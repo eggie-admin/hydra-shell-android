@@ -4,19 +4,18 @@ set -eu
 REPORT_DIR="${HYDRA_REPORT_DIR:-$PWD/hydra-audit}"
 STAMP="$(date -u +%Y%m%dT%H%M%SZ 2>/dev/null || printf unknown-time)"
 REPORT="$REPORT_DIR/hydra-sanity-$STAMP.txt"
+REPORT_FILE="${REPORT##*/}"
 mkdir -p "$REPORT_DIR"
 
 have() { command -v "$1" >/dev/null 2>&1; }
 line() { printf '%s\n' "$*" | tee -a "$REPORT"; }
-probe() {
+check() {
   label="$1"; shift
-  line ""
-  line "## $label"
-  if "$@" >>"$REPORT" 2>&1; then
-    line "status=PASS"
+  if "$@" >/dev/null 2>&1; then
+    line "$label=PASS"
   else
     rc=$?
-    line "status=FAIL rc=$rc"
+    line "$label=FAIL rc=$rc"
   fi
 }
 
@@ -24,17 +23,15 @@ line "HYDRA_SAMSUNG_SANITY_AUDIT"
 line "timestamp_utc=$STAMP"
 line "authority=Professor"
 line "mutation_policy=read_only_probe"
-line "report=$REPORT"
+line "redaction_policy=shareable_no_device_identifiers"
+line "report_file=$REPORT_FILE"
 line ""
 line "## Environment"
-line "shell=${SHELL:-unknown}"
-line "home=${HOME:-unknown}"
-line "pwd=$PWD"
-line "user=$(id -un 2>/dev/null || printf unknown)"
-line "uid=$(id -u 2>/dev/null || printf unknown)"
-line "kernel=$(uname -a 2>/dev/null || printf unavailable)"
-line "android_root=${ANDROID_ROOT:-unset}"
-line "termux_version=${TERMUX_VERSION:-unset}"
+line "shell_name=${SHELL##*/}"
+line "home_set=$([ -n "${HOME:-}" ] && printf yes || printf no)"
+line "android_root_set=$([ -n "${ANDROID_ROOT:-}" ] && printf yes || printf no)"
+line "termux_version_set=$([ -n "${TERMUX_VERSION:-}" ] && printf yes || printf no)"
+line "kernel=$(uname -srm 2>/dev/null || printf unavailable)"
 
 case "${PREFIX:-}" in
   /data/data/com.termux/*) runtime=termux ;;
@@ -49,35 +46,69 @@ line "runtime=$runtime"
 
 line ""
 line "## Tool inventory"
-for tool in sh bash busybox apk curl wget python3 node npm git adb openssl sha256sum ss netstat; do
+for tool in sh bash busybox apk curl wget python3 node npm git adb openssl sha256sum awk ss netstat ip ifconfig; do
   if have "$tool"; then
-    path="$(command -v "$tool")"
-    line "$tool=present:$path"
+    line "$tool=present"
   else
     line "$tool=missing"
   fi
 done
 
-probe "Identity" id
-probe "Filesystem" sh -c 'df -h .; printf "write_test="; f="${TMPDIR:-.}/.hydra-write-$$"; : > "$f" && rm -f "$f" && echo PASS'
-probe "Loopback" sh -c 'if command -v ip >/dev/null 2>&1; then ip addr show lo; elif command -v ifconfig >/dev/null 2>&1; then ifconfig lo; else echo "No ip/ifconfig"; exit 1; fi'
+line ""
+line "## Read-only probes"
+check "identity_probe" id
+check "workspace_write_probe" sh -c 'f="${TMPDIR:-.}/.hydra-write-$$"; : > "$f" && rm -f "$f"'
+if have ip; then
+  check "loopback_probe" ip link show lo
+elif have ifconfig; then
+  check "loopback_probe" ifconfig lo
+else
+  line "loopback_probe=FAIL tool_missing"
+fi
 
 line ""
 line "## Listening ports"
-if have ss; then ss -lntup >>"$REPORT" 2>&1 || true
-elif have netstat; then netstat -lntup >>"$REPORT" 2>&1 || true
-else line "port_probe=unavailable"
+if have ss; then
+  listener_count="$(ss -lnt 2>/dev/null | awk 'NR>1 {n++} END {print n+0}')"
+  line "tcp_listener_probe=ss"
+  line "tcp_listener_count=$listener_count"
+elif have netstat; then
+  listener_count="$(netstat -lnt 2>/dev/null | awk 'NR>2 {n++} END {print n+0}')"
+  line "tcp_listener_probe=netstat"
+  line "tcp_listener_count=$listener_count"
+else
+  line "tcp_listener_probe=unavailable"
 fi
+line "listener_endpoints=REDACTED"
+line "listener_processes=REDACTED"
 
 line ""
 line "## ADB target gate"
 if have adb; then
   adb_output="$(adb devices 2>&1 || true)"
-  printf '%s\n' "$adb_output" >>"$REPORT"
-  authorized_count="$(printf '%s\n' "$adb_output" | awk 'NR>1 && $2=="device" {n++} END {print n+0}')"
-  line "authorized_adb_targets=$authorized_count"
-  if [ "$authorized_count" -eq 1 ]; then line "adb_gate=PASS"
-  else line "adb_gate=BLOCKED_requires_exactly_one_authorized_target"
+  target_count="$(printf '%s\n' "$adb_output" | awk '
+    /^List of devices attached/ {seen=1; next}
+    seen && NF >= 2 && $1 !~ /^\*/ {n++}
+    END {print n+0}
+  ')"
+  authorized_count="$(printf '%s\n' "$adb_output" | awk '
+    /^List of devices attached/ {seen=1; next}
+    seen && $2 == "device" {n++}
+    END {print n+0}
+  ')"
+  unauthorized_count="$(printf '%s\n' "$adb_output" | awk '
+    /^List of devices attached/ {seen=1; next}
+    seen && ($2 == "unauthorized" || $2 == "offline" || ($2 == "no" && $3 == "permissions")) {n++}
+    END {print n+0}
+  ')"
+  line "adb_serials=REDACTED"
+  line "adb_targets_total=$target_count"
+  line "adb_targets_authorized=$authorized_count"
+  line "adb_targets_blocked_or_unready=$unauthorized_count"
+  if [ "$target_count" -eq 1 ] && [ "$authorized_count" -eq 1 ]; then
+    line "adb_gate=PASS"
+  else
+    line "adb_gate=BLOCKED_requires_exactly_one_target_and_it_must_be_authorized"
   fi
 else
   line "adb_gate=SKIP_adb_missing"
