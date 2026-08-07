@@ -1,0 +1,46 @@
+name: PR guardrails
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  shell-safety:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install ShellCheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+
+      - name: Parse portable shell scripts
+        run: |
+          set -eu
+          find tools tests -type f -name '*.sh' -print0 | xargs -0 -r -n1 sh -n
+
+      - name: Run ShellCheck
+        run: |
+          set -eu
+          find tools tests -type f -name '*.sh' -print0 | xargs -0 -r shellcheck -s sh
+
+      - name: Run audit regression test
+        run: sh tests/hydra-sanity-audit-test.sh
+
+      - name: Scan tracked files for obvious secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          pattern='(-----BEGIN ([A-Z]+ )?PRIVATE KEY-----|sk-(proj-)?[A-Za-z0-9_-]{20,}|gh[pousr]_[A-Za-z0-9]{20,}|AIza[0-9A-Za-z_-]{35})'
+          if git grep -nEI "$pattern" -- . ':(exclude).github/workflows/pr-guardrails.yml'; then
+            echo '::error::Potential credential material found in tracked files.'
+            exit 1
+          fi
+          echo 'No obvious tracked secrets found.'
