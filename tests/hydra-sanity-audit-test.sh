@@ -1,7 +1,8 @@
 #!/usr/bin/env sh
 set -eu
 
-ROOT="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
+SCRIPT_DIR="$(dirname "$0")"
+ROOT="$(CDPATH='' cd "$SCRIPT_DIR/.." && pwd)"
 TMP="${TMPDIR:-/tmp}/hydra-sanity-test-$$"
 FAKEBIN="$TMP/bin"
 REPORT_DIR="$TMP/reports"
@@ -30,7 +31,7 @@ grep -q '^adb_targets_blocked_or_unready=1$' "$REPORT"
 grep -q '^adb_gate=BLOCKED_requires_exactly_one_target_and_it_must_be_authorized$' "$REPORT"
 grep -q '^adb_serials=REDACTED$' "$REPORT"
 
-if grep -q 'SERIAL-ONE\|SERIAL-TWO' "$REPORT"; then
+if grep -Eq 'SERIAL-ONE|SERIAL-TWO' "$REPORT"; then
   echo 'FAIL: ADB serial leaked into redacted report' >&2
   exit 1
 fi
