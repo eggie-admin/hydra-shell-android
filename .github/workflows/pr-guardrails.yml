@@ -14,22 +14,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install ShellCheck
         run: |
           sudo apt-get update
           sudo apt-get install -y shellcheck
 
-      - name: Parse portable shell scripts
+      - name: Parse shell scripts with their declared interpreter
         run: |
           set -eu
-          find tools tests -type f -name '*.sh' -print0 | xargs -0 -r -n1 sh -n
+          sh -n tools/hydra-sanity-audit.sh tests/hydra-sanity-audit-test.sh
+          bash -n tools/install-shizuku.sh
 
       - name: Run ShellCheck
         run: |
           set -eu
-          find tools tests -type f -name '*.sh' -print0 | xargs -0 -r shellcheck -s sh
+          shellcheck tools/hydra-sanity-audit.sh tools/install-shizuku.sh tests/hydra-sanity-audit-test.sh
 
       - name: Run audit regression test
         run: sh tests/hydra-sanity-audit-test.sh
