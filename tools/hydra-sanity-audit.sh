@@ -18,6 +18,11 @@ check() {
     line "$label=FAIL rc=$rc"
   fi
 }
+workspace_write_check() {
+  write_file="${TMPDIR:-.}/.hydra-write-$$"
+  : >"$write_file"
+  rm -f "$write_file"
+}
 
 line "HYDRA_SAMSUNG_SANITY_AUDIT"
 line "timestamp_utc=$STAMP"
@@ -57,7 +62,7 @@ done
 line ""
 line "## Read-only probes"
 check "identity_probe" id
-check "workspace_write_probe" sh -c 'f="${TMPDIR:-.}/.hydra-write-$$"; : > "$f" && rm -f "$f"'
+check "workspace_write_probe" workspace_write_check
 if have ip; then
   check "loopback_probe" ip link show lo
 elif have ifconfig; then
