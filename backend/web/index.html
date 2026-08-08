@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Hydra Local</title>
+  <style>
+    :root{color-scheme:dark;--bg:#050908;--panel:#0a1210;--ink:#d9fff4;--mint:#62f6c5;--dim:#7da99a;--bad:#ff7b9b}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#0d211b 0,#050908 44%);color:var(--ink);font-family:system-ui,-apple-system,sans-serif;min-height:100vh}
+    main{max-width:760px;margin:auto;padding:18px 14px 110px}.top{display:flex;align-items:center;gap:12px;margin-bottom:12px}.orb{width:46px;height:46px;border:2px solid var(--mint);border-radius:50%;box-shadow:0 0 26px rgba(98,246,197,.35);display:grid;place-items:center;font-size:22px}.title{font-weight:800}.sub{font-size:.85rem;color:var(--dim)}
+    #status{padding:8px 10px;border:1px solid #1e4a3d;border-radius:12px;color:var(--dim);margin:10px 0}.chat{display:flex;flex-direction:column;gap:10px}.msg{padding:12px 14px;border-radius:16px;white-space:pre-wrap;line-height:1.38}.user{background:#10201b;align-self:flex-end;max-width:88%}.ai{background:#081713;border:1px solid #18382f;align-self:flex-start;max-width:94%}.err{border-color:#6b2436;color:#ffd7e2}
+    .dock{position:fixed;left:0;right:0;bottom:0;background:rgba(5,9,8,.94);backdrop-filter:blur(14px);border-top:1px solid #18382f;padding:10px}.dockin{max-width:760px;margin:auto;display:grid;grid-template-columns:1fr auto auto;gap:8px}textarea{resize:none;min-height:54px;max-height:160px;background:#0b1512;color:var(--ink);border:1px solid #214c3f;border-radius:14px;padding:12px;font:inherit}button{border:1px solid #2c6d59;background:#0f2b22;color:var(--mint);border-radius:14px;padding:0 16px;font-weight:800}button:disabled{opacity:.45}.speak{min-width:54px}.tiny{font-size:.78rem;color:var(--dim);margin-top:8px}
+  </style>
+</head>
+<body>
+<main>
+  <div class="top"><div class="orb">⚡</div><div><div class="title">Lum / Professor Green</div><div class="sub">Project Hydra · Ollama local</div></div></div>
+  <div id="status">checking localhost…</div>
+  <section id="chat" class="chat"></section>
+  <div class="tiny">Local endpoint: 127.0.0.1:8787 · no cloud key required</div>
+</main>
+<div class="dock"><div class="dockin">
+  <textarea id="input" placeholder="Talk to Hydra…"></textarea>
+  <button id="speak" class="speak" title="Toggle voice">🔊</button>
+  <button id="send">SEND</button>
+</div></div>
+<script>
+const chat=document.querySelector('#chat');const input=document.querySelector('#input');const send=document.querySelector('#send');const status=document.querySelector('#status');const speakBtn=document.querySelector('#speak');let speak=true;
+function add(text,kind='ai'){const el=document.createElement('div');el.className='msg '+kind;el.textContent=text;chat.appendChild(el);window.scrollTo(0,document.body.scrollHeight);return el}
+async function health(){try{const r=await fetch('/health');const j=await r.json();status.textContent=`${j.ollama?'GREEN':'OLLAMA OFF'} · ${j.model} · TTS ${j.tts?'READY':'OPTIONAL'}`;status.style.color=j.ollama?'var(--mint)':'var(--bad)'}catch(e){status.textContent='localhost backend unavailable';status.style.color='var(--bad)'}}
+async function submit(){const text=input.value.trim();if(!text)return;add(text,'user');input.value='';send.disabled=true;const placeholder=add('thinking…','ai');try{const r=await fetch('/v1/hydra/turn',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({conversation_id:'android-local',message:text,speak})});const j=await r.json();if(!r.ok)throw new Error(j.hint||j.error||`HTTP ${r.status}`);placeholder.textContent=j.text||'(empty response)'}catch(e){placeholder.textContent='⚠ '+e.message;placeholder.classList.add('err')}finally{send.disabled=false;health()}}
+send.onclick=submit;speakBtn.onclick=()=>{speak=!speak;speakBtn.textContent=speak?'🔊':'🔇'};input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();submit()}});health();setInterval(health,15000);
+</script>
+</body>
+</html>
