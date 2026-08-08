@@ -12,6 +12,9 @@ VNC_DPI="${HYDRA_VNC_DPI:-180}"
 FAST_MODEL="${HYDRA_FAST_MODEL:-qwen3:0.6b}"
 DEEP_MODEL="${HYDRA_DEEP_MODEL:-qwen2.5:3b}"
 
+VNC_DISPLAY_NUM="${VNC_DISPLAY#:}"
+VNC_PORT="$((5900 + VNC_DISPLAY_NUM))"
+
 mkdir -p "$LOG_DIR" "$PID_DIR"
 
 need_pkg() {
@@ -66,8 +69,13 @@ fi
 
 printf '\n[2/4] TigerVNC\n'
 export DISPLAY="$VNC_DISPLAY"
-if vncserver -list 2>/dev/null | grep -q "${VNC_DISPLAY}"; then
-  printf 'VNC GREEN on %s (existing session preserved)\n' "$VNC_DISPLAY"
+
+# On Android/Termux, vncserver -list can occasionally miss a live Xvnc while
+# the display lock and TCP listener are still valid. The loopback VNC socket is
+# the authority here: preserve a live listener and only clean stale locks when
+# the expected port is actually closed.
+if port_open "$VNC_PORT"; then
+  printf 'VNC GREEN on %s / 127.0.0.1:%s (live listener preserved)\n' "$VNC_DISPLAY" "$VNC_PORT"
 else
   vncserver -list -cleanstale >/dev/null 2>&1 || true
   vncserver "$VNC_DISPLAY" \
@@ -75,7 +83,16 @@ else
     -geometry "$VNC_GEOMETRY" \
     -depth "$VNC_DEPTH" \
     -dpi "$VNC_DPI"
-  printf 'VNC GREEN on %s / 127.0.0.1:5901\n' "$VNC_DISPLAY"
+
+  for _ in $(seq 1 10); do
+    port_open "$VNC_PORT" && break
+    sleep 1
+  done
+  port_open "$VNC_PORT" || {
+    printf 'VNC failed to open 127.0.0.1:%s. Check ~/.vnc logs.\n' "$VNC_PORT"
+    exit 1
+  }
+  printf 'VNC GREEN on %s / 127.0.0.1:%s\n' "$VNC_DISPLAY" "$VNC_PORT"
 fi
 
 printf '\n[3/4] Ollama + Hydra\n'
@@ -113,7 +130,7 @@ curl -fsS http://127.0.0.1:8787/v1/system/status | python -m json.tool
 
 printf '\nHYDRA PROFESSOR GREEN FULL GREEN\n'
 printf 'AcodeX/AXS : 127.0.0.1:%s\n' "$AXS_PORT"
-printf 'VNC        : %s / 127.0.0.1:5901\n' "$VNC_DISPLAY"
+printf 'VNC        : %s / 127.0.0.1:%s\n' "$VNC_DISPLAY" "$VNC_PORT"
 printf 'Hydra UI   : http://127.0.0.1:8787/ui/index.html\n'
 printf 'Hydra API  : http://127.0.0.1:8787\n'
 printf 'Ollama     : http://127.0.0.1:11434\n'
