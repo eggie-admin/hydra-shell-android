@@ -82,6 +82,21 @@ printf '\n[3/4] Ollama + Hydra\n'
 export HYDRA_FAST_MODEL="$FAST_MODEL"
 export HYDRA_DEEP_MODEL="$DEEP_MODEL"
 export HYDRA_OLLAMA_MODEL="$FAST_MODEL"
+
+# Force only the Hydra gateway to restart so code/persona/UI mutations become active.
+# Ollama, AXS and VNC are deliberately preserved.
+if [ -f "$PID_DIR/hydra-gateway.pid" ]; then
+  old_pid="$(cat "$PID_DIR/hydra-gateway.pid" 2>/dev/null || true)"
+  if [ -n "$old_pid" ] && kill -0 "$old_pid" 2>/dev/null; then
+    kill "$old_pid" 2>/dev/null || true
+    sleep 1
+  fi
+fi
+if port_open 8787; then
+  pkill -f 'python.*backend/server.py' 2>/dev/null || true
+  sleep 1
+fi
+
 "$REPO_DIR/tools/hydra-ollama-up.sh"
 
 if command -v ollama >/dev/null 2>&1; then
