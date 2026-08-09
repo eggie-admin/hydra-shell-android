@@ -27,7 +27,7 @@ INSTALLED_SCRIPT = BIN_DIR / "hydra-services"
 STATE_FILE = STATE_DIR / "state.json"
 LOCK_FILE = STATE_DIR / "control.lock"
 DISPLAY = ":1"
-PORTS = {"axs": 8767, "vnc": 5901, "websocket": 6080}
+PORTS = {"axs": 8767, "vnc": 5901, "websocket": 6080, "cockpit": 8787}
 
 
 def now() -> str:
@@ -176,6 +176,14 @@ def start_all() -> dict[str, object]:
         else:
             results.append({"service": "axs", "state": "missing_command"})
 
+        cockpit = which_any("hydra-cockpit")
+        if cockpit:
+            results.append(
+                start_background("cockpit", [cockpit], PORTS["cockpit"], state)
+            )
+        else:
+            results.append({"service": "cockpit", "state": "missing_command"})
+
         results.append(start_vnc())
 
         if port_open(PORTS["vnc"]):
@@ -227,7 +235,11 @@ def stop_owned(name: str, state: dict[str, object]) -> dict[str, object]:
 def stop_all() -> dict[str, object]:
     with lock_control():
         state = load_state()
-        results = [stop_owned("websocket", state), stop_owned("axs", state)]
+        results = [
+            stop_owned("websocket", state),
+            stop_owned("cockpit", state),
+            stop_owned("axs", state),
+        ]
 
         vncserver = which_any("vncserver")
         if vncserver:
