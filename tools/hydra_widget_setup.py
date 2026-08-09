@@ -176,7 +176,8 @@ def start_all() -> dict[str, object]:
         else:
             results.append({"service": "axs", "state": "missing_command"})
 
-        cockpit = which_any("hydra-cockpit")
+        installed_cockpit = BIN_DIR / "hydra-cockpit"
+        cockpit = str(installed_cockpit) if installed_cockpit.is_file() else which_any("hydra-cockpit")
         if cockpit:
             results.append(
                 start_background("cockpit", [cockpit], PORTS["cockpit"], state)
