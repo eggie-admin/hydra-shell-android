@@ -95,6 +95,19 @@ class CockpitTest(unittest.TestCase):
         self.assertIn("viewport-fit=cover", html)
         self.assertIn("/api/chat", html)
 
+    def test_final_mic_transcript_auto_submits_once(self):
+        with urllib.request.urlopen(self.base + "/", timeout=3) as response:
+            html = response.read().decode()
+        self.assertIn("async function submitMessage()", html)
+        self.assertIn("if(busy)return", html)
+        self.assertIn("setMicState('listening')", html)
+        self.assertIn("setMicState('sending')", html)
+        self.assertIn("void submitMessage()", html)
+        self.assertNotIn(
+            "rec.onresult=e=>{promptEl.value=e.results[0][0].transcript;promptEl.focus()}",
+            html,
+        )
+
     def test_cross_origin_chat_is_refused(self):
         request = urllib.request.Request(
             self.base + "/api/chat",
