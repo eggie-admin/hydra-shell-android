@@ -184,7 +184,8 @@ def start_all() -> dict[str, object]:
                 results.append(
                     start_background(
                         "websocket",
-                        [proxy, "127.0.0.1:5901", "127.0.0.1:6080"],
+                        # websockify-rs expects LISTEN first, then UPSTREAM.
+                        [proxy, "127.0.0.1:6080", "127.0.0.1:5901"],
                         PORTS["websocket"],
                         state,
                     )
