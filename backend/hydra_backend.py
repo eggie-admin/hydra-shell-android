@@ -88,6 +88,17 @@ def ingest_rss(text: str, source: str = "") -> list[dict[str, str]]:
     return list(unique.values())
 
 
+def fetch_approved_feeds() -> list[dict[str, str]]:
+    entries = []
+    for url in APPROVED_FEEDS:
+        try:
+            with urllib.request.urlopen(url, timeout=5) as response:
+                entries.extend(ingest_rss(response.read(RSS_MAX + 1).decode("utf-8"), url))
+        except (urllib.error.URLError, UnicodeDecodeError, ValidationError):
+            continue
+    return entries
+
+
 def _mock_reply(message: str) -> str:
     return f"Lum mock mode: I received “{_clean(message, 500)}”. ⚡"
 
@@ -105,7 +116,7 @@ def _openai_reply(message: str, context: list[dict[str, str]]) -> str:
                 {"role": "user", "content": message},
             ],
         }).encode(),
-        headers={"Authorization": f"******", "Content-Type": "application/json"},
+        headers={"Authorization": "Bearer " + key, "Content-Type": "application/json"},
     )
     try:
         with urllib.request.urlopen(request, timeout=15) as response:
@@ -142,11 +153,18 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self) -> None:  # noqa: N802
         if self.path == "/health":
-            return self._send(200, {"version": API_VERSION, "status": "ok", "bind": HOST, "port": PORT})
+            return self._send(200, {
+                "version": API_VERSION, "request_id": str(uuid.uuid4()),
+                "timestamp": int(time.time()), "status": "ok", "bind": HOST, "port": PORT,
+            })
         if self.path == "/v1/agents":
             return self._send(200, {"version": API_VERSION, "agents": [{"id": "lum", "role": "orchestrator"}]})
         if self.path == "/v1/tools":
             return self._send(200, {"version": API_VERSION, "tools": [{"name": "get_weather", "units": ["celsius", "fahrenheit"]}]})
+        if self.path == "/v1/failure/500":
+            return self._send(500, {"version": API_VERSION, "error": "injected_failure"})
+        if self.path == "/v1/failure/invalid-audio":
+            return self._send(400, {"version": API_VERSION, "error": "invalid_audio"})
         self._send(404, {"error": "not_found"})
 
     def do_POST(self) -> None:  # noqa: N802
