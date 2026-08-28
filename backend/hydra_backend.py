@@ -5,6 +5,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import html
+from html.parser import HTMLParser
 import json
 import os
 import re
@@ -27,8 +28,19 @@ APPROVED_FEEDS = tuple(
 )
 
 
+class _TextParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.parts: list[str] = []
+
+    def handle_data(self, data: str) -> None:
+        self.parts.append(data)
+
+
 def _clean(value: Any, limit: int = 4000) -> str:
-    text = html.unescape(re.sub(r"<[^>]*>", " ", str(value or "")))
+    parser = _TextParser()
+    parser.feed(html.unescape(str(value or "")))
+    text = " ".join(parser.parts)
     return re.sub(r"\s+", " ", text).strip()[:limit]
 
 
