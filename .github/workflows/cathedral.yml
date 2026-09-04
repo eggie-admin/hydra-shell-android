@@ -1,0 +1,27 @@
+name: Cathedral Android Gate
+
+on:
+  push:
+    branches: [main, video-forge-cathedral-npm-fdroid]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  source-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: python3 tools/cathedral.py fdroid-check
+      - run: python3 tools/cathedral.py doctor || true
+      - name: Explain Android build boundary
+        run: |
+          echo 'Source gate complete.'
+          echo 'Godot/Gradle Android export should run only after the Godot project and pinned CMS checkout are vendored/submoduled into this repository.'
