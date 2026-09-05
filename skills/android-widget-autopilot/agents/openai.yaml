@@ -1,0 +1,8 @@
+interface:
+  display_name: "Hydra Widget Autopilot"
+  short_description: "Audit and harden Hydra Android widget work"
+  brand_color: "#00695C"
+  default_prompt: "Audit the Android widget branch, apply the smallest safe fix, run available checks, and report exact evidence."
+policy:
+  products: [CHAT, CODEX]
+  allow_implicit_invocation: true

@@ -52,3 +52,11 @@ Before calling the milestone complete, document `docs/HARD_ARCH_AUDIT.md`:
 3. Build/reproducibility/maintainability: clean clone, pinned versions, deterministic tests, no secret artifacts, installable CI APK, replaceable interfaces.
 
 Use GREEN/YELLOW/RED findings and remediate RED before completion.
+
+## Plugin Autopilot lane
+- This branch contains a skills-only ChatGPT/Codex Plugin manifest at `.codex-plugin/plugin.json`.
+- For Android widget/supervisor work, use `skills/android-widget-autopilot/SKILL.md` as the branch-local Autopilot workflow.
+- Read repository state before writing. Prefer focused patches over broad rewrites.
+- Preserve the Termux widget task/state contract and localhost-only development boundary unless the user explicitly requests a breaking change.
+- Run available checks and report execution evidence. Never describe an unexecuted check as passed.
+- Distinguish branch-updated, locally validated, PR-ready, merged, released, submitted, approved, and published states.
