@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-label="Hydra Widget Autopilot icon">
+  <rect width="256" height="256" rx="56" fill="#00695C"/>
+  <circle cx="128" cy="128" r="68" fill="#10201F"/>
+  <path d="M88 82h24v34h32V82h24v92h-24v-34h-32v34H88z" fill="#4DD0E1"/>
+  <circle cx="128" cy="128" r="12" fill="#FFFFFF"/>
+</svg>
