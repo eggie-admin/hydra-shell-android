@@ -1,0 +1,33 @@
+{
+  "name": "hydra-android-widget",
+  "version": "0.1.0",
+  "description": "A skills-only ChatGPT/Codex workflow for safely auditing and evolving Project Hydra's Android Termux widget supervisor branch.",
+  "author": {
+    "name": "Eggie Bagelface",
+    "url": "https://github.com/eggie-admin"
+  },
+  "repository": "https://github.com/eggie-admin/hydra-shell-android",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Hydra Widget Autopilot",
+    "shortDescription": "Audit Android widget changes",
+    "longDescription": "Use a guarded Autopilot workflow to inspect, modify, test, and document the Project Hydra Android Termux widget supervisor. Preserve localhost-only development boundaries, typed tool execution, secret hygiene, deterministic mock mode, and the existing widget state contract. Read before writing, prefer focused patches, run available tests, and report evidence without exposing chain-of-thought.",
+    "developerName": "Eggie Bagelface",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Inspect the Android widget supervisor branch before mutation",
+      "Apply focused repository changes while preserving Hydra invariants",
+      "Run available Python and Android validation gates",
+      "Produce GREEN/YELLOW/RED architecture audit evidence"
+    ],
+    "defaultPrompt": [
+      "Audit the Android widget branch and fix blocking issues.",
+      "Harden the Termux widget supervisor without changing its core contract.",
+      "Validate this widget change and report exact evidence."
+    ],
+    "brandColor": "#00695C",
+    "brandColorDark": "#4DD0E1",
+    "logo": "./assets/logo-light.svg",
+    "composerIcon": "./assets/icon.svg"
+  }
+}
