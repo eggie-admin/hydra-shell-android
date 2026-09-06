@@ -1,0 +1,38 @@
+{
+  "schema": "kai9000.github-mirror.v1",
+  "package": "lum-dungeon-dev-kit",
+  "version": "0.1.0",
+  "encoding": "base64",
+  "artifact": "lum_dungeon_dev_github_mirror_bundle_v0.1.0.zip",
+  "artifact_bytes": 24946,
+  "artifact_sha256": "9edb6203748a4d491ac04c9003757204424d3be7f1a1cfe5ea7ebb648ec54d01",
+  "chunks": [
+    {
+      "file": "bundle.part001.b64",
+      "chars": 8000,
+      "sha256": "1444330c31dd2b3339ab98e582aa09d514a54d65d29ab7a7c0b52b8d8d53c40a"
+    },
+    {
+      "file": "bundle.part002.b64",
+      "chars": 8000,
+      "sha256": "eff49b7cf2ee3eacb90a6554cfd36b058eb98b852d5626e15d66019d9eb91ce5"
+    },
+    {
+      "file": "bundle.part003.b64",
+      "chars": 8000,
+      "sha256": "9df1efb47171ea577764a206b9f82f4c2f9a91e2ce28386b4d6985692aa36760"
+    },
+    {
+      "file": "bundle.part004.b64",
+      "chars": 8000,
+      "sha256": "579610f03f003aba5e04724acda59372d7fd1a074427c42aaec6b4053c3c64d2"
+    },
+    {
+      "file": "bundle.part005.b64",
+      "chars": 1264,
+      "sha256": "38351dffd853d25f0ddf44740826b2d3be0847a9cdfc784b0a3064590d2c0e7e"
+    }
+  ],
+  "rebuild": "concatenate chunks in order, Base64-decode, verify artifact_sha256",
+  "secrets_policy": "No secrets. Base64 is encoding, not encryption."
+}
