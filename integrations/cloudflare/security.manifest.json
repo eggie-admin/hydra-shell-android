@@ -1,84 +1,119 @@
 {
-  "schema": "kai9000.cloudflare-eap-security.v1",
+  "schema": "kai9000.cloudflare-eap-security.v2",
   "date": "2026-09-06",
   "zone": "eggiebagelface.art",
   "meaning_of_eap": "Edge Access Perimeter",
-  "status": "CLOUDFLARE_SECURITY_WIRED_NOT_LIVE_GREEN",
-  "public_surfaces": [
-    "eggiebagelface.art",
-    "www.eggiebagelface.art",
-    "fdroid.eggiebagelface.art"
-  ],
-  "private_surfaces": [
-    "admin.eggiebagelface.art",
-    "lum.eggiebagelface.lan",
-    "ai.eggiebagelface.lan"
-  ],
-  "edge": {
-    "universal_ssl": true,
+  "status": "CLOUDFLARE_FQDN_TLS_WIRED_NOT_LIVE_GREEN",
+  "fqdn_routes": {
+    "eggiebagelface.art": {
+      "role": "coming_soon_public_site",
+      "route": "workers_static_assets_custom_domain",
+      "public": true
+    },
+    "www.eggiebagelface.art": {
+      "role": "public_alias",
+      "route": "proxied_cname_to_apex",
+      "public": true
+    },
+    "fdroid.eggiebagelface.art": {
+      "role": "signed_fdroid_repository",
+      "route": "proxied_aaaa_to_gcp_ipv6_origin",
+      "public": true,
+      "access_gate": false
+    },
+    "admin.eggiebagelface.art": {
+      "role": "protected_cockpit",
+      "route": "proxied_cname_to_cloudflare_tunnel",
+      "public_dns": true,
+      "access_gate": true,
+      "warp_or_device_posture": true
+    },
+    "lum.eggiebagelface.lan": {
+      "role": "private_cockpit",
+      "route": "private_dns_and_warp_only",
+      "public_dns": false
+    },
+    "ai.eggiebagelface.lan": {
+      "role": "private_ai_services",
+      "route": "private_dns_and_warp_only",
+      "public_dns": false
+    }
+  },
+  "edge_tls": {
+    "manager": "cloudflare_universal_ssl",
+    "edge_private_key_export": false,
     "minimum_tls": "1.2",
     "tls_1_3": true,
     "always_use_https": true,
-    "hsts": "stage_after_https_proven",
-    "full_strict": true,
-    "ecdsa_preferred": true
+    "hsts": "enable_only_after_all_https_hosts_proven",
+    "fdroid_encryption_mode": "full_strict"
   },
   "origin_tls": {
-    "preferred_ca": "Lets Encrypt",
-    "acme_challenge": "dns-01",
+    "fdroid_primary_ca": "Cloudflare Origin CA",
+    "request_type": "origin-ecc",
+    "key_generation": "local_only",
     "key_type": "ecdsa",
-    "curve": "secp256r1",
-    "cloudflare_origin_ca_fallback": true
+    "curve": "P-256",
+    "private_key_export": false,
+    "csr_only_to_cloudflare": true,
+    "preferred_validity_days": 365,
+    "preferred_san": "fdroid.eggiebagelface.art",
+    "lets_encrypt_dns01_fallback": true
   },
   "dns_security": {
     "dnssec": true,
-    "algorithm_expected": "13 ECDSA P-256 SHA-256",
     "registrar_ds_required": true,
     "manual_dnskey_forbidden": true,
     "tlsa_for_proxied_https": false,
-    "caa_policy": "allow Lets Encrypt without blocking Cloudflare Universal partner CAs"
+    "caa_lets_encrypt_fallback": true,
+    "cloudflare_universal_caa_supplement_allowed": true
   },
   "network": {
-    "server_connector": "cloudflared",
+    "public_site": "cloudflare_static_assets",
+    "fdroid_origin": "gcp_ipv6_only",
+    "fdroid_public_a_record": false,
+    "fdroid_public_aaaa_record": true,
+    "admin_connector": "cloudflared",
     "client_connector": "Cloudflare One Client/WARP",
     "tunnel_direction": "outbound_only_from_origin",
     "wan_port_forwarding": false,
-    "public_origin_ipv4": false,
     "ipv4_to_ipv6_http_redirect": false,
     "edge_dual_stack": true,
-    "origin_preference": "tunnel_then_ipv6_only_direct_fallback"
+    "private_lan_public_dns": false
   },
   "security": {
     "ddos_managed": true,
     "waf": true,
-    "free_managed_ruleset": true,
-    "admin_location_lock": "US",
+    "admin_location_lock": "US_as_defense_in_depth",
     "admin_identity_required": true,
     "admin_warp_or_device_posture_required": true,
-    "public_fdroid_geo_locked": false
+    "public_fdroid_geo_locked": false,
+    "public_fdroid_identity_gate": false
   },
   "tokens": {
     "global_api_key_allowed": false,
-    "dns_acme": "least_privilege_zone_read_plus_dns_edit",
-    "zone_security": "least_privilege_zone_settings_dnssec_rules",
+    "zone_dns_tls": "least_privilege_token",
+    "origin_ca": "least_privilege_api_token_or_origin_ca_key",
     "tunnel_runtime": "tunnel_only",
     "zero_trust_admin": "access_apps_policies_groups_only_when_needed",
     "model_visible": false
   },
-  "doctrine": "docs/CLOUDFLARE_EAP_SECURITY_REROLL.md",
+  "doctrine": "docs/CLOUDFLARE_FQDN_TLS_REROLL_V2.md",
   "green_requires": [
     "zone_active",
     "universal_ssl_active",
-    "full_strict_active",
     "minimum_tls_1_2_or_newer",
     "tls_1_3_active",
-    "dnssec_active",
-    "registrar_ds_valid",
-    "tunnel_connected",
-    "origin_not_directly_exposed",
-    "ddos_waf_active",
-    "private_access_policy_proven",
-    "public_business_and_fdroid_routes_reachable",
+    "always_use_https_active",
+    "fdroid_full_strict_active",
+    "fdroid_origin_ecc_p256_certificate_valid",
+    "dnssec_active_and_registrar_ds_valid",
+    "fdroid_no_public_ipv4_a_record",
+    "fdroid_proxied_aaaa_reachable",
+    "fdroid_signed_index_publicly_reachable",
+    "admin_tunnel_connected",
+    "admin_access_warp_policy_proven",
+    "private_lan_not_public_dns",
     "no_secret_leakage"
   ]
 }
