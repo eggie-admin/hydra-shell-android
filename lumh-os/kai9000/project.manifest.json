@@ -21,6 +21,15 @@
     "google_drive": {
       "role": "sealed_recovery_and_artifact_mirror",
       "secrets_allowed": false
+    },
+    "hugging_face": {
+      "role": "forge_and_model_catalog",
+      "runtime_authority": false,
+      "secret_store": false,
+      "auto_download": false,
+      "auto_execute_remote_code": false,
+      "revision_pin_required": true,
+      "doctrine": "lumh-os/kai9000/huggingface.doctrine.json"
     }
   },
   "ingestion": {
