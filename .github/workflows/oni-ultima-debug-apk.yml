@@ -1,0 +1,283 @@
+name: Oni Summoning - Ultima Debug APK
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - testing/luhm-os-android
+    paths:
+      - 'backend/**'
+      - 'tools/**'
+      - 'tests/**'
+      - 'lumh-os/**'
+      - 'project/hydra/**'
+      - 'docs/**'
+      - 'release/**'
+      - '.github/**'
+  push:
+    branches:
+      - testing/luhm-os-android
+    paths:
+      - 'backend/**'
+      - 'tools/**'
+      - 'tests/**'
+      - 'lumh-os/**'
+      - 'project/hydra/**'
+      - 'docs/**'
+      - 'release/**'
+      - '.github/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: oni-ultima-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DONOR_REPO: eggie-admin/vue-headless-cms
+  DONOR_REF: 86507ed7c72650ff508eb9a1a9e52842eb50e821
+  GODOT_RELEASE: 4.7.2-stable
+  GODOT_TEMPLATE_VERSION: 4.7.2.stable
+  GODOT_EDITOR_SHA256: cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4
+  GODOT_TEMPLATES_SHA256: f298490b8d44d934be425a5a65a51bf15f422428b229a06a6e11d9ffea248011
+  APK_NAME: kai9000-luhm-os-testing-debug.apk
+
+jobs:
+  doctrine-preflight:
+    name: Doctrine + Python preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+          cache: pip
+          cache-dependency-path: |
+            backend/requirements.txt
+            backend/requirements-dev.txt
+
+      - name: Install test dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install -r backend/requirements.txt -r backend/requirements-dev.txt
+
+      - name: Compile and test local plane
+        run: |
+          set -euo pipefail
+          python -m compileall -q backend tools ultima/ollama-ffmpeg-antenna-v3
+          python -m pytest -q backend/tests
+          bash tests/hydra-sanity-audit-test.sh
+
+      - name: Doctrine invariants
+        run: |
+          set -euo pipefail
+          test -f lumh-os/kai9000/AI_MAGIC_DOCTRINE.md
+          test -f lumh-os/kai9000/project.manifest.json
+          test -f project/hydra/samsung/android/apk/testing-ingest.manifest.json
+          ! grep -RniE 'vercel|OPENAI_API_KEY[[:space:]]*=' \
+            lumh-os project docs release .github 2>/dev/null
+          echo 'DOCTRINE_PREFLIGHT_GREEN'
+
+  android-debug:
+    name: Godot Android debug forge
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - name: Checkout LuHm OS altar
+        uses: actions/checkout@v4
+
+      - name: Checkout pinned Samsung APK donor
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.DONOR_REPO }}
+          ref: ${{ env.DONOR_REF }}
+          path: _forge/vue-headless-cms
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.18.0'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.13'
+          cache-cleanup: on-success
+
+      - name: Cache npm downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm24-${{ hashFiles('_forge/vue-headless-cms/apps/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm24-
+
+      - name: Cache verified Godot archives
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/kai9000/godot-4.7.2
+          key: ${{ runner.os }}-godot-4.7.2-${{ env.GODOT_EDITOR_SHA256 }}-${{ env.GODOT_TEMPLATES_SHA256 }}
+
+      - name: Install Android SDK 36
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" 'platform-tools' 'build-tools;36.1.0' 'platforms;android-36'
+
+      - name: Install verified Godot 4.7.2
+        shell: bash
+        run: |
+          set -euo pipefail
+          CACHE="$HOME/.cache/kai9000/godot-4.7.2"
+          WORK="$RUNNER_TEMP/kai-godot"
+          mkdir -p "$CACHE" "$WORK"
+
+          if [ ! -s "$CACHE/godot.zip" ]; then
+            curl --fail --location --retry 3 -o "$CACHE/godot.zip" \
+              "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v4.7.2-stable_linux.x86_64.zip"
+          fi
+          echo "${GODOT_EDITOR_SHA256}  $CACHE/godot.zip" | sha256sum --check --strict
+
+          if [ ! -s "$CACHE/export_templates.tpz" ]; then
+            curl --fail --location --retry 3 -o "$CACHE/export_templates.tpz" \
+              "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v4.7.2-stable_export_templates.tpz"
+          fi
+          echo "${GODOT_TEMPLATES_SHA256}  $CACHE/export_templates.tpz" | sha256sum --check --strict
+
+          unzip -q -o "$CACHE/godot.zip" -d "$WORK"
+          chmod +x "$WORK/Godot_v4.7.2-stable_linux.x86_64"
+          echo "GODOT_BIN=$WORK/Godot_v4.7.2-stable_linux.x86_64" >> "$GITHUB_ENV"
+
+          rm -rf "$WORK/templates"
+          mkdir -p "$WORK/templates"
+          unzip -q "$CACHE/export_templates.tpz" -d "$WORK/templates"
+          TEMPLATE_DIR="$HOME/.local/share/godot/export_templates/${GODOT_TEMPLATE_VERSION}"
+          mkdir -p "$TEMPLATE_DIR"
+          cp -a "$WORK/templates/templates/." "$TEMPLATE_DIR/"
+          test -f "$TEMPLATE_DIR/android_debug.apk"
+          test -f "$TEMPLATE_DIR/android_source.zip"
+
+      - name: Build Vue cockpit
+        working-directory: _forge/vue-headless-cms/apps
+        run: |
+          set -euo pipefail
+          npm install --global npm@12.0.2 --no-audit --no-fund
+          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run build --workspace=video-forge-ui
+          test -f forge-ui/dist/index.html
+
+      - name: Build Godot Android plugin
+        working-directory: _forge/vue-headless-cms
+        run: |
+          set -euo pipefail
+          rm -rf godot/android-plugin/plugin/src/main/assets/cms
+          mkdir -p godot/android-plugin/plugin/src/main/assets/cms
+          cp -a apps/forge-ui/dist/. godot/android-plugin/plugin/src/main/assets/cms/
+          gradle -p godot/android-plugin :plugin:assemble
+          test -f godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-debug.aar
+          test -f godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-release.aar
+
+          rm -rf godot/addons/CathedralAndroid
+          mkdir -p godot/addons/CathedralAndroid/bin/debug godot/addons/CathedralAndroid/bin/release
+          cp -a godot/android-plugin/plugin/export_scripts_template/. godot/addons/CathedralAndroid/
+          cp godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-debug.aar godot/addons/CathedralAndroid/bin/debug/
+          cp godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-release.aar godot/addons/CathedralAndroid/bin/release/
+
+      - name: Run Samsung architecture gates
+        working-directory: _forge/vue-headless-cms
+        run: |
+          set -euo pipefail
+          python scripts/cathedral_full_sanity.py
+          python scripts/samsung_edge_sanity.py
+
+      - name: Configure ephemeral debug signing
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.config/godot" build/android
+          cat > "$HOME/.config/godot/editor_settings-4.tres" <<EOF
+          [gd_resource type="EditorSettings" format=3]
+
+          [resource]
+          export/android/android_sdk_path = "$ANDROID_HOME"
+          export/android/java_sdk_path = "$JAVA_HOME"
+          EOF
+
+          KEYSTORE="$RUNNER_TEMP/kai9000-debug.keystore"
+          keytool -genkeypair -keystore "$KEYSTORE" -storepass android \
+            -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 \
+            -validity 10000 -dname 'CN=KAI 9000 Debug,O=LuHm OS,C=US'
+          echo "GODOT_ANDROID_KEYSTORE_DEBUG_PATH=$KEYSTORE" >> "$GITHUB_ENV"
+          echo 'GODOT_ANDROID_KEYSTORE_DEBUG_USER=androiddebugkey' >> "$GITHUB_ENV"
+          echo 'GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD=android' >> "$GITHUB_ENV"
+
+      - name: Import and export Android debug APK
+        working-directory: _forge/vue-headless-cms
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$GODOT_BIN" --headless --editor --path godot --quit
+          "$GODOT_BIN" --headless --path godot \
+            --install-android-build-template \
+            --export-debug 'Android Debug' \
+            "$GITHUB_WORKSPACE/build/android/$APK_NAME"
+          test -s "$GITHUB_WORKSPACE/build/android/$APK_NAME"
+
+      - name: Verify APK identity and alignment
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="build/android/$APK_NAME"
+          BUILD_TOOLS="$ANDROID_HOME/build-tools/36.1.0"
+          "$BUILD_TOOLS/apksigner" verify --verbose --print-certs "$APK" | tee build/android/signature.txt
+          "$BUILD_TOOLS/zipalign" -c -P 16 -v 4 "$APK" | tee build/android/zipalign.txt
+          "$BUILD_TOOLS/aapt" dump badging "$APK" | tee build/android/badging.txt
+          unzip -l "$APK" | tee build/android/contents.txt
+          sha256sum "$APK" | tee build/android/sha256.txt
+          grep -q 'lib/arm64-v8a/' build/android/contents.txt
+          grep -q 'assets/cms/index.html' build/android/contents.txt
+
+      - name: Upload testing APK evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: kai9000-luhm-os-testing-debug-${{ github.run_number }}
+          path: |
+            build/android/${{ env.APK_NAME }}
+            build/android/sha256.txt
+            build/android/signature.txt
+            build/android/zipalign.txt
+            build/android/badging.txt
+            build/android/contents.txt
+          if-no-files-found: error
+          retention-days: 7
+
+  ultima-gate:
+    name: Final Ultima gate
+    if: always()
+    needs: [doctrine-preflight, android-debug]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require both lanes green
+        env:
+          PREFLIGHT: ${{ needs.doctrine-preflight.result }}
+          APK: ${{ needs.android-debug.result }}
+        run: |
+          set -euo pipefail
+          printf 'Doctrine preflight: %s\nAPK forge: %s\n' "$PREFLIGHT" "$APK"
+          test "$PREFLIGHT" = success
+          test "$APK" = success
+          echo 'ULTIMA_TESTING_GREEN'

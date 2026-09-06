@@ -1,0 +1,48 @@
+{
+  "schema": "kai9000.testing-apk-release-template.v1",
+  "status": "testing_only",
+  "release_name": "KAI9000_LUHM_OS_TESTING_DEBUG_<YYYYMMDD>_<RUN>",
+  "branch": "testing/luhm-os-android",
+  "hydra_shell_commit": "<commit-sha>",
+  "workflow": "Oni Summoning - Ultima Debug APK",
+  "workflow_run": "<run-number-or-url>",
+  "donor": {
+    "repository": "eggie-admin/vue-headless-cms",
+    "commit": "86507ed7c72650ff508eb9a1a9e52842eb50e821"
+  },
+  "artifact": {
+    "file": "kai9000-luhm-os-testing-debug.apk",
+    "package_id": "<package-id>",
+    "version_name": "<version-name>",
+    "version_code": "<version-code>",
+    "abi": ["arm64-v8a"],
+    "sha256": "<sha256>",
+    "signing": "ephemeral_ci_debug"
+  },
+  "toolchain": {
+    "godot": "4.7.2",
+    "android_api": 36,
+    "build_tools": "36.1.0",
+    "agp": "8.13.2",
+    "gradle": "8.13",
+    "kotlin_android": "2.2.21",
+    "jdk": 17,
+    "python": "3.14",
+    "node": "24.18.0",
+    "npm": "12.0.2"
+  },
+  "evidence": {
+    "doctrine_preflight": "<green|red>",
+    "python_tests": "<green|red>",
+    "apk_export": "<green|red>",
+    "signature_verify": "<green|red>",
+    "zipalign_16k": "<green|red>",
+    "package_identity": "<green|red>",
+    "device_install": "<green|red|not_run>"
+  },
+  "promotion": {
+    "automatic": false,
+    "production_signed": false,
+    "published": false
+  }
+}

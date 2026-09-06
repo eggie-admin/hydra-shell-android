@@ -1,0 +1,85 @@
+name: Copilot Setup Steps - LuHm OS Android
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [testing/luhm-os-android]
+    paths:
+      - '.github/workflows/copilot-setup-steps.yml'
+      - '.github/copilot-instructions.md'
+      - '.github/instructions/**'
+      - 'AGENTS.md'
+      - 'backend/requirements*.txt'
+  pull_request:
+    branches: [testing/luhm-os-android]
+    paths:
+      - '.github/workflows/copilot-setup-steps.yml'
+      - '.github/copilot-instructions.md'
+      - '.github/instructions/**'
+      - 'AGENTS.md'
+      - 'backend/requirements*.txt'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: copilot-setup-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  copilot-setup-steps:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Checkout LuHm OS Android
+        uses: actions/checkout@v4
+
+      - name: Checkout pinned Samsung build candidate
+        uses: actions/checkout@v4
+        with:
+          repository: eggie-admin/vue-headless-cms
+          ref: 86507ed7c72650ff508eb9a1a9e52842eb50e821
+          path: _forge/vue-headless-cms
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+          cache: pip
+          cache-dependency-path: |
+            backend/requirements.txt
+            backend/requirements-dev.txt
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.18.0'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.13'
+
+      - name: Install lightweight Python test stack
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install -r backend/requirements.txt -r backend/requirements-dev.txt
+          python -m pip check
+
+      - name: Verify coding-agent altar
+        run: |
+          set -euo pipefail
+          python --version
+          java -version
+          node --version
+          npm --version
+          gradle --version
+          test -f lumh-os/kai9000/AI_MAGIC_DOCTRINE.md
+          test -f project/hydra/samsung/android/apk/testing-ingest.manifest.json
+          test -f _forge/vue-headless-cms/godot/project.godot
+          test -f _forge/vue-headless-cms/godot/android-plugin/build.gradle.kts
+          python -m py_compile backend/server.py
+          echo 'COPILOT_ONI_ALTAR_GREEN'

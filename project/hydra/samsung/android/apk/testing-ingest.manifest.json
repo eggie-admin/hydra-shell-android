@@ -1,5 +1,5 @@
 {
-  "schema": "kai9000.android-testing-ingest.v1",
+  "schema": "kai9000.android-testing-ingest.v2",
   "date": "2026-09-06",
   "project": {
     "os": "LuHm OS",
@@ -25,6 +25,16 @@
     "cockpit": "127.0.0.1:8787",
     "ollama": "127.0.0.1:11434"
   },
+  "compile_bot": {
+    "implementation_assistant": "github_copilot",
+    "build_oracle": "github_actions",
+    "setup_workflow": ".github/workflows/copilot-setup-steps.yml",
+    "apk_workflow": ".github/workflows/oni-ultima-debug-apk.yml",
+    "artifact_name": "kai9000-luhm-os-testing-debug.apk",
+    "release_template": "release/TESTING_APK_DEBUG_TEMPLATE.md",
+    "cancel_superseded_runs": true,
+    "parallel_preflight_and_apk_build": true
+  },
   "donors": [
     {"branch": "audit/full-mutation-2026-08-05", "mode": "selected_transplant"},
     {"branch": "experiment/knox-termux-mutation-001", "mode": "manual_tool_only"},
@@ -37,7 +47,8 @@
     "samsung_frontend": {
       "repository": "eggie-admin/vue-headless-cms",
       "branch": "samsung-sm-x400-build-candidate",
-      "commit": "86507ed7c72650ff508eb9a1a9e52842eb50e821"
+      "commit": "86507ed7c72650ff508eb9a1a9e52842eb50e821",
+      "integration": "pinned_checkout_at_build_time"
     },
     "godot_ai_forge": {
       "repository": "eggie-admin/amplify-godot-engine-template",
@@ -46,6 +57,18 @@
       "mode": "reference_not_runtime_copy",
       "features": ["godot_android_export", "lum_spell_doctrine", "jquery_bridge"]
     }
+  },
+  "testing_toolchain": {
+    "godot": "4.7.2",
+    "android_api": 36,
+    "android_build_tools": "36.1.0",
+    "android_gradle_plugin": "8.13.2",
+    "gradle": "8.13",
+    "kotlin_android": "2.2.21",
+    "jdk": 17,
+    "python": "3.14",
+    "node": "24.18.0",
+    "npm": "12.0.2"
   },
   "visual_reference": {
     "manifest": "project/hydra/samsung/android/apk/lum-mona-outfit.reference.json",
@@ -69,11 +92,15 @@
       "reproducible_android_build",
       "installable_apk_evidence",
       "package_identity_evidence",
+      "apk_signature_evidence",
+      "apk_sha256_evidence",
+      "zipalign_16k_evidence",
       "device_or_emulator_validation"
     ]
   },
   "promotion_gate": {
     "status": "testing_only",
+    "automatic_promotion": false,
     "requires": [
       "ci_guards_green",
       "python_tests_green",
