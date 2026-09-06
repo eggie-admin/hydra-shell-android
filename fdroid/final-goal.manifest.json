@@ -1,5 +1,5 @@
 {
-  "schema": "kai9000.fdroid-final-form.v2",
+  "schema": "kai9000.fdroid-final-form.v3",
   "date": "2026-09-06",
   "project": {
     "os": "LuHm OS",
@@ -21,7 +21,8 @@
     "mode": "custom_binary_repository",
     "canonical_host": "fdroid.eggiebagelface.art",
     "canonical_repo_url": "https://fdroid.eggiebagelface.art/fdroid/repo/",
-    "public_path_convention": "/fdroid/repo/"
+    "public_path_convention": "/fdroid/repo/",
+    "trusted_signing_host_script": "fdroid/trusted-signing-host.sh"
   },
   "google_play_identity": {
     "website": "https://eggiebagelface.art/",
@@ -45,23 +46,47 @@
   },
   "current_apk_evidence": {
     "workflow": "Oni Summoning - Ultima Debug APK",
-    "workflow_run_id": 34035660208,
-    "source_commit": "f04fa27c3ac4eff8de8b7dfe093659dd9e532152",
-    "artifact_id": 9990128115,
-    "artifact_name": "kai9000-luhm-os-testing-debug-1",
-    "artifact_archive_digest": "sha256:bf28d157eb5cef0b53f95e83b5e9c14ce4a02713e62a963b6ca85f3a10a2bc20",
+    "workflow_run_id": 34042299709,
+    "run_number": 30,
+    "source_commit": "410ee76a5c567a44d45f802cd7a88dd42e8f3e4b",
+    "artifact_id": 9992099572,
+    "artifact_name": "kai9000-luhm-os-testing-debug-30",
+    "artifact_archive_digest": "sha256:fb168ec748e405e3037930fe1a0c8bd233a4ce3fe890470de0cba1bc840b3f48",
     "apk_signing_mode": "ephemeral_debug",
     "apk_green": true,
     "eligible_as_persistent_update_identity": false
   },
+  "current_fdroid_stage_evidence": {
+    "workflow_run_id": 34042299709,
+    "run_number": 30,
+    "source_commit": "410ee76a5c567a44d45f802cd7a88dd42e8f3e4b",
+    "artifact_id": 9992103371,
+    "artifact_name": "kai9000-fdroid-stage-30",
+    "artifact_archive_digest": "sha256:c9191c10613616a51c4e782b9bd20f3d6534f066dd4565bf19011ee4aacc7781",
+    "fdroid_staged": true,
+    "signed_repo": false,
+    "published": false,
+    "import_verified": false
+  },
+  "ultima_testing_evidence": {
+    "workflow_run_id": 34042299709,
+    "run_number": 30,
+    "conclusion": "success",
+    "doctrine_green": true,
+    "apk_green": true,
+    "fdroid_staged": true,
+    "final_ultima_gate_green": true
+  },
   "required_persistent_identities": {
     "apk_signing_key": {
       "required": true,
+      "established": false,
       "purpose": "Android package update continuity",
       "must_not_be_committed": true
     },
     "fdroid_repo_signing_key": {
       "required": true,
+      "established": false,
       "purpose": "F-Droid repository index trust and fingerprint continuity",
       "must_not_be_committed": true
     }
@@ -96,5 +121,5 @@
     "keys_in_model_context": false,
     "base64_is_secret_storage": false
   },
-  "status": "APK_GREEN_AWAITING_FDROID_STAGE_PERSISTENT_SIGNING_AND_DNS_PUBLICATION"
+  "status": "ULTIMA_TESTING_GREEN_FDROID_STAGED_AWAITING_PERSISTENT_SIGNING_DNS_PUBLICATION_IMPORT_AND_UPGRADE_VERIFICATION"
 }
