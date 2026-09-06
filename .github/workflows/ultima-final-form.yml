@@ -6,42 +6,32 @@ on:
       - testing/luhm-os-android
     paths:
       - '.github/workflows/ultima-final-form.yml'
+      - 'fdroid/publication.manifest.json'
+      - 'integrations/cloudflare/security.manifest.json'
       - 'integrations/cloudflare/origin-ca-ecc.sh'
+      - 'integrations/cloudflare/bootstrap-oauth.sh'
+      - 'integrations/google-cloud/bootstrap-oauth.sh'
   workflow_dispatch:
 
 permissions:
   contents: read
   actions: read
-  id-token: write
 
 concurrency:
   group: ultima-final-form-${{ github.ref }}
   cancel-in-progress: true
 
 env:
-  SOURCE_RUN_ID: '34042299709'
-  SOURCE_APK_ARTIFACT: kai9000-luhm-os-testing-debug-30
-  SOURCE_FDROID_STAGE_ARTIFACT: kai9000-fdroid-stage-30
   PACKAGE_ID: art.eggiebagelface.videoforge.dev
   FDROID_REPO_URL: https://fdroid.eggiebagelface.art/fdroid/repo/
+  APK_SIGNER_SHA256: A5E9364D5C21A119FE1D17FD39EE7BAE8192A872CE58A3E7A865248E0B070407
+  FDROID_REPO_FINGERPRINT_SHA256: BFB900A9EC913D35C22F1DC3DE7B152D1AF5CA11B7B07E5FAFDD06B44811F66D
+  SIGNED_BUNDLE_SHA256: fa350eeb2a2945b3b0e664f459ae1706cd3c19d0c02913e799e7ea005c6f3028
 
 jobs:
   final-form-preflight:
-    name: Final-form cryptographic and infrastructure preflight
+    name: Final-form signed evidence and OAuth bootstrap preflight
     runs-on: ubuntu-24.04
-    environment: testing
-    env:
-      KAI_APK_KEYSTORE_B64: ${{ secrets.KAI_APK_KEYSTORE_B64 }}
-      KAI_APK_KEYSTORE_PASS: ${{ secrets.KAI_APK_KEYSTORE_PASS }}
-      KAI_APK_KEY_ALIAS: ${{ secrets.KAI_APK_KEY_ALIAS }}
-      KAI_APK_KEY_PASS: ${{ secrets.KAI_APK_KEY_PASS }}
-      KAI_APK_SIGNER_SHA256: ${{ secrets.KAI_APK_SIGNER_SHA256 }}
-      FDROID_KEYSTORE_B64: ${{ secrets.FDROID_KEYSTORE_B64 }}
-      FDROID_KEYSTORE_PASS: ${{ secrets.FDROID_KEYSTORE_PASS }}
-      FDROID_KEY_PASS: ${{ secrets.FDROID_KEY_PASS }}
-      CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-      GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
-      GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
     steps:
       - uses: actions/checkout@v4
 
@@ -53,73 +43,57 @@ jobs:
           test -s build/cloudflare-origin-ca/cloudflare-origin-ecc-root.pem
           echo 'CLOUDFLARE_PUBLIC_CA_GREEN'
 
-      - name: Cast FINAL_FORM credential gate
+      - name: Verify persistent signed publication evidence
         shell: bash
         run: |
           set -euo pipefail
-          missing=0
-          require() {
-            local name="$1"
-            local value="${!name:-}"
-            if [ -z "$value" ]; then
-              echo "::error::MISSING_REQUIRED_IDENTITY=$name"
-              missing=1
-            else
-              echo "PRESENT=$name"
-            fi
-          }
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
 
-          require KAI_APK_KEYSTORE_B64
-          require KAI_APK_KEYSTORE_PASS
-          require KAI_APK_KEY_ALIAS
-          require KAI_APK_KEY_PASS
-          require KAI_APK_SIGNER_SHA256
-          require FDROID_KEYSTORE_B64
-          require FDROID_KEYSTORE_PASS
-          require FDROID_KEY_PASS
-          require CF_API_TOKEN
-          require GCP_PROJECT_ID
-          require GCP_WORKLOAD_IDENTITY_PROVIDER
+          manifest = json.loads(Path('fdroid/publication.manifest.json').read_text())
+          assert manifest['trust']['fdroid_signed'] is True
+          assert manifest['trust']['apk_signer_sha256'] == os.environ['APK_SIGNER_SHA256']
+          assert manifest['trust']['repo_fingerprint_sha256'] == os.environ['FDROID_REPO_FINGERPRINT_SHA256']
+          assert manifest['signed_bundle']['sha256'] == os.environ['SIGNED_BUNDLE_SHA256']
+          assert manifest['repo_url'] == os.environ['FDROID_REPO_URL']
+          assert manifest['package_id'] == os.environ['PACKAGE_ID']
+          assert manifest['origin']['human_auth'] == 'gcloud_user_oauth'
+          assert manifest['edge']['human_auth'] == 'wrangler_and_cloudflared_oauth_browser_flows'
+          print('PERSISTENT_SIGNED_EVIDENCE_GREEN')
+          PY
 
-          if [ "$missing" -ne 0 ]; then
-            echo 'FINAL_FORM_BLOCKED_AT_IDENTITY_GATE'
-            exit 1
-          fi
-          echo 'FINAL_FORM_IDENTITY_GATE_GREEN'
-
-      - name: Verify immutable ULTIMA source evidence
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          python -m json.tool fdroid/final-goal.manifest.json >/dev/null
-          grep -q '"workflow_run_id": 34042299709' fdroid/final-goal.manifest.json
-          grep -q '"fdroid_staged": true' fdroid/final-goal.manifest.json
-          grep -q 'ULTIMA_TESTING_GREEN_FDROID_STAGED' fdroid/final-goal.manifest.json
-          echo 'SOURCE_EVIDENCE_GREEN'
-
-      - name: Confirm final-form tools are armed
+      - name: Verify OAuth-first operator bootstrap
         shell: bash
         run: |
           set -euo pipefail
-          test -s fdroid/trusted-signing-host.sh
-          grep -q 'APK_PERSISTENT_SIGNER_VERIFIED' fdroid/trusted-signing-host.sh
-          grep -q 'FDROID_SIGNED' fdroid/trusted-signing-host.sh
-          test -s integrations/google-cloud/strict-free-vm.manifest.json
-          test -s integrations/cloudflare/security.manifest.json
+          bash -n integrations/cloudflare/bootstrap-oauth.sh
+          bash -n integrations/google-cloud/bootstrap-oauth.sh
+          grep -q 'login --device' integrations/cloudflare/bootstrap-oauth.sh
+          grep -q 'cloudflared tunnel login' integrations/cloudflare/bootstrap-oauth.sh
+          grep -q 'gcloud auth login --no-launch-browser' integrations/google-cloud/bootstrap-oauth.sh
+          grep -q 'cf_api_token_required_for_human_bootstrap' integrations/cloudflare/security.manifest.json
+          echo 'OAUTH_OPERATOR_BOOTSTRAP_ARMED'
+
+      - name: Confirm final publication tools are armed
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s scripts/publish_fdroid_origin.sh
+          test -s integrations/google-cloud/nginx-fdroid-origin.conf
           test -s integrations/cloudflare/origin-ca-ecc.sh
           grep -q 'origin-ecc' integrations/cloudflare/origin-ca-ecc.sh
           grep -q 'ec_paramgen_curve:P-256' integrations/cloudflare/origin-ca-ecc.sh
-          echo 'FINAL_FORM_TOOLCHAIN_ARMED'
+          echo 'FINAL_FORM_OPERATOR_TOOLCHAIN_ARMED'
 
   final-form-ready:
-    name: FINAL FORM ready to sign and publish
+    name: FINAL FORM operator publication armed
     needs: final-form-preflight
     runs-on: ubuntu-24.04
     steps:
-      - name: Require every external identity before production mutation
+      - name: Seal operator-ready state
         run: |
-          echo 'FINAL_FORM_EXTERNAL_IDENTITIES_GREEN'
-          echo 'Cloudflare edge TLS is provider-managed. Origin private key is generated locally; only the CSR is sent to Cloudflare Origin CA.'
-          echo 'Next executable stage: persistent APK signing + F-Droid repo signing + Google origin publish + Cloudflare DNS/TLS + client import/upgrade proof.'
+          echo 'FINAL_FORM_OPERATOR_READY'
+          echo 'No private signing key, Cloudflare API token, or Google WIF credential is required in GitHub for human publication.'
+          echo 'Human bootstrap uses Cloudflare OAuth + gcloud OAuth. Durable CI may add scoped account tokens/WIF later.'
+          echo 'FINAL_FORM_GREEN still requires live HTTPS publication, F-Droid import proof, and signed upgrade proof.'
