@@ -1,6 +1,11 @@
 [project]
 name = "kai9000-ultima-ollama-ffmpeg-antenna"
 version = "3.0.0"
-description = "Local Ollama + FFmpeg antenna with GitHub remote and Drive recovery mirror"
+description = "KAI 9000 local Ollama + FFmpeg antenna with GitHub remote and Google Drive recovery mirror"
 requires-python = ">=3.10"
-dependencies = ["httpx"]
+dependencies = [
+  "fastapi",
+  "uvicorn[standard]",
+  "pydantic",
+  "httpx",
+]
