@@ -11,8 +11,8 @@
       "public": true
     },
     "www.eggiebagelface.art": {
-      "role": "public_alias",
-      "route": "proxied_cname_to_apex",
+      "role": "coming_soon_public_site_alias",
+      "route": "workers_static_assets_custom_domain",
       "public": true
     },
     "fdroid.eggiebagelface.art": {
@@ -40,7 +40,7 @@
     }
   },
   "edge_tls": {
-    "manager": "cloudflare_universal_ssl",
+    "manager": "cloudflare_universal_ssl_and_worker_custom_domain_certificates",
     "edge_private_key_export": false,
     "minimum_tls": "1.2",
     "tls_1_3": true,
@@ -66,10 +66,11 @@
     "manual_dnskey_forbidden": true,
     "tlsa_for_proxied_https": false,
     "caa_lets_encrypt_fallback": true,
+    "wildcard_fallback_authorized_by_default": false,
     "cloudflare_universal_caa_supplement_allowed": true
   },
   "network": {
-    "public_site": "cloudflare_static_assets",
+    "public_site": "cloudflare_static_assets_custom_domains",
     "fdroid_origin": "gcp_ipv6_only",
     "fdroid_public_a_record": false,
     "fdroid_public_aaaa_record": true,
@@ -101,7 +102,9 @@
   "doctrine": "docs/CLOUDFLARE_FQDN_TLS_REROLL_V2.md",
   "green_requires": [
     "zone_active",
-    "universal_ssl_active",
+    "apex_worker_custom_domain_active",
+    "www_worker_custom_domain_active",
+    "edge_certificates_active",
     "minimum_tls_1_2_or_newer",
     "tls_1_3_active",
     "always_use_https_active",
