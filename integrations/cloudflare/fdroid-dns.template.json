@@ -1,0 +1,29 @@
+{
+  "schema": "kai9000.cloudflare-fdroid-dns.v1",
+  "api_base": "https://api.cloudflare.com/client/v4",
+  "zone_name": "eggiebagelface.art",
+  "hostname": "fdroid.eggiebagelface.art",
+  "record": {
+    "type": "CNAME",
+    "name": "fdroid.eggiebagelface.art",
+    "content": "${CLOUDFLARE_TUNNEL_ID}.cfargotunnel.com",
+    "proxied": true
+  },
+  "required_runtime_values": [
+    "CLOUDFLARE_ZONE_ID",
+    "CLOUDFLARE_TUNNEL_ID"
+  ],
+  "credential_env": "CLOUDFLARE_API_TOKEN",
+  "minimum_capability": "Zone DNS Write for eggiebagelface.art; add Tunnel/Connector Write only when tunnel creation/configuration is part of the exact plan",
+  "policy": {
+    "global_api_key_allowed": false,
+    "invent_origin_a_or_aaaa": false,
+    "credentials_visible_to_model": false,
+    "external_side_effect_requires_approval": true,
+    "post_apply_checks": [
+      "dns_resolution",
+      "https_tls",
+      "fdroid_index_path"
+    ]
+  }
+}
