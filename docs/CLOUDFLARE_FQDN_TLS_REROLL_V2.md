@@ -10,7 +10,7 @@ This is the canonical Cloudflare network split for KAI 9000 publication.
 | FQDN | Role | Cloudflare route | Origin exposure |
 |---|---|---|---|
 | `eggiebagelface.art` | Coming-soon/public site | Cloudflare Workers Static Assets custom domain | none |
-| `www.eggiebagelface.art` | public alias | proxied CNAME to apex | none |
+| `www.eggiebagelface.art` | public site alias | Cloudflare Workers Static Assets custom domain | none |
 | `fdroid.eggiebagelface.art` | signed F-Droid repository | proxied AAAA to Google IPv6 origin | IPv6 only, no public A |
 | `admin.eggiebagelface.art` | protected cockpit | proxied CNAME to `<CF_TUNNEL_ID>.cfargotunnel.com` | none |
 | `lum.eggiebagelface.lan` | private cockpit | private DNS / WARP route only | LAN only |
@@ -18,7 +18,7 @@ This is the canonical Cloudflare network split for KAI 9000 publication.
 
 ## TLS doctrine
 
-Cloudflare owns and renews the browser-facing edge certificate through Universal SSL. Do not try to export or persist the edge private key.
+Cloudflare owns and renews the browser-facing edge certificates through its managed certificate systems. Do not try to export or persist an edge private key.
 
 Public edge policy:
 
@@ -28,9 +28,9 @@ Public edge policy:
 - HSTS enabled only after HTTPS is proven across every intended public hostname.
 - `Full (strict)` for the direct `fdroid` origin.
 
-The `fdroid` origin uses a locally generated ECDSA P-256 private key. The private key never leaves the origin. A CSR containing only the public key and requested SANs is sent to Cloudflare Origin CA. Cloudflare returns the signed Origin CA certificate. Preferred rotation validity is 365 days even though Cloudflare supports longer validity.
+The `fdroid` origin uses a locally generated ECDSA P-256 private key. The private key never leaves the origin. A CSR containing only the public key and requested SAN is sent to Cloudflare Origin CA. Cloudflare returns the signed Origin CA certificate. Preferred rotation validity is 365 days even though Cloudflare supports longer validity.
 
-Certificate SAN scope should be the smallest practical scope, normally `fdroid.eggiebagelface.art`. Do not use a wildcard unless another reviewed origin genuinely needs the same key.
+Certificate SAN scope should be the smallest practical scope: `fdroid.eggiebagelface.art`. No wildcard is authorized by default.
 
 Let's Encrypt ECDSA DNS-01 remains the browser-trusted fallback for origins that may ever be reached without Cloudflare. Do not put a Cloudflare Origin CA certificate on a DNS-only/bypass hostname intended for direct browser access.
 
@@ -41,7 +41,7 @@ Let's Encrypt ECDSA DNS-01 remains the browser-trusted fallback for origins that
 - DNS authenticity: Cloudflare DNSSEC + registrar DS is the DNS public-key trust layer.
 - Do not publish manual DNSKEY material.
 - Do not use TLSA/DANE to pin Cloudflare-proxied HTTPS hostnames because Cloudflare terminates and rotates the edge certificate.
-- CAA may authorize Let's Encrypt for fallback issuance; Cloudflare may synthesize additional CAA values needed for Universal SSL issuance.
+- CAA authorizes Let's Encrypt for the direct-browser fallback only; no wildcard CAA is needed by default. Cloudflare may synthesize additional CAA values needed for its managed edge certificates.
 
 ## IPv4 / IPv6 doctrine
 
@@ -68,21 +68,24 @@ The F-Droid repository stays public and must never be placed behind identity, ge
 ## Canonical DNS intent
 
 ```
-www     CNAME  eggiebagelface.art                  PROXIED
+# Cloudflare-managed custom domains, no hand-written origin records:
+eggiebagelface.art          WORKERS CUSTOM DOMAIN
+www.eggiebagelface.art      WORKERS CUSTOM DOMAIN
+
+# Explicit DNS:
 fdroid  AAAA   <GCP_VM_EXTERNAL_IPV6>              PROXIED
 admin   CNAME  <CF_TUNNEL_ID>.cfargotunnel.com     PROXIED
 @       CAA    0 issue "letsencrypt.org"            DNS ONLY
-@       CAA    0 issuewild "letsencrypt.org"        DNS ONLY
 ```
 
-The apex site is attached using a Workers Static Assets custom domain rather than a hand-written origin record.
+Workers Custom Domains create their own DNS records and certificates. Do not place a CNAME on a hostname that is being attached as a Workers Custom Domain.
 
 ## Green gate
 
 `CLOUDFLARE_FQDN_TLS_GREEN` requires actual evidence for all of:
 
 - zone active;
-- Universal SSL active;
+- apex and `www` Worker custom domains active with edge certificates;
 - minimum TLS >= 1.2 and TLS 1.3 enabled;
 - Always Use HTTPS active;
 - Full (strict) on `fdroid` origin;
