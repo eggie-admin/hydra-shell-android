@@ -8,17 +8,15 @@
       "provider": "Cloudflare Workers Static Assets custom domain",
       "purpose": "coming-soon public site",
       "manual_origin_record": false
+    },
+    {
+      "hostname": "www.eggiebagelface.art",
+      "provider": "Cloudflare Workers Static Assets custom domain",
+      "purpose": "coming-soon public site alias",
+      "manual_origin_record": false
     }
   ],
   "records": [
-    {
-      "type": "CNAME",
-      "name": "www.eggiebagelface.art",
-      "content": "eggiebagelface.art",
-      "proxied": true,
-      "ttl": 1,
-      "purpose": "public alias to apex"
-    },
     {
       "type": "AAAA",
       "name": "fdroid.eggiebagelface.art",
@@ -40,14 +38,7 @@
       "name": "eggiebagelface.art",
       "tag": "issue",
       "value": "letsencrypt.org",
-      "purpose": "authorize browser-trusted fallback origin issuance; Cloudflare may synthesize CAA needed for Universal SSL"
-    },
-    {
-      "type": "CAA",
-      "name": "eggiebagelface.art",
-      "tag": "issuewild",
-      "value": "letsencrypt.org",
-      "purpose": "authorize wildcard fallback only if later reviewed and actually required"
+      "purpose": "authorize browser-trusted fallback origin issuance; Cloudflare may synthesize CAA needed for managed edge certificates"
     }
   ],
   "dnssec": {
@@ -80,6 +71,7 @@
     "route": "private resolver via WARP/Zero Trust tunnel"
   },
   "forbidden": [
+    "manual A/CNAME record on Workers custom-domain hostnames",
     "public A record for fdroid origin",
     "public .lan records",
     "unproxied fdroid origin AAAA without explicit review",
