@@ -1,0 +1,49 @@
+{
+  "schema": "kai9000.fdroid-publication.v1",
+  "date": "2026-09-06",
+  "state": "PUBLICATION_READY_AWAITING_LIVE_ORIGIN_CONTROL",
+  "repo_url": "https://fdroid.eggiebagelface.art/fdroid/repo/",
+  "package_id": "art.eggiebagelface.videoforge.dev",
+  "version": "0.6.0-dev",
+  "version_code": 6,
+  "signed_bundle": {
+    "name": "KAI9000_FDROID_SIGNED_20260906.zip",
+    "sha256": "fa350eeb2a2945b3b0e664f459ae1706cd3c19d0c02913e799e7ea005c6f3028",
+    "drive_file_id": "1IA_xHWZsJo9Ot2wM3GGLpsIYIzOvC9Gv",
+    "drive_source_of_truth_folder_id": "1AD_KgcM32sgli_pSSub0MXf-W0tPWIHr"
+  },
+  "trust": {
+    "apk_signer_sha256": "A5E9364D5C21A119FE1D17FD39EE7BAE8192A872CE58A3E7A865248E0B070407",
+    "repo_fingerprint_sha256": "BFB900A9EC913D35C22F1DC3DE7B152D1AF5CA11B7B07E5FAFDD06B44811F66D",
+    "fdroid_signed": true
+  },
+  "origin": {
+    "provider": "google_compute_engine_strict_free",
+    "machine_type": "e2-micro",
+    "ipv4_public": false,
+    "ipv6_public": true,
+    "web_server": "nginx",
+    "root": "/srv/kai9000/fdroid",
+    "publisher": "scripts/publish_fdroid_origin.sh",
+    "nginx_config": "integrations/google-cloud/nginx-fdroid-origin.conf"
+  },
+  "edge": {
+    "provider": "cloudflare",
+    "hostname": "fdroid.eggiebagelface.art",
+    "tls_mode": "Full (strict)",
+    "origin_ca": "ECDSA P-256 local-key CSR flow",
+    "dnssec": true
+  },
+  "required_before_fdroid_published": [
+    "live Google origin exists",
+    "publisher can SSH to origin",
+    "Cloudflare DNS routes fdroid.eggiebagelface.art to origin",
+    "public index-v1.jar fetch succeeds over HTTPS",
+    "public repository fingerprint matches pinned fingerprint"
+  ],
+  "required_before_final_form_green": [
+    "FDROID_PUBLISHED",
+    "FDROID_IMPORT_VERIFIED",
+    "UPGRADE_VERIFIED"
+  ]
+}
