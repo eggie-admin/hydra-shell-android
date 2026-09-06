@@ -1,0 +1,19 @@
+{
+  "schema": "kai9000.openai-responses-template.v1",
+  "endpoint": "https://api.openai.com/v1/responses",
+  "model_env": "OPENAI_MODEL",
+  "default_model": "gpt-6-astra",
+  "credential_env": "OPENAI_API_KEY",
+  "request": {
+    "model": "${OPENAI_MODEL}",
+    "instructions": "KAI policy-owned instructions are injected server-side.",
+    "input": "${USER_INPUT}",
+    "store": false,
+    "max_output_tokens": 1600
+  },
+  "policy": {
+    "typed_tools_only": true,
+    "credentials_visible_to_model": false,
+    "provider_output_is_untrusted_until_validated": true
+  }
+}
