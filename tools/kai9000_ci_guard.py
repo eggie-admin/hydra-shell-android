@@ -13,6 +13,13 @@ RUNTIME = ROOT / "ultima" / "ollama-ffmpeg-antenna-v3"
 RUNTIME_MANIFEST = RUNTIME / "KAI9000_ULTIMA_OLLAMA_FFMPEG_ANTENNA_V3.manifest.json"
 MAIN_PY = RUNTIME / "main.py"
 
+HYDRA = ROOT / "project" / "hydra"
+HYDRA_PROJECT = HYDRA / "project.manifest.json"
+HYDRA_DIRECTORY = HYDRA / "doctrine" / "directory-structure.json"
+HYDRA_RUNTIME_REF = HYDRA / "runtime" / "kai9000.reference.json"
+HYDRA_HF_REF = HYDRA / "forge" / "hugging-face" / "reference.json"
+HYDRA_APK_REF = HYDRA / "samsung" / "android" / "apk" / "app.reference.json"
+
 
 def fail(message: str) -> None:
     print(f"CI GUARD RED: {message}", file=sys.stderr)
@@ -29,6 +36,61 @@ def load_json(path: Path) -> dict:
 def assert_equal(actual, expected, label: str) -> None:
     if actual != expected:
         fail(f"{label}: expected {expected!r}, got {actual!r}")
+
+
+def hydra_structure_checks() -> None:
+    hydra = load_json(HYDRA_PROJECT)
+    directory = load_json(HYDRA_DIRECTORY)
+    runtime_ref = load_json(HYDRA_RUNTIME_REF)
+    hf_ref = load_json(HYDRA_HF_REF)
+    apk_ref = load_json(HYDRA_APK_REF)
+
+    assert_equal(hydra.get("canonical_root"), "project/hydra", "Project Hydra canonical root")
+    assert_equal(hydra.get("parent_os"), "LumH OS", "Project Hydra parent OS")
+    assert_equal(hydra.get("branch_authority"), "main", "Project Hydra branch authority")
+    assert_equal(hydra.get("migration", {}).get("strategy"), "reference_not_copy", "Project Hydra migration strategy")
+    assert_equal(hydra.get("migration", {}).get("destructive_move_allowed"), False, "Project Hydra destructive move policy")
+    assert_equal(hydra.get("platforms", {}).get("samsung_android_apk"), "project/hydra/samsung/android/apk/app.reference.json", "Samsung APK canonical path")
+
+    assert_equal(directory.get("project_namespace"), "project", "singular project namespace")
+    assert_equal(directory.get("project_slug"), "hydra", "Project Hydra slug")
+    assert_equal(directory.get("canonical_root"), "project/hydra", "directory doctrine root")
+    assert_equal(directory.get("rules", {}).get("singular_project_namespace"), True, "singular project doctrine")
+    assert_equal(directory.get("rules", {}).get("reference_not_copy"), True, "directory reference doctrine")
+    assert_equal(directory.get("rules", {}).get("duplicate_runtime_forbidden"), True, "duplicate runtime doctrine")
+    assert_equal(directory.get("rules", {}).get("green_ci_required_before_legacy_prune"), True, "legacy prune gate")
+
+    forbidden = ROOT / "lumh-os" / "projects" / "hydra"
+    if forbidden.exists():
+        fail("obsolete plural path lumh-os/projects/hydra must not exist")
+
+    required = [
+        HYDRA,
+        HYDRA / "doctrine",
+        HYDRA / "runtime",
+        HYDRA / "forge",
+        HYDRA / "samsung" / "android" / "apk",
+    ]
+    for path in required:
+        if not path.exists():
+            fail(f"required Project Hydra path missing: {path.relative_to(ROOT)}")
+
+    assert_equal(runtime_ref.get("integration_strategy"), "reference_not_copy", "KAI runtime reference strategy")
+    assert_equal(runtime_ref.get("canonical_runtime"), "ultima/ollama-ffmpeg-antenna-v3", "KAI canonical runtime")
+    assert_equal(runtime_ref.get("rules", {}).get("runtime_copy_under_project_hydra"), False, "KAI runtime copy policy")
+    assert_equal(runtime_ref.get("services", {}).get("ollama"), "http://127.0.0.1:11434", "Hydra Ollama endpoint")
+
+    assert_equal(hf_ref.get("role"), "forge_and_model_catalog", "Hydra Hugging Face role")
+    assert_equal(hf_ref.get("runtime_authority"), False, "Hydra Hugging Face runtime authority")
+    assert_equal(hf_ref.get("auto_download"), False, "Hydra Hugging Face auto-download")
+    assert_equal(hf_ref.get("revision_pin_required"), True, "Hydra Hugging Face revision pin")
+
+    assert_equal(apk_ref.get("integration_strategy"), "reference_not_copy", "Samsung APK reference strategy")
+    assert_equal(apk_ref.get("source", {}).get("repository"), "eggie-admin/vue-headless-cms", "Samsung APK source repo")
+    assert_equal(apk_ref.get("source", {}).get("branch"), "samsung-sm-x400-build-candidate", "Samsung APK source branch")
+    assert_equal(apk_ref.get("requirements", {}).get("installable_apk_required_for_green"), True, "Samsung APK artifact gate")
+    assert_equal(apk_ref.get("requirements", {}).get("loopback_only_local_services"), True, "Samsung loopback policy")
+    assert_equal(apk_ref.get("requirements", {}).get("arbitrary_model_shell"), False, "Samsung model shell policy")
 
 
 def architecture_checks() -> None:
@@ -107,6 +169,7 @@ def secret_scan() -> None:
 
 
 def main() -> None:
+    hydra_structure_checks()
     architecture_checks()
     secret_scan()
     print("KAI9000 CI GUARD GREEN")
