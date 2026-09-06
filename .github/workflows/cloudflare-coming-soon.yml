@@ -1,0 +1,97 @@
+name: Cloudflare Coming Soon
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Deployment target
+        required: true
+        type: choice
+        default: preview
+        options:
+          - preview
+          - publish
+      confirm_publish:
+        description: Type YES only when binding eggiebagelface.art is intended
+        required: false
+        default: NO
+        type: string
+  pull_request:
+    branches:
+      - testing/luhm-os-android
+    paths:
+      - 'site/coming-soon/**'
+      - '.github/workflows/cloudflare-coming-soon.yml'
+  push:
+    branches:
+      - testing/luhm-os-android
+    paths:
+      - 'site/coming-soon/**'
+      - '.github/workflows/cloudflare-coming-soon.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate static coming-soon site
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Static-site invariants
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s site/coming-soon/public/index.html
+          test -s site/coming-soon/public/robots.txt
+          test -s site/coming-soon/wrangler.preview.jsonc
+          test -s site/coming-soon/wrangler.production.jsonc
+          grep -q 'eggiebagelface.art' site/coming-soon/public/index.html
+          grep -q 'noindex,nofollow,noarchive' site/coming-soon/public/index.html
+          ! grep -RniE '<script|javascript:|https?://[^ ]+' site/coming-soon/public/index.html
+          ! grep -RniE 'OPENAI_API_KEY|HF_TOKEN|CLOUDFLARE_API_TOKEN|CF_API_TOKEN|BEGIN .*PRIVATE KEY' site/coming-soon
+          grep -q '"pattern": "eggiebagelface.art"' site/coming-soon/wrangler.production.jsonc
+          ! grep -q 'fdroid.eggiebagelface.art' site/coming-soon/wrangler.production.jsonc
+          echo 'COMING_SOON_STATIC_GREEN'
+
+  deploy:
+    name: Deploy Cloudflare static site
+    if: github.event_name == 'workflow_dispatch'
+    needs: validate
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.18.0'
+
+      - name: Credential and publish guard
+        env:
+          TARGET: ${{ inputs.target }}
+          CONFIRM: ${{ inputs.confirm_publish }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CF_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_API_TOKEN"
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          if [ "$TARGET" = publish ]; then
+            test "$CONFIRM" = YES
+          fi
+
+      - name: Deploy preview
+        if: inputs.target == 'preview'
+        working-directory: site/coming-soon
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CF_ACCOUNT_ID }}
+        run: npx --yes wrangler@latest deploy --config wrangler.preview.jsonc
+
+      - name: Publish eggiebagelface.art
+        if: inputs.target == 'publish'
+        working-directory: site/coming-soon
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CF_ACCOUNT_ID }}
+        run: npx --yes wrangler@latest deploy --config wrangler.production.jsonc
