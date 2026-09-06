@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-HYDRA = ROOT / "lumh-os" / "projects" / "hydra"
+HYDRA = ROOT / "project" / "hydra"
 
 
 def load(path: Path) -> dict:
@@ -19,50 +19,80 @@ def expect(actual, expected, label: str) -> None:
 
 def main() -> None:
     project = load(HYDRA / "project.manifest.json")
-    doctrine = load(HYDRA / "doctrine" / "directory.doctrine.json")
-    samsung = load(HYDRA / "platforms" / "samsung-android-apk" / "platform.manifest.json")
-    kai = load(HYDRA / "subsystems" / "kai9000" / "reference.json")
-    hf = load(HYDRA / "integrations" / "hugging-face" / "reference.json")
+    doctrine = load(HYDRA / "doctrine" / "directory-structure.json")
+    samsung = load(HYDRA / "samsung" / "android" / "apk" / "app.reference.json")
+    kai = load(HYDRA / "runtime" / "kai9000.reference.json")
+    hf = load(HYDRA / "forge" / "hugging-face" / "reference.json")
 
     expect(project.get("name"), "Project Hydra", "project name")
-    expect(project.get("canonical_root"), "lumh-os/projects/hydra", "project root")
+    expect(project.get("canonical_root"), "project/hydra", "project root")
     expect(project.get("parent_os"), "LumH OS", "parent OS")
     expect(project.get("branch_authority"), "main", "branch authority")
     expect(project.get("migration", {}).get("strategy"), "reference_not_copy", "migration strategy")
     expect(project.get("migration", {}).get("destructive_move_allowed"), False, "destructive migration")
 
+    expect(doctrine.get("branch_is_os"), "main", "OS branch")
+    expect(doctrine.get("os_name"), "LumH OS", "OS name")
+    expect(doctrine.get("project_namespace"), "project", "project namespace")
+    expect(doctrine.get("project_slug"), "hydra", "project slug")
+    expect(doctrine.get("canonical_root"), "project/hydra", "doctrine root")
     expect(
-        doctrine.get("canonical_chain"),
-        ["main", "lumh-os", "projects", "hydra", "platforms", "samsung-android-apk"],
-        "canonical chain",
+        doctrine.get("required_paths"),
+        [
+            "project/hydra/doctrine",
+            "project/hydra/runtime",
+            "project/hydra/forge",
+            "project/hydra/samsung/android/apk",
+        ],
+        "required paths",
     )
-    expect(doctrine.get("rules", {}).get("one_project_root"), True, "single project root")
-    expect(doctrine.get("rules", {}).get("reference_not_copy"), True, "reference-not-copy doctrine")
-    expect(doctrine.get("rules", {}).get("secrets_forbidden"), True, "secret doctrine")
+    rules = doctrine.get("rules", {})
+    expect(rules.get("singular_project_namespace"), True, "single project namespace")
+    expect(rules.get("reference_not_copy"), True, "reference-not-copy doctrine")
+    expect(rules.get("duplicate_runtime_forbidden"), True, "duplicate runtime doctrine")
+    expect(rules.get("destructive_relocation_during_reroll"), False, "destructive reroll doctrine")
+    expect(rules.get("green_ci_required_before_legacy_prune"), True, "legacy prune gate")
+    expect(rules.get("secrets_in_repo"), False, "secret doctrine")
 
-    expect(samsung.get("canonical_path"), "lumh-os/projects/hydra/platforms/samsung-android-apk", "Samsung APK path")
-    expect(samsung.get("implementation", {}).get("forge_repository"), "eggie-admin/vue-headless-cms", "APK forge repo")
-    expect(samsung.get("implementation", {}).get("integration_strategy"), "reference_not_copy", "APK reference strategy")
-    expect(samsung.get("security", {}).get("loopback_first"), True, "Samsung loopback")
-    expect(samsung.get("security", {}).get("automatic_root"), False, "Samsung automatic root")
-    expect(samsung.get("green_gate", {}).get("installable_apk_required_for_apk_release"), True, "APK evidence gate")
+    expect(samsung.get("role"), "Samsung Android APK forge and cockpit surface", "Samsung role")
+    expect(samsung.get("integration_strategy"), "reference_not_copy", "Samsung integration strategy")
+    expect(samsung.get("source", {}).get("repository"), "eggie-admin/vue-headless-cms", "Samsung source repo")
+    expect(samsung.get("integration_baseline", {}).get("branch"), "main", "Samsung integration baseline branch")
+    expect(samsung.get("requirements", {}).get("installable_apk_required_for_green"), True, "APK evidence gate")
+    expect(samsung.get("requirements", {}).get("loopback_only_local_services"), True, "Samsung loopback")
+    expect(samsung.get("requirements", {}).get("automatic_root"), False, "Samsung automatic root")
+    expect(samsung.get("requirements", {}).get("arbitrary_model_shell"), False, "Samsung model shell")
+    expect(samsung.get("requirements", {}).get("secrets_in_apk_or_repo"), False, "Samsung secret policy")
 
-    expect(kai.get("canonical_registry"), "lumh-os/kai9000/project.manifest.json", "KAI registry reference")
-    expect(kai.get("runtime"), "ultima/ollama-ffmpeg-antenna-v3", "KAI runtime reference")
-    expect(kai.get("ingestion_strategy"), "reference_not_copy", "KAI ingestion")
+    expect(kai.get("integration_strategy"), "reference_not_copy", "KAI integration")
+    expect(kai.get("policy_manifest"), "lumh-os/kai9000/project.manifest.json", "KAI policy manifest")
+    expect(kai.get("canonical_runtime"), "ultima/ollama-ffmpeg-antenna-v3", "KAI runtime")
+    expect(kai.get("services", {}).get("ollama"), "http://127.0.0.1:11434", "KAI Ollama endpoint")
+    expect(kai.get("rules", {}).get("public_ollama_exposure"), False, "KAI public Ollama policy")
+    expect(kai.get("rules", {}).get("remote_shell"), False, "KAI remote shell policy")
+    expect(kai.get("rules", {}).get("runtime_copy_under_project_hydra"), False, "KAI runtime copy policy")
 
+    expect(hf.get("integration_strategy"), "reference_not_copy", "HF integration")
     expect(hf.get("role"), "forge_and_model_catalog", "HF role")
     expect(hf.get("runtime_authority"), False, "HF runtime authority")
+    expect(hf.get("secret_store"), False, "HF secret store")
     expect(hf.get("auto_download"), False, "HF auto-download")
+    expect(hf.get("auto_execute_remote_code"), False, "HF auto-execute")
     expect(hf.get("revision_pin_required"), True, "HF revision pin")
+    expect(hf.get("license_record_required"), True, "HF license record")
+    expect(hf.get("preferred_live_runtime"), "Ollama", "HF preferred runtime")
 
-    for legacy in [
-        ROOT / "lumh-os" / "kai9000" / "project.manifest.json",
-        ROOT / "ultima" / "ollama-ffmpeg-antenna-v3",
-        ROOT / "samsung-sm-x400",
-    ]:
-        if not legacy.exists():
-            raise SystemExit(f"PROJECT HYDRA STRUCTURE RED: compatibility source missing: {legacy.relative_to(ROOT)}")
+    for required in doctrine.get("required_paths", []):
+        if not (ROOT / required).exists():
+            raise SystemExit(f"PROJECT HYDRA STRUCTURE RED: required path missing: {required}")
+
+    for legacy in doctrine.get("legacy_compatibility_sources", []):
+        if not (ROOT / legacy).exists():
+            raise SystemExit(f"PROJECT HYDRA STRUCTURE RED: compatibility source missing: {legacy}")
+
+    duplicate = ROOT / "lumh-os" / "projects" / "hydra"
+    if duplicate.exists():
+        raise SystemExit("PROJECT HYDRA STRUCTURE RED: duplicate lumh-os/projects/hydra namespace exists")
 
     print("PROJECT HYDRA STRUCTURE GREEN")
 
