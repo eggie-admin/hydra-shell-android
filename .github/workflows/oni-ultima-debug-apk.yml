@@ -9,6 +9,8 @@ on:
       - 'backend/**'
       - 'tools/**'
       - 'tests/**'
+      - 'ultima/**'
+      - 'integrations/**'
       - 'lumh-os/**'
       - 'project/hydra/**'
       - 'docs/**'
@@ -21,6 +23,8 @@ on:
       - 'backend/**'
       - 'tools/**'
       - 'tests/**'
+      - 'ultima/**'
+      - 'integrations/**'
       - 'lumh-os/**'
       - 'project/hydra/**'
       - 'docs/**'
@@ -77,9 +81,14 @@ jobs:
           set -euo pipefail
           test -f lumh-os/kai9000/AI_MAGIC_DOCTRINE.md
           test -f lumh-os/kai9000/project.manifest.json
+          test -f docs/API_TRINITY_DOCTRINE.md
+          test -f docs/EGGIEBAGELFACE_ART_IDENTITY.md
+          test -f integrations/vendor-apis.manifest.json
           test -f project/hydra/samsung/android/apk/testing-ingest.manifest.json
-          ! grep -RniE 'vercel|OPENAI_API_KEY[[:space:]]*=' \
-            lumh-os project docs release .github 2>/dev/null
+          python -m json.tool integrations/vendor-apis.manifest.json >/dev/null
+          python -m json.tool lumh-os/kai9000/project.manifest.json >/dev/null
+          ! grep -RniE 'vercel|OPENAI_API_KEY[[:space:]]*=|CLOUDFLARE_API_TOKEN[[:space:]]*=|GOOGLE_APPLICATION_CREDENTIALS[[:space:]]*=' \
+            lumh-os project docs release integrations ultima .github 2>/dev/null
           echo 'DOCTRINE_PREFLIGHT_GREEN'
 
   android-debug:
