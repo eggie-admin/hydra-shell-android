@@ -1,0 +1,29 @@
+{
+  "schema": "kai9000.ultima.ollama-ffmpeg-antenna.v3",
+  "version": "3.0.0",
+  "planes": {
+    "local_live": {
+      "ollama": "http://127.0.0.1:11434",
+      "ffmpeg": "local_binary",
+      "ffprobe": "local_binary",
+      "comfyui_optional": "http://127.0.0.1:8188",
+      "antenna": "http://127.0.0.1:8797"
+    },
+    "github_remote": {
+      "repo": "eggie-admin/hydra-shell-android",
+      "branch": "main",
+      "update": "git_pull_ff_only",
+      "runtime_ai": false
+    },
+    "google_drive_backup": {
+      "role": "sealed_recovery_and_artifact_mirror",
+      "secrets": false
+    }
+  },
+  "authority": {
+    "Professor": "CROWN_FINAL_AUTHORITY",
+    "Ollama": "LOCAL_AI_BOSS",
+    "GitHub": "REMOTE_SOURCE_OF_TRUTH",
+    "Google_Drive": "RECOVERY_MIRROR"
+  }
+}

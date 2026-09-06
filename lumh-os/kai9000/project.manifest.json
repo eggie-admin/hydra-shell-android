@@ -1,0 +1,37 @@
+{
+  "schema": "lumh-os.kai9000.project.v1",
+  "name": "KAI 9000",
+  "role": "local-first AI and media subsystem",
+  "source_path": "ultima/ollama-ffmpeg-antenna-v3",
+  "runtime": {
+    "orchestrator": "python3",
+    "command_front_door": "npm",
+    "ollama": "http://127.0.0.1:11434",
+    "ffmpeg": "local_binary",
+    "ffprobe": "local_binary",
+    "comfyui_optional": "http://127.0.0.1:8188",
+    "antenna": "http://127.0.0.1:8797"
+  },
+  "remote": {
+    "github": {
+      "repository": "eggie-admin/hydra-shell-android",
+      "branch": "main",
+      "role": "versioned_source_of_truth"
+    },
+    "google_drive": {
+      "role": "sealed_recovery_and_artifact_mirror",
+      "secrets_allowed": false
+    }
+  },
+  "ingestion": {
+    "strategy": "reference_not_copy",
+    "subsystem_manifest": "ultima/ollama-ffmpeg-antenna-v3/KAI9000_ULTIMA_OLLAMA_FFMPEG_ANTENNA_V3.manifest.json",
+    "graceful_offline": true,
+    "remote_shell": false,
+    "public_ollama_exposure": false
+  },
+  "authority": {
+    "final": "Professor",
+    "local_ai_boss": "Ollama"
+  }
+}
