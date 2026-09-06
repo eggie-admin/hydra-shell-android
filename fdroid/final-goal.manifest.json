@@ -1,0 +1,77 @@
+{
+  "schema": "kai9000.fdroid-final-form.v1",
+  "date": "2026-09-06",
+  "project": {
+    "os": "LuHm OS",
+    "airship": "KAI 9000",
+    "warp": "git",
+    "orchestrator": "Lum",
+    "orchestrator_role": "SUPREME_WITCH"
+  },
+  "goal": "signed_importable_fdroid_repository",
+  "repository_lane": "testing/luhm-os-android",
+  "black_magic": {
+    "ecosystem": "F-Droid",
+    "mode": "custom_binary_repository",
+    "public_path_convention": "/fdroid/repo/"
+  },
+  "package": {
+    "id": "art.eggiebagelface.videoforge.dev",
+    "version": "0.6.0-dev",
+    "version_code": 6,
+    "donor_repository": "eggie-admin/vue-headless-cms",
+    "donor_commit": "86507ed7c72650ff508eb9a1a9e52842eb50e821"
+  },
+  "current_apk_evidence": {
+    "workflow": "Oni Summoning - Ultima Debug APK",
+    "workflow_run_id": 34035660208,
+    "source_commit": "f04fa27c3ac4eff8de8b7dfe093659dd9e532152",
+    "artifact_id": 9990128115,
+    "artifact_name": "kai9000-luhm-os-testing-debug-1",
+    "artifact_archive_digest": "sha256:bf28d157eb5cef0b53f95e83b5e9c14ce4a02713e62a963b6ca85f3a10a2bc20",
+    "apk_signing_mode": "ephemeral_debug",
+    "apk_green": true,
+    "eligible_as_persistent_update_identity": false
+  },
+  "required_persistent_identities": {
+    "apk_signing_key": {
+      "required": true,
+      "purpose": "Android package update continuity",
+      "must_not_be_committed": true
+    },
+    "fdroid_repo_signing_key": {
+      "required": true,
+      "purpose": "F-Droid repository index trust and fingerprint continuity",
+      "must_not_be_committed": true
+    }
+  },
+  "states": [
+    "APK_GREEN",
+    "FDROID_STAGED",
+    "FDROID_SIGNED",
+    "FDROID_PUBLISHED",
+    "FDROID_IMPORT_VERIFIED",
+    "FINAL_FORM_GREEN"
+  ],
+  "final_form_requires": [
+    "declared_git_warp_coordinates",
+    "verified_apk_identity",
+    "persistent_apk_signing_identity",
+    "fdroid_metadata_matches_package",
+    "fdroid_repo_staged",
+    "persistent_fdroid_repo_signing_identity",
+    "signed_fdroid_indexes",
+    "repo_fingerprint_recorded",
+    "https_repo_endpoint",
+    "fdroid_client_import_verified",
+    "upgrade_path_verified"
+  ],
+  "secret_policy": {
+    "keys_in_git": false,
+    "passwords_in_git": false,
+    "keys_in_apk": false,
+    "keys_in_model_context": false,
+    "base64_is_secret_storage": false
+  },
+  "status": "APK_GREEN_AWAITING_FDROID_STAGE_AND_PERSISTENT_SIGNING"
+}
