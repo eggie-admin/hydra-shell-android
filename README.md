@@ -1,21 +1,60 @@
-# Hydra Shell Android
+# LumH OS · Project Hydra
 
-A Knox-aware Android shell, terminal interface, and runtime probe for Project Hydra.
+This repository's `main` branch is the canonical **LumH OS** source branch. **Project Hydra** lives beneath it at one singular project root, and Samsung Android APK is a Hydra platform.
 
-## Initial milestone
+```text
+main (LumH OS)
+└── project/
+    └── hydra/
+        ├── doctrine/
+        ├── runtime/
+        │   └── kai9000.reference.json
+        ├── forge/
+        │   └── hugging-face/
+        └── samsung/
+            └── android/
+                └── apk/
+                    └── app.reference.json
+```
 
-HYDRA_SHELL_KNOX_PROBE_001
+Canonical manifest: `project/hydra/project.manifest.json`  
+Directory doctrine: `project/hydra/doctrine/directory-structure.json`
 
-- Detect the Android user/profile ID
-- Display the private application data path
-- Test private file creation
-- Test executable/runtime capabilities
-- Capture stdout and stderr
-- Export a diagnostic report
+## Compatibility migration
 
-## Samsung SM-X400 full mutation
+The repository previously grew around implementation roots including `lumh-os/kai9000/`, `ultima/ollama-ffmpeg-antenna-v3/`, and `samsung-sm-x400/`. They remain valid compatibility sources during migration and are **referenced, not copied**, from `project/hydra`.
 
-The Samsung operator lane is now split into explicit trust and capability layers instead of treating root as a default requirement.
+The obsolete plural tree `lumh-os/projects/hydra` is not canonical and must not be recreated. Legacy paths may be retired only after CI is green and an explicit migration approves the removal.
+
+## Samsung Android APK
+
+The canonical Hydra platform reference is:
+
+`project/hydra/samsung/android/apk/app.reference.json`
+
+The actual APK/cockpit source remains in `eggie-admin/vue-headless-cms` on the pinned `samsung-sm-x400-build-candidate` lane. Android GREEN requires an installable APK plus package/build evidence. The local operator lane remains loopback-first, no automatic root, no arbitrary model-authored shell, and no secrets in the APK or repository.
+
+## KAI 9000 runtime
+
+Hydra references KAI through:
+
+`project/hydra/runtime/kai9000.reference.json`
+
+Canonical implementation remains:
+
+`ultima/ollama-ffmpeg-antenna-v3/`
+
+Local Ollama, FFmpeg/ffprobe, and optional ComfyUI remain the live plane. GitHub is versioned source of truth and Google Drive is the recovery/artifact mirror.
+
+## Hugging Face Forge
+
+Hydra references the Hugging Face doctrine through:
+
+`project/hydra/forge/hugging-face/reference.json`
+
+Hugging Face is the Forge/model catalog, not runtime authority. No automatic model download or repository-code execution; promoted models require pinned revisions and license/attribution records.
+
+## Samsung operator trust lane
 
 Trusted stock/Knox path:
 
@@ -38,29 +77,9 @@ Canonical localhost services:
 - Hydra cockpit `127.0.0.1:8787`
 - Ollama `127.0.0.1:11434`
 
-The authoritative service supervisor is `tools/hydra_widget_setup.py`. The multi-repository source of truth is `eggie-admin/vue-headless-cms` on branch `samsung-sm-x400-build-candidate`, file `samsung-sm-x400/samsung-dev-stack.manifest.json`. This repo keeps a compact pointer at `samsung-sm-x400/full-stack.reference.json`.
-
-Privileged operations must remain typed and allow-listed. No automatic root, arbitrary model-authored shell execution, public service binding, or secret storage belongs in the Samsung operator lane.
-
-## LumH OS : KAI 9000
-
-KAI 9000 is registered as a local-first AI/media subsystem under `lumh-os/kai9000/`.
-
-Canonical implementation:
-
-`ultima/ollama-ffmpeg-antenna-v3/`
-
-The integration uses a reference manifest rather than duplicating runtime code. Local Ollama, FFmpeg/ffprobe, and optional ComfyUI remain the live plane; GitHub is the versioned source of truth and Google Drive is the recovery/artifact mirror.
-
-See:
-
-- `lumh-os/kai9000/project.manifest.json`
-- `lumh-os/kai9000/README.md`
-- `ultima/ollama-ffmpeg-antenna-v3/README.md`
-
 ## Status
 
-Early development. No bundled Linux distribution. KAI 9000 services are integrated as optional local-first subsystems and must degrade gracefully when unavailable.
+Compatibility-first structural migration. Existing services must degrade gracefully when optional capabilities are unavailable.
 
 ## License
 
