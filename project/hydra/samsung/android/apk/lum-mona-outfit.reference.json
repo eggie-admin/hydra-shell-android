@@ -1,12 +1,17 @@
 {
-  "schema": "project-hydra.lum-mona-outfit-reference.v1",
+  "schema": "project-hydra.lum-mona-outfit-reference.v2",
   "savepoint": "KAI9000_LUM_MONA_OUTFIT_ANDROID_GREEN_20260906",
   "status": "GREEN",
+  "revision": 2,
   "role": "Android visual reference for Lum wardrobe mutation and future Puppet2D/Godot avatar work",
   "drive_reference": {
-    "file_id": "1h2VeIK0NEFKHB8i8hRxCoG5s9X8uWYbx",
+    "file_id": "1eWOk-VvYjwbheKwKLHe6waW54RJQPMnx",
     "file_name": "KAI9000_LUM_MONA_OUTFIT_MUTATION_COLLECTION_20260906.png",
-    "url": "https://drive.google.com/file/d/1h2VeIK0NEFKHB8i8hRxCoG5s9X8uWYbx/view?usp=drivesdk"
+    "url": "https://drive.google.com/file/d/1eWOk-VvYjwbheKwKLHe6waW54RJQPMnx/view?usp=drivesdk",
+    "seal_manifest_file_id": "1UGms41h4DwfRIzrXHj2E-_INdb6-XcR9"
+  },
+  "integrity": {
+    "sha256": "420c2c749a0ab19231a5850b33c4432c7705e0b91cc0764c4ee88bb60bc849da"
   },
   "integration": {
     "target": "project/hydra/samsung/android/apk",
