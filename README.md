@@ -112,5 +112,15 @@ No automatic root. Stock Shizuku is preferred when scoped privilege brokering is
 - `SUPPORT.md`
 - `CODE_OF_CONDUCT.md`
 
-## License
-GNU General Public License v3.0.
+## Copyright and licensing
+
+Copyright © 2026 Eggie Bagelface in copyrightable original Project Hydra / LuHm OS / KAI 9000 material, subject to the scope and exclusions in `COPYRIGHT.md`.
+
+This repository is **multi-license by component**:
+
+- material governed by the root `LICENSE` remains GNU GPLv3;
+- third-party material remains under its own license;
+- independently owned Project Hydra beta material may be marked for noncommercial use under `docs/PROJECT_HYDRA_BETA_LICENSING.md`;
+- Project Hydra branding, original artwork, character assets, and other separately owned material are not automatically licensed merely because GPL-covered source code is available.
+
+Existing GPL rights are not revoked or narrowed. Commercial use of separately owned Project Hydra material marked `PROJECT HYDRA NONCOMMERCIAL BETA` requires separate permission.
