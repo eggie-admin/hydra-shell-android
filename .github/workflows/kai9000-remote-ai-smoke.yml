@@ -7,12 +7,16 @@ on:
       - "tools/kai9000_remote_smoke.py"
       - ".github/workflows/kai9000-remote-ai-smoke.yml"
       - "ultima/ollama-ffmpeg-antenna-v3/**"
+      - "docs/API_TRINITY_DOCTRINE.md"
+      - "integrations/vendor-apis.manifest.json"
   push:
     branches: [main]
     paths:
       - "tools/kai9000_remote_smoke.py"
       - ".github/workflows/kai9000-remote-ai-smoke.yml"
       - "ultima/ollama-ffmpeg-antenna-v3/**"
+      - "docs/API_TRINITY_DOCTRINE.md"
+      - "integrations/vendor-apis.manifest.json"
 
 permissions:
   contents: read
@@ -24,7 +28,7 @@ jobs:
 
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      OPENAI_SMOKE_MODEL: gpt-5.6-luna
+      OPENAI_SMOKE_MODEL: gpt-6-astra
 
     steps:
       - name: Checkout
