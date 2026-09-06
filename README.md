@@ -1,86 +1,95 @@
-# LumH OS · Project Hydra
+# LuHm OS · KAI 9000 · Project Hydra
 
-This repository's `main` branch is the canonical **LumH OS** source branch. **Project Hydra** lives beneath it at one singular project root, and Samsung Android APK is a Hydra platform.
+**LuHm OS** = Linux / Unix approach Hydra manifest.  
+**KAI 9000** = working title for the local-first AI/media/game subsystem.  
+**Project Hydra** = integration architecture.  
+**Samsung Android APK** = the current device-facing testing platform.
+
+## Current lane
 
 ```text
-main (LumH OS)
-└── project/
-    └── hydra/
-        ├── doctrine/
-        ├── runtime/
-        │   └── kai9000.reference.json
-        ├── forge/
-        │   └── hugging-face/
-        └── samsung/
-            └── android/
-                └── apk/
-                    └── app.reference.json
+testing/luhm-os-android
+        │
+        ├── doctrine + manifests
+        ├── Python/Ollama localhost plane
+        ├── Samsung/Termux trust contract
+        ├── Copilot agent instructions
+        └── Oni Summoning / ULTIMA debug APK forge
 ```
 
-Canonical manifest: `project/hydra/project.manifest.json`  
-Directory doctrine: `project/hydra/doctrine/directory-structure.json`
+This branch is testing-only. Nothing here is automatically promoted or released.
 
-## Compatibility migration
+## Mission
+Build a reproducible Samsung Android cockpit that combines local AI, OpenAI-assisted coding/reasoning, Godot 4 UI/game systems, Python 3 orchestration, Ollama, FFmpeg/media tooling, Edge Gallery/widget surfaces, and controlled cloud integrations without giving models unrestricted device authority.
 
-The repository previously grew around implementation roots including `lumh-os/kai9000/`, `ultima/ollama-ffmpeg-antenna-v3/`, and `samsung-sm-x400/`. They remain valid compatibility sources during migration and are **referenced, not copied**, from `project/hydra`.
+Project overview: `docs/LUHM_OS_KAI9000_OVERVIEW.md`  
+Build altar: `docs/ULTIMA_BUILD_ALTAR.md`  
+Fast build guide: `docs/BUILD_FAST.md`
 
-The obsolete plural tree `lumh-os/projects/hydra` is not canonical and must not be recreated. Legacy paths may be retired only after CI is green and an explicit migration approves the removal.
+## Canonical doctrine
 
-## Samsung Android APK
+- `lumh-os/kai9000/AI_MAGIC_DOCTRINE.md`
+- `lumh-os/kai9000/project.manifest.json`
+- `project/hydra/project.manifest.json`
+- `project/hydra/samsung/android/apk/app.reference.json`
+- `project/hydra/samsung/android/apk/testing-ingest.manifest.json`
 
-The canonical Hydra platform reference is:
+## APK source and build
+This repository is the Android **orchestration altar**. The current APK body remains pinned in the public Samsung build candidate:
 
-`project/hydra/samsung/android/apk/app.reference.json`
+`eggie-admin/vue-headless-cms@86507ed7c72650ff508eb9a1a9e52842eb50e821`
 
-The actual APK/cockpit source remains in `eggie-admin/vue-headless-cms` on the pinned `samsung-sm-x400-build-candidate` lane. Android GREEN requires an installable APK plus package/build evidence. The local operator lane remains loopback-first, no automatic root, no arbitrary model-authored shell, and no secrets in the APK or repository.
+That candidate contains the Vue cockpit, Godot 4 project, Godot Android v2 plugin, Samsung widget surface, Android export preset, and build sanity tools.
 
-## KAI 9000 runtime
+Canonical compile workflow:
 
-Hydra references KAI through:
+`.github/workflows/oni-ultima-debug-apk.yml`
 
-`project/hydra/runtime/kai9000.reference.json`
+Testing output:
 
-Canonical implementation remains:
+`kai9000-luhm-os-testing-debug.apk`
 
-`ultima/ollama-ffmpeg-antenna-v3/`
+Android GREEN requires executed CI plus an installable APK, package identity, signature evidence, SHA-256, and 16 KiB alignment evidence.
 
-Local Ollama, FFmpeg/ffprobe, and optional ComfyUI remain the live plane. GitHub is versioned source of truth and Google Drive is the recovery/artifact mirror.
+Release/debug template:
+`release/TESTING_APK_DEBUG_TEMPLATE.md`
 
-## Hugging Face Forge
+## Copilot compile architecture
+Copilot is the implementation assistant. GitHub Actions is the deterministic build oracle.
 
-Hydra references the Hugging Face doctrine through:
+Copilot reads:
+- `.github/copilot-instructions.md`
+- `.github/instructions/ultima-build.instructions.md`
+- `AGENTS.md`
 
-`project/hydra/forge/hugging-face/reference.json`
+The lightweight setup workflow prepares Python, Java, Node, Gradle, doctrine references, and the pinned Samsung source without running the full APK export.
 
-Hugging Face is the Forge/model catalog, not runtime authority. No automatic model download or repository-code execution; promoted models require pinned revisions and license/attribution records.
+## AI stack
+- **Lum / OpenAI**: remote reasoning, coding/spell compiler, typed agent/tool requests. Credentials remain server-side.
+- **Ollama**: local inference at `127.0.0.1:11434`.
+- **Python 3**: orchestration, policy, tests, feeds, local backend.
+- **Godot 4**: Android cockpit/game/UI runtime.
+- **Edge Gallery**: Samsung-facing local media/gallery/widget surface.
 
-## Samsung operator trust lane
+More: `docs/AI_STACK.md`
 
-Trusted stock/Knox path:
+## Samsung trust lane
+Ordinary Termux owns the daemon/control plane. Samsung Secure Folder is a protected cockpit/client.
 
-1. stock Samsung firmware
-2. Developer Options enabled
-3. USB or Wireless debugging only when needed
-4. Shizuku started through ADB / Wireless debugging
-5. explicit per-app Shizuku authorization
-6. Termux + Termux:Widget own the localhost control plane
-7. optional Termux:X11 display transport
-8. optional YagniLauncher front door
-
-Root/Sui is a separate laboratory lane and must never claim Secure Folder/Knox trust.
-
-Canonical localhost services:
-
-- AXS `127.0.0.1:8767`
+Canonical local services:
+- AcodeX/AXS `127.0.0.1:8767`
 - TigerVNC `127.0.0.1:5901`
 - WebSocket bridge `127.0.0.1:6080`
 - Hydra cockpit `127.0.0.1:8787`
 - Ollama `127.0.0.1:11434`
 
-## Status
+No automatic root. Stock Shizuku is preferred when scoped privilege brokering is required. USB/UVC camera permission work stays isolated from the green control plane.
 
-Compatibility-first structural migration. Existing services must degrade gracefully when optional capabilities are unavailable.
+## Community and security
+- `CONTRIBUTING.md`
+- `SECURITY.md`
+- `SUPPORT.md`
+- `CODE_OF_CONDUCT.md`
 
 ## License
-
-GNU General Public License v3.0
+GNU General Public License v3.0.
