@@ -14,7 +14,7 @@ def main() -> None:
     ap = argparse.ArgumentParser(description="Fast-forward-only GitHub remote pull for the Ultima antenna.")
     ap.add_argument("--repo", default=".")
     ap.add_argument("--remote", default="origin")
-    ap.add_argument("--branch", default="feature/ultima-ollama-ffmpeg-antenna-v3")
+    ap.add_argument("--branch", default="main")
     args = ap.parse_args()
 
     repo = Path(args.repo).resolve()
