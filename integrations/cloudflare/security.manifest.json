@@ -1,9 +1,9 @@
 {
-  "schema": "kai9000.cloudflare-eap-security.v3",
+  "schema": "kai9000.cloudflare-eap-security.v4",
   "date": "2026-09-06",
   "zone": "eggiebagelface.art",
   "meaning_of_eap": "Edge Access Perimeter",
-  "status": "CLOUDFLARE_SSL_GOOGLE_AUTH_WIRED_NOT_LIVE_GREEN",
+  "status": "CLOUDFLARE_OAUTH_BOOTSTRAP_WIRED_NOT_LIVE_GREEN",
   "fqdn_routes": {
     "eggiebagelface.art": {"role": "coming_soon_public_site", "route": "workers_static_assets_custom_domain", "public": true},
     "www.eggiebagelface.art": {"role": "coming_soon_public_site_alias", "route": "workers_static_assets_custom_domain", "public": true},
@@ -29,38 +29,50 @@
   "admin_https_auth": {
     "hostname": "admin.eggiebagelface.art",
     "identity_provider": "google_oauth",
-    "google_oauth_client_type": "web_application",
-    "active_google_browser_session": "allowed_only_through_normal_oauth_flow",
+    "active_google_browser_session": "normal_oauth_flow_only",
     "reuse_chatgpt_google_connector_credentials": false,
     "identity_allowlist_required": true,
-    "mfa": {
-      "provider": "cloudflare_independent_mfa",
-      "method": "authenticator_app_totp",
-      "google_authenticator_supported": true,
-      "session_duration": "0m"
-    },
+    "independent_mfa": "authenticator_app_totp_every_access_login",
+    "google_authenticator_supported": true,
     "country_defense_in_depth": "US",
     "warp_or_device_posture_required": true
   },
-  "dns_security": {
-    "dnssec": true,
-    "registrar_ds_required": true,
-    "manual_dnskey_forbidden": true,
-    "tlsa_for_proxied_https": false,
-    "caa_lets_encrypt_fallback": true,
-    "wildcard_fallback_authorized_by_default": false
+  "oauth_bootstrap": {
+    "preferred_human_path": "interactive_oauth_not_copied_api_tokens",
+    "wrangler": {
+      "minimum_version": "4.119.0",
+      "login": "wrangler login --device",
+      "helper": "integrations/cloudflare/bootstrap-oauth.sh wrangler-login",
+      "credential_export": false,
+      "keyring_optional_when_supported": true
+    },
+    "tunnel_management": {
+      "login": "cloudflared tunnel login",
+      "account_certificate": "~/.cloudflared/cert.pem",
+      "account_certificate_scope": "account_wide_tunnel_management",
+      "account_certificate_mode": "0600",
+      "runtime_credential": "tunnel_specific_only"
+    },
+    "api_mcp_oauth": "preferred_when_available_in_operator_product",
+    "cf_api_token_required_for_human_bootstrap": false
   },
   "token_management": {
     "global_api_key_allowed": false,
     "existing_secret_values_retrievable": false,
     "inventory": "metadata_only_via_tools/cloudflare_token_inventory.py",
     "lost_secret_action": "roll_or_replace_token",
-    "bootstrap": "human_dashboard_login_then_short_lived_least_privilege_token",
-    "durable_ci_preference": "account_owned_scoped_token_when_endpoint_supports_it",
+    "bootstrap": "oauth_first",
+    "durable_ci_preference": "account_owned_scoped_token_when_unattended_automation_is_required",
     "separate_lanes_preferred": ["dns_tls", "workers", "zero_trust_access", "origin_ca", "tunnel_runtime"],
     "token_values_model_visible": false,
     "oauth_client_secret_model_visible": false,
     "totp_seed_model_visible": false
+  },
+  "signing_evidence": {
+    "private_signing_keys_required_in_github_preflight": false,
+    "apk_signer_sha256": "A5E9364D5C21A119FE1D17FD39EE7BAE8192A872CE58A3E7A865248E0B070407",
+    "fdroid_repo_fingerprint_sha256": "BFB900A9EC913D35C22F1DC3DE7B152D1AF5CA11B7B07E5FAFDD06B44811F66D",
+    "signed_bundle_sha256": "fa350eeb2a2945b3b0e664f459ae1706cd3c19d0c02913e799e7ea005c6f3028"
   },
   "network": {
     "fdroid_origin": "gcp_ipv6_only",
@@ -74,17 +86,16 @@
     "edge_dual_stack": true,
     "private_lan_public_dns": false
   },
-  "doctrine": "docs/CLOUDFLARE_SSL_GOOGLE_AUTH_REROLL_V3.md",
+  "doctrine": "docs/CLOUDFLARE_OAUTH_BOOTSTRAP_REROLL_V4.md",
   "green_requires": [
+    "wrangler_oauth_identity_proven_on_operator_machine",
     "edge_tls_settings_active",
     "fdroid_full_strict_and_origin_ecc_p256_valid",
-    "google_idp_configured_and_tested",
-    "approved_google_identity_restricted",
-    "cloudflare_independent_totp_mfa_enrolled_and_required",
-    "admin_google_oauth_plus_mfa_login_proven",
+    "google_idp_and_independent_totp_mfa_proven",
     "admin_warp_or_device_posture_proven",
-    "token_metadata_inventory_proven_without_secret_values",
-    "only_required_scoped_tokens_active",
+    "tunnel_runtime_uses_tunnel_specific_credential",
+    "public_fdroid_signed_index_reachable",
+    "token_inventory_contains_metadata_only_when_used",
     "no_global_api_key",
     "no_secret_leakage"
   ]
