@@ -3,6 +3,7 @@ name: KAI9000 Cathedral CI
 on:
   pull_request:
     paths:
+      - "project/hydra/**"
       - "lumh-os/kai9000/**"
       - "ultima/ollama-ffmpeg-antenna-v3/**"
       - "tools/kai9000_ci_guard.py"
@@ -10,6 +11,7 @@ on:
   push:
     branches: [main]
     paths:
+      - "project/hydra/**"
       - "lumh-os/kai9000/**"
       - "ultima/ollama-ffmpeg-antenna-v3/**"
       - "tools/kai9000_ci_guard.py"
