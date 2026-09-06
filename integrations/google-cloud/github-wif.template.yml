@@ -1,0 +1,39 @@
+# Template only. Do not place real project/provider identifiers or secrets here.
+# Preferred Google Cloud authentication path for KAI 9000 GitHub Actions.
+
+name: KAI9000 Google Cloud WIF Template
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  white-magic-auth:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - id: auth
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          # Omit service_account for preferred direct WIF where the target
+          # resource supports federated principal access.
+          # service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+
+      - name: Verify identity boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${{ steps.auth.outputs.auth_token }}"
+          echo 'GOOGLE_WIF_AUTHENTICATED'
+
+# Required doctrine outside this template:
+# - restrict the Workload Identity Provider with GitHub attribute conditions;
+# - grant only resource-specific roles;
+# - use service-account impersonation only where the product/API requires it;
+# - never commit service-account key JSON.
