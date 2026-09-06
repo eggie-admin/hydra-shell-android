@@ -22,6 +22,24 @@
 - SHA-256: `<sha256>`
 - Signing mode: `ephemeral CI debug`
 
+## Copyright and licensing
+
+- Copyright holder for copyrightable original Project Hydra material: `Eggie Bagelface`
+- Public identity: `eggiebagelface.art`
+- Copyright notice: `COPYRIGHT.md`
+- Beta licensing doctrine: `docs/PROJECT_HYDRA_BETA_LICENSING.md`
+- Package notice: `release/PROJECT_HYDRA_BETA_NOTICE.txt`
+- Root GPL license preserved for GPL-covered material: `LICENSE`
+
+Release gate:
+
+- [ ] GPL-covered material retains GPL notices and obligations
+- [ ] third-party notices/licenses remain intact
+- [ ] Project Hydra copyright notice is present in release documentation
+- [ ] `PROJECT_HYDRA_BETA_NOTICE.txt` is included with the beta distribution or made directly accessible from the release entry
+- [ ] proprietary/noncommercial markings are applied only to separable material Project Hydra is legally able to license separately
+- [ ] no release language claims ownership of third-party or purely non-copyrightable material
+
 ## Build matrix
 
 - Godot: `4.7.2`
@@ -78,6 +96,7 @@ Result:
 - USB/UVC camera access may remain blocked by Android/Knox permission boundaries.
 - OpenAI credentials are not embedded in the APK.
 - Optional AI/media services may be unavailable without affecting base launch.
+- Existing GPL rights in GPL-covered material remain in force and are not made noncommercial by Project Hydra beta notices.
 
 ## Doctrine statement
 
@@ -87,3 +106,5 @@ Canonical doctrine:
 - `lumh-os/kai9000/AI_MAGIC_DOCTRINE.md`
 - `lumh-os/kai9000/project.manifest.json`
 - `project/hydra/samsung/android/apk/testing-ingest.manifest.json`
+- `COPYRIGHT.md`
+- `docs/PROJECT_HYDRA_BETA_LICENSING.md`
