@@ -1,0 +1,28 @@
+{
+  "schema": "lumh-os.project-hydra.v2",
+  "name": "Project Hydra",
+  "canonical_root": "project/hydra",
+  "parent_os": "LumH OS",
+  "branch_authority": "main",
+  "directory_doctrine": "project/hydra/doctrine/directory-structure.json",
+  "runtime": {
+    "kai9000": "project/hydra/runtime/kai9000.reference.json"
+  },
+  "forge": {
+    "hugging_face": "project/hydra/forge/hugging-face/reference.json"
+  },
+  "platforms": {
+    "samsung_android_apk": "project/hydra/samsung/android/apk/app.reference.json"
+  },
+  "migration": {
+    "strategy": "reference_not_copy",
+    "legacy_paths_remain_compatible": true,
+    "destructive_move_allowed": false,
+    "green_required_before_path_retirement": true
+  },
+  "authority": {
+    "final": "Professor",
+    "runtime_mutation_requires_evidence": true,
+    "secrets_in_repo": false
+  }
+}

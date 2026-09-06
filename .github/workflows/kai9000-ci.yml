@@ -3,16 +3,20 @@ name: KAI9000 Cathedral CI
 on:
   pull_request:
     paths:
+      - "project/hydra/**"
       - "lumh-os/kai9000/**"
       - "ultima/ollama-ffmpeg-antenna-v3/**"
       - "tools/kai9000_ci_guard.py"
+      - "tools/project_hydra_structure_guard.py"
       - ".github/workflows/kai9000-ci.yml"
   push:
     branches: [main]
     paths:
+      - "project/hydra/**"
       - "lumh-os/kai9000/**"
       - "ultima/ollama-ffmpeg-antenna-v3/**"
       - "tools/kai9000_ci_guard.py"
+      - "tools/project_hydra_structure_guard.py"
       - ".github/workflows/kai9000-ci.yml"
 
 permissions:
@@ -48,13 +52,16 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e .
 
+      - name: Project Hydra structure guard
+        run: python tools/project_hydra_structure_guard.py
+
       - name: Architecture and secret guard
         run: python tools/kai9000_ci_guard.py
 
       - name: Python compile gate
         run: |
           python -m compileall -q ultima/ollama-ffmpeg-antenna-v3
-          python -m py_compile tools/kai9000_ci_guard.py
+          python -m py_compile tools/kai9000_ci_guard.py tools/project_hydra_structure_guard.py
 
       - name: Locked jQuery vendor gate
         working-directory: ultima/ollama-ffmpeg-antenna-v3

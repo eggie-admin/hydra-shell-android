@@ -1,0 +1,26 @@
+{
+  "schema": "project-hydra.samsung-android-apk-reference.v1",
+  "role": "Samsung Android APK forge and cockpit surface",
+  "integration_strategy": "reference_not_copy",
+  "source": {
+    "repository": "eggie-admin/vue-headless-cms",
+    "branch": "samsung-sm-x400-build-candidate",
+    "pinned_commit": "86507ed7c72650ff508eb9a1a9e52842eb50e821",
+    "manifest": "samsung-sm-x400/samsung-dev-stack.manifest.json"
+  },
+  "integration_baseline": {
+    "repository": "eggie-admin/vue-headless-cms",
+    "branch": "main",
+    "commit": "1d51c5b90266f7beb8236cf07acfb17a085a4134",
+    "manifest": "integrations/kai9000.remote-smoke.json"
+  },
+  "local_compatibility_reference": "samsung-sm-x400/full-stack.reference.json",
+  "requirements": {
+    "installable_apk_required_for_green": true,
+    "package_identity_evidence_required": true,
+    "loopback_only_local_services": true,
+    "automatic_root": false,
+    "arbitrary_model_shell": false,
+    "secrets_in_apk_or_repo": false
+  }
+}

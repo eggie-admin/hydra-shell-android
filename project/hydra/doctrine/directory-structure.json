@@ -1,0 +1,27 @@
+{
+  "schema": "lumh-os.project-hydra.directory-doctrine.v1",
+  "branch_is_os": "main",
+  "os_name": "LumH OS",
+  "project_namespace": "project",
+  "project_slug": "hydra",
+  "canonical_root": "project/hydra",
+  "required_paths": [
+    "project/hydra/doctrine",
+    "project/hydra/runtime",
+    "project/hydra/forge",
+    "project/hydra/samsung/android/apk"
+  ],
+  "rules": {
+    "singular_project_namespace": true,
+    "reference_not_copy": true,
+    "duplicate_runtime_forbidden": true,
+    "destructive_relocation_during_reroll": false,
+    "green_ci_required_before_legacy_prune": true,
+    "secrets_in_repo": false
+  },
+  "legacy_compatibility_sources": [
+    "lumh-os/kai9000",
+    "ultima/ollama-ffmpeg-antenna-v3",
+    "samsung-sm-x400"
+  ]
+}

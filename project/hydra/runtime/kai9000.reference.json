@@ -1,0 +1,20 @@
+{
+  "schema": "project-hydra.kai9000-runtime-reference.v1",
+  "integration_strategy": "reference_not_copy",
+  "policy_manifest": "lumh-os/kai9000/project.manifest.json",
+  "canonical_runtime": "ultima/ollama-ffmpeg-antenna-v3",
+  "runtime_manifest": "ultima/ollama-ffmpeg-antenna-v3/KAI9000_ULTIMA_OLLAMA_FFMPEG_ANTENNA_V3.manifest.json",
+  "services": {
+    "ollama": "http://127.0.0.1:11434",
+    "antenna": "http://127.0.0.1:8797",
+    "comfyui_optional": "http://127.0.0.1:8188",
+    "ffmpeg": "local_binary",
+    "ffprobe": "local_binary"
+  },
+  "rules": {
+    "loopback_first": true,
+    "public_ollama_exposure": false,
+    "remote_shell": false,
+    "runtime_copy_under_project_hydra": false
+  }
+}

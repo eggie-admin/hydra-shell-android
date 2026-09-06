@@ -1,0 +1,13 @@
+{
+  "schema": "project-hydra.hugging-face-reference.v1",
+  "integration_strategy": "reference_not_copy",
+  "role": "forge_and_model_catalog",
+  "doctrine": "lumh-os/kai9000/huggingface.doctrine.json",
+  "runtime_authority": false,
+  "secret_store": false,
+  "auto_download": false,
+  "auto_execute_remote_code": false,
+  "revision_pin_required": true,
+  "license_record_required": true,
+  "preferred_live_runtime": "Ollama"
+}
