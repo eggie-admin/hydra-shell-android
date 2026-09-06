@@ -163,8 +163,6 @@ def _execute(spell: str, args: dict[str, Any], cast_id: str) -> dict[str, Any]:
 
     if spell == "READ_FILE":
         path = _safe_path(str(args.get("path", "")), must_exist=True)
-        if path.is_symlink():
-            raise HTTPException(status_code=403, detail="Symlink reads are denied")
         if path.stat().st_size > 262_144:
             raise HTTPException(status_code=413, detail="File exceeds 256 KiB read limit")
         return {
@@ -230,6 +228,7 @@ def _execute(spell: str, args: dict[str, Any], cast_id: str) -> dict[str, Any]:
 
         checkpoint_dir = CHECKPOINT_ROOT / cast_id
         checkpoint_dir.mkdir(parents=True, exist_ok=False)
+        checkpoint_path = checkpoint_dir / "checkpoint.json"
         checkpoint = {
             "cast_id": cast_id,
             "path": path.relative_to(CODE_ROOT).as_posix(),
@@ -238,10 +237,12 @@ def _execute(spell: str, args: dict[str, Any], cast_id: str) -> dict[str, Any]:
             "before_base64": base64.b64encode(before).decode("ascii"),
             "created_unix": int(time.time()),
         }
-        (checkpoint_dir / "checkpoint.json").write_text(json.dumps(checkpoint, indent=2), encoding="utf-8")
+        checkpoint_path.write_text(json.dumps(checkpoint, indent=2), encoding="utf-8")
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(content, encoding="utf-8")
         after = _sha256_bytes(path.read_bytes())
+        checkpoint["after_sha256"] = after
+        checkpoint_path.write_text(json.dumps(checkpoint, indent=2), encoding="utf-8")
         return {
             "ok": True,
             "spell": spell,
@@ -358,7 +359,16 @@ def rollback_cast(cast_id: str, req: RollbackRequest) -> dict[str, Any]:
     if not checkpoint_path.is_file():
         raise HTTPException(status_code=404, detail="Checkpoint not found")
     checkpoint = json.loads(checkpoint_path.read_text(encoding="utf-8"))
+    expected_after = checkpoint.get("after_sha256")
+    if not expected_after:
+        raise HTTPException(status_code=409, detail="Checkpoint lacks an after-SHA and cannot be rolled back safely")
     path = _safe_path(checkpoint["path"], must_exist=None)
+    current_sha = _sha256_bytes(path.read_bytes()) if path.is_file() else None
+    if current_sha != expected_after:
+        raise HTTPException(
+            status_code=409,
+            detail={"message": "Rollback conflict: file changed after cast", "expected_current_sha256": expected_after, "actual_current_sha256": current_sha},
+        )
     before = base64.b64decode(checkpoint["before_base64"])
     if checkpoint["existed"]:
         path.parent.mkdir(parents=True, exist_ok=True)
