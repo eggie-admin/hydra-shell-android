@@ -59,7 +59,15 @@
     "checkpoint_before_mutation": true,
     "execution_evidence_required_for_green": true,
     "ultima_green_requires_verified_final_goal": true,
-    "android_goal_requires_installable_apk": true
+    "android_goal_requires_installable_apk": true,
+    "external_hosting_status_is_authoritative": false,
+    "android_green_authority": [
+      "repository_ci",
+      "reproducible_android_build",
+      "installable_apk_evidence",
+      "package_identity_evidence",
+      "device_or_emulator_validation"
+    ]
   },
   "runtime": {
     "orchestrator": "python3",
