@@ -1,5 +1,5 @@
 {
-  "schema": "kai9000.vendor-apis.v3",
+  "schema": "kai9000.vendor-apis.v4",
   "date": "2026-09-06",
   "airship": "KAI9000",
   "warp": "git",
@@ -54,16 +54,32 @@
     },
     "cloudflare": {
       "magic_color": null,
-      "role": "public_dns_https_and_tunnel_gate",
+      "role": "edge_access_perimeter_dns_tls_ddos_waf_zero_trust_and_tunnel_gate",
       "api_base": "https://api.cloudflare.com/client/v4",
       "zone": "eggiebagelface.art",
       "fdroid_hostname": "fdroid.eggiebagelface.art",
-      "preferred_origin_transport": "cloudflare_tunnel_when_private_origin",
-      "credential_strategy": "least_privilege_api_token",
+      "security_doctrine": "docs/CLOUDFLARE_EAP_SECURITY_REROLL.md",
+      "security_manifest": "integrations/cloudflare/security.manifest.json",
+      "server_connector": "cloudflared_outbound_only",
+      "client_connector": "cloudflare_one_client_warp",
+      "preferred_public_origin_transport": "cloudflare_tunnel",
+      "direct_origin_fallback": "proxied_ipv6_only",
+      "public_origin_ipv4": false,
+      "wan_port_forwarding": false,
+      "tls_mode": "full_strict",
+      "minimum_tls": "1.2",
+      "tls_1_3": true,
+      "origin_ca": "lets_encrypt_dns01",
+      "origin_key": "ecdsa_p256",
+      "dnssec": true,
+      "dnssec_expected_algorithm": "13_ecdsa_p256_sha256",
+      "ddos": "managed_default",
+      "waf": "enabled",
+      "private_admin_policy": "approved_identity_and_US_and_warp_or_device_posture",
+      "public_fdroid_geo_locked": false,
+      "credential_strategy": "split_least_privilege_api_tokens",
       "ci_token_preference": "account_owned_api_token_when_supported",
       "forbid_global_api_key_in_automation": true,
-      "dns_scope": "zone_dns_write_only_when_needed",
-      "tunnel_scope": "cloudflare_tunnel_or_connector_write_only_when_needed",
       "credentials_visible_to_model": false
     },
     "google_cloud": {
@@ -75,11 +91,7 @@
       "service_account_impersonation": "only_when_api_or_product_requires",
       "long_lived_service_account_json_in_repo": false,
       "iam_policy": "resource_specific_least_privilege",
-      "oidc_conditions": [
-        "repository",
-        "branch_or_ref",
-        "workflow_when_available"
-      ],
+      "oidc_conditions": ["repository", "branch_or_ref", "workflow_when_available"],
       "credentials_visible_to_model": false
     }
   },

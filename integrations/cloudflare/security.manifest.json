@@ -1,0 +1,84 @@
+{
+  "schema": "kai9000.cloudflare-eap-security.v1",
+  "date": "2026-09-06",
+  "zone": "eggiebagelface.art",
+  "meaning_of_eap": "Edge Access Perimeter",
+  "status": "CLOUDFLARE_SECURITY_WIRED_NOT_LIVE_GREEN",
+  "public_surfaces": [
+    "eggiebagelface.art",
+    "www.eggiebagelface.art",
+    "fdroid.eggiebagelface.art"
+  ],
+  "private_surfaces": [
+    "admin.eggiebagelface.art",
+    "lum.eggiebagelface.lan",
+    "ai.eggiebagelface.lan"
+  ],
+  "edge": {
+    "universal_ssl": true,
+    "minimum_tls": "1.2",
+    "tls_1_3": true,
+    "always_use_https": true,
+    "hsts": "stage_after_https_proven",
+    "full_strict": true,
+    "ecdsa_preferred": true
+  },
+  "origin_tls": {
+    "preferred_ca": "Lets Encrypt",
+    "acme_challenge": "dns-01",
+    "key_type": "ecdsa",
+    "curve": "secp256r1",
+    "cloudflare_origin_ca_fallback": true
+  },
+  "dns_security": {
+    "dnssec": true,
+    "algorithm_expected": "13 ECDSA P-256 SHA-256",
+    "registrar_ds_required": true,
+    "manual_dnskey_forbidden": true,
+    "tlsa_for_proxied_https": false,
+    "caa_policy": "allow Lets Encrypt without blocking Cloudflare Universal partner CAs"
+  },
+  "network": {
+    "server_connector": "cloudflared",
+    "client_connector": "Cloudflare One Client/WARP",
+    "tunnel_direction": "outbound_only_from_origin",
+    "wan_port_forwarding": false,
+    "public_origin_ipv4": false,
+    "ipv4_to_ipv6_http_redirect": false,
+    "edge_dual_stack": true,
+    "origin_preference": "tunnel_then_ipv6_only_direct_fallback"
+  },
+  "security": {
+    "ddos_managed": true,
+    "waf": true,
+    "free_managed_ruleset": true,
+    "admin_location_lock": "US",
+    "admin_identity_required": true,
+    "admin_warp_or_device_posture_required": true,
+    "public_fdroid_geo_locked": false
+  },
+  "tokens": {
+    "global_api_key_allowed": false,
+    "dns_acme": "least_privilege_zone_read_plus_dns_edit",
+    "zone_security": "least_privilege_zone_settings_dnssec_rules",
+    "tunnel_runtime": "tunnel_only",
+    "zero_trust_admin": "access_apps_policies_groups_only_when_needed",
+    "model_visible": false
+  },
+  "doctrine": "docs/CLOUDFLARE_EAP_SECURITY_REROLL.md",
+  "green_requires": [
+    "zone_active",
+    "universal_ssl_active",
+    "full_strict_active",
+    "minimum_tls_1_2_or_newer",
+    "tls_1_3_active",
+    "dnssec_active",
+    "registrar_ds_valid",
+    "tunnel_connected",
+    "origin_not_directly_exposed",
+    "ddos_waf_active",
+    "private_access_policy_proven",
+    "public_business_and_fdroid_routes_reachable",
+    "no_secret_leakage"
+  ]
+}

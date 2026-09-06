@@ -1,0 +1,41 @@
+{
+  "schema": "kai9000.cloudflare-access-policy-template.v1",
+  "application": {
+    "name": "KAI9000 Admin",
+    "hostname": "admin.eggiebagelface.art",
+    "type": "self_hosted"
+  },
+  "policy": {
+    "name": "KAI9000 Admin US WARP Posture",
+    "action": "allow",
+    "decision_model": "approved identity AND US location AND WARP/device posture",
+    "include": [
+      {
+        "email": {
+          "email": "<APPROVED_ADMIN_EMAIL>"
+        }
+      }
+    ],
+    "require": [
+      {
+        "geo": {
+          "country_code": "US"
+        }
+      },
+      {
+        "warp": {}
+      }
+    ],
+    "exclude": []
+  },
+  "notes": [
+    "Replace placeholder identity before apply.",
+    "Device posture may be used instead of or in addition to WARP after a posture integration/check exists.",
+    "Do not apply this policy to fdroid.eggiebagelface.art or the public business site.",
+    "Location is defense-in-depth and is not a substitute for authenticated identity."
+  ],
+  "api_permissions": [
+    "Access: Apps and Policies Write",
+    "Access group/identity permissions only if reusable groups are automated"
+  ]
+}
