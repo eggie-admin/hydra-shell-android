@@ -1,30 +1,31 @@
 {
-  "schema": "kai9000.cloudflare-dns-security-template.v1",
+  "schema": "kai9000.cloudflare-dns-security-template.v2",
   "zone": "eggiebagelface.art",
-  "mode": "tunnel_preferred",
-  "records": [
+  "mode": "split_by_fqdn_role",
+  "managed_bindings": [
     {
-      "type": "CNAME",
-      "name": "eggiebagelface.art",
-      "content": "<CF_TUNNEL_ID>.cfargotunnel.com",
-      "proxied": true,
-      "ttl": 1,
-      "purpose": "public business site through Cloudflare Tunnel"
-    },
+      "hostname": "eggiebagelface.art",
+      "provider": "Cloudflare Workers Static Assets custom domain",
+      "purpose": "coming-soon public site",
+      "manual_origin_record": false
+    }
+  ],
+  "records": [
     {
       "type": "CNAME",
       "name": "www.eggiebagelface.art",
       "content": "eggiebagelface.art",
       "proxied": true,
-      "ttl": 1
+      "ttl": 1,
+      "purpose": "public alias to apex"
     },
     {
-      "type": "CNAME",
+      "type": "AAAA",
       "name": "fdroid.eggiebagelface.art",
-      "content": "<CF_TUNNEL_ID>.cfargotunnel.com",
+      "content": "<GCP_VM_EXTERNAL_IPV6>",
       "proxied": true,
       "ttl": 1,
-      "purpose": "public F-Droid repository"
+      "purpose": "public signed F-Droid repository on IPv6-only origin"
     },
     {
       "type": "CNAME",
@@ -32,38 +33,59 @@
       "content": "<CF_TUNNEL_ID>.cfargotunnel.com",
       "proxied": true,
       "ttl": 1,
-      "purpose": "Access-protected admin surface"
+      "purpose": "Access/WARP-protected admin cockpit through Cloudflare Tunnel"
     },
     {
       "type": "CAA",
       "name": "eggiebagelface.art",
       "tag": "issue",
       "value": "letsencrypt.org",
-      "purpose": "authorize selected origin CA; Cloudflare Universal may synthesize additional partner-CA CAA records"
+      "purpose": "authorize browser-trusted fallback origin issuance; Cloudflare may synthesize CAA needed for Universal SSL"
     },
     {
       "type": "CAA",
       "name": "eggiebagelface.art",
       "tag": "issuewild",
       "value": "letsencrypt.org",
-      "purpose": "authorize wildcard origin certificate"
+      "purpose": "authorize wildcard fallback only if later reviewed and actually required"
     }
   ],
   "dnssec": {
     "desired_status": "active",
-    "registrar_action_required": "publish Cloudflare-generated DS record",
+    "registrar_action_required": "publish and validate Cloudflare-generated DS record",
     "manual_dnskey": false,
-    "expected_algorithm": "13 ECDSA P-256 SHA-256"
+    "public_key_role": "DNSSEC authenticates the zone; it is not the TLS private key",
+    "tlsa_for_proxied_https": false
   },
-  "direct_ipv6_fallback": {
-    "enabled_by_default": false,
-    "rule": "If Tunnel is unavailable by design, publish proxied AAAA to the real origin IPv6 and do not publish a public A record.",
-    "origin_ipv6": "<GCP_VM_EXTERNAL_IPV6>"
+  "origin_tls": {
+    "fdroid_key": "locally generated ECDSA P-256 private key",
+    "fdroid_csr": "send public-key CSR only to Cloudflare Origin CA",
+    "fdroid_certificate": "Cloudflare Origin CA origin-ecc, SAN fdroid.eggiebagelface.art, 365-day preferred rotation",
+    "fallback": "Lets Encrypt ECDSA DNS-01 for any reviewed direct-browser origin"
+  },
+  "ipv6_policy": {
+    "cloudflare_edge": "dual_stack",
+    "fdroid_origin": "IPv6_only",
+    "fdroid_public_a_record": false,
+    "fdroid_public_aaaa_record": true,
+    "ipv4_to_ipv6_http_redirect": false,
+    "reason": "IP family is selected before HTTP; Cloudflare accepts IPv4/IPv6 clients and connects to the only published fdroid origin family, IPv6"
+  },
+  "private_dns": {
+    "public_records_for_lan": false,
+    "names": [
+      "lum.eggiebagelface.lan",
+      "ai.eggiebagelface.lan"
+    ],
+    "route": "private resolver via WARP/Zero Trust tunnel"
   },
   "forbidden": [
+    "public A record for fdroid origin",
     "public .lan records",
-    "unproxied origin A/AAAA without explicit review",
+    "unproxied fdroid origin AAAA without explicit review",
     "TLSA pinning of Cloudflare-proxied HTTPS",
+    "manual DNSKEY publication",
+    "Cloudflare edge private-key export",
     "Global API Key in automation"
   ]
 }
