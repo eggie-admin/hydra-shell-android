@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>KAI9000 Magic Cockpit</title>
 <style>
-body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;margin:20px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}.card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:14px}input,textarea,select,button{box-sizing:border-box;width:100%;margin:5px 0;padding:9px;background:#0d1117;color:#e6edf3;border:1px solid #30363d;border-radius:8px}button{cursor:pointer}button:hover{border-color:#4dd0e1}img,video{width:100%;background:#000;border-radius:8px}pre{white-space:pre-wrap;overflow:auto;background:#0d1117;padding:10px;border-radius:8px;max-height:55vh}.small{font-size:.9rem;color:#9da7b3}.rune{color:#4dd0e1}.warn{color:#ffcf66}.status{padding:6px;border:1px solid #30363d;border-radius:8px;margin:6px 0}
+body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;margin:20px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}.card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:14px}input,textarea,select,button{box-sizing:border-box;width:100%;margin:5px 0;padding:9px;background:#0d1117;color:#e6edf3;border:1px solid #30363d;border-radius:8px}button{cursor:pointer}button:hover{border-color:#4dd0e1}img,video{width:100%;background:#000;border-radius:8px}pre{white-space:pre-wrap;overflow:auto;background:#0d1117;padding:10px;border-radius:8px;max-height:55vh}.small{font-size:.9rem;color:#9da7b3}.rune{color:#4dd0e1}.warn{color:#ffcf66}.status{padding:6px;border:1px solid #30363d;border-radius:8px;margin:6px 0}.fatal{background:#4a1111;color:#ffd8d8;padding:10px;border-radius:8px;margin-bottom:12px}
 </style>
 </head>
 <body>
@@ -73,9 +73,12 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;margin:20
 <script src="/static/vendor/jquery.min.js"></script>
 <script>
 if (!window.jQuery) {
-  document.write('<script src="https://code.jquery.com/jquery-3.7.1.min.js"><\\/script>');
+  document.body.insertAdjacentHTML("afterbegin", '<div class="fatal">Local jQuery is missing. Run <code>npm run bootstrap</code> or <code>npm ci && npm run vendor:jquery</code>, then reload.</div>');
+} else {
+  var cockpit = document.createElement("script");
+  cockpit.src = "/static/app.jquery.js";
+  document.body.appendChild(cockpit);
 }
 </script>
-<script src="/static/app.jquery.js"></script>
 </body>
 </html>
