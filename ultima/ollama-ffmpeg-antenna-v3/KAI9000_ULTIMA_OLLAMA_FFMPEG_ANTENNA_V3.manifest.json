@@ -11,7 +11,7 @@
     },
     "github_remote": {
       "repo": "eggie-admin/hydra-shell-android",
-      "branch": "feature/ultima-ollama-ffmpeg-antenna-v3",
+      "branch": "main",
       "update": "git_pull_ff_only",
       "runtime_ai": false
     },
