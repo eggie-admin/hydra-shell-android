@@ -1,0 +1,85 @@
+{
+  "schema": "kai9000.google-cloud-strict-free-vm.v1",
+  "date": "2026-09-06",
+  "status": "CONFIGURED_NOT_PROVISIONED",
+  "project": "KAI 9000 / LuHm OS / Project Hydra",
+  "public_identity": "eggiebagelface.art",
+  "goal": "strict_free_compute_origin_with_free_authoritative_dns",
+  "compute": {
+    "provider": "google_cloud_compute_engine",
+    "machine_type": "e2-micro",
+    "provisioning_model": "STANDARD_NON_PREEMPTIBLE",
+    "allowed_regions": ["us-west1", "us-central1", "us-east1"],
+    "default_region": "us-central1",
+    "default_zone": "us-central1-a",
+    "boot_disk_type": "pd-standard",
+    "boot_disk_gb": 30,
+    "gpu": false,
+    "tpu": false,
+    "external_ipv4": false,
+    "external_ipv6": true,
+    "cloud_nat": false,
+    "load_balancer": false,
+    "managed_instance_group": false,
+    "free_tier_egress_budget_gb_per_month": 1,
+    "note": "The conservative KAI guard follows the Compute Engine Free Tier allowance rather than broader network-tier allowances."
+  },
+  "dns": {
+    "authoritative_provider": "cloudflare_free",
+    "google_cloud_dns_enabled": false,
+    "reason": "Cloud DNS has no free tier and is therefore prohibited by strict-free doctrine.",
+    "zone": "eggiebagelface.art",
+    "records": [
+      {
+        "type": "AAAA",
+        "name": "eggiebagelface.art",
+        "target": "<GCP_VM_EXTERNAL_IPV6>",
+        "proxied": true
+      },
+      {
+        "type": "AAAA",
+        "name": "fdroid.eggiebagelface.art",
+        "target": "<GCP_VM_EXTERNAL_IPV6>",
+        "proxied": true
+      },
+      {
+        "type": "CNAME",
+        "name": "www.eggiebagelface.art",
+        "target": "eggiebagelface.art",
+        "proxied": true
+      }
+    ]
+  },
+  "google_auth": {
+    "github_actions": "workload_identity_federation_oidc",
+    "long_lived_service_account_key_in_git": false,
+    "required_permissions": "compute resources scoped to the KAI project only"
+  },
+  "forbidden_in_strict_free_mode": [
+    "cloud_dns_managed_zone",
+    "external_ipv4_on_vm",
+    "static_external_ipv4",
+    "cloud_nat",
+    "load_balancer",
+    "gpu",
+    "tpu",
+    "disk_larger_than_30gb",
+    "non_pd_standard_boot_disk",
+    "machine_type_other_than_e2_micro",
+    "region_outside_compute_free_tier_regions"
+  ],
+  "billing_guard": {
+    "architecture_target_monthly_cost_usd": 0,
+    "hard_global_spend_cap_guaranteed": false,
+    "reason": "Free Tier limits and pricing can change; persistent Compute resources are not protected by current service spend-cap preview in the same way as API-based services.",
+    "required_actions": [
+      "enable_billing_notifications",
+      "review_monthly_cost_table",
+      "verify_free_tier_eligibility_before_provision",
+      "verify_no_external_ipv4_after_provision",
+      "verify_machine_disk_region_against_manifest",
+      "monitor_egress_below_1gb_per_month"
+    ]
+  },
+  "state": "WHITE_MAGIC_STRICT_FREE_STAGED"
+}
