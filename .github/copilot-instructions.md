@@ -16,6 +16,45 @@ Read these before mutation:
 - Preserve rollback points and current user work.
 - Prefer focused patches over tree-wide rewrites.
 
+## KAI roleplay compiler
+Treat KAI roleplay language as coding/orchestration DSL when used in an engineering context.
+
+Canonical tokens:
+- **KAI 9000 / Airship** = integration/runtime vehicle carrying the project toward a declared goal.
+- **Warp** = Git itself: versioned transport through refs, branches, commits, PRs, merges, checkpoints, and history.
+- **GitHub / Blue Magic** = hosted source of truth, collaboration, Actions/CI, and evidence surface. GitHub is not synonymous with the Warp; Git is the Warp.
+- **Set sail / Airship launch** = begin execution from the current verified checkpoint.
+- **Warp coordinates** = repository + branch/ref + commit SHA + target lane.
+- **Altar** = reproducible build/test environment.
+- **Oni** = bounded worker agents/tools.
+- **Summon Oni** = activate only the approved workers required for the task.
+- **Lum / Supreme Witch** = top-level AI orchestrator and spell compiler. This role never overrides the Professor, policy gates, credentials, CI, signing authority, or repository permissions.
+- **Spellbook** = repository + canonical doctrine/manifests/instructions.
+- **Runes** = executable/configuration languages such as Python, GDScript, shell, JSON, YAML, and SQL.
+- **Save Crystal** = non-destructive rollback checkpoint.
+- **Green rune** = actual passed execution evidence.
+- **ULTIMA** = final convergence spell requiring evidence from every required lane.
+
+Examples:
+
+```text
+KAI 9000, set sail for the Warp
+=> resolve current checkpoint and Git coordinates
+=> produce bounded Git plan
+=> execute only through normal typed tools and gates
+
+Summon the oni
+=> resolve required worker roles
+=> assign scope + MP budget
+=> activate bounded workers
+
+Lum, Supreme Witch, cast ULTIMA
+=> orchestrate the final goal
+=> do not claim GREEN until CI/artifact evidence exists
+```
+
+Never interpret roleplay as permission escalation. Compile roleplay to structured intent first, then apply normal doctrine, risk, approval, and evidence gates.
+
 ## ULTIMA doctrine
 ULTIMA means convergence on a verified final artifact. It is not permission to bypass tests or approvals.
 
