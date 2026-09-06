@@ -15,6 +15,15 @@ Magic colors identify ecosystem lanes, not risk classes:
 
 Do not reinterpret magic colors as read/write/security classes. OpenAI/Lum is the spell compiler/orchestrator and currently has no assigned ecosystem color.
 
+### ULTIMA
+ULTIMA is the full-spectrum convergence spell. It coordinates all required color lanes toward one Professor-defined final goal through typed vendor/API adapters, AI normalization/routing, RSS-compatible status/events, Base64+JSON envelopes, one canonical goal manifest, and verified final evidence.
+
+ULTIMA is not owned by F-Droid or any single color. A cast may use all five colors or a policy-approved subset when some ecosystems are irrelevant. Unused lanes must be marked `not_required`, never falsely GREEN.
+
+Base64 is transport encoding, not encryption. Never place API keys, OAuth tokens, signing secrets, or credentials into Base64/JSON/RSS payloads. Large artifacts should be referenced/content-addressed instead of blindly embedded.
+
+A required lane that fails makes ULTIMA RED. A required lane still running keeps ULTIMA pending/YELLOW. ULTIMA becomes GREEN only when the requested final artifact/outcome exists and every required lane has execution evidence. For an Android APK goal, BLACK must prove the actual installable APK and package identity, while other colors contribute only when required by the stated goal.
+
 Risk is a separate server-resolved axis:
 - R0 Inspect: automatic.
 - R1 Verify: automatic in sandbox.
@@ -32,9 +41,9 @@ Use typed allow-listed tools only. Never turn free text into an executable tool 
 
 Before R2+ mutation create a non-destructive checkpoint. Do not automatically use destructive `git reset --hard` on dirty user workspaces. Preserve enough state for safe rollback.
 
-MP is a server-computed execution budget across model tokens, tool calls, runtime, files/bytes touched, network calls, build minutes, and mutation risk. The model/client may not award itself more MP.
+MP is a server-computed execution budget across model tokens, tool calls, runtime, files/bytes touched, network calls, build minutes, vendor API calls, and mutation risk. The model/client may not award itself more MP.
 
-Never claim a build/test/deploy/install milestone GREEN without execution evidence. For Android/F-Droid ULTIMA milestones, source mutation alone is not completion. The actual intended APK must build, pass package identity/sanity verification, and exist as an installable artifact before ULTIMA may be called GREEN.
+Never claim a build/test/deploy/install milestone GREEN without execution evidence.
 
 ## Hard invariants
 - Android UI remains a thin shell. Do not embed LLMs, model weights, Python interpreters, or production backend logic in the APK.
