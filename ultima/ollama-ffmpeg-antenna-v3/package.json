@@ -1,14 +1,19 @@
 {
   "name": "kai9000-ultima-ollama-ffmpeg-antenna",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "private": true,
-  "description": "npm front door for local Ollama + FFmpeg antenna with GitHub remote and Drive backup",
+  "description": "jQuery cockpit with Python3/FastAPI KAI9000 magic coding and local media antenna",
   "scripts": {
-    "bootstrap": "python3 -m pip install -e .",
+    "bootstrap": "python3 -m pip install -e . && npm ci && npm run vendor:jquery",
+    "vendor:jquery": "mkdir -p static/vendor && cp node_modules/jquery/dist/jquery.min.js static/vendor/jquery.min.js",
     "doctor": "python3 doctor.py",
-    "start": "python3 main.py",
+    "start": "python3 magic_server.py",
+    "start:legacy": "python3 main.py",
     "antenna:status": "python3 -c \"from antenna import antenna_status; import json; print(json.dumps(antenna_status(), indent=2))\"",
     "remote:pull": "python3 remote_pull.py"
+  },
+  "dependencies": {
+    "jquery": "3.7.1"
   },
   "engines": {
     "node": ">=20",

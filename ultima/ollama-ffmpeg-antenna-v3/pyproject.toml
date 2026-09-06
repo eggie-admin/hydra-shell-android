@@ -1,7 +1,7 @@
 [project]
 name = "kai9000-ultima-ollama-ffmpeg-antenna"
-version = "3.0.0"
-description = "KAI 9000 local Ollama + FFmpeg antenna with GitHub remote and Google Drive recovery mirror"
+version = "3.1.0"
+description = "KAI 9000 jQuery cockpit with Python3/FastAPI magic coding, local Ollama, and FFmpeg antenna"
 requires-python = ">=3.10"
 dependencies = [
   "fastapi",
