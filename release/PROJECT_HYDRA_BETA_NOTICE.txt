@@ -1,0 +1,36 @@
+PROJECT HYDRA / LuHm OS / KAI 9000 BETA NOTICE
+Copyright © 2026 Eggie Bagelface
+Public identity: eggiebagelface.art
+
+THIS BUILD MAY CONTAIN MULTIPLE LICENSE CLASSES.
+
+1. GPL-COVERED SOFTWARE
+Material governed by the repository root GNU GPLv3 license remains GPLv3. Nothing in this notice reduces rights granted by the GPL.
+
+2. THIRD-PARTY MATERIAL
+Third-party code, libraries, models, fonts, media, SDKs, and other external works remain governed by their respective copyright holders and licenses.
+
+3. PROJECT HYDRA ORIGINAL MATERIAL
+Separately owned Project Hydra material may include original branding, artwork, character assets, media, authored documentation, release materials, proprietary beta extras, and future independently authored components.
+
+Material explicitly marked:
+
+PROJECT HYDRA NONCOMMERCIAL BETA
+
+may be used, modified, forked, and shared for noncommercial purposes subject to the Project Hydra Beta Licensing Doctrine and retention of copyright/license notices.
+
+Commercial exploitation of separately owned Project Hydra material marked PROJECT HYDRA NONCOMMERCIAL BETA requires separate written permission.
+
+Commercial use includes selling copies, charging for access, including the protected material as a material part of a paid product or subscription, or licensing the protected material for monetary compensation.
+
+This restriction does not apply to rights already granted for GPL-covered or third-party material under their applicable licenses.
+
+Branding and source-identifying material are not automatically licensed with source code and may not be used to imply official endorsement or sponsorship.
+
+See:
+COPYRIGHT.md
+docs/PROJECT_HYDRA_BETA_LICENSING.md
+LICENSE
+
+AI-assisted development note:
+Copyright claims are limited to copyrightable human-authored expression and protectable human selection, arrangement, modification, editing, and integration.
