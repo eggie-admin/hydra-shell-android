@@ -21,7 +21,7 @@
   },
   "operatorSurface": {
     "supervisor": "tools/hydra_widget_setup.py",
-    "shizukuSanity": "samsung-sm-x400/frontend/widget/shizuku/sm_x400_shizuku_sanity.py"
+    "shizukuSanity": "tools/sm_x400_shizuku_sanity.py"
   },
   "rules": {
     "loopbackOnly": true,
