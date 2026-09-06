@@ -1,0 +1,79 @@
+{
+  "schema": "kai9000.android-testing-ingest.v1",
+  "date": "2026-09-06",
+  "project": {
+    "os": "LuHm OS",
+    "working_title": "KAI 9000"
+  },
+  "repository": "eggie-admin/hydra-shell-android",
+  "branch": "testing/luhm-os-android",
+  "base_before_audit": "f4ef83e83355fa55fbec093719b7262bb39c45cc",
+  "consolidated_donor_commit": "70eafa7bcaa62786593922bdcc7e1706cba0bf04",
+  "device_contract": {
+    "manufacturer": "Samsung",
+    "model": "SM-X400",
+    "android": 16,
+    "abi": "arm64-v8a",
+    "secure_folder_role": "cockpit_client",
+    "daemon_owner": "ordinary_termux",
+    "root": false
+  },
+  "loopback": {
+    "axs": "127.0.0.1:8767",
+    "vnc": "127.0.0.1:5901",
+    "websocket": "127.0.0.1:6080",
+    "cockpit": "127.0.0.1:8787",
+    "ollama": "127.0.0.1:11434"
+  },
+  "donors": [
+    {"branch": "audit/full-mutation-2026-08-05", "mode": "selected_transplant"},
+    {"branch": "experiment/knox-termux-mutation-001", "mode": "manual_tool_only"},
+    {"branch": "hydra-ollama-local-001", "mode": "selected_transplant"},
+    {"branch": "kai9000-media-forge", "mode": "selected_transplant"},
+    {"branch": "kai9000-samsung-agent-rss-merge-010", "mode": "selected_transplant_after_divergence"},
+    {"branch": "video-forge-cathedral-npm-fdroid", "mode": "selected_transplant"}
+  ],
+  "external_references": {
+    "samsung_frontend": {
+      "repository": "eggie-admin/vue-headless-cms",
+      "branch": "samsung-sm-x400-build-candidate",
+      "commit": "86507ed7c72650ff508eb9a1a9e52842eb50e821"
+    },
+    "godot_ai_forge": {
+      "repository": "eggie-admin/amplify-godot-engine-template",
+      "branch": "testing/jrpg-dating-sim",
+      "commit": "c77465fb2884cbf33061b98a9fb08f4a03cccf20",
+      "mode": "reference_not_runtime_copy",
+      "features": ["godot_android_export", "lum_spell_doctrine", "jquery_bridge"]
+    }
+  },
+  "visual_reference": {
+    "manifest": "project/hydra/samsung/android/apk/lum-mona-outfit.reference.json",
+    "file_id": "1eWOk-VvYjwbheKwKLHe6waW54RJQPMnx",
+    "seal_manifest_file_id": "1UGms41h4DwfRIzrXHj2E-_INdb6-XcR9",
+    "sha256": "420c2c749a0ab19231a5850b33c4432c7705e0b91cc0764c4ee88bb60bc849da",
+    "bundle_mode": "reference_not_copy"
+  },
+  "quarantine": [
+    "backups/lum-dungeon-dev/v0.1.0/mirror/bundle.part*.b64",
+    "automatic_root",
+    "secure_folder_sui",
+    "arbitrary_model_shell",
+    "openai_api_keys_in_source_or_apk",
+    "proprietary_game_runtime_assets"
+  ],
+  "promotion_gate": {
+    "status": "testing_only",
+    "requires": [
+      "ci_guards_green",
+      "python_tests_green",
+      "android_apk_build_green",
+      "installable_apk_evidence",
+      "package_identity_evidence",
+      "loopback_binding_verified",
+      "secret_scan_green",
+      "proprietary_asset_scan_green",
+      "secure_folder_client_boundary_verified"
+    ]
+  }
+}
