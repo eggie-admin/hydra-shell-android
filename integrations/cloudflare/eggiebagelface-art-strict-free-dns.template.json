@@ -1,0 +1,46 @@
+{
+  "schema": "kai9000.cloudflare-strict-free-dns.v1",
+  "zone": "eggiebagelface.art",
+  "authoritative_provider": "cloudflare_free",
+  "google_cloud_dns": false,
+  "origin": {
+    "provider": "google_cloud_compute_engine",
+    "machine": "kai9000-free",
+    "address_family": "ipv6_only_public_origin",
+    "external_ipv4": false,
+    "external_ipv6": "<GCP_VM_EXTERNAL_IPV6>"
+  },
+  "records": [
+    {
+      "type": "AAAA",
+      "name": "eggiebagelface.art",
+      "content": "<GCP_VM_EXTERNAL_IPV6>",
+      "ttl": 1,
+      "proxied": true,
+      "purpose": "business/developer website"
+    },
+    {
+      "type": "AAAA",
+      "name": "fdroid.eggiebagelface.art",
+      "content": "<GCP_VM_EXTERNAL_IPV6>",
+      "ttl": 1,
+      "proxied": true,
+      "purpose": "KAI 9000 custom F-Droid repository"
+    },
+    {
+      "type": "CNAME",
+      "name": "www.eggiebagelface.art",
+      "content": "eggiebagelface.art",
+      "ttl": 1,
+      "proxied": true,
+      "purpose": "website alias"
+    }
+  ],
+  "security": {
+    "proxy_web_records": true,
+    "publish_origin_ipv4": false,
+    "cloudflare_api_token_in_git": false,
+    "dns_mutation_requires_scoped_token": true
+  },
+  "status": "TEMPLATE_REQUIRES_REAL_GCP_IPV6"
+}
