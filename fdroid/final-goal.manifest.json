@@ -1,5 +1,5 @@
 {
-  "schema": "kai9000.fdroid-final-form.v1",
+  "schema": "kai9000.fdroid-final-form.v2",
   "date": "2026-09-06",
   "project": {
     "os": "LuHm OS",
@@ -8,12 +8,33 @@
     "orchestrator": "Lum",
     "orchestrator_role": "SUPREME_WITCH"
   },
+  "business_identity": {
+    "canonical_domain": "eggiebagelface.art",
+    "website": "https://eggiebagelface.art/",
+    "role": "public_business_and_developer_identity",
+    "legal_note": "DNS/domain ownership is not itself a government business license. Platform legal verification remains provider-specific."
+  },
   "goal": "signed_importable_fdroid_repository",
   "repository_lane": "testing/luhm-os-android",
   "black_magic": {
     "ecosystem": "F-Droid",
     "mode": "custom_binary_repository",
+    "canonical_host": "fdroid.eggiebagelface.art",
+    "canonical_repo_url": "https://fdroid.eggiebagelface.art/fdroid/repo/",
     "public_path_convention": "/fdroid/repo/"
+  },
+  "google_play_identity": {
+    "website": "https://eggiebagelface.art/",
+    "website_role": "organization/developer website identity",
+    "organization_verification_is_separate": true,
+    "expected_provider_checks": [
+      "Google Payments profile",
+      "legal organization name and address",
+      "D-U-N-S for organization accounts where required",
+      "identity/organization documentation",
+      "verified contact details",
+      "website verification"
+    ]
   },
   "package": {
     "id": "art.eggiebagelface.videoforge.dev",
@@ -49,6 +70,7 @@
     "APK_GREEN",
     "FDROID_STAGED",
     "FDROID_SIGNED",
+    "DNS_READY",
     "FDROID_PUBLISHED",
     "FDROID_IMPORT_VERIFIED",
     "FINAL_FORM_GREEN"
@@ -62,6 +84,7 @@
     "persistent_fdroid_repo_signing_identity",
     "signed_fdroid_indexes",
     "repo_fingerprint_recorded",
+    "dns_fdroid_subdomain_resolves",
     "https_repo_endpoint",
     "fdroid_client_import_verified",
     "upgrade_path_verified"
@@ -73,5 +96,5 @@
     "keys_in_model_context": false,
     "base64_is_secret_storage": false
   },
-  "status": "APK_GREEN_AWAITING_FDROID_STAGE_AND_PERSISTENT_SIGNING"
+  "status": "APK_GREEN_AWAITING_FDROID_STAGE_PERSISTENT_SIGNING_AND_DNS_PUBLICATION"
 }
