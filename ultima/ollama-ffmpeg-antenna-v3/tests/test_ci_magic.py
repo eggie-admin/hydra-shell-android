@@ -39,7 +39,7 @@ class MagicPolicyTests(unittest.TestCase):
         with self.assertRaises(Exception):
             magic_chat._safe_path("../outside.py")
 
-    def test_write_checkpoint_and_rollback_round_trip(self):
+    def test_write_checkpoint_conflict_and_rollback_round_trip(self):
         old_code_root = magic_chat.CODE_ROOT
         old_checkpoint_root = magic_chat.CHECKPOINT_ROOT
         try:
@@ -65,6 +65,13 @@ class MagicPolicyTests(unittest.TestCase):
                 self.assertEqual(target.read_text(encoding="utf-8"), after)
                 self.assertNotEqual(result["after_sha256"], before_sha)
 
+                target.write_text("value = 3\n", encoding="utf-8")
+                with self.assertRaises(Exception):
+                    magic_chat.rollback_cast(
+                        "roundtrip-cast", magic_chat.RollbackRequest(approved=True)
+                    )
+
+                target.write_text(after, encoding="utf-8")
                 rolled = magic_chat.rollback_cast(
                     "roundtrip-cast", magic_chat.RollbackRequest(approved=True)
                 )
