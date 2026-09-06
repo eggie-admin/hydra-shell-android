@@ -1,23 +1,38 @@
 # Hydra Shell Android
 
-Project Hydra Android-side development repository.
+A Knox-aware Android shell, terminal interface, and runtime probe for Project Hydra.
 
-## Current KAI 9000 integration
+## Initial milestone
 
-The canonical KAI 9000/LumH OS integration lives under:
+HYDRA_SHELL_KNOX_PROBE_001
 
-- `lumh-os/kai9000/`
-- `ultima/ollama-ffmpeg-antenna-v3/`
+- Detect the Android user/profile ID
+- Display the private application data path
+- Test private file creation
+- Test executable/runtime capabilities
+- Capture stdout and stderr
+- Export a diagnostic report
 
-GitHub is the versioned source of truth; Google Drive is used as a sealed recovery/artifact mirror. The runtime remains local-first with Ollama and media services bound to loopback.
+## LumH OS : KAI 9000
 
-## Plugin Autopilot
+KAI 9000 is registered as a local-first AI/media subsystem under `lumh-os/kai9000/`.
 
-This repository also contains a skills-only ChatGPT/Codex Plugin at `.codex-plugin/plugin.json` and the Android widget workflow under `skills/android-widget-autopilot/`.
+Canonical implementation:
 
-## Safety boundaries
+`ultima/ollama-ffmpeg-antenna-v3/`
 
-- No secrets or model weights in source or APK assets.
-- No public Ollama exposure.
-- No GitHub remote-shell behavior.
-- Prefer feature branches and validation before merge.
+The integration uses a reference manifest rather than duplicating runtime code. Local Ollama, FFmpeg/ffprobe, and optional ComfyUI remain the live plane; GitHub is the versioned source of truth and Google Drive is the recovery/artifact mirror.
+
+See:
+
+- `lumh-os/kai9000/project.manifest.json`
+- `lumh-os/kai9000/README.md`
+- `ultima/ollama-ffmpeg-antenna-v3/README.md`
+
+## Status
+
+Early development. No bundled Linux distribution. KAI 9000 services are integrated as optional local-first subsystems and must degrade gracefully when unavailable.
+
+## License
+
+GNU General Public License v3.0
