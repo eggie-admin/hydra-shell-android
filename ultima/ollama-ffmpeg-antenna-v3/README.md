@@ -8,15 +8,15 @@ Canonical split:
 
 GitHub is not the AI runtime. Drive is not the execution plane. Local Ollama and FFmpeg stay the live services.
 
-## Remote branch
+## Canonical remote branch
 
-`feature/ultima-ollama-ffmpeg-antenna-v3`
+`main`
 
 ## Update rule
 
 ```bash
-git fetch --prune origin feature/ultima-ollama-ffmpeg-antenna-v3
-git pull --ff-only origin feature/ultima-ollama-ffmpeg-antenna-v3
+git fetch --prune origin main
+git pull --ff-only origin main
 ```
 
 Do not force-reset local work and do not commit secrets.
