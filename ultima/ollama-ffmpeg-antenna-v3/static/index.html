@@ -1,25 +1,81 @@
 <!doctype html>
-<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>KAI9000 Ultima Antenna</title>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KAI9000 Magic Cockpit</title>
 <style>
-body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;margin:20px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}.card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:14px}input,textarea,button{box-sizing:border-box;width:100%;margin:5px 0;padding:9px;background:#0d1117;color:#e6edf3;border:1px solid #30363d;border-radius:8px}button{cursor:pointer}img,video{width:100%;background:#000;border-radius:8px}pre{white-space:pre-wrap;overflow:auto;background:#0d1117;padding:10px;border-radius:8px}.small{font-size:.9rem;color:#9da7b3}
-</style></head><body>
-<h1>⚔ KAI9000 Ultima Ollama + FFmpeg Antenna V3</h1>
-<p class="small">Local Ollama → MP4 demux → 24fps PNG → APNG → optional ComfyUI regen → MP4 → seal → Drive</p>
+body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;margin:20px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}.card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:14px}input,textarea,select,button{box-sizing:border-box;width:100%;margin:5px 0;padding:9px;background:#0d1117;color:#e6edf3;border:1px solid #30363d;border-radius:8px}button{cursor:pointer}button:hover{border-color:#4dd0e1}img,video{width:100%;background:#000;border-radius:8px}pre{white-space:pre-wrap;overflow:auto;background:#0d1117;padding:10px;border-radius:8px;max-height:55vh}.small{font-size:.9rem;color:#9da7b3}.rune{color:#4dd0e1}.warn{color:#ffcf66}.status{padding:6px;border:1px solid #30363d;border-radius:8px;margin:6px 0}
+</style>
+</head>
+<body>
+<h1>🔷 KAI9000 Magic Cockpit</h1>
+<p class="small">jQuery cockpit → Python 3/FastAPI policy kernel → OpenAI coding planner + local KAI workers. Browser code never owns credentials, filesystem policy, approval, or rollback.</p>
+
 <div class="grid">
-<div class="card"><h2>Demux</h2><input id="src" placeholder="Absolute MP4 path on host"><input id="label" value="ultima-test"><button onclick="demux()">Demux MP4</button></div>
-<div class="card"><h2>Job</h2><input id="job" placeholder="Job ID"><button onclick="apngPreview(false)">Source APNG</button><button onclick="apngPreview(true)">AI APNG</button><button onclick="remux()">Remux AI MP4</button><button onclick="seal()">Seal artifacts</button><button onclick="backup()">Backup to Drive</button></div>
-<div class="card"><h2>Local Ollama</h2><textarea id="prompt" placeholder="Ask the local KAI antenna"></textarea><button onclick="ollama()">Ask Ollama</button><h2>ComfyUI batch</h2><input id="start" placeholder="Start frame, optional"><input id="end" placeholder="End frame, optional"><input id="step" value="1"><button onclick="regen()">Run ComfyUI regen</button></div>
+  <div class="card">
+    <h2>OpenAI Coding Chat</h2>
+    <textarea id="magicPrompt" rows="8" placeholder="Ask for a coding plan, inspection, patch strategy, or validation path"></textarea>
+    <button id="askOpenAI">Ask OpenAI</button>
+    <p class="small">If <code>OPENAI_API_KEY</code> is absent, Python returns deterministic mock guidance instead of leaking a key into the UI.</p>
+  </div>
+
+  <div class="card">
+    <h2>Spell Compiler</h2>
+    <div class="small">Code root: <span id="codeRoot" class="rune">loading…</span></div>
+    <select id="spellList"></select>
+    <textarea id="spellArgs" rows="7" placeholder='{"path":"ultima/ollama-ffmpeg-antenna-v3/main.py"}'></textarea>
+    <button id="prepareCast">Prepare Cast</button>
+    <input id="castId" placeholder="Cast / checkpoint ID" readonly>
+    <div id="approvalState" class="status warn">NOT PREPARED</div>
+    <button id="approveCast">Human Approve</button>
+    <button id="executeCast">Execute Cast</button>
+    <button id="rollbackCast">Rollback Checkpoint</button>
+    <p class="small">WRITE_FILE is checkpointed and SHA-guarded. ULTIMA remains disabled in-app.</p>
+  </div>
+
+  <div class="card">
+    <h2>Local Ollama</h2>
+    <textarea id="ollamaPrompt" rows="5" placeholder="Ask the local KAI antenna"></textarea>
+    <button id="askOllama">Ask Ollama</button>
+    <h2>ComfyUI Batch</h2>
+    <input id="start" placeholder="Start frame, optional">
+    <input id="end" placeholder="End frame, optional">
+    <input id="step" value="1">
+    <button id="regen">Run ComfyUI Regen</button>
+  </div>
 </div>
-<div class="grid"><div class="card"><h2>APNG</h2><img id="apngImage"></div><div class="card"><h2>MP4</h2><video id="mp4" controls></video></div></div>
-<div class="card"><h2>Response</h2><pre id="out">Ready.</pre></div>
+
+<div class="grid">
+  <div class="card">
+    <h2>Demux</h2>
+    <input id="src" placeholder="Absolute MP4 path on host">
+    <input id="label" value="ultima-test">
+    <button id="demux">Demux MP4</button>
+  </div>
+  <div class="card">
+    <h2>Media Job</h2>
+    <input id="job" placeholder="Job ID">
+    <button class="apng" data-ai="false">Source APNG</button>
+    <button class="apng" data-ai="true">AI APNG</button>
+    <button id="remux">Remux AI MP4</button>
+    <button id="seal">Seal Artifacts</button>
+    <button id="backup">Backup to Drive</button>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="card"><h2>APNG</h2><img id="apngImage" alt="APNG preview"></div>
+  <div class="card"><h2>MP4</h2><video id="mp4" controls></video></div>
+</div>
+<div class="card"><h2>Response / Cast Evidence</h2><pre id="out">Ready.</pre></div>
+
+<script src="/static/vendor/jquery.min.js"></script>
 <script>
-async function post(p,b){let r=await fetch(p,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});let j=await r.json();out.textContent=JSON.stringify(j,null,2);return j}
-async function demux(){let j=await post('/api/demux',{source_mp4:src.value,label:label.value});if(j.job_id)job.value=j.job_id}
-async function apngPreview(ai){let j=await post('/api/apng',{job_id:job.value,use_ai_frames:ai,fps:12,loop:0});if(j.download)apngImage.src=j.download+'?t='+Date.now()}
-async function remux(){let j=await post('/api/remux',{job_id:job.value,use_ai_frames:true,crf:18,preset:'medium'});if(j.download)mp4.src=j.download+'?t='+Date.now()}
-async function regen(){await post('/api/comfy/regen',{job_id:job.value,start_frame:start.value?Number(start.value):null,end_frame:end.value?Number(end.value):null,step:Number(step.value||1),timeout_s:900})}
-async function seal(){await post('/api/seal',{job_id:job.value,include_source_mp4:false})}
-async function backup(){await post('/api/backup',{job_id:job.value,include_source_mp4:false})}
-async function ollama(){await post('/api/antenna/ollama/chat',{message:prompt.value})}
-</script></body></html>
+if (!window.jQuery) {
+  document.write('<script src="https://code.jquery.com/jquery-3.7.1.min.js"><\\/script>');
+}
+</script>
+<script src="/static/app.jquery.js"></script>
+</body>
+</html>
