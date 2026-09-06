@@ -23,7 +23,7 @@ STATE_ROOT = Path(os.environ.get("KAI_MAGIC_STATE", str(RUNTIME_DIR / "data" / "
 CHECKPOINT_ROOT = STATE_ROOT / "checkpoints"
 CHECKPOINT_ROOT.mkdir(parents=True, exist_ok=True)
 OPENAI_API_URL = os.environ.get("OPENAI_API_URL", "https://api.openai.com/v1/responses")
-OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-5.6")
+OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-6-astra")
 
 ALLOWED_SUFFIXES = {
     ".py", ".js", ".html", ".css", ".json", ".toml", ".md", ".txt", ".yml", ".yaml", ".sh"
@@ -33,6 +33,8 @@ SECRET_PATTERNS = {
     "private_key": re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
     "openai_key": re.compile(r"\bsk-[A-Za-z0-9_-]{20,}\b"),
     "github_token": re.compile(r"\b(?:gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,})\b"),
+    "cloudflare_account_token": re.compile(r"\bcfat_[A-Za-z0-9_-]{20,}\b"),
+    "google_api_key": re.compile(r"\bAIza[0-9A-Za-z_-]{30,}\b"),
     "aws_access_key": re.compile(r"\bAKIA[0-9A-Z]{16}\b"),
 }
 
