@@ -1,0 +1,25 @@
+{
+  "schema": "kai9000.lum-mona-outfit-android-seal.v1",
+  "seal": "KAI9000_LUM_MONA_OUTFIT_ANDROID_GREEN_20260906",
+  "status": "GREEN",
+  "date": "2026-09-06",
+  "asset": {
+    "canonical_name": "KAI9000_LUM_MONA_OUTFIT_MUTATION_COLLECTION_20260906.png",
+    "sha256": "420c2c749a0ab19231a5850b33c4432c7705e0b91cc0764c4ee88bb60bc849da",
+    "role": "Lum wardrobe and Puppet2D/Godot cockpit visual reference"
+  },
+  "drive": {
+    "image_file_id": "1eWOk-VvYjwbheKwKLHe6waW54RJQPMnx",
+    "seal_manifest_file_id": "1UGms41h4DwfRIzrXHj2E-_INdb6-XcR9"
+  },
+  "android_repo": {
+    "repository": "eggie-admin/hydra-shell-android",
+    "canonical_lane": "project/hydra/samsung/android/apk",
+    "integration": "reference_not_copy"
+  },
+  "rights_firewall": {
+    "destiny_child_assets_bundled": false,
+    "destiny_child_reference_use": "design and motion taxonomy only",
+    "binary_art_in_repo": false
+  }
+}
