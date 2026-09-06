@@ -5,6 +5,13 @@ build/
 # Local configuration file (sdk path, etc)
 local.properties
 
+# Local environment / provider credentials
+.env
+.env.*
+!.env.example
+gha-creds-*.json
+.cloudflared/
+
 # Log/OS Files
 *.log
 
