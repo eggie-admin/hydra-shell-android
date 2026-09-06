@@ -7,6 +7,8 @@ import uvicorn
 from magic_chat import ROUTER
 from main import APP
 
+APP.title = "KAI9000 jQuery Python3 Magic Cockpit"
+APP.version = "3.1.0"
 APP.include_router(ROUTER)
 
 
