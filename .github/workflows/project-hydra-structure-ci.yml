@@ -3,16 +3,14 @@ name: Project Hydra Structure CI
 on:
   pull_request:
     paths:
-      - "lumh-os/projects/hydra/**"
-      - "lumh-os/README.md"
+      - "project/hydra/**"
       - "README.md"
       - "tools/project_hydra_structure_guard.py"
       - ".github/workflows/project-hydra-structure-ci.yml"
   push:
     branches: [main]
     paths:
-      - "lumh-os/projects/hydra/**"
-      - "lumh-os/README.md"
+      - "project/hydra/**"
       - "README.md"
       - "tools/project_hydra_structure_guard.py"
       - ".github/workflows/project-hydra-structure-ci.yml"
@@ -44,5 +42,5 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          find lumh-os/projects/hydra -name '*.json' -print0 | xargs -0 -n1 python -m json.tool >/dev/null
+          find project/hydra -name '*.json' -print0 | xargs -0 -n1 python -m json.tool >/dev/null
           echo "PROJECT HYDRA JSON GREEN"
