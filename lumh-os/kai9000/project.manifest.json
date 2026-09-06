@@ -26,6 +26,28 @@
     },
     "color_is_risk_rank": false
   },
+  "ultima": {
+    "mode": "full_spectrum_goal_convergence",
+    "meaning": "all required magic colors converge through vendor APIs, AI routing, RSS/events and Base64+JSON manifests toward one verified final goal",
+    "all_colors_capable": true,
+    "every_cast_requires_every_vendor": false,
+    "unused_lane_status": "not_required",
+    "pipeline": [
+      "vendor_api_adapters",
+      "ai_normalization_router",
+      "rss_event_feed",
+      "base64_json_envelope",
+      "goal_manifest",
+      "final_verified_outcome"
+    ],
+    "event_schema": "kai9000.ultima.event.v1",
+    "envelope_schema": "kai9000.ultima.envelope.v1",
+    "goal_schema": "kai9000.ultima.goal.v1",
+    "base64_is_encryption": false,
+    "secrets_in_base64_forbidden": true,
+    "required_lane_failure_blocks_green": true,
+    "required_lane_pending_blocks_green": true
+  },
   "doctrine": {
     "ai_logic": "lumh-os/kai9000/AI_MAGIC_DOCTRINE.md",
     "policy_authority": "server_side_registry",
@@ -36,7 +58,8 @@
     "approval_binds_to_exact_plan": true,
     "checkpoint_before_mutation": true,
     "execution_evidence_required_for_green": true,
-    "ultima_requires_installable_apk_for_android_milestone": true
+    "ultima_green_requires_verified_final_goal": true,
+    "android_goal_requires_installable_apk": true
   },
   "runtime": {
     "orchestrator": "python3",
