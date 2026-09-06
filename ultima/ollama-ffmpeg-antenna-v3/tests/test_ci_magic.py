@@ -19,8 +19,9 @@ class MagicPolicyTests(unittest.TestCase):
         self.assertFalse(magic_chat.SPELLS["SEARCH_TEXT"]["approval"])
 
     def test_secret_shaped_content_is_rejected(self):
+        fake_secret = "token=" + "sk-" + ("a" * 24)
         with self.assertRaises(Exception):
-            magic_chat._reject_secrets("token=sk-abcdefghijklmnopqrstuvwxyz123456")
+            magic_chat._reject_secrets(fake_secret)
 
     def test_openai_missing_key_is_deterministic_mock(self):
         with mock.patch.dict(os.environ, {}, clear=True):
