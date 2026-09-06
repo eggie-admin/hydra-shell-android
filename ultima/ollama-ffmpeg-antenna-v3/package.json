@@ -4,7 +4,7 @@
   "private": true,
   "description": "jQuery cockpit with Python3/FastAPI KAI9000 magic coding and local media antenna",
   "scripts": {
-    "bootstrap": "python3 -m pip install -e . && npm install && npm run vendor:jquery",
+    "bootstrap": "python3 -m pip install -e . && npm ci && npm run vendor:jquery",
     "vendor:jquery": "mkdir -p static/vendor && cp node_modules/jquery/dist/jquery.min.js static/vendor/jquery.min.js",
     "doctor": "python3 doctor.py",
     "start": "python3 magic_server.py",
