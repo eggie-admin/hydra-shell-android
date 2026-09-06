@@ -1,8 +1,13 @@
 {
-  "schema": "lumh-os.kai9000.project.v1",
+  "schema": "lumh-os.kai9000.project.v2",
   "name": "KAI 9000",
   "role": "local-first AI and media subsystem",
   "source_path": "ultima/ollama-ffmpeg-antenna-v3",
+  "identity": {
+    "business_domain": "eggiebagelface.art",
+    "fdroid_host": "fdroid.eggiebagelface.art",
+    "fdroid_repo_url": "https://fdroid.eggiebagelface.art/fdroid/repo/"
+  },
   "magic": {
     "blue": {
       "ecosystem": "GitHub",
@@ -14,7 +19,7 @@
     },
     "white": {
       "ecosystem": "Google",
-      "role": "Google services, approved APIs, Drive recovery/artifact mirror and explicitly authorized Google AI integrations"
+      "role": "Google Cloud services, approved APIs, Drive recovery/artifact mirror and explicitly authorized Google AI integrations"
     },
     "red": {
       "ecosystem": "Meta",
@@ -41,6 +46,7 @@
       "final_verified_outcome"
     ],
     "event_schema": "kai9000.ultima.event.v1",
+    "provider_event_schema": "kai9000.provider-event.v1",
     "envelope_schema": "kai9000.ultima.envelope.v1",
     "goal_schema": "kai9000.ultima.goal.v1",
     "base64_is_encryption": false,
@@ -50,6 +56,10 @@
   },
   "doctrine": {
     "ai_logic": "lumh-os/kai9000/AI_MAGIC_DOCTRINE.md",
+    "api_trinity": "docs/API_TRINITY_DOCTRINE.md",
+    "vendor_api_manifest": "integrations/vendor-apis.manifest.json",
+    "business_identity": "docs/EGGIEBAGELFACE_ART_IDENTITY.md",
+    "fdroid_final_form": "docs/FDROID_FINAL_FORM.md",
     "policy_authority": "server_side_registry",
     "risk_axis": "R0-R4_separate_from_magic_color",
     "model_may_self_authorize": false,
@@ -81,12 +91,42 @@
   "remote": {
     "github": {
       "repository": "eggie-admin/hydra-shell-android",
-      "branch": "main",
-      "role": "versioned_source_of_truth"
+      "branch": "testing/luhm-os-android",
+      "role": "versioned_source_of_truth_and_ci_evidence"
+    },
+    "openai": {
+      "role": "spell_compiler_coding_reasoning_and_typed_tool_requester",
+      "magic_color": null,
+      "api": "responses",
+      "endpoint": "https://api.openai.com/v1/responses",
+      "default_model": "gpt-6-astra",
+      "credential_env": "OPENAI_API_KEY",
+      "store_default": false,
+      "typed_tools_only": true,
+      "credentials_visible_to_model": false
+    },
+    "cloudflare": {
+      "role": "public_dns_https_and_tunnel_gate",
+      "zone": "eggiebagelface.art",
+      "fdroid_hostname": "fdroid.eggiebagelface.art",
+      "credential_strategy": "least_privilege_api_tokens",
+      "durable_ci_preference": "account_owned_api_token_when_supported",
+      "global_api_key_automation": false,
+      "credentials_visible_to_model": false
+    },
+    "google_cloud": {
+      "role": "white_magic_cloud_service_lane",
+      "github_auth": "workload_identity_federation_oidc",
+      "preferred_access": "direct_resource_access",
+      "service_account_impersonation": "only_when_required",
+      "long_lived_service_account_json_in_repo": false,
+      "least_privilege": true,
+      "credentials_visible_to_model": false
     },
     "google_drive": {
       "role": "sealed_recovery_and_artifact_mirror",
-      "secrets_allowed": false
+      "secrets_allowed": false,
+      "iam_equivalent_to_google_cloud": false
     },
     "hugging_face": {
       "role": "forge_and_model_catalog",
@@ -110,6 +150,8 @@
     "local_ai_boss": "Ollama",
     "openai_agent_role": "spell_compiler_coding_reasoning_and_typed_tool_requester",
     "openai_magic_color": "unassigned",
+    "cloudflare_role": "dns_https_tunnel_gate_not_policy_authority",
+    "google_cloud_role": "white_magic_provider_not_policy_authority",
     "policy_registry_role": "capability_risk_and_approval_authority"
   }
 }
