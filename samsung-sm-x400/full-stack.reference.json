@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "hydra.samsung.sm-x400.operator-reference",
+  "canonicalManifest": {
+    "repository": "eggie-admin/vue-headless-cms",
+    "branch": "samsung-sm-x400-build-candidate",
+    "path": "samsung-sm-x400/samsung-dev-stack.manifest.json"
+  },
+  "trust": {
+    "preferred": "stock-shizuku",
+    "secureFolderRootAllowed": false,
+    "secureFolderSuiAllowed": false,
+    "rootedLabSecureFolderTrusted": false
+  },
+  "controlPlane": {
+    "axs": "127.0.0.1:8767",
+    "vnc": "127.0.0.1:5901",
+    "websocket": "127.0.0.1:6080",
+    "cockpit": "127.0.0.1:8787",
+    "ollama": "127.0.0.1:11434"
+  },
+  "operatorSurface": {
+    "supervisor": "tools/hydra_widget_setup.py",
+    "shizukuSanity": "samsung-sm-x400/frontend/widget/shizuku/sm_x400_shizuku_sanity.py"
+  },
+  "rules": {
+    "loopbackOnly": true,
+    "automaticRoot": false,
+    "arbitraryModelShell": false,
+    "typedAllowlistedPrivilegedActions": true,
+    "optionalCapabilitiesDegradeGracefully": true
+  }
+}
