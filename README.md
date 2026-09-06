@@ -14,7 +14,8 @@ testing/luhm-os-android
         ├── Python/Ollama localhost plane
         ├── Samsung/Termux trust contract
         ├── Copilot agent instructions
-        └── Oni Summoning / ULTIMA debug APK forge
+        ├── Oni Summoning / ULTIMA debug APK forge
+        └── Black Magic / F-Droid repository lane
 ```
 
 This branch is testing-only. Nothing here is automatically promoted or released.
@@ -26,6 +27,23 @@ Project overview: `docs/LUHM_OS_KAI9000_OVERVIEW.md`
 Build altar: `docs/ULTIMA_BUILD_ALTAR.md`  
 Fast build guide: `docs/BUILD_FAST.md`
 
+## Final form
+
+The distribution goal is no longer merely an APK artifact. **Final form is a signed custom F-Droid repository that can be added/imported into an F-Droid client.**
+
+```text
+AIRSHIP KAI9000
+WARP GIT
+BLACK_MAGIC FDROID
+FINAL_FORM SIGNED_FDROID_REPOSITORY
+```
+
+Canonical final-form doctrine: `docs/FDROID_FINAL_FORM.md`  
+Machine-readable goal: `fdroid/final-goal.manifest.json`  
+Black Magic staging workflow: `.github/workflows/oni-black-magic-fdroid-stage.yml`
+
+The long-lived repository requires two protected persistent identities: an APK signing identity for Android update continuity and an F-Droid repository signing identity for index/fingerprint trust. Neither belongs in Git, APKs, logs, Base64 backups, or model context.
+
 ## Canonical doctrine
 
 - `lumh-os/kai9000/AI_MAGIC_DOCTRINE.md`
@@ -33,13 +51,14 @@ Fast build guide: `docs/BUILD_FAST.md`
 - `project/hydra/project.manifest.json`
 - `project/hydra/samsung/android/apk/app.reference.json`
 - `project/hydra/samsung/android/apk/testing-ingest.manifest.json`
+- `fdroid/final-goal.manifest.json`
 
 ## APK source and build
 This repository is the Android **orchestration altar**. The current APK body remains pinned in the public Samsung build candidate:
 
 `eggie-admin/vue-headless-cms@86507ed7c72650ff508eb9a1a9e52842eb50e821`
 
-That candidate contains the Vue cockpit, Godot 4 project, Godot Android v2 plugin, Samsung widget surface, Android export preset, and build sanity tools.
+That candidate contains the Vue cockpit, Godot 4 project, Godot Android v2 plugin, Samsung widget surface, Android export preset, private F-Droid metadata, and build sanity tools.
 
 Canonical compile workflow:
 
@@ -50,6 +69,8 @@ Testing output:
 `kai9000-luhm-os-testing-debug.apk`
 
 Android GREEN requires executed CI plus an installable APK, package identity, signature evidence, SHA-256, and 16 KiB alignment evidence.
+
+After a successful push-triggered APK run, the Black Magic workflow stages the verified APK and donor metadata into a private F-Droid repository input bundle.
 
 Release/debug template:
 `release/TESTING_APK_DEBUG_TEMPLATE.md`
@@ -69,7 +90,7 @@ The lightweight setup workflow prepares Python, Java, Node, Gradle, doctrine ref
 - **Ollama**: local inference at `127.0.0.1:11434`.
 - **Python 3**: orchestration, policy, tests, feeds, local backend.
 - **Godot 4**: Android cockpit/game/UI runtime.
-- **Edge Gallery**: Samsung-facing local media/gallery/widget surface.
+- **Edge Gallery**: Samsung-facing local media/gallery surface.
 
 More: `docs/AI_STACK.md`
 
