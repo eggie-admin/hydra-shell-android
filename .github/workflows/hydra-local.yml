@@ -1,0 +1,37 @@
+name: Hydra Local CI
+
+on:
+  pull_request:
+    paths:
+      - 'backend/**'
+      - 'tools/**'
+      - '.github/workflows/hydra-local.yml'
+  push:
+    branches: [main, hydra-ollama-local-001]
+    paths:
+      - 'backend/**'
+      - 'tools/**'
+      - '.github/workflows/hydra-local.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test dependencies
+        working-directory: backend
+        run: python -m pip install -r requirements-dev.txt
+      - name: Run tests
+        run: python -m pytest backend/tests -q
+      - name: Syntax check launchers
+        run: |
+          bash -n tools/hydra-ollama-up.sh
+          bash -n tools/hydra-full-green.sh

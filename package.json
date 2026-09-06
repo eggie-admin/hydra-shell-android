@@ -1,0 +1,19 @@
+{
+  "name": "@eggie-admin/video-forge-cathedral",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Build-time wizard for the Video Forge Cathedral Android/F-Droid shell.",
+  "scripts": {
+    "wizard": "python3 tools/cathedral.py wizard",
+    "doctor": "python3 tools/cathedral.py doctor",
+    "cms:install": "python3 tools/cathedral.py cms-install",
+    "cms:build": "python3 tools/cathedral.py cms-build",
+    "fdroid:check": "python3 tools/cathedral.py fdroid-check",
+    "build": "python3 tools/cathedral.py build"
+  },
+  "engines": {
+    "node": ">=20",
+    "npm": ">=10",
+    "python": ">=3.11"
+  }
+}

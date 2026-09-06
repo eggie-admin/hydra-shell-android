@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Hydra Local</title>
+  <style>
+    :root{color-scheme:dark;--bg:#050908;--panel:#0a1210;--ink:#d9fff4;--mint:#62f6c5;--dim:#7da99a;--bad:#ff7b9b;--warn:#f6d36a}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#0d211b 0,#050908 44%);color:var(--ink);font-family:system-ui,-apple-system,sans-serif;min-height:100vh}
+    main{max-width:760px;margin:auto;padding:18px 14px 126px}.top{display:flex;align-items:center;gap:12px;margin-bottom:12px}.orb{width:52px;height:52px;border:2px solid var(--mint);border-radius:50%;box-shadow:0 0 30px rgba(98,246,197,.35);display:grid;place-items:center;font-size:24px}.title{font-weight:900;font-size:1.2rem}.sub{font-size:.86rem;color:var(--dim)}
+    #status{padding:10px 12px;border:1px solid #1e4a3d;border-radius:14px;color:var(--dim);margin:10px 0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0 14px}.svc{background:#08130f;border:1px solid #17382e;border-radius:12px;padding:10px}.svc b{display:block;font-size:.8rem}.svc span{font-size:.74rem;color:var(--dim)}.ok{border-color:#24664f}.off{border-color:#6b2436}.warn{border-color:#645421}
+    .modes{display:flex;gap:8px;margin:10px 0 14px}.mode{flex:1;padding:10px 12px;border-radius:12px;background:#0b1512;border:1px solid #214c3f;color:var(--dim);font-weight:800}.mode.active{color:var(--mint);border-color:#2c6d59;background:#0f2b22}
+    .chat{display:flex;flex-direction:column;gap:10px}.msg{padding:12px 14px;border-radius:16px;white-space:pre-wrap;line-height:1.38}.user{background:#10201b;align-self:flex-end;max-width:88%}.ai{background:#081713;border:1px solid #18382f;align-self:flex-start;max-width:94%}.err{border-color:#6b2436;color:#ffd7e2}
+    .dock{position:fixed;left:0;right:0;bottom:0;background:rgba(5,9,8,.96);backdrop-filter:blur(14px);border-top:1px solid #18382f;padding:10px env(safe-area-inset-right) calc(10px + env(safe-area-inset-bottom)) env(safe-area-inset-left)}.dockin{max-width:760px;margin:auto;display:grid;grid-template-columns:1fr auto auto auto;gap:8px}textarea{resize:none;min-height:58px;max-height:160px;background:#0b1512;color:var(--ink);border:1px solid #214c3f;border-radius:14px;padding:12px;font:inherit}button{border:1px solid #2c6d59;background:#0f2b22;color:var(--mint);border-radius:14px;padding:0 14px;font-weight:900}button:disabled{opacity:.45}.icon{min-width:52px;font-size:1.05rem}.tiny{font-size:.78rem;color:var(--dim);margin-top:8px}.foot{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.chip{font-size:.72rem;padding:5px 8px;border:1px solid #18382f;border-radius:999px;color:var(--dim)}
+    @media(min-width:520px){.grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
+  </style>
+</head>
+<body>
+<main>
+  <div class="top"><div class="orb">⚡</div><div><div class="title">Lum / Professor Green</div><div class="sub">Project Hydra · Android localhost cockpit</div></div></div>
+  <div id="status">checking localhost…</div>
+  <div id="services" class="grid"></div>
+  <div class="modes"><button id="fast" class="mode active">FAST / CHAT</button><button id="deep" class="mode">DEEP / BUILD</button></div>
+  <section id="chat" class="chat"></section>
+  <div class="foot"><span class="chip">Hydra 8787</span><span class="chip">AXS 8767</span><span class="chip">VNC 5901</span><span class="chip">Ollama 11434</span></div>
+  <div class="tiny">Local-first. AcodeX talks to AXS on 8767. Hydra talks to Ollama on 11434. No cloud key required.</div>
+</main>
+<div class="dock"><div class="dockin">
+  <textarea id="input" placeholder="Talk to Lum…"></textarea>
+  <button id="mic" class="icon" title="Dictate">🎙️</button>
+  <button id="speak" class="icon" title="Toggle voice">🔊</button>
+  <button id="send">SEND</button>
+</div></div>
+<script>
+const chat=document.querySelector('#chat');const input=document.querySelector('#input');const send=document.querySelector('#send');const status=document.querySelector('#status');const speakBtn=document.querySelector('#speak');const micBtn=document.querySelector('#mic');const services=document.querySelector('#services');const fastBtn=document.querySelector('#fast');const deepBtn=document.querySelector('#deep');let speak=true;let mode='fast';
+function add(text,kind='ai'){const el=document.createElement('div');el.className='msg '+kind;el.textContent=text;chat.appendChild(el);window.scrollTo(0,document.body.scrollHeight);return el}
+function svc(name,obj,detail=''){const d=document.createElement('div');d.className='svc '+(obj&&obj.online?'ok':'off');const b=document.createElement('b');b.textContent=(obj&&obj.online?'● ':'○ ')+name;const s=document.createElement('span');s.textContent=detail||((obj&&obj.port)?`127.0.0.1:${obj.port}`:'optional');d.append(b,s);return d}
+async function health(){try{const [hr,sr]=await Promise.all([fetch('/health'),fetch('/v1/system/status')]);const h=await hr.json();const s=await sr.json();status.textContent=`${h.ollama?'GREEN':'OLLAMA OFF'} · ${mode==='fast'?h.fast_model:h.deep_model} · TTS ${h.tts?'READY':'OPTIONAL'}`;status.style.color=h.ollama?'var(--mint)':'var(--bad)';services.replaceChildren();services.append(svc('HYDRA',s.services.hydra,'8787'),svc('AXS / ACODE',s.services.axs,'8767'),svc('VNC',s.services.vnc,'5901 / :1'),svc('OLLAMA',s.services.ollama,'11434'),svc('TTS',s.services.tts,h.tts?'termux-api':'optional'))}catch(e){status.textContent='localhost backend unavailable';status.style.color='var(--bad)'}}
+function setMode(next){mode=next;fastBtn.classList.toggle('active',mode==='fast');deepBtn.classList.toggle('active',mode==='deep');health()}
+async function submit(){const text=input.value.trim();if(!text)return;add(text,'user');input.value='';send.disabled=true;const placeholder=add(mode==='fast'?'thinking fast…':'waking the bigger brain…','ai');try{const r=await fetch('/v1/hydra/turn',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({conversation_id:'android-local',message:text,speak,mode})});const j=await r.json();if(!r.ok)throw new Error(j.hint||j.error||`HTTP ${r.status}`);placeholder.textContent=j.text||'(empty response)';placeholder.dataset.model=j.model||''}catch(e){placeholder.textContent='⚠ '+e.message;placeholder.classList.add('err')}finally{send.disabled=false;health()}}
+function setupDictation(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){micBtn.onclick=()=>add('System speech recognition is not available in this browser. Type normally or use Android keyboard dictation.','ai');return}const r=new SR();r.lang='en-US';r.interimResults=true;r.continuous=false;r.onstart=()=>{micBtn.textContent='🟢';status.textContent='LISTENING…'};r.onresult=e=>{let text='';for(let i=e.resultIndex;i<e.results.length;i++)text+=e.results[i][0].transcript;input.value=text};r.onerror=e=>add('Dictation: '+e.error,'ai err');r.onend=()=>{micBtn.textContent='🎙️';health()};micBtn.onclick=()=>r.start()}
+send.onclick=submit;speakBtn.onclick=()=>{speak=!speak;speakBtn.textContent=speak?'🔊':'🔇'};fastBtn.onclick=()=>setMode('fast');deepBtn.onclick=()=>setMode('deep');input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();submit()}});setupDictation();health();setInterval(health,15000);
+</script>
+</body>
+</html>
