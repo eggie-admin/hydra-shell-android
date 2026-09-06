@@ -1,0 +1,39 @@
+{
+  "schema": "kai9000.lum.voice.reference.v1",
+  "seal": "KAI9000_LUM_VOICE_REFERENCE_GREEN_20260906",
+  "source_project": "KAI9000_JRPG_DATING_CATHEDRAL_GREEN_20260906",
+  "drive_reference": {
+    "file_id": "1gGT_fjA0JK999wTXiG0VjNeewkpukA4f",
+    "file_name": "KAI9000_DC_c176_ESHU_voice_reference_bundle.zip",
+    "sha256": "bd2bbe66323b2e877225d85328531eaa11e779000e8488be54462537b596aba0",
+    "bytes": 1156949
+  },
+  "reference_scope": {
+    "allowed": [
+      "cadence analysis",
+      "phrase-length analysis",
+      "battle-versus-dialogue intensity mapping",
+      "reaction timing",
+      "emotion taxonomy",
+      "original Lum performance direction"
+    ],
+    "blocked": [
+      "voice cloning",
+      "performer impersonation",
+      "redistribution of proprietary source recordings",
+      "shipping Destiny Child audio inside public APK or repository"
+    ]
+  },
+  "lum_voice_target": {
+    "identity": "original fictional Lum voice",
+    "style": ["dry", "confident", "gothic", "playful", "clear technical diction"],
+    "runtime": "OpenAI-compatible voice layer or local TTS adapter",
+    "fallback": "text-only dialogue"
+  },
+  "android": {
+    "device_target": "Samsung S24 FE / Android 16 / aarch64",
+    "control_plane": "ordinary Termux",
+    "secure_folder": "client-only",
+    "audio_reference_bundled": false
+  }
+}
