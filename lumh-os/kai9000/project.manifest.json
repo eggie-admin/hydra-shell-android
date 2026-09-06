@@ -3,6 +3,22 @@
   "name": "KAI 9000",
   "role": "local-first AI and media subsystem",
   "source_path": "ultima/ollama-ffmpeg-antenna-v3",
+  "alignment": {
+    "primary": "blue-black",
+    "blue": "inspect_understand_retrieve_explain_verify",
+    "black": "bounded_local_mutation_through_typed_tools",
+    "irreversible_authority": "Professor"
+  },
+  "doctrine": {
+    "ai_logic": "lumh-os/kai9000/AI_DOCTRINE_BLUE_BLACK.md",
+    "policy_authority": "server_side_registry",
+    "model_may_self_authorize": false,
+    "arbitrary_model_code_execution": false,
+    "r4_human_confirmation_required": true,
+    "approval_binds_to_exact_plan": true,
+    "checkpoint_before_mutation": true,
+    "execution_evidence_required_for_green": true
+  },
   "runtime": {
     "orchestrator": "python3",
     "command_front_door": "npm",
@@ -41,6 +57,8 @@
   },
   "authority": {
     "final": "Professor",
-    "local_ai_boss": "Ollama"
+    "local_ai_boss": "Ollama",
+    "openai_agent_role": "coding_reasoning_and_typed_tool_requester",
+    "policy_registry_role": "capability_and_risk_authority"
   }
 }
