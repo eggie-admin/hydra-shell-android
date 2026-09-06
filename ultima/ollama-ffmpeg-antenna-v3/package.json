@@ -1,0 +1,14 @@
+{
+  "name": "kai9000-ultima-ollama-ffmpeg-antenna",
+  "version": "3.0.0",
+  "private": true,
+  "description": "npm front door for local Ollama + FFmpeg antenna with GitHub remote",
+  "scripts": {
+    "antenna:status": "python3 -c \"from antenna import antenna_status; import json; print(json.dumps(antenna_status(), indent=2))\"",
+    "remote:pull": "python3 remote_pull.py"
+  },
+  "engines": {
+    "node": ">=20",
+    "npm": ">=10"
+  }
+}
