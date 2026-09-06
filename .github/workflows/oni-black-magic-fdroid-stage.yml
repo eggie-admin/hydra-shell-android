@@ -1,0 +1,117 @@
+name: Oni Black Magic - F-Droid Stage
+
+on:
+  workflow_run:
+    workflows:
+      - Oni Summoning - Ultima Debug APK
+    types:
+      - completed
+    branches:
+      - testing/luhm-os-android
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: fdroid-stage-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: true
+
+jobs:
+  fdroid-stage:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout Airship coordinates
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Checkout pinned Samsung donor
+        uses: actions/checkout@v4
+        with:
+          repository: eggie-admin/vue-headless-cms
+          ref: 86507ed7c72650ff508eb9a1a9e52842eb50e821
+          path: _forge/vue-headless-cms
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+
+      - name: Download verified APK evidence from ULTIMA run
+        uses: actions/download-artifact@v4
+        with:
+          name: kai9000-luhm-os-testing-debug-${{ github.event.workflow_run.run_number }}
+          path: build/apk-evidence
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Stage private F-Droid binary repository input
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          APK="$(find "$GITHUB_WORKSPACE/build/apk-evidence" -type f -name '*.apk' -print -quit)"
+          test -n "$APK"
+          test -s "$APK"
+
+          PACKAGE_ID="$(python -c 'import json; print(json.load(open("_forge/vue-headless-cms/release/version.json"))["packageId"])')"
+          VERSION_CODE="$(python -c 'import json; print(json.load(open("_forge/vue-headless-cms/release/version.json"))["versionCode"])')"
+          VERSION_NAME="$(python -c 'import json; print(json.load(open("_forge/vue-headless-cms/release/version.json"))["version"])')"
+
+          cd _forge/vue-headless-cms
+          python scripts/stage_fdroid_repo.py \
+            --apk "$APK" \
+            --output "$GITHUB_WORKSPACE/build/fdroid-stage" \
+            --package "$PACKAGE_ID" \
+            --version-code "$VERSION_CODE"
+          cd "$GITHUB_WORKSPACE"
+
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+
+          root = Path('build/fdroid-stage')
+          manifest = {
+              'schema': 'kai9000.fdroid-stage.v1',
+              'source_workflow_run': int(os.environ['SOURCE_RUN_ID']),
+              'source_commit': os.environ['SOURCE_COMMIT'],
+              'package_id': os.environ['PACKAGE_ID'],
+              'version': os.environ['VERSION_NAME'],
+              'version_code': int(os.environ['VERSION_CODE']),
+              'signed_repo': False,
+              'importable_repo': False,
+              'next_gate': 'persistent APK signing identity + persistent F-Droid repo signing identity + fdroid update + HTTPS publication',
+          }
+          (root / 'FINAL_FORM_STATUS.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
+          PY
+        env:
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+          SOURCE_COMMIT: ${{ github.event.workflow_run.head_sha }}
+          PACKAGE_ID: art.eggiebagelface.videoforge.dev
+          VERSION_NAME: 0.6.0-dev
+          VERSION_CODE: '6'
+
+      - name: Verify F-Droid staging bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s build/fdroid-stage/repo/art.eggiebagelface.videoforge.dev_6.apk
+          test -s build/fdroid-stage/metadata/art.eggiebagelface.videoforge.dev.yml
+          test -s build/fdroid-stage/SHA256SUMS
+          test -s build/fdroid-stage/FINAL_FORM_STATUS.json
+          grep -q 'This is not a signed F-Droid repository yet' build/fdroid-stage/README.txt
+          echo 'FDROID_STAGED'
+
+      - name: Upload Black Magic staging bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: kai9000-fdroid-stage-${{ github.event.workflow_run.run_number }}
+          path: build/fdroid-stage/**
+          if-no-files-found: error
+          retention-days: 14
