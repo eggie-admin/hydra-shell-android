@@ -1,0 +1,42 @@
+{
+  "schema": "kai9000.huggingface-doctrine.v1",
+  "role": "forge_and_model_catalog",
+  "runtime_authority": false,
+  "secret_store": false,
+  "auto_download": false,
+  "auto_execute_remote_code": false,
+  "trust_remote_code_default": false,
+  "download": {
+    "explicit_operator_action_required": true,
+    "revision_pin_required": true,
+    "license_record_required": true,
+    "prefer_filtered_files": true,
+    "dry_run_preferred": true,
+    "cache_is_canonical_backup": false
+  },
+  "auth": {
+    "tokens_in_git": false,
+    "tokens_in_drive_manifest": false,
+    "tokens_in_prompts_or_logs": false,
+    "runtime_env_allowed": true,
+    "preferred_env_name": "HF_TOKEN"
+  },
+  "promotion": {
+    "separate_explicit_action": true,
+    "record_repo_id": true,
+    "record_revision": true,
+    "record_format": true,
+    "record_license": true,
+    "record_size": true,
+    "record_runtime_target": true,
+    "record_validation": true,
+    "operator_approval": true
+  },
+  "local_runtime_preference": {
+    "primary": "Ollama",
+    "optional": ["ComfyUI", "Transformers", "llama.cpp"]
+  },
+  "offline": {
+    "existing_local_models_continue_working": true
+  }
+}

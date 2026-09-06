@@ -8,6 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PROJECT = ROOT / "lumh-os" / "kai9000" / "project.manifest.json"
+HF_DOCTRINE = ROOT / "lumh-os" / "kai9000" / "huggingface.doctrine.json"
 RUNTIME = ROOT / "ultima" / "ollama-ffmpeg-antenna-v3"
 RUNTIME_MANIFEST = RUNTIME / "KAI9000_ULTIMA_OLLAMA_FFMPEG_ANTENNA_V3.manifest.json"
 MAIN_PY = RUNTIME / "main.py"
@@ -33,6 +34,7 @@ def assert_equal(actual, expected, label: str) -> None:
 def architecture_checks() -> None:
     project = load_json(PROJECT)
     runtime = load_json(RUNTIME_MANIFEST)
+    hf = load_json(HF_DOCTRINE)
 
     assert_equal(project.get("source_path"), "ultima/ollama-ffmpeg-antenna-v3", "source_path")
     assert_equal(project.get("ingestion", {}).get("strategy"), "reference_not_copy", "ingestion strategy")
@@ -42,6 +44,28 @@ def architecture_checks() -> None:
     assert_equal(project.get("runtime", {}).get("antenna"), "http://127.0.0.1:8797", "antenna endpoint")
     assert_equal(project.get("remote", {}).get("github", {}).get("branch"), "main", "GitHub canonical branch")
     assert_equal(project.get("remote", {}).get("google_drive", {}).get("secrets_allowed"), False, "Drive secret policy")
+
+    project_hf = project.get("remote", {}).get("hugging_face", {})
+    assert_equal(project_hf.get("role"), "forge_and_model_catalog", "Hugging Face role")
+    assert_equal(project_hf.get("runtime_authority"), False, "Hugging Face runtime authority")
+    assert_equal(project_hf.get("secret_store"), False, "Hugging Face secret-store policy")
+    assert_equal(project_hf.get("auto_download"), False, "Hugging Face auto-download policy")
+    assert_equal(project_hf.get("auto_execute_remote_code"), False, "Hugging Face remote-code execution policy")
+    assert_equal(project_hf.get("revision_pin_required"), True, "Hugging Face revision pin policy")
+    assert_equal(project_hf.get("doctrine"), "lumh-os/kai9000/huggingface.doctrine.json", "Hugging Face doctrine path")
+
+    assert_equal(hf.get("role"), "forge_and_model_catalog", "HF doctrine role")
+    assert_equal(hf.get("runtime_authority"), False, "HF doctrine runtime authority")
+    assert_equal(hf.get("auto_download"), False, "HF doctrine auto-download")
+    assert_equal(hf.get("auto_execute_remote_code"), False, "HF doctrine auto-execute")
+    assert_equal(hf.get("trust_remote_code_default"), False, "HF trust_remote_code default")
+    assert_equal(hf.get("download", {}).get("explicit_operator_action_required"), True, "HF explicit download approval")
+    assert_equal(hf.get("download", {}).get("revision_pin_required"), True, "HF pinned revision")
+    assert_equal(hf.get("download", {}).get("license_record_required"), True, "HF license record")
+    assert_equal(hf.get("auth", {}).get("tokens_in_git"), False, "HF token Git policy")
+    assert_equal(hf.get("auth", {}).get("tokens_in_drive_manifest"), False, "HF token Drive policy")
+    assert_equal(hf.get("promotion", {}).get("operator_approval"), True, "HF model promotion approval")
+    assert_equal(hf.get("offline", {}).get("existing_local_models_continue_working"), True, "HF offline doctrine")
 
     assert_equal(runtime.get("planes", {}).get("github_remote", {}).get("branch"), "main", "runtime GitHub branch")
     assert_equal(runtime.get("planes", {}).get("github_remote", {}).get("runtime_ai"), False, "GitHub runtime AI policy")
@@ -61,6 +85,7 @@ def secret_scan() -> None:
     patterns = {
         "private key": re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
         "OpenAI-style key": re.compile(r"\bsk-[A-Za-z0-9_-]{20,}\b"),
+        "Hugging Face token": re.compile(r"\bhf_[A-Za-z0-9]{20,}\b"),
         "GitHub classic token": re.compile(r"\bgh[pousr]_[A-Za-z0-9]{20,}\b"),
         "GitHub fine-grained token": re.compile(r"\bgithub_pat_[A-Za-z0-9_]{20,}\b"),
         "AWS access key": re.compile(r"\bAKIA[0-9A-Z]{16}\b"),
