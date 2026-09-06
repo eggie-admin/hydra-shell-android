@@ -1,0 +1,114 @@
+name: ULTIMA Final Form Gate
+
+on:
+  push:
+    branches:
+      - testing/luhm-os-android
+    paths:
+      - '.github/workflows/ultima-final-form.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  id-token: write
+
+concurrency:
+  group: ultima-final-form-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_RUN_ID: '34042299709'
+  SOURCE_APK_ARTIFACT: kai9000-luhm-os-testing-debug-30
+  SOURCE_FDROID_STAGE_ARTIFACT: kai9000-fdroid-stage-30
+  PACKAGE_ID: art.eggiebagelface.videoforge.dev
+  FDROID_REPO_URL: https://fdroid.eggiebagelface.art/fdroid/repo/
+
+jobs:
+  final-form-preflight:
+    name: Final-form cryptographic and infrastructure preflight
+    runs-on: ubuntu-24.04
+    environment: testing
+    env:
+      KAI_APK_KEYSTORE_B64: ${{ secrets.KAI_APK_KEYSTORE_B64 }}
+      KAI_APK_KEYSTORE_PASS: ${{ secrets.KAI_APK_KEYSTORE_PASS }}
+      KAI_APK_KEY_ALIAS: ${{ secrets.KAI_APK_KEY_ALIAS }}
+      KAI_APK_KEY_PASS: ${{ secrets.KAI_APK_KEY_PASS }}
+      KAI_APK_SIGNER_SHA256: ${{ secrets.KAI_APK_SIGNER_SHA256 }}
+      FDROID_KEYSTORE_B64: ${{ secrets.FDROID_KEYSTORE_B64 }}
+      FDROID_KEYSTORE_PASS: ${{ secrets.FDROID_KEYSTORE_PASS }}
+      FDROID_KEY_PASS: ${{ secrets.FDROID_KEY_PASS }}
+      CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+      CF_ACCOUNT_ID: ${{ vars.CF_ACCOUNT_ID }}
+      GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+      GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cast FINAL_FORM credential gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          missing=0
+          require() {
+            local name="$1"
+            local value="${!name:-}"
+            if [ -z "$value" ]; then
+              echo "::error::MISSING_REQUIRED_IDENTITY=$name"
+              missing=1
+            else
+              echo "PRESENT=$name"
+            fi
+          }
+
+          require KAI_APK_KEYSTORE_B64
+          require KAI_APK_KEYSTORE_PASS
+          require KAI_APK_KEY_ALIAS
+          require KAI_APK_KEY_PASS
+          require KAI_APK_SIGNER_SHA256
+          require FDROID_KEYSTORE_B64
+          require FDROID_KEYSTORE_PASS
+          require FDROID_KEY_PASS
+          require CF_API_TOKEN
+          require CF_ACCOUNT_ID
+          require GCP_PROJECT_ID
+          require GCP_WORKLOAD_IDENTITY_PROVIDER
+
+          if [ "$missing" -ne 0 ]; then
+            echo 'FINAL_FORM_BLOCKED_AT_IDENTITY_GATE'
+            exit 1
+          fi
+          echo 'FINAL_FORM_IDENTITY_GATE_GREEN'
+
+      - name: Verify immutable ULTIMA source evidence
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python -m json.tool fdroid/final-goal.manifest.json >/dev/null
+          grep -q '"workflow_run_id": 34042299709' fdroid/final-goal.manifest.json
+          grep -q '"fdroid_staged": true' fdroid/final-goal.manifest.json
+          grep -q 'ULTIMA_TESTING_GREEN_FDROID_STAGED' fdroid/final-goal.manifest.json
+          echo 'SOURCE_EVIDENCE_GREEN'
+
+      - name: Confirm final-form tools are armed
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s fdroid/trusted-signing-host.sh
+          grep -q 'APK_PERSISTENT_SIGNER_VERIFIED' fdroid/trusted-signing-host.sh
+          grep -q 'FDROID_SIGNED' fdroid/trusted-signing-host.sh
+          test -s integrations/google-cloud/strict-free-vm.manifest.json
+          test -s integrations/cloudflare/security.manifest.json
+          echo 'FINAL_FORM_TOOLCHAIN_ARMED'
+
+  final-form-ready:
+    name: FINAL FORM ready to sign and publish
+    needs: final-form-preflight
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require every external identity before production mutation
+        run: |
+          echo 'FINAL_FORM_EXTERNAL_IDENTITIES_GREEN'
+          echo 'Next executable stage: persistent APK signing + F-Droid repo signing + Google origin publish + Cloudflare DNS/TLS + client import/upgrade proof.'
