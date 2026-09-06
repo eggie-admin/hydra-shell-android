@@ -56,9 +56,16 @@ jobs:
           python -m compileall -q ultima/ollama-ffmpeg-antenna-v3
           python -m py_compile tools/kai9000_ci_guard.py
 
+      - name: Locked jQuery vendor gate
+        working-directory: ultima/ollama-ffmpeg-antenna-v3
+        run: |
+          npm ci
+          npm run vendor:jquery
+          test -s static/vendor/jquery.min.js
+
       - name: npm metadata gate
         working-directory: ultima/ollama-ffmpeg-antenna-v3
-        run: npm pkg get name version scripts
+        run: npm pkg get name version scripts dependencies
 
       - name: Runtime doctor
         working-directory: ultima/ollama-ffmpeg-antenna-v3
