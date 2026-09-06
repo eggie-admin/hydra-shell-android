@@ -1,5 +1,5 @@
 {
-  "schema": "lumh-os.kai9000.project.v2",
+  "schema": "lumh-os.kai9000.project.v3",
   "name": "KAI 9000",
   "role": "local-first AI and media subsystem",
   "source_path": "ultima/ollama-ffmpeg-antenna-v3",
@@ -56,7 +56,8 @@
   },
   "doctrine": {
     "ai_logic": "lumh-os/kai9000/AI_MAGIC_DOCTRINE.md",
-    "api_trinity": "docs/API_TRINITY_DOCTRINE.md",
+    "api_constellation": "docs/API_TRINITY_DOCTRINE.md",
+    "huggingface_api": "docs/HUGGINGFACE_API_REROLL.md",
     "vendor_api_manifest": "integrations/vendor-apis.manifest.json",
     "business_identity": "docs/EGGIEBAGELFACE_ART_IDENTITY.md",
     "fdroid_final_form": "docs/FDROID_FINAL_FORM.md",
@@ -82,6 +83,10 @@
   "runtime": {
     "orchestrator": "python3",
     "command_front_door": "npm",
+    "remote_ai_endpoint": "http://127.0.0.1:8797/api/remote-ai/chat",
+    "remote_ai_provider_mode": "auto",
+    "remote_ai_auto_order": ["openai", "huggingface", "deterministic_mock"],
+    "silent_cross_provider_failover": false,
     "ollama": "http://127.0.0.1:11434",
     "ffmpeg": "local_binary",
     "ffprobe": "local_binary",
@@ -95,7 +100,7 @@
       "role": "versioned_source_of_truth_and_ci_evidence"
     },
     "openai": {
-      "role": "spell_compiler_coding_reasoning_and_typed_tool_requester",
+      "role": "primary_spell_compiler_coding_reasoning_and_typed_tool_requester",
       "magic_color": null,
       "api": "responses",
       "endpoint": "https://api.openai.com/v1/responses",
@@ -103,6 +108,23 @@
       "credential_env": "OPENAI_API_KEY",
       "store_default": false,
       "typed_tools_only": true,
+      "credentials_visible_to_model": false
+    },
+    "hugging_face": {
+      "role": "open_model_forge_catalog_and_alternate_remote_inference_lane",
+      "magic_color": null,
+      "api_base": "https://router.huggingface.co/v1",
+      "responses_endpoint": "https://router.huggingface.co/v1/responses",
+      "chat_endpoint": "https://router.huggingface.co/v1/chat/completions",
+      "default_model": "openai/gpt-oss-120b:fastest",
+      "lower_latency_candidate": "openai/gpt-oss-20b:fastest",
+      "credential_env": "HF_TOKEN",
+      "credential_strategy": "fine_grained_inference_provider_token_or_ci_trusted_publisher",
+      "runtime_authority": false,
+      "secret_store": false,
+      "auto_download": false,
+      "auto_execute_remote_code": false,
+      "revision_pin_required_for_downloads": true,
       "credentials_visible_to_model": false
     },
     "cloudflare": {
@@ -127,15 +149,6 @@
       "role": "sealed_recovery_and_artifact_mirror",
       "secrets_allowed": false,
       "iam_equivalent_to_google_cloud": false
-    },
-    "hugging_face": {
-      "role": "forge_and_model_catalog",
-      "runtime_authority": false,
-      "secret_store": false,
-      "auto_download": false,
-      "auto_execute_remote_code": false,
-      "revision_pin_required": true,
-      "doctrine": "lumh-os/kai9000/huggingface.doctrine.json"
     }
   },
   "ingestion": {
@@ -148,10 +161,10 @@
   "authority": {
     "final": "Professor",
     "local_ai_boss": "Ollama",
-    "openai_agent_role": "spell_compiler_coding_reasoning_and_typed_tool_requester",
-    "openai_magic_color": "unassigned",
+    "openai_agent_role": "primary_remote_spell_compiler_and_typed_tool_requester",
+    "hugging_face_role": "forge_catalog_and_alternate_remote_inference_not_policy_authority",
     "cloudflare_role": "dns_https_tunnel_gate_not_policy_authority",
     "google_cloud_role": "white_magic_provider_not_policy_authority",
-    "policy_registry_role": "capability_risk_and_approval_authority"
+    "policy_registry_role": "capability_risk_provider_routing_and_approval_authority"
   }
 }

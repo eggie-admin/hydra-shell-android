@@ -1,0 +1,38 @@
+{
+  "schema": "kai9000.huggingface-responses-template.v1",
+  "provider": "huggingface",
+  "api_base": "https://router.huggingface.co/v1",
+  "responses_endpoint": "https://router.huggingface.co/v1/responses",
+  "chat_completions_endpoint": "https://router.huggingface.co/v1/chat/completions",
+  "credential_env": "HF_TOKEN",
+  "credential_policy": "fine_grained_inference_permission_server_side_only",
+  "default_model": "openai/gpt-oss-120b:fastest",
+  "alternate_model": "openai/gpt-oss-20b:fastest",
+  "provider_policies": [
+    "fastest",
+    "cheapest",
+    "preferred",
+    "specific_provider"
+  ],
+  "request_template": {
+    "model": "${HF_MODEL:-openai/gpt-oss-120b:fastest}",
+    "instructions": "KAI 9000 doctrine-owned instructions are injected server side.",
+    "input": "${APPROVED_NON_SECRET_INPUT}",
+    "store": false,
+    "max_output_tokens": 1600
+  },
+  "runtime": {
+    "kai_endpoint": "/api/remote-ai/chat",
+    "provider_selector": "huggingface",
+    "silent_cross_provider_failover": false
+  },
+  "prohibitions": [
+    "hf_token_in_git",
+    "hf_token_in_apk",
+    "hf_token_in_webview_javascript",
+    "hf_token_in_prompt_or_model_context",
+    "automatic_model_download",
+    "automatic_remote_code_execution",
+    "provider_output_as_execution_evidence"
+  ]
+}
