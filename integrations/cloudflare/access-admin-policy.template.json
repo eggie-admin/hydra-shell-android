@@ -1,22 +1,37 @@
 {
-  "schema": "kai9000.cloudflare-access-policy-template.v1",
+  "schema": "kai9000.cloudflare-access-policy-template.v2",
   "application": {
     "name": "KAI9000 Admin",
     "hostname": "admin.eggiebagelface.art",
-    "type": "self_hosted"
+    "type": "self_hosted",
+    "origin": "cloudflare_tunnel",
+    "session_policy": "high_security"
+  },
+  "identity": {
+    "provider": "google",
+    "identity_provider_id": "<CF_GOOGLE_IDP_ID>",
+    "approved_email": "<AUTHORIZED_GOOGLE_EMAIL>",
+    "active_browser_google_session_allowed_via_normal_oauth": true,
+    "connector_or_cookie_reuse_forbidden": true
   },
   "policy": {
-    "name": "KAI9000 Admin US WARP Posture",
+    "name": "KAI9000 Admin Google MFA US WARP",
     "action": "allow",
-    "decision_model": "approved identity AND US location AND WARP/device posture",
+    "decision_model": "approved Google identity AND independent MFA AND US location AND WARP/device posture",
     "include": [
       {
         "email": {
-          "email": "<APPROVED_ADMIN_EMAIL>"
+          "email": "<AUTHORIZED_GOOGLE_EMAIL>"
         }
       }
     ],
     "require": [
+      {
+        "login_method": {
+          "identity_provider_id": "<CF_GOOGLE_IDP_ID>",
+          "provider": "google"
+        }
+      },
       {
         "geo": {
           "country_code": "US"
@@ -28,14 +43,25 @@
     ],
     "exclude": []
   },
+  "independent_mfa": {
+    "required": true,
+    "scope": "application_or_policy",
+    "method": "authenticator_app_totp",
+    "google_authenticator_supported": true,
+    "session_duration": "0m",
+    "meaning": "require independent MFA on every Access login"
+  },
   "notes": [
-    "Replace placeholder identity before apply.",
-    "Device posture may be used instead of or in addition to WARP after a posture integration/check exists.",
+    "Replace all placeholders before apply.",
+    "Google is the identity provider; Google Authenticator is the TOTP second factor.",
+    "Cloudflare independent MFA is used because Google IdP MFA-method claims are not relied upon by this doctrine.",
+    "Device posture may be used instead of or in addition to WARP after a posture check exists.",
     "Do not apply this policy to fdroid.eggiebagelface.art or the public business site.",
-    "Location is defense-in-depth and is not a substitute for authenticated identity."
+    "Location is defense-in-depth and is not a substitute for identity or MFA.",
+    "Do not extract browser cookies, Google connector tokens, OAuth refresh tokens, or TOTP seeds."
   ],
   "api_permissions": [
     "Access: Apps and Policies Write",
-    "Access group/identity permissions only if reusable groups are automated"
+    "Access identity-provider administration only when the Google IdP is automated"
   ]
 }
