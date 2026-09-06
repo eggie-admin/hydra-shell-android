@@ -1,21 +1,32 @@
-# Hydra Shell Android
+# LumH OS · Project Hydra
 
-A Knox-aware Android shell, terminal interface, and runtime probe for Project Hydra.
+This repository's `main` branch is the canonical **LumH OS** source branch. **Project Hydra** is the project root beneath LumH OS, and Samsung Android APK is a Hydra platform.
 
-## Initial milestone
+```text
+main
+└── lumh-os/
+    └── projects/
+        └── hydra/
+            ├── doctrine/
+            ├── subsystems/
+            │   └── kai9000/
+            ├── integrations/
+            │   └── hugging-face/
+            └── platforms/
+                └── samsung-android-apk/
+```
 
-HYDRA_SHELL_KNOX_PROBE_001
+See `lumh-os/projects/hydra/project.manifest.json` and `lumh-os/projects/hydra/doctrine/directory.doctrine.json`.
 
-- Detect the Android user/profile ID
-- Display the private application data path
-- Test private file creation
-- Test executable/runtime capabilities
-- Capture stdout and stderr
-- Export a diagnostic report
+## Compatibility migration
 
-## Samsung SM-X400 full mutation
+The repo previously grew around separate implementation roots including `lumh-os/kai9000/`, `ultima/ollama-ffmpeg-antenna-v3/`, and `samsung-sm-x400/`. They remain valid implementation sources during the migration and are referenced from the new Hydra tree rather than copied.
 
-The Samsung operator lane is now split into explicit trust and capability layers instead of treating root as a default requirement.
+Old paths are retired only after CI, cross-repository references, and explicit operator approval are green.
+
+## Samsung Android platform
+
+The Samsung operator lane uses explicit trust and capability layers instead of treating root as a default requirement.
 
 Trusted stock/Knox path:
 
@@ -38,29 +49,30 @@ Canonical localhost services:
 - Hydra cockpit `127.0.0.1:8787`
 - Ollama `127.0.0.1:11434`
 
-The authoritative service supervisor is `tools/hydra_widget_setup.py`. The multi-repository source of truth is `eggie-admin/vue-headless-cms` on branch `samsung-sm-x400-build-candidate`, file `samsung-sm-x400/samsung-dev-stack.manifest.json`. This repo keeps a compact pointer at `samsung-sm-x400/full-stack.reference.json`.
+The platform manifest is `lumh-os/projects/hydra/platforms/samsung-android-apk/platform.manifest.json`. The Android APK/cockpit forge is `eggie-admin/vue-headless-cms`; this repository retains compatibility references under `samsung-sm-x400/` while the migration is active.
 
-Privileged operations must remain typed and allow-listed. No automatic root, arbitrary model-authored shell execution, public service binding, or secret storage belongs in the Samsung operator lane.
+Privileged operations remain typed and allow-listed. No automatic root, arbitrary model-authored shell execution, public service binding, or secret storage belongs in the Samsung operator lane.
 
-## LumH OS : KAI 9000
+## KAI 9000
 
-KAI 9000 is registered as a local-first AI/media subsystem under `lumh-os/kai9000/`.
+KAI 9000 is Project Hydra's local-first AI/media subsystem. Its Hydra reference is:
 
-Canonical implementation:
+`lumh-os/projects/hydra/subsystems/kai9000/reference.json`
 
-`ultima/ollama-ffmpeg-antenna-v3/`
-
-The integration uses a reference manifest rather than duplicating runtime code. Local Ollama, FFmpeg/ffprobe, and optional ComfyUI remain the live plane; GitHub is the versioned source of truth and Google Drive is the recovery/artifact mirror.
-
-See:
+Compatibility registry/runtime sources remain:
 
 - `lumh-os/kai9000/project.manifest.json`
-- `lumh-os/kai9000/README.md`
-- `ultima/ollama-ffmpeg-antenna-v3/README.md`
+- `ultima/ollama-ffmpeg-antenna-v3/`
+
+Local Ollama, FFmpeg/ffprobe, and optional ComfyUI remain the live plane; GitHub is versioned source of truth and Google Drive is the recovery/artifact mirror.
+
+## Hugging Face
+
+Hugging Face is registered beneath Project Hydra as a Forge/model catalog integration. It is not runtime authority, does not auto-download models, does not auto-execute repository code, and requires pinned revisions plus license records before promotion.
 
 ## Status
 
-Early development. No bundled Linux distribution. KAI 9000 services are integrated as optional local-first subsystems and must degrade gracefully when unavailable.
+Compatibility-first structural migration. Existing services must degrade gracefully when optional capabilities are unavailable.
 
 ## License
 
