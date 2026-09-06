@@ -1,5 +1,5 @@
 {
-  "schema": "project-hydra.samsung-android-apk-reference.v1",
+  "schema": "project-hydra.samsung-android-apk-reference.v2",
   "role": "Samsung Android APK forge and cockpit surface",
   "integration_strategy": "reference_not_copy",
   "source": {
@@ -17,14 +17,18 @@
   "visual_reference": {
     "savepoint": "KAI9000_LUM_MONA_OUTFIT_ANDROID_GREEN_20260906",
     "manifest": "project/hydra/samsung/android/apk/lum-mona-outfit.reference.json",
-    "drive_file_id": "1h2VeIK0NEFKHB8i8hRxCoG5s9X8uWYbx",
+    "drive_file_id": "1eWOk-VvYjwbheKwKLHe6waW54RJQPMnx",
+    "seal_manifest_file_id": "1UGms41h4DwfRIzrXHj2E-_INdb6-XcR9",
+    "sha256": "420c2c749a0ab19231a5850b33c4432c7705e0b91cc0764c4ee88bb60bc849da",
     "usage": "Lum wardrobe art direction and future Godot Puppet2D layer planning"
   },
   "local_compatibility_reference": "samsung-sm-x400/full-stack.reference.json",
+  "testing_lane": "testing/luhm-os-android",
   "requirements": {
     "installable_apk_required_for_green": true,
     "package_identity_evidence_required": true,
     "loopback_only_local_services": true,
+    "secure_folder_is_client_not_daemon_owner": true,
     "automatic_root": false,
     "arbitrary_model_shell": false,
     "secrets_in_apk_or_repo": false,
