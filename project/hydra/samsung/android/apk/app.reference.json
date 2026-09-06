@@ -14,6 +14,12 @@
     "commit": "1d51c5b90266f7beb8236cf07acfb17a085a4134",
     "manifest": "integrations/kai9000.remote-smoke.json"
   },
+  "visual_reference": {
+    "savepoint": "KAI9000_LUM_MONA_OUTFIT_ANDROID_GREEN_20260906",
+    "manifest": "project/hydra/samsung/android/apk/lum-mona-outfit.reference.json",
+    "drive_file_id": "1h2VeIK0NEFKHB8i8hRxCoG5s9X8uWYbx",
+    "usage": "Lum wardrobe art direction and future Godot Puppet2D layer planning"
+  },
   "local_compatibility_reference": "samsung-sm-x400/full-stack.reference.json",
   "requirements": {
     "installable_apk_required_for_green": true,
@@ -21,6 +27,7 @@
     "loopback_only_local_services": true,
     "automatic_root": false,
     "arbitrary_model_shell": false,
-    "secrets_in_apk_or_repo": false
+    "secrets_in_apk_or_repo": false,
+    "proprietary_reference_assets_in_apk": false
   }
 }

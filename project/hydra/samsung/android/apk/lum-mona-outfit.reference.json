@@ -1,0 +1,26 @@
+{
+  "schema": "project-hydra.lum-mona-outfit-reference.v1",
+  "savepoint": "KAI9000_LUM_MONA_OUTFIT_ANDROID_GREEN_20260906",
+  "status": "GREEN",
+  "role": "Android visual reference for Lum wardrobe mutation and future Puppet2D/Godot avatar work",
+  "drive_reference": {
+    "file_id": "1h2VeIK0NEFKHB8i8hRxCoG5s9X8uWYbx",
+    "file_name": "KAI9000_LUM_MONA_OUTFIT_MUTATION_COLLECTION_20260906.png",
+    "url": "https://drive.google.com/file/d/1h2VeIK0NEFKHB8i8hRxCoG5s9X8uWYbx/view?usp=drivesdk"
+  },
+  "integration": {
+    "target": "project/hydra/samsung/android/apk",
+    "usage": [
+      "character wardrobe reference",
+      "Godot 4 Puppet2D layer planning",
+      "Android cockpit art direction"
+    ],
+    "bundle_mode": "reference_not_copy"
+  },
+  "rights_firewall": {
+    "destiny_child_runtime_assets_bundled": false,
+    "destiny_child_live2d_files_bundled": false,
+    "destiny_child_audio_bundled": false,
+    "rule": "Use only original Lum artwork and high-level wardrobe/motion inspiration. Do not ship extracted proprietary art, audio, .pck, .moc, .mtn, or other game assets."
+  }
+}
