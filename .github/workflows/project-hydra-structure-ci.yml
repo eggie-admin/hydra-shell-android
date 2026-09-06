@@ -1,0 +1,48 @@
+name: Project Hydra Structure CI
+
+on:
+  pull_request:
+    paths:
+      - "lumh-os/projects/hydra/**"
+      - "lumh-os/README.md"
+      - "README.md"
+      - "tools/project_hydra_structure_guard.py"
+      - ".github/workflows/project-hydra-structure-ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - "lumh-os/projects/hydra/**"
+      - "lumh-os/README.md"
+      - "README.md"
+      - "tools/project_hydra_structure_guard.py"
+      - ".github/workflows/project-hydra-structure-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  project-hydra-structure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate Project Hydra hierarchy
+        run: python tools/project_hydra_structure_guard.py
+
+      - name: Compile structure guard
+        run: python -m py_compile tools/project_hydra_structure_guard.py
+
+      - name: Validate JSON manifests
+        shell: bash
+        run: |
+          set -euo pipefail
+          find lumh-os/projects/hydra -name '*.json' -print0 | xargs -0 -n1 python -m json.tool >/dev/null
+          echo "PROJECT HYDRA JSON GREEN"
