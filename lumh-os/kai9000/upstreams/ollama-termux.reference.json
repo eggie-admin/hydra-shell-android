@@ -1,0 +1,35 @@
+{
+  "schema": "kai9000.upstream-reference.v1",
+  "project": "Luhm OS / KAI 9000",
+  "upstream": {
+    "name": "DioNanos/ollama-termux",
+    "repository": "https://github.com/DioNanos/ollama-termux",
+    "pinned_commit": "39d8bc2c7b123293703fbead08198c9efa9187b5",
+    "release_line": "0.33.1-termux",
+    "license": "MIT",
+    "lifecycle": "eol_archived"
+  },
+  "role": "reference_runtime_for_termux_android_arm64_ollama",
+  "integration": {
+    "mode": "reference_only_no_source_copy",
+    "ollama_base_url": "http://127.0.0.1:11434",
+    "godot_repo": "eggie-admin/3d-chat-interface",
+    "godot_branch": "kai9000-ollama-termux-godot4-20260906",
+    "godot_bridge": "pet/godot/jrpg/OllamaTermuxBridge.gd",
+    "public_ollama": false,
+    "remote_shell": false
+  },
+  "adopted_runtime_patterns": [
+    "android_arm64_termux_runtime",
+    "mobile_memory_budgeting",
+    "mobile_thread_budgeting",
+    "android_system_vulkan_loader_preference",
+    "sha256_verified_release_assets"
+  ],
+  "policy": {
+    "automatic_eol_package_install": false,
+    "credentials_in_godot": false,
+    "arbitrary_shell_from_godot": false,
+    "localhost_first": true
+  }
+}
