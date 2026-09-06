@@ -1,0 +1,74 @@
+{
+  "schema": "kai9000.vendor-apis.v2",
+  "date": "2026-09-06",
+  "airship": "KAI9000",
+  "warp": "git",
+  "crown": "Professor",
+  "orchestrator": {
+    "name": "Lum",
+    "role": "SUPREME_WITCH"
+  },
+  "public_identity": {
+    "domain": "eggiebagelface.art",
+    "fdroid_host": "fdroid.eggiebagelface.art",
+    "fdroid_repo_url": "https://fdroid.eggiebagelface.art/fdroid/repo/"
+  },
+  "providers": {
+    "openai": {
+      "magic_color": null,
+      "role": "remote_reasoning_agent_and_typed_tool_request_lane",
+      "api": "responses",
+      "endpoint": "https://api.openai.com/v1/responses",
+      "default_model": "gpt-6-astra",
+      "credential_env": "OPENAI_API_KEY",
+      "credential_location": "server_or_protected_ci_only",
+      "store_default": false,
+      "tool_policy": "typed_allowlist_only",
+      "unrestricted_shell": false,
+      "credentials_visible_to_model": false
+    },
+    "cloudflare": {
+      "magic_color": null,
+      "role": "public_dns_https_and_tunnel_gate",
+      "api_base": "https://api.cloudflare.com/client/v4",
+      "zone": "eggiebagelface.art",
+      "fdroid_hostname": "fdroid.eggiebagelface.art",
+      "preferred_origin_transport": "cloudflare_tunnel_when_private_origin",
+      "credential_strategy": "least_privilege_api_token",
+      "ci_token_preference": "account_owned_api_token_when_supported",
+      "forbid_global_api_key_in_automation": true,
+      "dns_scope": "zone_dns_write_only_when_needed",
+      "tunnel_scope": "cloudflare_tunnel_or_connector_write_only_when_needed",
+      "credentials_visible_to_model": false
+    },
+    "google_cloud": {
+      "magic_color": "white",
+      "role": "approved_google_cloud_service_lane",
+      "credential_strategy": "workload_identity_federation_for_github_actions",
+      "github_auth": "oidc_to_workload_identity_pool_provider",
+      "preferred_access": "direct_resource_access",
+      "service_account_impersonation": "only_when_api_or_product_requires",
+      "long_lived_service_account_json_in_repo": false,
+      "iam_policy": "resource_specific_least_privilege",
+      "oidc_conditions": [
+        "repository",
+        "branch_or_ref",
+        "workflow_when_available"
+      ],
+      "credentials_visible_to_model": false
+    }
+  },
+  "shared_policy": {
+    "typed_actions_only": true,
+    "server_side_risk_resolution": true,
+    "risk_axis": "R0-R4",
+    "approval_binds_exact_plan": true,
+    "secrets_in_git": false,
+    "secrets_in_apk": false,
+    "secrets_in_rss": false,
+    "secrets_in_base64": false,
+    "secrets_in_model_context": false,
+    "provider_response_is_untrusted_data": true,
+    "execution_evidence_required_for_green": true
+  }
+}
