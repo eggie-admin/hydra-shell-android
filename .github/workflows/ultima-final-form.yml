@@ -6,6 +6,7 @@ on:
       - testing/luhm-os-android
     paths:
       - '.github/workflows/ultima-final-form.yml'
+      - 'integrations/cloudflare/origin-ca-ecc.sh'
   workflow_dispatch:
 
 permissions:
@@ -39,11 +40,18 @@ jobs:
       FDROID_KEYSTORE_PASS: ${{ secrets.FDROID_KEYSTORE_PASS }}
       FDROID_KEY_PASS: ${{ secrets.FDROID_KEY_PASS }}
       CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-      CF_ACCOUNT_ID: ${{ vars.CF_ACCOUNT_ID }}
       GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
       GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Pull Cloudflare public Origin CA ECC root
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash integrations/cloudflare/origin-ca-ecc.sh pull-root
+          test -s build/cloudflare-origin-ca/cloudflare-origin-ecc-root.pem
+          echo 'CLOUDFLARE_PUBLIC_CA_GREEN'
 
       - name: Cast FINAL_FORM credential gate
         shell: bash
@@ -70,7 +78,6 @@ jobs:
           require FDROID_KEYSTORE_PASS
           require FDROID_KEY_PASS
           require CF_API_TOKEN
-          require CF_ACCOUNT_ID
           require GCP_PROJECT_ID
           require GCP_WORKLOAD_IDENTITY_PROVIDER
 
@@ -101,6 +108,9 @@ jobs:
           grep -q 'FDROID_SIGNED' fdroid/trusted-signing-host.sh
           test -s integrations/google-cloud/strict-free-vm.manifest.json
           test -s integrations/cloudflare/security.manifest.json
+          test -s integrations/cloudflare/origin-ca-ecc.sh
+          grep -q 'origin-ecc' integrations/cloudflare/origin-ca-ecc.sh
+          grep -q 'ec_paramgen_curve:P-256' integrations/cloudflare/origin-ca-ecc.sh
           echo 'FINAL_FORM_TOOLCHAIN_ARMED'
 
   final-form-ready:
@@ -111,4 +121,5 @@ jobs:
       - name: Require every external identity before production mutation
         run: |
           echo 'FINAL_FORM_EXTERNAL_IDENTITIES_GREEN'
+          echo 'Cloudflare edge TLS is provider-managed. Origin private key is generated locally; only the CSR is sent to Cloudflare Origin CA.'
           echo 'Next executable stage: persistent APK signing + F-Droid repo signing + Google origin publish + Cloudflare DNS/TLS + client import/upgrade proof.'
