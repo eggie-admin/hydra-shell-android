@@ -62,6 +62,16 @@
     "openai_api_keys_in_source_or_apk",
     "proprietary_game_runtime_assets"
   ],
+  "ci_authority": {
+    "external_hosting_status_is_authoritative": false,
+    "authoritative_evidence": [
+      "repository_ci",
+      "reproducible_android_build",
+      "installable_apk_evidence",
+      "package_identity_evidence",
+      "device_or_emulator_validation"
+    ]
+  },
   "promotion_gate": {
     "status": "testing_only",
     "requires": [
