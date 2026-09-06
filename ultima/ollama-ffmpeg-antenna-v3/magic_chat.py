@@ -9,7 +9,7 @@ import subprocess
 import time
 import uuid
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator
 
 import httpx
 from fastapi import APIRouter, HTTPException
@@ -92,6 +92,21 @@ def _safe_path(value: str, *, must_exist: bool | None = None) -> Path:
     return target
 
 
+def _iter_source_files() -> Iterator[Path]:
+    for path in CODE_ROOT.rglob("*"):
+        if not path.is_file() or path.is_symlink():
+            continue
+        try:
+            resolved = path.resolve()
+            rel = resolved.relative_to(CODE_ROOT)
+        except (OSError, ValueError):
+            continue
+        if any(part in DENY_PARTS or part.startswith(".env") for part in rel.parts):
+            continue
+        if resolved.suffix.lower() in ALLOWED_SUFFIXES:
+            yield resolved
+
+
 def _reject_secrets(text: str) -> None:
     for label, pattern in SECRET_PATTERNS.items():
         if pattern.search(text):
@@ -138,43 +153,40 @@ def _execute(spell: str, args: dict[str, Any], cast_id: str) -> dict[str, Any]:
         raise HTTPException(status_code=403, detail="ULTIMA is disabled in the in-app runtime")
 
     if spell == "INSPECT":
-        limit = min(int(args.get("limit", 120)), 300)
+        limit = min(max(int(args.get("limit", 120)), 1), 300)
         files: list[str] = []
-        for path in CODE_ROOT.rglob("*"):
+        for path in _iter_source_files():
+            files.append(path.relative_to(CODE_ROOT).as_posix())
             if len(files) >= limit:
                 break
-            if not path.is_file():
-                continue
-            rel = path.relative_to(CODE_ROOT)
-            if any(part in DENY_PARTS for part in rel.parts):
-                continue
-            if path.suffix.lower() in ALLOWED_SUFFIXES:
-                files.append(rel.as_posix())
         return {"ok": True, "spell": spell, "files": files, "truncated": len(files) >= limit}
 
     if spell == "READ_FILE":
         path = _safe_path(str(args.get("path", "")), must_exist=True)
+        if path.is_symlink():
+            raise HTTPException(status_code=403, detail="Symlink reads are denied")
         if path.stat().st_size > 262_144:
             raise HTTPException(status_code=413, detail="File exceeds 256 KiB read limit")
-        return {"ok": True, "spell": spell, "path": path.relative_to(CODE_ROOT).as_posix(), "content": path.read_text(encoding="utf-8")}
+        return {
+            "ok": True,
+            "spell": spell,
+            "path": path.relative_to(CODE_ROOT).as_posix(),
+            "sha256": _sha256_bytes(path.read_bytes()),
+            "content": path.read_text(encoding="utf-8"),
+        }
 
     if spell == "SEARCH_TEXT":
         query = str(args.get("query", "")).strip()
         if not query or len(query) > 160:
             raise HTTPException(status_code=400, detail="Search query must be 1-160 characters")
         hits: list[dict[str, Any]] = []
-        for path in CODE_ROOT.rglob("*"):
+        for path in _iter_source_files():
             if len(hits) >= 50:
                 break
-            if not path.is_file() or path.suffix.lower() not in ALLOWED_SUFFIXES:
-                continue
-            rel = path.relative_to(CODE_ROOT)
-            if any(part in DENY_PARTS for part in rel.parts):
-                continue
             try:
                 for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
                     if query.lower() in line.lower():
-                        hits.append({"path": rel.as_posix(), "line": lineno, "text": line[:300]})
+                        hits.append({"path": path.relative_to(CODE_ROOT).as_posix(), "line": lineno, "text": line[:300]})
                         if len(hits) >= 50:
                             break
             except (UnicodeDecodeError, OSError):
@@ -230,7 +242,14 @@ def _execute(spell: str, args: dict[str, Any], cast_id: str) -> dict[str, Any]:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(content, encoding="utf-8")
         after = _sha256_bytes(path.read_bytes())
-        return {"ok": True, "spell": spell, "path": checkpoint["path"], "before_sha256": actual, "after_sha256": after, "checkpoint": cast_id}
+        return {
+            "ok": True,
+            "spell": spell,
+            "path": checkpoint["path"],
+            "before_sha256": actual,
+            "after_sha256": after,
+            "checkpoint": cast_id,
+        }
 
     raise HTTPException(status_code=400, detail="Unknown spell")
 
@@ -242,6 +261,7 @@ def list_spells() -> dict[str, Any]:
 
 @ROUTER.post("/chat")
 def magic_chat(req: MagicChatRequest) -> dict[str, Any]:
+    _reject_secrets(req.message)
     key = os.environ.get("OPENAI_API_KEY")
     if not key:
         return {
@@ -268,7 +288,13 @@ def magic_chat(req: MagicChatRequest) -> dict[str, Any]:
         data = response.json()
     except httpx.HTTPError as exc:
         raise HTTPException(status_code=502, detail=f"OpenAI request failed: {exc}") from exc
-    return {"ok": True, "mode": "openai", "model": req.model or OPENAI_MODEL, "assistant": _extract_openai_text(data), "response_id": data.get("id")}
+    return {
+        "ok": True,
+        "mode": "openai",
+        "model": req.model or OPENAI_MODEL,
+        "assistant": _extract_openai_text(data),
+        "response_id": data.get("id"),
+    }
 
 
 @ROUTER.post("/cast/prepare")
@@ -286,7 +312,14 @@ def prepare_cast(req: PrepareCastRequest) -> dict[str, Any]:
         "created": time.time(),
         "executed": False,
     }
-    return {"ok": True, "cast_id": cast_id, "spell": spell, "spec": spec, "approved": PENDING[cast_id]["approved"], "expires_in": CAST_TTL_SECONDS}
+    return {
+        "ok": True,
+        "cast_id": cast_id,
+        "spell": spell,
+        "spec": spec,
+        "approved": PENDING[cast_id]["approved"],
+        "expires_in": CAST_TTL_SECONDS,
+    }
 
 
 @ROUTER.post("/cast/{cast_id}/approve")
@@ -332,4 +365,9 @@ def rollback_cast(cast_id: str, req: RollbackRequest) -> dict[str, Any]:
         path.write_bytes(before)
     else:
         path.unlink(missing_ok=True)
-    return {"ok": True, "cast_id": cast_id, "rolled_back": checkpoint["path"], "restored_sha256": checkpoint["before_sha256"]}
+    return {
+        "ok": True,
+        "cast_id": cast_id,
+        "rolled_back": checkpoint["path"],
+        "restored_sha256": checkpoint["before_sha256"],
+    }
