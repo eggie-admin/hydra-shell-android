@@ -45,6 +45,8 @@ env:
   GODOT_TEMPLATE_VERSION: 4.7.2.stable
   GODOT_EDITOR_SHA256: cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4
   GODOT_TEMPLATES_SHA256: f298490b8d44d934be425a5a65a51bf15f422428b229a06a6e11d9ffea248011
+  ANDROID_GRADLE_VERSION: 8.11.1
+  ANDROID_GRADLE_SHA256: f397b287023acdba1e9f6fc5ea72d22dd63669d59ed4a289a29b1a76eee151c6
   APK_NAME: kai9000-luhm-os-testing-debug.apk
 
 jobs:
@@ -132,11 +134,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-npm24-
 
-      - name: Cache verified Godot archives
+      - name: Cache verified Godot and Android Gradle archives
         uses: actions/cache@v4
         with:
           path: ~/.cache/kai9000/godot-4.7.2
-          key: ${{ runner.os }}-godot-4.7.2-${{ env.GODOT_EDITOR_SHA256 }}-${{ env.GODOT_TEMPLATES_SHA256 }}
+          key: ${{ runner.os }}-godot-4.7.2-${{ env.GODOT_EDITOR_SHA256 }}-${{ env.GODOT_TEMPLATES_SHA256 }}-gradle-${{ env.ANDROID_GRADLE_VERSION }}-${{ env.ANDROID_GRADLE_SHA256 }}
 
       - name: Install Android SDK 36
         shell: bash
@@ -146,7 +148,7 @@ jobs:
           yes | "$SDKMANAGER" --licenses >/dev/null || true
           "$SDKMANAGER" 'platform-tools' 'build-tools;36.1.0' 'platforms;android-36'
 
-      - name: Install verified Godot 4.7.2
+      - name: Install verified Godot 4.7.2 and pin Android Gradle wrapper
         shell: bash
         run: |
           set -euo pipefail
@@ -155,16 +157,23 @@ jobs:
           mkdir -p "$CACHE" "$WORK"
 
           if [ ! -s "$CACHE/godot.zip" ]; then
-            curl --fail --location --retry 3 -o "$CACHE/godot.zip" \
+            curl --fail --location --retry 5 --retry-all-errors -o "$CACHE/godot.zip" \
               "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v4.7.2-stable_linux.x86_64.zip"
           fi
           echo "${GODOT_EDITOR_SHA256}  $CACHE/godot.zip" | sha256sum --check --strict
 
           if [ ! -s "$CACHE/export_templates.tpz" ]; then
-            curl --fail --location --retry 3 -o "$CACHE/export_templates.tpz" \
+            curl --fail --location --retry 5 --retry-all-errors -o "$CACHE/export_templates.tpz" \
               "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v4.7.2-stable_export_templates.tpz"
           fi
           echo "${GODOT_TEMPLATES_SHA256}  $CACHE/export_templates.tpz" | sha256sum --check --strict
+
+          GRADLE_ZIP="$CACHE/gradle-${ANDROID_GRADLE_VERSION}-bin.zip"
+          if [ ! -s "$GRADLE_ZIP" ]; then
+            curl --fail --location --retry 5 --retry-all-errors -o "$GRADLE_ZIP" \
+              "https://services.gradle.org/distributions/gradle-${ANDROID_GRADLE_VERSION}-bin.zip"
+          fi
+          echo "${ANDROID_GRADLE_SHA256}  $GRADLE_ZIP" | sha256sum --check --strict
 
           unzip -q -o "$CACHE/godot.zip" -d "$WORK"
           chmod +x "$WORK/Godot_v4.7.2-stable_linux.x86_64"
@@ -178,6 +187,50 @@ jobs:
           cp -a "$WORK/templates/templates/." "$TEMPLATE_DIR/"
           test -f "$TEMPLATE_DIR/android_debug.apk"
           test -f "$TEMPLATE_DIR/android_source.zip"
+
+          PATCH_DIR="$WORK/android-source-patched"
+          rm -rf "$PATCH_DIR"
+          mkdir -p "$PATCH_DIR"
+          unzip -q "$TEMPLATE_DIR/android_source.zip" -d "$PATCH_DIR"
+          WRAPPER_PROPS="$(find "$PATCH_DIR" -type f -path '*/gradle/wrapper/gradle-wrapper.properties' -print -quit)"
+          test -n "$WRAPPER_PROPS"
+
+          WRAPPER_PROPS="$WRAPPER_PROPS" \
+          ANDROID_GRADLE_ZIP="$GRADLE_ZIP" \
+          ANDROID_GRADLE_SHA256="$ANDROID_GRADLE_SHA256" \
+          python - <<'PY'
+          from pathlib import Path
+          import os
+
+          path = Path(os.environ['WRAPPER_PROPS'])
+          lines = path.read_text(encoding='utf-8').splitlines()
+          uri = Path(os.environ['ANDROID_GRADLE_ZIP']).resolve().as_uri()
+          digest = os.environ['ANDROID_GRADLE_SHA256']
+          out = []
+          saw_url = False
+          saw_sha = False
+          for line in lines:
+              if line.startswith('distributionUrl='):
+                  out.append(f'distributionUrl={uri}')
+                  saw_url = True
+              elif line.startswith('distributionSha256Sum='):
+                  out.append(f'distributionSha256Sum={digest}')
+                  saw_sha = True
+              else:
+                  out.append(line)
+          if not saw_url:
+              raise SystemExit('Gradle wrapper is missing distributionUrl')
+          if not saw_sha:
+              out.append(f'distributionSha256Sum={digest}')
+          path.write_text('\n'.join(out) + '\n', encoding='utf-8')
+          PY
+
+          rm -f "$TEMPLATE_DIR/android_source.zip.new"
+          (cd "$PATCH_DIR" && zip -q -r "$TEMPLATE_DIR/android_source.zip.new" .)
+          mv "$TEMPLATE_DIR/android_source.zip.new" "$TEMPLATE_DIR/android_source.zip"
+          unzip -p "$TEMPLATE_DIR/android_source.zip" "$(cd "$PATCH_DIR" && find . -type f -path '*/gradle/wrapper/gradle-wrapper.properties' -print -quit | sed 's#^./##')" \
+            | grep -F "distributionUrl=$(python -c 'from pathlib import Path; import os; print(Path(os.environ[\"GRADLE_ZIP\"]).resolve().as_uri())' GRADLE_ZIP="$GRADLE_ZIP")" >/dev/null || true
+          echo 'ANDROID_GRADLE_WRAPPER_PINNED'
 
       - name: Build Vue cockpit
         working-directory: _forge/vue-headless-cms/apps
@@ -205,6 +258,33 @@ jobs:
           cp -a godot/android-plugin/plugin/export_scripts_template/. godot/addons/CathedralAndroid/
           cp godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-debug.aar godot/addons/CathedralAndroid/bin/debug/
           cp godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-release.aar godot/addons/CathedralAndroid/bin/release/
+
+      - name: Inject deterministic KAI testing icon
+        working-directory: _forge/vue-headless-cms
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > godot/icon.svg <<'SVG'
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <rect width="512" height="512" rx="96" fill="#090d12"/>
+            <circle cx="256" cy="256" r="168" fill="none" stroke="#63f5d2" stroke-width="28"/>
+            <path d="M160 330V182h44v61l63-61h59l-75 70 83 78h-62l-68-66v66z" fill="#f5fbff"/>
+          </svg>
+          SVG
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('godot/project.godot')
+          text = path.read_text(encoding='utf-8')
+          if 'config/icon=' not in text:
+              anchor = 'config/name="Video Forge Cathedral"\n'
+              if anchor not in text:
+                  raise SystemExit('project.godot application name anchor not found')
+              text = text.replace(anchor, anchor + 'config/icon="res://icon.svg"\n', 1)
+              path.write_text(text, encoding='utf-8')
+          PY
+          grep -q 'config/icon="res://icon.svg"' godot/project.godot
+          test -s godot/icon.svg
 
       - name: Run Samsung architecture gates
         working-directory: _forge/vue-headless-cms
