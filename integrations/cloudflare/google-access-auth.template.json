@@ -1,0 +1,50 @@
+{
+  "schema": "kai9000.cloudflare-google-access-auth.v1",
+  "zone": "eggiebagelface.art",
+  "status": "TEMPLATE_REQUIRES_GOOGLE_OAUTH_AND_CLOUDFLARE_ACCOUNT_VALUES",
+  "identity_provider": {
+    "type": "google",
+    "name": "KAI9000 Google HTTPS Login",
+    "oauth_application_type": "web",
+    "team_name": "<CF_TEAM_NAME>",
+    "authorized_javascript_origin": "https://<CF_TEAM_NAME>.cloudflareaccess.com",
+    "authorized_redirect_uri": "https://<CF_TEAM_NAME>.cloudflareaccess.com/cdn-cgi/access/callback",
+    "client_id": "<GOOGLE_OAUTH_CLIENT_ID>",
+    "client_secret": "SECRET_PROVIDER_BOUNDARY_ONLY",
+    "pkce_preferred": true,
+    "active_browser_google_session_may_be_used_normally": true,
+    "reuse_chatgpt_google_connector_credentials": false
+  },
+  "application": {
+    "hostname": "admin.eggiebagelface.art",
+    "type": "self_hosted",
+    "public_dns": true,
+    "origin": "cloudflare_tunnel",
+    "allowed_login_method": "google_only",
+    "approved_identity": "<AUTHORIZED_GOOGLE_EMAIL>"
+  },
+  "independent_mfa": {
+    "provider": "cloudflare_access",
+    "required": true,
+    "allowed_method": "authenticator_app_totp",
+    "example_authenticator": "Google Authenticator",
+    "session_duration": "0m",
+    "meaning": "require MFA on every Access login"
+  },
+  "additional_requirements": {
+    "country": "US",
+    "warp_or_device_posture": true
+  },
+  "public_exemptions": [
+    "eggiebagelface.art",
+    "www.eggiebagelface.art",
+    "fdroid.eggiebagelface.art"
+  ],
+  "forbidden": [
+    "copying Google browser cookies",
+    "reusing ChatGPT Google connector OAuth tokens",
+    "committing Google OAuth client secret",
+    "exporting TOTP enrollment seed",
+    "placing the public F-Droid repository behind Access"
+  ]
+}
