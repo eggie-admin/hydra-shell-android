@@ -2,8 +2,10 @@
 set -euo pipefail
 
 MODE="${1:-pull-root}"
-DOMAIN="${CF_ORIGIN_DOMAIN:-eggiebagelface.art}"
+ZONE="${CF_ZONE_NAME:-eggiebagelface.art}"
+DOMAIN="${CF_ORIGIN_DOMAIN:-fdroid.eggiebagelface.art}"
 OUT_DIR="${CF_ORIGIN_OUT_DIR:-build/cloudflare-origin-ca}"
+VALIDITY_DAYS="${CF_ORIGIN_VALIDITY_DAYS:-365}"
 ROOT_URL="https://developers.cloudflare.com/ssl/static/origin_ca_ecc_root.pem"
 API_BASE="https://api.cloudflare.com/client/v4"
 mkdir -p "$OUT_DIR"
@@ -19,6 +21,11 @@ need curl
 need openssl
 need python3
 
+case "$VALIDITY_DAYS" in
+  7|30|90|365|730|1095|5475) ;;
+  *) echo "Unsupported Cloudflare Origin CA validity: $VALIDITY_DAYS" >&2; exit 2 ;;
+esac
+
 pull_root() {
   local root="$OUT_DIR/cloudflare-origin-ecc-root.pem"
   curl --fail --silent --show-error --location "$ROOT_URL" -o "$root"
@@ -28,7 +35,7 @@ pull_root() {
 
 resolve_zone_id() {
   : "${CF_API_TOKEN:?CF_API_TOKEN is required}"
-  python3 - "$DOMAIN" <<'PY'
+  python3 - "$ZONE" <<'PY'
 import json, os, sys, urllib.parse, urllib.request
 name = sys.argv[1]
 url = 'https://api.cloudflare.com/client/v4/zones?' + urllib.parse.urlencode({'name': name, 'status': 'active', 'per_page': 50})
@@ -46,11 +53,11 @@ issue_origin_cert() {
   umask 077
   pull_root >/dev/null
 
-  local key="$OUT_DIR/origin-p256.key"
-  local csr="$OUT_DIR/origin-p256.csr"
-  local cert="$OUT_DIR/origin-p256.pem"
+  local key="$OUT_DIR/fdroid-origin-p256.key"
+  local csr="$OUT_DIR/fdroid-origin-p256.csr"
+  local cert="$OUT_DIR/fdroid-origin-p256.pem"
   local response="$OUT_DIR/origin-ca-response.json"
-  local fullchain="$OUT_DIR/origin-p256-fullchain.pem"
+  local fullchain="$OUT_DIR/fdroid-origin-p256-fullchain.pem"
 
   if [[ ! -s "$key" ]]; then
     openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 -out "$key"
@@ -60,17 +67,17 @@ issue_origin_cert() {
   openssl req -new -sha256 \
     -key "$key" \
     -subj "/CN=$DOMAIN" \
-    -addext "subjectAltName=DNS:$DOMAIN,DNS:*.$DOMAIN" \
+    -addext "subjectAltName=DNS:$DOMAIN" \
     -out "$csr"
 
-  python3 - "$csr" "$DOMAIN" "$OUT_DIR/request.json" <<'PY'
+  python3 - "$csr" "$DOMAIN" "$VALIDITY_DAYS" "$OUT_DIR/request.json" <<'PY'
 import json, pathlib, sys
-csr_path, domain, out = sys.argv[1:]
+csr_path, domain, validity, out = sys.argv[1:]
 payload = {
     'csr': pathlib.Path(csr_path).read_text(),
-    'hostnames': [domain, f'*.{domain}'],
+    'hostnames': [domain],
     'request_type': 'origin-ecc',
-    'requested_validity': 365,
+    'requested_validity': int(validity),
 }
 pathlib.Path(out).write_text(json.dumps(payload), encoding='utf-8')
 PY
