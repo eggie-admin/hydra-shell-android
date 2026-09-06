@@ -1,5 +1,5 @@
 {
-  "schema": "kai9000.fdroid-publication.v1",
+  "schema": "kai9000.fdroid-publication.v2",
   "date": "2026-09-06",
   "state": "PUBLICATION_READY_AWAITING_LIVE_ORIGIN_CONTROL",
   "repo_url": "https://fdroid.eggiebagelface.art/fdroid/repo/",
@@ -15,7 +15,8 @@
   "trust": {
     "apk_signer_sha256": "A5E9364D5C21A119FE1D17FD39EE7BAE8192A872CE58A3E7A865248E0B070407",
     "repo_fingerprint_sha256": "BFB900A9EC913D35C22F1DC3DE7B152D1AF5CA11B7B07E5FAFDD06B44811F66D",
-    "fdroid_signed": true
+    "fdroid_signed": true,
+    "private_signing_keys_required_for_publication_preflight": false
   },
   "origin": {
     "provider": "google_compute_engine_strict_free",
@@ -25,14 +26,20 @@
     "web_server": "nginx",
     "root": "/srv/kai9000/fdroid",
     "publisher": "scripts/publish_fdroid_origin.sh",
-    "nginx_config": "integrations/google-cloud/nginx-fdroid-origin.conf"
+    "nginx_config": "integrations/google-cloud/nginx-fdroid-origin.conf",
+    "human_auth": "gcloud_user_oauth",
+    "human_auth_helper": "integrations/google-cloud/bootstrap-oauth.sh login-remote",
+    "github_wif": "optional_for_unattended_ci_not_human_publication"
   },
   "edge": {
     "provider": "cloudflare",
     "hostname": "fdroid.eggiebagelface.art",
     "tls_mode": "Full (strict)",
     "origin_ca": "ECDSA P-256 local-key CSR flow",
-    "dnssec": true
+    "dnssec": true,
+    "human_auth": "wrangler_and_cloudflared_oauth_browser_flows",
+    "human_auth_helper": "integrations/cloudflare/bootstrap-oauth.sh",
+    "api_token": "optional_for_unattended_api_automation_not_human_publication"
   },
   "required_before_fdroid_published": [
     "live Google origin exists",
