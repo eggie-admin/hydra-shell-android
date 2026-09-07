@@ -40,7 +40,7 @@ concurrency:
 
 env:
   DONOR_REPO: eggie-admin/vue-headless-cms
-  DONOR_REF: 86507ed7c72650ff508eb9a1a9e52842eb50e821
+  DONOR_REF: 88be3ea5d9bcdecfcaf035b043cd112002dc06d7
   GODOT_RELEASE: 4.7.2-stable
   GODOT_TEMPLATE_VERSION: 4.7.2.stable
   GODOT_EDITOR_SHA256: cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4
@@ -55,9 +55,11 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: '3.14'
           cache: pip
@@ -78,20 +80,54 @@ jobs:
           python -m pytest -q backend/tests
           bash tests/hydra-sanity-audit-test.sh
 
-      - name: Doctrine invariants
+      - name: Ten-pass doctrine invariants
+        shell: bash
         run: |
           set -euo pipefail
           test -f lumh-os/kai9000/AI_MAGIC_DOCTRINE.md
           test -f lumh-os/kai9000/project.manifest.json
           test -f docs/API_TRINITY_DOCTRINE.md
           test -f docs/EGGIEBAGELFACE_ART_IDENTITY.md
+          test -f docs/KAI9000_APK_ARCHITECTURE_HARDENING_10PASS_20260907.md
           test -f integrations/vendor-apis.manifest.json
           test -f project/hydra/samsung/android/apk/testing-ingest.manifest.json
           python -m json.tool integrations/vendor-apis.manifest.json >/dev/null
           python -m json.tool lumh-os/kai9000/project.manifest.json >/dev/null
+          python -m json.tool project/hydra/samsung/android/apk/testing-ingest.manifest.json >/dev/null
+
+          # External hosting is never Android build authority and secret values must not be embedded.
           ! grep -RniE 'vercel|OPENAI_API_KEY[[:space:]]*=|CLOUDFLARE_API_TOKEN[[:space:]]*=|GOOGLE_APPLICATION_CREDENTIALS[[:space:]]*=' \
             lumh-os project docs release integrations ultima .github 2>/dev/null
-          echo 'DOCTRINE_PREFLIGHT_GREEN'
+
+          # No tracked secret directories, private keys, signing containers, or provider credential files.
+          if git ls-files | grep -E '(^|/)(\.secrets|private)/|\.(jks|keystore|p12|pfx|pkcs12|key|pem)$|(^|/)(google-services|service-account|credentials[^/]*)\.json$'; then
+            echo 'Tracked secret/signing material detected' >&2
+            exit 1
+          fi
+          if git grep -nE -- '-----BEGIN ([A-Z0-9 ]+ )?PRIVATE KEY-----|github_pat_[A-Za-z0-9_]{20,}|ghp_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9_-]{20,}|hf_[A-Za-z0-9]{20,}|AIza[0-9A-Za-z_-]{30,}' -- ':!*.md' ':!*.example' ':!*.template'; then
+            echo 'Secret-like credential material detected' >&2
+            exit 1
+          fi
+
+          # The APK workflow itself must use immutable 40-hex Action revisions.
+          python - <<'PY'
+          import pathlib, re
+          path = pathlib.Path('.github/workflows/oni-ultima-debug-apk.yml')
+          bad = []
+          for number, line in enumerate(path.read_text(encoding='utf-8').splitlines(), 1):
+              stripped = line.strip()
+              if not stripped.startswith('- uses:') and not stripped.startswith('uses:'):
+                  continue
+              value = stripped.split('uses:', 1)[1].strip().split('#', 1)[0].strip()
+              if not re.search(r'@[0-9a-f]{40}$', value):
+                  bad.append((number, value))
+          if bad:
+              raise SystemExit(f'mutable GitHub Action references: {bad}')
+          PY
+
+          grep -q '"schema": "kai9000.android-testing-ingest.v3"' project/hydra/samsung/android/apk/testing-ingest.manifest.json
+          grep -q '88be3ea5d9bcdecfcaf035b043cd112002dc06d7' project/hydra/samsung/android/apk/testing-ingest.manifest.json
+          echo 'TEN_PASS_DOCTRINE_GREEN'
 
   android-debug:
     name: Godot Android debug forge
@@ -99,43 +135,65 @@ jobs:
     timeout-minutes: 40
     steps:
       - name: Checkout LuHm OS altar
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
       - name: Checkout pinned Samsung APK donor
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: ${{ env.DONOR_REPO }}
           ref: ${{ env.DONOR_REF }}
           path: _forge/vue-headless-cms
+          persist-credentials: false
 
-      - uses: actions/setup-java@v4
+      - name: Verify hardened donor boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          MANIFEST='_forge/vue-headless-cms/godot/android-plugin/plugin/src/main/AndroidManifest.xml'
+          NET='_forge/vue-headless-cms/godot/android-plugin/plugin/src/main/res/xml/cathedral_network_security.xml'
+          PLUGIN='_forge/vue-headless-cms/godot/android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralAndroidPlugin.kt'
+          WIDGET='_forge/vue-headless-cms/godot/android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralWidgetProvider.kt'
+          grep -q 'android:exported="false"' "$MANIFEST"
+          grep -q 'cleartextTrafficPermitted="false"' "$NET"
+          grep -q '>127.0.0.1<' "$NET"
+          grep -q 'allowFileAccess = false' "$PLUGIN"
+          grep -q 'allowContentAccess = false' "$PLUGIN"
+          grep -q 'setAcceptThirdPartyCookies(view, false)' "$PLUGIN"
+          grep -q 'setOf(APP_ORIGIN)' "$PLUGIN"
+          grep -q 'arrayOf(command)' "$WIDGET"
+          ! grep -q 'Runtime.getRuntime().exec' "$WIDGET"
+          echo 'ANDROID_BOUNDARIES_GREEN'
+
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
         with:
           distribution: temurin
           java-version: '17'
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: '3.14'
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '24.18.0'
 
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4.4.3
         with:
           gradle-version: '8.13'
           cache-cleanup: on-success
 
       - name: Cache npm downloads
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-npm24-${{ hashFiles('_forge/vue-headless-cms/apps/package.json') }}
+          key: ${{ runner.os }}-npm24-${{ hashFiles('_forge/vue-headless-cms/apps/package.json', '_forge/vue-headless-cms/apps/forge-ui/package.json') }}
           restore-keys: |
             ${{ runner.os }}-npm24-
 
       - name: Cache verified Godot and Android Gradle archives
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ~/.cache/kai9000/godot-4.7.2
           key: ${{ runner.os }}-godot-4.7.2-${{ env.GODOT_EDITOR_SHA256 }}-${{ env.GODOT_TEMPLATES_SHA256 }}-gradle-${{ env.ANDROID_GRADLE_VERSION }}-${{ env.ANDROID_GRADLE_SHA256 }}
@@ -230,13 +288,15 @@ jobs:
           mv "$TEMPLATE_DIR/android_source.zip.new" "$TEMPLATE_DIR/android_source.zip"
           echo 'ANDROID_GRADLE_WRAPPER_PINNED'
 
-      - name: Build Vue cockpit
+      - name: Build Vue cockpit and record lock provenance
         working-directory: _forge/vue-headless-cms/apps
         run: |
           set -euo pipefail
           npm install --global npm@12.0.2 --no-audit --no-fund
           npm install --package-lock-only --ignore-scripts --no-audit --no-fund
           npm ci --ignore-scripts --no-audit --no-fund
+          mkdir -p "$GITHUB_WORKSPACE/build/provenance"
+          sha256sum package-lock.json | tee "$GITHUB_WORKSPACE/build/provenance/npm-package-lock.sha256"
           npm run build --workspace=video-forge-ui
           test -f forge-ui/dist/index.html
 
@@ -339,7 +399,7 @@ jobs:
           grep -q 'assets/cms/index.html' build/android/contents.txt
 
       - name: Upload testing APK evidence
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: kai9000-luhm-os-testing-debug-${{ github.run_number }}
           path: |
@@ -349,6 +409,8 @@ jobs:
             build/android/zipalign.txt
             build/android/badging.txt
             build/android/contents.txt
+            build/provenance/npm-package-lock.sha256
+            _forge/vue-headless-cms/apps/package-lock.json
           if-no-files-found: error
           retention-days: 7
 
@@ -360,21 +422,24 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout Airship coordinates
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
       - name: Checkout pinned Samsung donor
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: ${{ env.DONOR_REPO }}
           ref: ${{ env.DONOR_REF }}
           path: _forge/vue-headless-cms
+          persist-credentials: false
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: '3.14'
 
       - name: Download APK evidence from this ULTIMA run
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: kai9000-luhm-os-testing-debug-${{ github.run_number }}
           path: build/apk-evidence
@@ -437,7 +502,7 @@ jobs:
           echo 'FDROID_STAGED'
 
       - name: Upload Black Magic staging bundle
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: kai9000-fdroid-stage-${{ github.run_number }}
           path: build/fdroid-stage/**
