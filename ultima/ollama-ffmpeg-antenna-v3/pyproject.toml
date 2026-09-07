@@ -1,7 +1,7 @@
 [project]
 name = "kai9000-ultima-ollama-ffmpeg-antenna"
-version = "3.3.0"
-description = "KAI 9000 jQuery cockpit with Python3/FastAPI magic coding, local Ollama, FFmpeg, and Google/Gemini antenna gateway"
+version = "3.4.0"
+description = "KAI 9000 jQuery cockpit with Python3/FastAPI, doctrine-driven OpenAI Lum agent, local Ollama, FFmpeg, and Google/Gemini antenna gateway"
 requires-python = ">=3.10"
 dependencies = [
   "fastapi",
@@ -9,10 +9,11 @@ dependencies = [
   "pydantic",
   "httpx",
   "google-genai",
+  "openai-agents==0.22.0",
 ]
 
 [tool.setuptools]
-packages = ["ai_feed"]
+packages = ["ai_feed", "lum_agent"]
 py-modules = [
   "antenna",
   "comfy_batch",
@@ -25,3 +26,6 @@ py-modules = [
   "remote_ai",
   "remote_pull",
 ]
+
+[tool.setuptools.package-data]
+lum_agent = ["skills/*/SKILL.md"]
