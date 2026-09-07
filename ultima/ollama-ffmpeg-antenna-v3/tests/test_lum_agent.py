@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 from unittest import mock
 
+import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
@@ -15,6 +16,7 @@ from lum_agent.agent import (
     build_lum_agent,
     route_lum_message,
     run_lum,
+    validate_session_id,
 )
 from lum_agent.doctrine import SKILLS, build_agent_instructions, load_skill
 from lum_agent.router import ROUTER
@@ -90,14 +92,26 @@ def test_luna_sol_routing_contract() -> None:
     assert forced_sol["route"] == "explicit_sol"
 
 
+def test_session_id_policy() -> None:
+    assert validate_session_id("kai.s24_chat-01") == "kai.s24_chat-01"
+    with pytest.raises(ValueError):
+        validate_session_id("../../secrets")
+    with pytest.raises(ValueError):
+        validate_session_id("has spaces")
+
+
 def test_no_key_is_deterministic_and_does_not_call_model() -> None:
     with mock.patch.dict(os.environ, {}, clear=True):
-        result = run_lum("Run a hard audit of the Python architecture")
+        result = run_lum(
+            "Run a hard audit of the Python architecture",
+            session_id="kai9000-test",
+        )
     assert result["ok"] is True
     assert result["mode"] == "deterministic_mock"
     assert result["model"] is None
     assert result["planned_model"] == "gpt-5.6-sol"
     assert result["reasoning_effort"] == "medium"
+    assert result["session_id"] == "kai9000-test"
     assert result["execution"] == "NOT_EXECUTED"
 
 
@@ -107,15 +121,31 @@ def test_lum_router_status_and_no_key_chat() -> None:
     client = TestClient(app)
     with mock.patch.dict(os.environ, {}, clear=True):
         status = client.get("/api/lum/status")
-        chat = client.post("/api/lum/chat", json={"message": "inspect Python doctrine"})
+        chat = client.post(
+            "/api/lum/chat",
+            json={"message": "inspect Python doctrine", "session_id": "kai-ui-test"},
+        )
     assert status.status_code == 200
     status_json = status.json()
     assert status_json["agent"] == "KAI9000-Lum-InApp"
     assert status_json["default_model"] == "gpt-5.6-luna"
     assert status_json["heavy_model"] == "gpt-5.6-sol"
+    assert status_json["session_memory"] == "sqlite"
     assert status_json["credential_exposed_to_client"] is False
     assert status_json["self_approval"] is False
     assert status_json["silent_cross_provider_failover"] is False
     assert "huggingface-forge" in status_json["skills"]
     assert chat.status_code == 200
     assert chat.json()["mode"] == "deterministic_mock"
+    assert chat.json()["session_id"] == "kai-ui-test"
+
+
+def test_lum_router_rejects_bad_session_id() -> None:
+    app = FastAPI()
+    app.include_router(ROUTER)
+    client = TestClient(app)
+    response = client.post(
+        "/api/lum/chat",
+        json={"message": "hello", "session_id": "../escape"},
+    )
+    assert response.status_code == 422
