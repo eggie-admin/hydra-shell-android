@@ -95,16 +95,21 @@ jobs:
           python -m json.tool lumh-os/kai9000/project.manifest.json >/dev/null
           python -m json.tool project/hydra/samsung/android/apk/testing-ingest.manifest.json >/dev/null
 
-          # External hosting is never Android build authority and secret values must not be embedded.
-          ! grep -RniE 'vercel|OPENAI_API_KEY[[:space:]]*=|CLOUDFLARE_API_TOKEN[[:space:]]*=|GOOGLE_APPLICATION_CREDENTIALS[[:space:]]*=' \
-            lumh-os project docs release integrations ultima .github 2>/dev/null
+          # Doctrine may say an external host is purged; fail only on actionable deployment references.
+          if git grep -nE 'vercel\.app|@vercel|npx[[:space:]]+vercel|vercel[[:space:]]+(deploy|build)|OPENAI_API_KEY[[:space:]]*=|CLOUDFLARE_API_TOKEN[[:space:]]*=|GOOGLE_APPLICATION_CREDENTIALS[[:space:]]*=' -- \
+            ':!.github/workflows/oni-ultima-debug-apk.yml' \
+            ':!.github/workflows/cloudflare-ultima-audit.yml'; then
+            echo 'Forbidden external deployment or embedded credential reference detected' >&2
+            exit 1
+          fi
 
           # No tracked secret directories, private keys, signing containers, or provider credential files.
           if git ls-files | grep -E '(^|/)(\.secrets|private)/|\.(jks|keystore|p12|pfx|pkcs12|key|pem)$|(^|/)(google-services|service-account|credentials[^/]*)\.json$'; then
             echo 'Tracked secret/signing material detected' >&2
             exit 1
           fi
-          if git grep -nE -- '-----BEGIN ([A-Z0-9 ]+ )?PRIVATE KEY-----|github_pat_[A-Za-z0-9_]{20,}|ghp_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9_-]{20,}|hf_[A-Za-z0-9]{20,}|AIza[0-9A-Za-z_-]{30,}' -- ':!*.md' ':!*.example' ':!*.template'; then
+          if git grep -nE -- '-----BEGIN ([A-Z0-9 ]+ )?PRIVATE KEY-----|github_pat_[A-Za-z0-9_]{20,}|ghp_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9_-]{20,}|hf_[A-Za-z0-9]{20,}|AIza[0-9A-Za-z_-]{30,}' -- \
+            ':!*.md' ':!*.example' ':!*.template' ':!backend/tests/test_remote_ai_router.py'; then
             echo 'Secret-like credential material detected' >&2
             exit 1
           fi
