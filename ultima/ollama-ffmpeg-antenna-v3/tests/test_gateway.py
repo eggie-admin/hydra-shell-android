@@ -35,7 +35,7 @@ class Kai9000GatewayTests(unittest.TestCase):
         self.client = TestClient(app)
 
     def test_four_lane_contract_is_mounted(self):
-        paths = {route.path for route in self.app.routes}
+        paths = {path for route in self.app.routes if (path := getattr(route, "path", None))}
         required = {
             "/api/status",
             "/api/director",
