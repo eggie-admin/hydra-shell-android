@@ -77,7 +77,11 @@ jobs:
           set -euo pipefail
           python - <<'PY'
           import magic_server
-          paths = {route.path for route in magic_server.APP.routes}
+          paths = {
+              path
+              for route in magic_server.APP.routes
+              if (path := getattr(route, 'path', None))
+          }
           required = {
               '/health',
               '/api/jobs',
