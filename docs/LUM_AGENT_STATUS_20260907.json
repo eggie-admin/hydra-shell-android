@@ -1,0 +1,42 @@
+{
+  "schema": "kai9000.lum-agent-status.v1",
+  "date": "2026-09-07",
+  "agent": "KAI9000-Lum-InApp",
+  "openai_agents_sdk": "0.22.0",
+  "default_model": "gpt-5.6-luna",
+  "reasoning_effort": "none",
+  "verbosity": "low",
+  "credential_contract": {
+    "env": "OPENAI_API_KEY",
+    "reuse_existing_luhm_os_key": true,
+    "new_key_created_by_reroll": false,
+    "platform_key_label_renamed": false,
+    "key_value_in_git": false,
+    "key_value_in_android": false
+  },
+  "skill_chain": [
+    "prime",
+    "python-core",
+    "python-debug",
+    "json-boundary",
+    "jquery-plugin",
+    "android-backend"
+  ],
+  "authority": {
+    "read_and_reason": true,
+    "compile_python": true,
+    "propose_spell": true,
+    "direct_write_tool": false,
+    "self_approval": false,
+    "in_app_ultima": false
+  },
+  "evidence": {
+    "antenna_lum_smoke_run": 34158459126,
+    "antenna_lum_smoke_python_311": "GREEN",
+    "antenna_lum_smoke_python_314": "GREEN",
+    "ultima_run": 34158801803,
+    "ultima_commit": "35ce6524b031b5cbc395b2e168e74d246f8de9de",
+    "ultima_conclusion": "success",
+    "live_openai_request_with_reused_key": "NOT_PROVEN"
+  }
+}
