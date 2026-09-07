@@ -8,9 +8,13 @@ on:
       - '.github/workflows/ultima-final-form.yml'
       - 'fdroid/publication.manifest.json'
       - 'integrations/cloudflare/security.manifest.json'
-      - 'integrations/cloudflare/origin-ca-ecc.sh'
+      - 'integrations/cloudflare/dns-security.template.json'
+      - 'integrations/cloudflare/cloudflared-fdroid-origin.template.yml'
       - 'integrations/cloudflare/bootstrap-oauth.sh'
       - 'integrations/google-cloud/bootstrap-oauth.sh'
+      - 'integrations/google-cloud/provision-strict-free-vm.sh'
+      - 'integrations/google-cloud/nginx-fdroid-origin.conf'
+      - 'scripts/cast-ultima-live.sh'
   workflow_dispatch:
 
 permissions:
@@ -30,18 +34,10 @@ env:
 
 jobs:
   final-form-preflight:
-    name: Final-form signed evidence and OAuth bootstrap preflight
+    name: Final-form signed evidence and Tunnel publication preflight
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-
-      - name: Pull Cloudflare public Origin CA ECC root
-        shell: bash
-        run: |
-          set -euo pipefail
-          bash integrations/cloudflare/origin-ca-ecc.sh pull-root
-          test -s build/cloudflare-origin-ca/cloudflare-origin-ecc-root.pem
-          echo 'CLOUDFLARE_PUBLIC_CA_GREEN'
 
       - name: Verify persistent signed publication evidence
         shell: bash
@@ -52,6 +48,7 @@ jobs:
           from pathlib import Path
 
           manifest = json.loads(Path('fdroid/publication.manifest.json').read_text())
+          assert manifest['schema'] == 'kai9000.fdroid-publication.v3'
           assert manifest['trust']['fdroid_signed'] is True
           assert manifest['trust']['apk_signer_sha256'] == os.environ['APK_SIGNER_SHA256']
           assert manifest['trust']['repo_fingerprint_sha256'] == os.environ['FDROID_REPO_FINGERPRINT_SHA256']
@@ -59,8 +56,14 @@ jobs:
           assert manifest['repo_url'] == os.environ['FDROID_REPO_URL']
           assert manifest['package_id'] == os.environ['PACKAGE_ID']
           assert manifest['origin']['human_auth'] == 'gcloud_user_oauth'
+          assert manifest['origin']['public_web_ingress'] is False
+          assert manifest['origin']['public_ssh'] is False
+          assert manifest['origin']['admin_transport'] == 'google_iap_ssh_only'
           assert manifest['edge']['human_auth'] == 'wrangler_and_cloudflared_oauth_browser_flows'
-          print('PERSISTENT_SIGNED_EVIDENCE_GREEN')
+          assert manifest['edge']['route'] == 'dedicated_locally_managed_cloudflare_tunnel'
+          assert manifest['edge']['origin_ip_exposed_in_dns'] is False
+          assert manifest['live_cast']['script'] == 'scripts/cast-ultima-live.sh'
+          print('PERSISTENT_SIGNED_TUNNEL_PUBLICATION_EVIDENCE_GREEN')
           PY
 
       - name: Verify OAuth-first operator bootstrap
@@ -75,25 +78,44 @@ jobs:
           grep -q 'cf_api_token_required_for_human_bootstrap' integrations/cloudflare/security.manifest.json
           echo 'OAUTH_OPERATOR_BOOTSTRAP_ARMED'
 
-      - name: Confirm final publication tools are armed
+      - name: Verify Tunnel-hidden Google origin doctrine
         shell: bash
         run: |
           set -euo pipefail
-          test -s scripts/publish_fdroid_origin.sh
-          test -s integrations/google-cloud/nginx-fdroid-origin.conf
-          test -s integrations/cloudflare/origin-ca-ecc.sh
-          grep -q 'origin-ecc' integrations/cloudflare/origin-ca-ecc.sh
-          grep -q 'ec_paramgen_curve:P-256' integrations/cloudflare/origin-ca-ecc.sh
-          echo 'FINAL_FORM_OPERATOR_TOOLCHAIN_ARMED'
+          python -m json.tool integrations/cloudflare/security.manifest.json >/dev/null
+          python -m json.tool integrations/cloudflare/dns-security.template.json >/dev/null
+          bash -n integrations/google-cloud/provision-strict-free-vm.sh
+          test -s integrations/cloudflare/cloudflared-fdroid-origin.template.yml
+          grep -q 'service: http://127.0.0.1:8080' integrations/cloudflare/cloudflared-fdroid-origin.template.yml
+          grep -q '35.235.240.0/20' integrations/google-cloud/provision-strict-free-vm.sh
+          grep -q 'tunnel-through-iap' integrations/google-cloud/provision-strict-free-vm.sh
+          ! grep -Eq -- '--source-ranges[= ]+.*::/0' integrations/google-cloud/provision-strict-free-vm.sh
+          ! grep -Eq 'listen[[:space:]]+\[::\]:(80|443)' integrations/google-cloud/nginx-fdroid-origin.conf
+          grep -q 'listen 127.0.0.1:8080' integrations/google-cloud/nginx-fdroid-origin.conf
+          echo 'TUNNEL_HIDDEN_ORIGIN_DOCTRINE_GREEN'
+
+      - name: Verify live-cast script
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash -n scripts/cast-ultima-live.sh
+          grep -q 'cloudflared tunnel route dns' scripts/cast-ultima-live.sh
+          grep -q 'gcloud compute scp' scripts/cast-ultima-live.sh
+          grep -q -- '--tunnel-through-iap' scripts/cast-ultima-live.sh
+          grep -q 'PERSISTENT_SIGNED_EVIDENCE_GREEN' scripts/cast-ultima-live.sh
+          grep -q 'FDROID_PUBLISHED' scripts/cast-ultima-live.sh
+          grep -q 'origin_public_ip_record=NONE' scripts/cast-ultima-live.sh
+          echo 'ULTIMA_LIVE_CAST_SCRIPT_GREEN'
 
   final-form-ready:
-    name: FINAL FORM operator publication armed
+    name: FINAL FORM live publication armed
     needs: final-form-preflight
     runs-on: ubuntu-24.04
     steps:
       - name: Seal operator-ready state
         run: |
-          echo 'FINAL_FORM_OPERATOR_READY'
-          echo 'No private signing key, Cloudflare API token, or Google WIF credential is required in GitHub for human publication.'
-          echo 'Human bootstrap uses Cloudflare OAuth + gcloud OAuth. Durable CI may add scoped account tokens/WIF later.'
+          echo 'FINAL_FORM_LIVE_PUBLICATION_ARMED'
+          echo 'F-Droid origin is designed for a dedicated outbound-only Cloudflare Tunnel.'
+          echo 'Google VM web ingress is closed; administration is Google IAP SSH only.'
+          echo 'Human bootstrap uses Cloudflare OAuth + gcloud OAuth; no copied API token is required.'
           echo 'FINAL_FORM_GREEN still requires live HTTPS publication, F-Droid import proof, and signed upgrade proof.'
