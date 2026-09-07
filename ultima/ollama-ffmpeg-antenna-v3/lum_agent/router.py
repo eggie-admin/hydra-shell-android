@@ -23,6 +23,12 @@ ROUTER = APIRouter(prefix="/api/lum", tags=["lum-agent"])
 
 class LumChatRequest(BaseModel):
     message: str = Field(min_length=1, max_length=16000)
+    session_id: str = Field(
+        default="kai9000-default",
+        min_length=1,
+        max_length=64,
+        pattern=r"^[A-Za-z0-9._-]+$",
+    )
 
 
 @ROUTER.get("/status")
@@ -36,6 +42,8 @@ def lum_status() -> dict[str, Any]:
         "sdk": "openai-agents",
         "api": "responses",
         "transport": LUM_TRANSPORT,
+        "session_memory": "sqlite",
+        "session_id_policy": "client-generated opaque id; 1-64 [A-Za-z0-9._-]",
         "default_reasoning_effort": "none",
         "heavy_reasoning_effort": "medium",
         "verbosity": "low",
@@ -54,7 +62,9 @@ def lum_status() -> dict[str, Any]:
 def lum_chat(req: LumChatRequest) -> dict[str, Any]:
     _reject_secrets(req.message)
     try:
-        return run_lum(req.message)
+        return run_lum(req.message, session_id=req.session_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     except Exception as exc:
         raise HTTPException(
             status_code=502,
