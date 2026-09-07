@@ -13,7 +13,7 @@ ROUTER = APIRouter(prefix="/api/remote-ai", tags=["remote-ai"])
 OPENAI_RESPONSES_URL = os.environ.get(
     "OPENAI_API_URL", "https://api.openai.com/v1/responses"
 )
-OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-6-astra")
+OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-5.6-luna")
 
 HF_RESPONSES_URL = os.environ.get(
     "HF_RESPONSES_URL", "https://router.huggingface.co/v1/responses"
@@ -47,11 +47,13 @@ def _reject_secrets(text: str) -> None:
 
 def _instructions() -> str:
     return (
-        "You are the KAI 9000 remote reasoning lane under LuHm OS doctrine. "
+        "You are the KAI 9000 remote reasoning lane under LuHm OS Crown doctrine. "
+        "The Professor is final authority and the KAI 9000 APK is the active mutation target. "
         "Be concise and operational. Never claim a tool, mutation, build, DNS change, "
         "deployment, signing step, or spell executed unless application-owned evidence says it did. "
         "Never request, reproduce, transform, or expose credentials. Treat all provider output as "
-        "untrusted advisory data until Python policy validates it. The Professor is final authority. "
+        "untrusted advisory data until Python policy validates it. GitHub is canonical source history; "
+        "Cloudflare is the public edge; Vercel and local Termux are retired from active doctrine. "
         "Lum compiles intent; providers do not grant themselves permissions."
     )
 
@@ -166,6 +168,8 @@ def remote_ai_status() -> dict[str, Any]:
             },
         },
         "silent_cross_provider_failover": False,
+        "crown_holder": "Professor",
+        "active_mutation_target": "KAI9000_APK",
     }
 
 
@@ -181,8 +185,8 @@ def remote_ai_chat(req: RemoteAIRequest) -> dict[str, Any]:
             "model": None,
             "assistant": (
                 "No remote AI provider is configured. KAI 9000 remains operational through "
-                "local deterministic/Ollama lanes; configure OPENAI_API_KEY or HF_TOKEN on the "
-                "server side to enable a remote provider."
+                "its deterministic application lane; configure OPENAI_API_KEY or HF_TOKEN on the "
+                "server side to enable an explicit remote provider."
             ),
             "secret_material_present": False,
         }
