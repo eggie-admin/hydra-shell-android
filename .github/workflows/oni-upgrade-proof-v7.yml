@@ -204,12 +204,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python _forge/vue-headless-cms/scripts/stage_fdroid_repo.py \
+          cd _forge/vue-headless-cms
+          python scripts/stage_fdroid_repo.py \
             --apk "$GITHUB_WORKSPACE/build/android/$APK_NAME" \
             --output "$GITHUB_WORKSPACE/build/fdroid-v7-stage" \
             --package "$PACKAGE_ID" \
             --version-code "$VERSION_CODE"
+          cd "$GITHUB_WORKSPACE"
           test -s "build/fdroid-v7-stage/repo/${PACKAGE_ID}_${VERSION_CODE}.apk"
+          test -s "build/fdroid-v7-stage/metadata/${PACKAGE_ID}.yml"
           echo 'FDROID_V7_STAGED'
 
       - name: Upload v7 upgrade evidence
