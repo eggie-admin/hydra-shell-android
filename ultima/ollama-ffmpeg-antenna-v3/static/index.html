@@ -1,80 +1,103 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>KAI9000 Magic Cockpit</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050b16">
+<title>KAI 9000 · Lum Cockpit</title>
 <style>
-body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;margin:20px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}.card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:14px}input,textarea,select,button{box-sizing:border-box;width:100%;margin:5px 0;padding:9px;background:#0d1117;color:#e6edf3;border:1px solid #30363d;border-radius:8px}button{cursor:pointer}button:hover{border-color:#4dd0e1}img,video{width:100%;background:#000;border-radius:8px}pre{white-space:pre-wrap;overflow:auto;background:#0d1117;padding:10px;border-radius:8px;max-height:55vh}.small{font-size:.9rem;color:#9da7b3}.rune{color:#4dd0e1}.warn{color:#ffcf66}.status{padding:6px;border:1px solid #30363d;border-radius:8px;margin:6px 0}.fatal{background:#4a1111;color:#ffd8d8;padding:10px;border-radius:8px;margin-bottom:12px}
+:root{--ink:#05080d;--navy:#07182c;--navy2:#0a2440;--blue:#24c7ff;--blue2:#1868ff;--gold:#e7bc66;--gold2:#fff0a8;--red:#9b2638;--red2:#ff526b;--paper:#eef7ff;--muted:#8da3b7;--panel:rgba(4,14,27,.92);--line:rgba(231,188,102,.58);--shadow:0 18px 60px rgba(0,0,0,.48)}
+*{box-sizing:border-box}html{background:#03060b}body{margin:0;min-height:100vh;color:var(--paper);font-family:Georgia,"Times New Roman",serif;background:radial-gradient(circle at 50% 2%,rgba(23,103,255,.34),transparent 35%),radial-gradient(circle at 77% 40%,rgba(155,38,56,.13),transparent 28%),linear-gradient(180deg,#02050a 0%,#071528 47%,#02070d 100%)}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.28;background-image:linear-gradient(rgba(36,199,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(36,199,255,.035) 1px,transparent 1px);background-size:28px 28px;mask-image:linear-gradient(to bottom,#000,transparent 82%)}
+button,input,textarea,select{font:inherit}.shell{width:min(1180px,100%);margin:0 auto;padding:max(14px,env(safe-area-inset-top)) 14px max(24px,env(safe-area-inset-bottom))}.frame{border:1px solid var(--gold);border-radius:28px;background:linear-gradient(145deg,rgba(6,20,36,.97),rgba(3,8,15,.98));box-shadow:0 0 0 2px rgba(36,199,255,.18),var(--shadow);overflow:hidden}.masthead{position:relative;text-align:center;padding:22px 18px 16px;border-bottom:1px solid var(--line);background:linear-gradient(90deg,rgba(155,38,56,.13),rgba(19,91,180,.28),rgba(155,38,56,.13))}.masthead h1{margin:0;color:var(--gold2);font-size:clamp(2.35rem,7vw,5rem);letter-spacing:.045em;text-shadow:0 0 18px rgba(36,199,255,.38),0 2px 0 #5d3519}.masthead .tag{color:var(--gold);letter-spacing:.35em;text-transform:uppercase;font-size:.72rem}.crown{position:absolute;right:20px;top:17px;width:36px;height:36px;filter:sepia(1) saturate(4) hue-rotate(350deg) brightness(1.15)}
+.statusbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:10px 14px;background:#040b14;border-bottom:1px solid rgba(36,199,255,.25)}.chip{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.72rem;border:1px solid rgba(36,199,255,.35);border-radius:999px;padding:5px 9px;color:#bfefff;background:rgba(9,42,73,.55)}.chip.gold{border-color:rgba(231,188,102,.55);color:var(--gold2)}.chip.red{border-color:rgba(255,82,107,.45);color:#ffb8c3}
+.cockpit{display:grid;grid-template-columns:220px minmax(0,1fr) 250px;gap:12px;padding:12px}@media(max-width:900px){.cockpit{grid-template-columns:1fr}.persona,.quests{order:2}.chatdeck{order:1}}
+.panel{position:relative;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,rgba(7,26,47,.95),rgba(4,12,23,.96));box-shadow:inset 0 0 30px rgba(36,199,255,.035);overflow:hidden}.panel:after{content:"";position:absolute;inset:6px;border:1px solid rgba(36,199,255,.13);border-radius:13px;pointer-events:none}.panelhead{padding:13px 15px 9px;color:var(--gold2);letter-spacing:.1em;text-transform:uppercase;font-size:.88rem;border-bottom:1px solid rgba(231,188,102,.28)}
+.persona{padding-bottom:14px}.sigil{width:86px;height:86px;margin:18px auto 10px;border:1px solid var(--gold);border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,rgba(36,199,255,.28),rgba(155,38,56,.22) 55%,transparent 70%);box-shadow:0 0 35px rgba(36,199,255,.25)}.sigil img{width:50px;filter:sepia(1) saturate(5) hue-rotate(350deg) brightness(1.25)}.persona h2{text-align:center;margin:4px 12px;color:#fff0c7;font-size:1.55rem}.persona .role{text-align:center;color:#b7d8ef;font-size:.82rem;line-height:1.5;padding:0 14px}.traits{list-style:none;margin:14px;padding:0;border-top:1px solid rgba(231,188,102,.25);border-bottom:1px solid rgba(231,188,102,.25)}.traits li{padding:7px 3px;color:#e8bf73;text-transform:uppercase;letter-spacing:.12em;font-size:.72rem}.quote{padding:0 16px;font-style:italic;color:#e9eef4;line-height:1.5;font-size:.9rem}.crownlaw{margin:14px;border:1px solid rgba(255,82,107,.42);padding:9px;border-radius:10px;color:#ffc3cc;background:rgba(98,13,31,.18);font-size:.76rem;line-height:1.4}
+.chatdeck{min-height:620px;display:flex;flex-direction:column}.chatdeck .panelhead{display:flex;justify-content:space-between;gap:8px;align-items:center}.modelroute{font-family:ui-monospace,monospace;color:#82deff;font-size:.68rem;text-transform:none;letter-spacing:0}.chatlog{position:relative;z-index:1;flex:1;min-height:380px;max-height:58vh;overflow:auto;padding:16px;scroll-behavior:smooth;background:radial-gradient(circle at 50% 35%,rgba(13,76,134,.18),transparent 42%)}.msg{max-width:86%;padding:11px 13px;margin:8px 0;border-radius:14px;line-height:1.45;font-family:system-ui,sans-serif;font-size:.94rem;white-space:pre-wrap}.msg.user{margin-left:auto;border:1px solid rgba(36,199,255,.54);background:linear-gradient(135deg,rgba(14,86,143,.88),rgba(6,43,75,.88));box-shadow:0 0 18px rgba(36,199,255,.08)}.msg.lum{margin-right:auto;border:1px solid rgba(231,188,102,.5);background:linear-gradient(135deg,rgba(65,28,34,.76),rgba(26,18,29,.9))}.msg .who{display:block;margin-bottom:4px;font-size:.68rem;letter-spacing:.13em;text-transform:uppercase;color:var(--gold)}.composer{position:relative;z-index:1;padding:12px;border-top:1px solid rgba(231,188,102,.28);background:#040b14}.composer textarea{width:100%;min-height:92px;resize:vertical;border:1px solid rgba(36,199,255,.45);border-radius:12px;padding:12px;background:#020912;color:#eafbff;font-family:system-ui,sans-serif;outline:none}.composer textarea:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(36,199,255,.12)}.compose-actions{display:flex;gap:8px;margin-top:8px}.btn{cursor:pointer;border:1px solid var(--gold);border-radius:10px;padding:10px 12px;background:linear-gradient(180deg,#102b48,#081725);color:var(--gold2);font-weight:700;letter-spacing:.04em}.btn:hover{border-color:var(--blue);color:#dff7ff}.btn.primary{flex:1;border-color:var(--blue);color:#e8fbff;background:linear-gradient(180deg,#0a4e82,#062a49);box-shadow:0 0 18px rgba(36,199,255,.14)}.btn.ghost{border-color:rgba(231,188,102,.35);background:#07111d;color:#c6a86f}.hint{margin:8px 2px 0;color:var(--muted);font:11px/1.4 ui-monospace,monospace}
+.quests{padding-bottom:12px}.questlist{padding:11px}.quest{width:100%;display:flex;gap:9px;align-items:center;margin:7px 0;padding:10px;border:1px solid rgba(231,188,102,.34);border-radius:10px;background:rgba(4,14,27,.76);color:#e8eef6;text-align:left;cursor:pointer}.quest:hover{border-color:var(--blue);box-shadow:0 0 14px rgba(36,199,255,.12)}.quest img{width:22px;height:22px;filter:sepia(1) saturate(4) hue-rotate(175deg) brightness(1.6)}.rewards{margin:10px;border-top:1px solid rgba(231,188,102,.3);padding-top:12px}.reward{display:flex;gap:10px;align-items:center;padding:9px 3px;color:#d8e7f1;font-size:.85rem}.reward strong{color:var(--gold2)}.reward img{width:31px;height:31px;filter:sepia(1) saturate(5) hue-rotate(350deg) brightness(1.2)}
+.commandbar{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;padding:10px 12px;border-top:1px solid rgba(36,199,255,.22);background:rgba(2,8,14,.96)}@media(max-width:650px){.commandbar{grid-template-columns:repeat(2,1fr)}}.cmd{border:1px solid rgba(36,199,255,.52);background:#04111e;color:#86e8ff;border-radius:9px;padding:9px 7px;cursor:pointer;font:700 .78rem ui-monospace,monospace}.cmd:hover{background:#0a3558;color:#fff}.nav{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:10px;background:#030912;border-top:1px solid var(--line)}.nav button{border:0;background:transparent;color:#d7b569;padding:9px 4px;font-size:.74rem;text-transform:uppercase;letter-spacing:.08em}.nav button.active{color:#9eeaff;text-shadow:0 0 12px var(--blue)}
+.forge{margin:12px;border:1px solid rgba(231,188,102,.32);border-radius:14px;background:rgba(2,8,14,.9)}.forge summary{cursor:pointer;padding:12px 14px;color:var(--gold);letter-spacing:.11em;text-transform:uppercase}.forgegrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;padding:0 12px 12px}.card{border:1px solid rgba(36,199,255,.22);border-radius:12px;padding:12px;background:rgba(7,24,43,.72)}.card h3{margin:0 0 9px;color:#bfeeff}.card input,.card textarea,.card select{width:100%;margin:4px 0;padding:8px;border:1px solid #294961;border-radius:8px;background:#020912;color:#eaf7ff}.card button{width:100%;margin:4px 0}.status{padding:7px;border:1px solid rgba(36,199,255,.25);border-radius:8px;color:#a9d9ed;font:12px ui-monospace,monospace}.warn{color:#ffd98a}.rune{color:#78e4ff}.evidence{margin:0 12px 12px;border:1px solid rgba(36,199,255,.18);border-radius:12px;overflow:hidden}.evidence h3{margin:0;padding:10px 12px;color:#bfeeff;background:#06111d}.evidence pre{margin:0;max-height:260px;overflow:auto;padding:12px;background:#02070d;color:#b7cad9;white-space:pre-wrap;font:12px/1.45 ui-monospace,monospace}.fatal{margin:10px;padding:10px;border:1px solid #ff526b;background:#3c0a15;color:#ffd7de;border-radius:10px}
 </style>
 </head>
 <body>
-<h1>🔷 KAI9000 Magic Cockpit</h1>
-<p class="small">jQuery cockpit → Python 3/FastAPI policy kernel → doctrine-driven Lum Agents SDK + local KAI workers. Browser code never owns credentials, filesystem policy, approval, or rollback.</p>
+<div class="shell"><main class="frame">
+<header class="masthead">
+  <img class="crown" src="/static/vendor/kai-icons/jewel-crown.svg" alt="Crown">
+  <h1>KAI 9000</h1>
+  <div class="tag">Code · Create · Conquer</div>
+</header>
+<div class="statusbar">
+  <span class="chip gold">CROWN: PROFESSOR</span>
+  <span class="chip">APK COCKPIT</span>
+  <span class="chip">GITHUB REMOTE</span>
+  <span id="providerChip" class="chip">LUM: CONNECTING</span>
+  <span class="chip red">SELF-APPROVAL: OFF</span>
+</div>
+<section class="cockpit">
+  <aside class="panel persona">
+    <div class="panelhead">Infernal Secretary</div>
+    <div class="sigil"><img src="/static/vendor/kai-icons/magic-swirl.svg" alt="Lum sigil"></div>
+    <h2>LUM // MONA</h2>
+    <div class="role">AI operative · spell compiler · creator companion</div>
+    <ul class="traits"><li>Loyal</li><li>Dangerous</li><li>Efficient</li><li>Yours to command</li></ul>
+    <p class="quote">“I don’t just collect code. I manage expectations.”</p>
+    <div class="crownlaw">Professor holds the Crown. Lum may inspect, reason, compile and propose. External mutation remains behind deterministic approval gates.</div>
+  </aside>
 
-<div class="grid">
-  <div class="card">
-    <h2>Lum Python Coding Agent</h2>
-    <div id="lumStatus" class="status">loading Lum status…</div>
-    <textarea id="magicPrompt" rows="8" placeholder="Ask Lum to inspect Python, explain a class, debug a failure, propose a patch, or load a doctrine skill"></textarea>
-    <button id="askOpenAI">Ask Lum</button>
-    <p class="small">Server-side OpenAI Agents SDK. Default model: GPT-5.6 Luna, reasoning none, low verbosity. Existing <code>OPENAI_API_KEY</code> stays server-side. Lum can inspect and propose; mutation remains behind the human-approved spell gateway.</p>
-  </div>
+  <section class="panel chatdeck">
+    <div class="panelhead"><span>In-App Lum Chat</span><span id="lumRoute" class="modelroute">route: loading</span></div>
+    <div id="lumChatLog" class="chatlog" aria-live="polite">
+      <div class="msg lum"><span class="who">Lum</span>KAI 9000 cockpit online. Give me a build, debug, refactor, research, or architecture task.</div>
+    </div>
+    <div class="composer">
+      <textarea id="magicPrompt" placeholder="Message Lum…  Shift+Enter for a new line"></textarea>
+      <div class="compose-actions"><button id="newLumSession" class="btn ghost" type="button">New Session</button><button id="askOpenAI" class="btn primary" type="button">Cast Message</button></div>
+      <div class="hint"><span id="lumStatus">loading Lum status…</span> · session <span id="lumSessionLabel">creating…</span></div>
+    </div>
+  </section>
 
-  <div class="card">
-    <h2>Spell Compiler</h2>
-    <div class="small">Code root: <span id="codeRoot" class="rune">loading…</span></div>
-    <select id="spellList"></select>
-    <textarea id="spellArgs" rows="7" placeholder='{"path":"ultima/ollama-ffmpeg-antenna-v3/main.py"}'></textarea>
-    <button id="prepareCast">Prepare Cast</button>
-    <input id="castId" placeholder="Cast / checkpoint ID" readonly>
-    <div id="approvalState" class="status warn">NOT PREPARED</div>
-    <button id="approveCast">Human Approve</button>
-    <button id="executeCast">Execute Cast</button>
-    <button id="rollbackCast">Rollback Checkpoint</button>
-    <p class="small">WRITE_FILE is checkpointed and SHA-guarded. ULTIMA remains disabled in-app.</p>
-  </div>
+  <aside class="panel quests">
+    <div class="panelhead">Active Quests</div>
+    <div class="questlist">
+      <button class="quest quickPrompt" data-prompt="Inspect the current project structure and identify the next highest-value change. Do not mutate anything yet."><img src="/static/vendor/kai-icons/floating-crystal.svg" alt="">Inspect project structure</button>
+      <button class="quest quickPrompt" data-prompt="Implement core logic for the current task. First inspect evidence, then propose the smallest safe patch."><img src="/static/vendor/kai-icons/spell-book.svg" alt="">Implement core logic</button>
+      <button class="quest quickPrompt" data-prompt="Run a root cause debug pass on the current failure and return evidence plus a minimal fix plan."><img src="/static/vendor/kai-icons/magic-swirl.svg" alt="">Debug root cause</button>
+      <button class="quest quickPrompt" data-prompt="Refactor the current code for clarity without changing behavior. Show the proposed diff before mutation."><img src="/static/vendor/kai-icons/spell-book.svg" alt="">Refactor for clarity</button>
+      <button class="quest quickPrompt" data-prompt="Prepare deployment readiness evidence for the KAI 9000 APK lane. Do not publish or merge."><img src="/static/vendor/kai-icons/jewel-crown.svg" alt="">Prepare deployment</button>
+    </div>
+    <div class="rewards">
+      <div class="reward"><img src="/static/vendor/kai-icons/floating-crystal.svg" alt=""><span><strong>Session Memory</strong><br>Multi-turn context</span></div>
+      <div class="reward"><img src="/static/vendor/kai-icons/magic-swirl.svg" alt=""><span><strong>Luna → Sol</strong><br>Speed then depth</span></div>
+      <div class="reward"><img src="/static/vendor/kai-icons/jewel-crown.svg" alt=""><span><strong>Crown Gate</strong><br>Professor final authority</span></div>
+    </div>
+  </aside>
+</section>
 
-  <div class="card">
-    <h2>Local Ollama</h2>
-    <textarea id="ollamaPrompt" rows="5" placeholder="Ask the local KAI antenna"></textarea>
-    <button id="askOllama">Ask Ollama</button>
-    <h2>ComfyUI Batch</h2>
-    <input id="start" placeholder="Start frame, optional">
-    <input id="end" placeholder="End frame, optional">
-    <input id="step" value="1">
-    <button id="regen">Run ComfyUI Regen</button>
-  </div>
+<div class="commandbar">
+  <button class="cmd quickPrompt" data-prompt="Compile the relevant Python files and report exact evidence. Do not claim integration success from syntax alone.">/compile</button>
+  <button class="cmd quickPrompt" data-prompt="Debug the current issue using the deterministic evidence ladder. Identify root cause before proposing a patch.">/debug</button>
+  <button class="cmd quickPrompt" data-prompt="Refactor the relevant code for clarity and maintainability while preserving behavior.">/refactor</button>
+  <button class="cmd quickPrompt" data-prompt="Prepare a release or deployment plan for the current KAI 9000 APK state. Do not publish, merge, sign, or deploy without Crown approval.">/ship</button>
+  <button class="cmd quickPrompt" data-prompt="Create a Save Crystal plan for the current Git coordinates and recovery evidence. Do not move refs without approval.">/save 1</button>
 </div>
 
-<div class="grid">
-  <div class="card">
-    <h2>Demux</h2>
-    <input id="src" placeholder="Absolute MP4 path on host">
-    <input id="label" value="ultima-test">
-    <button id="demux">Demux MP4</button>
+<details class="forge">
+  <summary>Forge Bay · advanced tools</summary>
+  <div class="forgegrid">
+    <div class="card"><h3>Spell Compiler</h3><div class="hint">Code root: <span id="codeRoot" class="rune">loading…</span></div><select id="spellList"></select><textarea id="spellArgs" rows="5" placeholder='{"path":"ultima/ollama-ffmpeg-antenna-v3/main.py"}'></textarea><button id="prepareCast" class="btn">Prepare Cast</button><input id="castId" placeholder="Cast / checkpoint ID" readonly><div id="approvalState" class="status warn">NOT PREPARED</div><button id="approveCast" class="btn">Human Approve</button><button id="executeCast" class="btn">Execute Cast</button><button id="rollbackCast" class="btn">Rollback Checkpoint</button></div>
+    <div class="card"><h3>Media Forge</h3><input id="src" placeholder="Remote/runtime MP4 path"><input id="label" value="ultima-test"><button id="demux" class="btn">Demux MP4</button><input id="job" placeholder="Job ID"><button class="apng btn" data-ai="false">Source APNG</button><button class="apng btn" data-ai="true">AI APNG</button><button id="remux" class="btn">Remux AI MP4</button><button id="seal" class="btn">Seal Artifacts</button><button id="backup" class="btn">Backup Evidence</button></div>
+    <div class="card"><h3>Image Forge</h3><input id="start" placeholder="Start frame, optional"><input id="end" placeholder="End frame, optional"><input id="step" value="1"><button id="regen" class="btn">Run Regen Job</button><img id="apngImage" alt="APNG preview"><video id="mp4" controls></video></div>
   </div>
-  <div class="card">
-    <h2>Media Job</h2>
-    <input id="job" placeholder="Job ID">
-    <button class="apng" data-ai="false">Source APNG</button>
-    <button class="apng" data-ai="true">AI APNG</button>
-    <button id="remux">Remux AI MP4</button>
-    <button id="seal">Seal Artifacts</button>
-    <button id="backup">Backup to Drive</button>
-  </div>
-</div>
-
-<div class="grid">
-  <div class="card"><h2>APNG</h2><img id="apngImage" alt="APNG preview"></div>
-  <div class="card"><h2>MP4</h2><video id="mp4" controls></video></div>
-</div>
-<div class="card"><h2>Response / Cast Evidence</h2><pre id="out">Ready.</pre></div>
+</details>
+<div class="evidence"><h3>Response / Cast Evidence</h3><pre id="out">Ready.</pre></div>
+<nav class="nav"><button class="active">Cockpit</button><button>Projects</button><button>AcodeX</button><button>Artifacts</button><button>Settings</button></nav>
+</main></div>
 
 <script src="/static/vendor/jquery.min.js"></script>
 <script>
 if (!window.jQuery) {
-  document.body.insertAdjacentHTML("afterbegin", '<div class="fatal">Local jQuery is missing. Run <code>npm run bootstrap</code> or <code>npm ci && npm run vendor:jquery</code>, then reload.</div>');
+  document.body.insertAdjacentHTML("afterbegin", '<div class="fatal">KAI cockpit dependency missing: local jQuery vendor bundle.</div>');
 } else {
   var cockpit = document.createElement("script");
   cockpit.src = "/static/app.jquery.js";
