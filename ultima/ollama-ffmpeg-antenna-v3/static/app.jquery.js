@@ -27,6 +27,15 @@
     return value === "" ? null : Number(value);
   }
 
+  function refreshLumStatus() {
+    api("GET", "/api/lum/status").done(function (data) {
+      var state = data.credential_configured ? "OPENAI READY" : "DETERMINISTIC MOCK";
+      $("#lumStatus").text(
+        data.agent + " · " + data.model + " · " + state + " · self-approval OFF"
+      );
+    });
+  }
+
   function refreshSpells() {
     api("GET", "/api/magic/spells").done(function (data) {
       var $list = $("#spellList").empty();
@@ -46,10 +55,11 @@
   }
 
   $(function () {
+    refreshLumStatus();
     refreshSpells();
 
     $("#askOpenAI").on("click", function () {
-      post("/api/magic/chat", {message: $("#magicPrompt").val()});
+      post("/api/lum/chat", {message: $("#magicPrompt").val()});
     });
 
     $("#prepareCast").on("click", function () {
