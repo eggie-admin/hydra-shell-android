@@ -1,9 +1,13 @@
 {
-  "schema": "kai9000.android-testing-ingest.v3",
+  "schema": "kai9000.android-testing-ingest.v4",
   "date": "2026-09-07",
   "project": {
     "os": "LuHm OS",
-    "working_title": "KAI 9000"
+    "working_title": "KAI 9000",
+    "android_app_name": "KAI 9000 Dev",
+    "android_package_id": "art.eggiebagelface.kai9000.dev",
+    "version": "0.7.0-dev",
+    "version_code": 7
   },
   "repository": "eggie-admin/hydra-shell-android",
   "branch": "testing/luhm-os-android",
@@ -33,43 +37,25 @@
     "implementation_assistant": "github_copilot",
     "build_oracle": "github_actions",
     "setup_workflow": ".github/workflows/copilot-setup-steps.yml",
-    "apk_workflow": ".github/workflows/oni-ultima-debug-apk.yml",
-    "artifact_name": "kai9000-luhm-os-testing-debug.apk",
+    "apk_workflow": ".github/workflows/kai9000-ultima-apk.yml",
+    "artifact_name": "kai9000-dev.apk",
     "release_template": "release/TESTING_APK_DEBUG_TEMPLATE.md",
     "cancel_superseded_runs": true,
     "parallel_preflight_and_apk_build": true
   },
   "donors": [
-    {
-      "branch": "audit/full-mutation-2026-08-05",
-      "mode": "selected_transplant"
-    },
-    {
-      "branch": "experiment/knox-termux-mutation-001",
-      "mode": "manual_tool_only"
-    },
-    {
-      "branch": "hydra-ollama-local-001",
-      "mode": "selected_transplant"
-    },
-    {
-      "branch": "kai9000-media-forge",
-      "mode": "selected_transplant"
-    },
-    {
-      "branch": "kai9000-samsung-agent-rss-merge-010",
-      "mode": "selected_transplant_after_divergence"
-    },
-    {
-      "branch": "video-forge-cathedral-npm-fdroid",
-      "mode": "selected_transplant"
-    }
+    {"branch": "audit/full-mutation-2026-08-05", "mode": "selected_transplant"},
+    {"branch": "experiment/knox-termux-mutation-001", "mode": "manual_tool_only"},
+    {"branch": "hydra-ollama-local-001", "mode": "selected_transplant"},
+    {"branch": "kai9000-media-forge", "mode": "selected_transplant"},
+    {"branch": "kai9000-samsung-agent-rss-merge-010", "mode": "selected_transplant_after_divergence"},
+    {"branch": "video-forge-cathedral-npm-fdroid", "mode": "selected_transplant"}
   ],
   "external_references": {
     "samsung_frontend": {
       "repository": "eggie-admin/vue-headless-cms",
       "branch": "samsung-sm-x400-build-candidate",
-      "commit": "06947ad9c0167bb28ac60f9281e3d348dbb6fe51",
+      "commit": "b507282a963a663c8d9d6c30c5769dbc22141953",
       "integration": "pinned_checkout_at_build_time",
       "hardening_doctrine": "docs/KAI9000_ANDROID_HARDENING_10PASS_20260907.md",
       "control_receiver_exported": false,
@@ -80,11 +66,7 @@
       "branch": "testing/jrpg-dating-sim",
       "commit": "c77465fb2884cbf33061b98a9fb08f4a03cccf20",
       "mode": "reference_not_runtime_copy",
-      "features": [
-        "godot_android_export",
-        "lum_spell_doctrine",
-        "jquery_bridge"
-      ]
+      "features": ["godot_android_export", "lum_spell_doctrine", "jquery_bridge"]
     }
   },
   "testing_toolchain": {
