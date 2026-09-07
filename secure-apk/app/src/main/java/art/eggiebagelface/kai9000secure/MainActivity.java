@@ -9,9 +9,11 @@ import android.os.*;
 import android.widget.*;
 
 import java.io.*;
-import java.net.*;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Executors;
+
+import javax.net.ssl.HttpsURLConnection;
 
 public final class MainActivity extends Activity {
     private TextView status;
@@ -44,12 +46,12 @@ public final class MainActivity extends Activity {
         box.addView(title);
 
         TextView doctrine = new TextView(this);
-        doctrine.setText("\nOne APK • localhost only • no Termux • no AcodeX\nSecure Folder owns the app data.\n");
+        doctrine.setText("\nOne APK • HTTPS localhost • Android Keystore TLS • SQLite\nSecure Folder owns the identity and app data.\n");
         doctrine.setTextSize(16);
         box.addView(doctrine);
 
         status = new TextView(this);
-        status.setText("Checking 127.0.0.1:8000...");
+        status.setText("Checking https://127.0.0.1:8443...");
         status.setTextSize(16);
         status.setTextIsSelectable(true);
         box.addView(status);
@@ -69,7 +71,7 @@ public final class MainActivity extends Activity {
         box.addView(stop);
 
         Button refresh = new Button(this);
-        refresh.setText("HEALTH CHECK");
+        refresh.setText("HTTPS HEALTH CHECK");
         refresh.setOnClickListener(v -> refreshStatus());
         box.addView(refresh);
 
@@ -83,13 +85,16 @@ public final class MainActivity extends Activity {
     }
 
     private void refreshStatus() {
-        status.setText("Checking...");
+        status.setText("Checking TLS localhost...");
         Executors.newSingleThreadExecutor().execute(() -> {
             String result;
             try {
-                HttpURLConnection c = (HttpURLConnection) new URL("http://127.0.0.1:8000/api/health").openConnection();
-                c.setConnectTimeout(1500);
-                c.setReadTimeout(1500);
+                Thread.sleep(250L);
+                HttpsURLConnection c = (HttpsURLConnection) new URL("https://127.0.0.1:8443/api/health").openConnection();
+                c.setSSLSocketFactory(LocalTls.pinnedClientSocketFactory());
+                c.setHostnameVerifier((hostname, session) -> "127.0.0.1".equals(hostname) || "localhost".equalsIgnoreCase(hostname));
+                c.setConnectTimeout(2000);
+                c.setReadTimeout(2000);
                 c.setUseCaches(false);
                 int code = c.getResponseCode();
                 try (InputStream in = code >= 400 ? c.getErrorStream() : c.getInputStream()) {
@@ -109,9 +114,7 @@ public final class MainActivity extends Activity {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         byte[] buffer = new byte[4096];
         int n;
-        while ((n = in.read(buffer)) != -1) {
-            out.write(buffer, 0, n);
-        }
+        while ((n = in.read(buffer)) != -1) out.write(buffer, 0, n);
         return new String(out.toByteArray(), StandardCharsets.UTF_8);
     }
 }

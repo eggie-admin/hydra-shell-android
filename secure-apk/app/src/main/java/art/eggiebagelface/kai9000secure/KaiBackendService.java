@@ -49,8 +49,8 @@ public final class KaiBackendService extends Service {
 
         Notification notification = new Notification.Builder(this, CHANNEL_ID)
             .setSmallIcon(android.R.drawable.stat_sys_upload_done)
-            .setContentTitle("KAI 9000 backend")
-            .setContentText("127.0.0.1:8000 • Secure Folder localhost")
+            .setContentTitle("KAI 9000 HTTPS backend")
+            .setContentText("https://127.0.0.1:8443 • Secure Folder TLS")
             .setOngoing(true)
             .setContentIntent(openPi)
             .addAction(new Notification.Action.Builder(null, "Stop", stopPi).build())
@@ -66,8 +66,8 @@ public final class KaiBackendService extends Service {
     private void createChannel() {
         NotificationManager nm = getSystemService(NotificationManager.class);
         NotificationChannel ch = new NotificationChannel(
-            CHANNEL_ID, "KAI 9000 backend", NotificationManager.IMPORTANCE_LOW);
-        ch.setDescription("Persistent localhost control-plane status");
+            CHANNEL_ID, "KAI 9000 HTTPS backend", NotificationManager.IMPORTANCE_LOW);
+        ch.setDescription("Persistent HTTPS localhost control-plane status");
         nm.createNotificationChannel(ch);
     }
 

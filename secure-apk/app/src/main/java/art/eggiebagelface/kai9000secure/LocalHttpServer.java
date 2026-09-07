@@ -11,12 +11,15 @@ import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.net.ssl.SSLServerSocket;
+
 public final class LocalHttpServer {
+    public static final int PORT = 8443;
     private final Context context;
     private final KaiDb db;
     private final ExecutorService pool = Executors.newCachedThreadPool();
     private volatile boolean running;
-    private ServerSocket serverSocket;
+    private SSLServerSocket serverSocket;
     private final long startedAt = SystemClock.elapsedRealtime();
 
     public LocalHttpServer(Context context) {
@@ -24,13 +27,16 @@ public final class LocalHttpServer {
         this.db = new KaiDb(this.context);
     }
 
-    public synchronized void start() throws IOException {
+    public synchronized void start() throws Exception {
         if (running) return;
-        serverSocket = new ServerSocket();
-        serverSocket.setReuseAddress(true);
-        serverSocket.bind(new InetSocketAddress(InetAddress.getByName("127.0.0.1"), 8000));
+        serverSocket = LocalTls.newServerSocket();
         running = true;
-        db.event("backend_start", "{\"port\":8000}");
+        db.event("backend_start", new JSONObject()
+            .put("scheme", "https")
+            .put("host", "127.0.0.1")
+            .put("port", PORT)
+            .put("tls_sha256", LocalTls.fingerprintSha256())
+            .toString());
         pool.execute(this::acceptLoop);
     }
 
@@ -105,8 +111,10 @@ public final class LocalHttpServer {
             JSONObject j = new JSONObject()
                 .put("ok", true)
                 .put("service", "kai9000-secure")
+                .put("scheme", "https")
                 .put("host", "127.0.0.1")
-                .put("port", 8000)
+                .put("port", PORT)
+                .put("tls_sha256", LocalTls.fingerprintSha256())
                 .put("uptime_seconds", (SystemClock.elapsedRealtime() - startedAt) / 1000L)
                 .put("package", context.getPackageName())
                 .put("secure_folder_ready", true);
