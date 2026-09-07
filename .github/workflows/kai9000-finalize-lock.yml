@@ -10,10 +10,6 @@ on:
 permissions:
   contents: write
 
-concurrency:
-  group: kai9000-finalize-proven-lock
-  cancel-in-progress: false
-
 jobs:
   finalize:
     runs-on: ubuntu-24.04
@@ -43,27 +39,11 @@ jobs:
               raise SystemExit('Expected old donor pin not found')
           text = text.replace(old_donor, new_donor)
 
-          old_cache = "key: ${{ runner.os }}-npm24-${{ hashFiles('_forge/vue-headless-cms/apps/package.json', '_forge/vue-headless-cms/apps/forge-ui/package.json') }}"
-          new_cache = "key: ${{ runner.os }}-npm24-${{ hashFiles('_forge/vue-headless-cms/apps/package-lock.json') }}"
-          if old_cache not in text:
-              raise SystemExit('Expected npm cache key not found')
-          text = text.replace(old_cache, new_cache, 1)
-
-          old_block = """          npm install --global npm@12.0.2 --no-audit --no-fund
-          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
-          npm ci --ignore-scripts --no-audit --no-fund
-          mkdir -p \"$GITHUB_WORKSPACE/build/provenance\"
-          sha256sum package-lock.json | tee \"$GITHUB_WORKSPACE/build/provenance/npm-package-lock.sha256\"
-"""
-          new_block = f"""          npm install --global npm@12.0.2 --no-audit --no-fund
-          echo '{lock_sha}  package-lock.json' | sha256sum --check --strict
-          npm ci --ignore-scripts --no-audit --no-fund
-          mkdir -p \"$GITHUB_WORKSPACE/build/provenance\"
-          sha256sum package-lock.json | tee \"$GITHUB_WORKSPACE/build/provenance/npm-package-lock.sha256\"
-"""
-          if old_block not in text:
-              raise SystemExit('Expected generated-lock build block not found')
-          text = text.replace(old_block, new_block, 1)
+          old_line = '          npm install --package-lock-only --ignore-scripts --no-audit --no-fund\n'
+          new_line = f"          echo '{lock_sha}  package-lock.json' | sha256sum --check --strict\n"
+          if old_line not in text:
+              raise SystemExit('Expected generated-lock line not found')
+          text = text.replace(old_line, new_line, 1)
           workflow.write_text(text, encoding='utf-8')
 
           manifest_path = Path('project/hydra/samsung/android/apk/testing-ingest.manifest.json')
