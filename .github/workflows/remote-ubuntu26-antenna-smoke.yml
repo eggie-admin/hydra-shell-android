@@ -1,0 +1,210 @@
+name: KAI9000 Remote Ubuntu 26 Antenna Smoke
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - testing/luhm-os-android
+    paths:
+      - '.github/workflows/remote-ubuntu26-antenna-smoke.yml'
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: kai9000-remote-ubuntu26-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+  GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+  GCP_SERVICE_ACCOUNT: ${{ vars.GCP_SERVICE_ACCOUNT }}
+  GCP_ZONE_HINT: ${{ vars.GCP_ZONE }}
+  KAI_GCP_INSTANCE_HINT: ${{ vars.KAI_GCP_INSTANCE }}
+
+jobs:
+  smoke:
+    name: Smoke real Google Cloud Ubuntu 26 antenna
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify Google control-plane coordinates
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$GCP_PROJECT_ID" || { echo 'RED: GitHub variable GCP_PROJECT_ID is missing'; exit 20; }
+          test -n "$GCP_WORKLOAD_IDENTITY_PROVIDER" || { echo 'RED: GitHub variable GCP_WORKLOAD_IDENTITY_PROVIDER is missing'; exit 21; }
+          echo 'GCP_CONTROL_COORDINATES_PRESENT'
+
+      - id: auth-direct
+        name: Authenticate to Google Cloud with direct WIF
+        if: ${{ vars.GCP_SERVICE_ACCOUNT == '' }}
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+
+      - id: auth-sa
+        name: Authenticate to Google Cloud with WIF service-account impersonation
+        if: ${{ vars.GCP_SERVICE_ACCOUNT != '' }}
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v3
+
+      - name: Discover running antenna VM
+        id: discover
+        shell: bash
+        run: |
+          set -euo pipefail
+          project="$GCP_PROJECT_ID"
+          instance="$KAI_GCP_INSTANCE_HINT"
+          zone="$GCP_ZONE_HINT"
+
+          if [ -n "$instance" ]; then
+            if [ -z "$zone" ]; then
+              mapfile -t matches < <(gcloud compute instances list --project="$project" \
+                --filter="name=($instance) AND status=RUNNING" \
+                --format='value(name,zone.basename())')
+              [ "${#matches[@]}" -eq 1 ] || {
+                echo "RED: instance hint '$instance' did not resolve to exactly one running VM";
+                printf '%s\n' "${matches[@]:-}";
+                exit 30;
+              }
+              instance="$(awk '{print $1}' <<<"${matches[0]}")"
+              zone="$(awk '{print $2}' <<<"${matches[0]}")"
+            fi
+          else
+            mapfile -t candidates < <(gcloud compute instances list --project="$project" \
+              --filter='status=RUNNING' \
+              --format='value(name,zone.basename())')
+
+            mapfile -t kai_candidates < <(printf '%s\n' "${candidates[@]:-}" | grep -Ei 'kai9000|antenna|ubuntu' || true)
+            if [ "${#kai_candidates[@]}" -eq 1 ]; then
+              instance="$(awk '{print $1}' <<<"${kai_candidates[0]}")"
+              zone="$(awk '{print $2}' <<<"${kai_candidates[0]}")"
+            elif [ "${#candidates[@]}" -eq 1 ]; then
+              instance="$(awk '{print $1}' <<<"${candidates[0]}")"
+              zone="$(awk '{print $2}' <<<"${candidates[0]}")"
+            else
+              echo 'RED: could not safely auto-select one running VM.'
+              echo 'Running VM candidates:'
+              printf '  %s\n' "${candidates[@]:-NONE}"
+              echo 'Set repository variables KAI_GCP_INSTANCE and GCP_ZONE to select the antenna.'
+              exit 31
+            fi
+          fi
+
+          status="$(gcloud compute instances describe "$instance" --project="$project" --zone="$zone" --format='get(status)')"
+          machine="$(gcloud compute instances describe "$instance" --project="$project" --zone="$zone" --format='get(machineType.basename())')"
+          internal_ip="$(gcloud compute instances describe "$instance" --project="$project" --zone="$zone" --format='get(networkInterfaces[0].networkIP)')"
+          external_v4="$(gcloud compute instances describe "$instance" --project="$project" --zone="$zone" --format='get(networkInterfaces[0].accessConfigs[0].natIP)')"
+          external_v6="$(gcloud compute instances describe "$instance" --project="$project" --zone="$zone" --format='get(networkInterfaces[0].ipv6AccessConfigs[0].externalIpv6)')"
+
+          echo "instance=$instance" >> "$GITHUB_OUTPUT"
+          echo "zone=$zone" >> "$GITHUB_OUTPUT"
+          echo "REMOTE_VM_DISCOVERED name=$instance zone=$zone status=$status machine=$machine"
+          echo "REMOTE_VM_NETWORK internal=$internal_ip external_ipv4=${external_v4:-NONE} external_ipv6=${external_v6:+PRESENT}"
+          [ "$status" = RUNNING ] || { echo "RED: VM status=$status"; exit 32; }
+
+      - name: IAP guest smoke test
+        shell: bash
+        env:
+          INSTANCE: ${{ steps.discover.outputs.instance }}
+          ZONE: ${{ steps.discover.outputs.zone }}
+        run: |
+          set -euo pipefail
+          REMOTE_SCRIPT="$RUNNER_TEMP/kai9000-remote-smoke.sh"
+          cat > "$REMOTE_SCRIPT" <<'REMOTE'
+          #!/usr/bin/env bash
+          set -uo pipefail
+          fail=0
+
+          green() { printf 'GREEN %-28s %s\n' "$1" "${2:-}"; }
+          yellow() { printf 'YELLOW %-27s %s\n' "$1" "${2:-}"; }
+          red() { printf 'RED %-30s %s\n' "$1" "${2:-}"; fail=1; }
+
+          echo '=== KAI9000 REMOTE ANTENNA SMOKE ==='
+          hostnamectl --static 2>/dev/null || hostname
+          uname -a
+          uptime
+
+          if [ -r /etc/os-release ]; then
+            . /etc/os-release
+            echo "guest_os_id=$ID guest_version_id=$VERSION_ID guest_pretty_name=$PRETTY_NAME"
+            [ "$ID" = ubuntu ] || red OS_ID "expected ubuntu, got $ID"
+            case "$VERSION_ID" in
+              26.04|26.04.*) green OS_VERSION "$PRETTY_NAME" ;;
+              *) red OS_VERSION "expected Ubuntu 26.04 LTS, got $PRETTY_NAME" ;;
+            esac
+          else
+            red OS_RELEASE '/etc/os-release missing'
+          fi
+
+          echo '--- resources ---'
+          df -h /
+          free -m || true
+          echo '--- network ---'
+          ip -br addr || true
+          ip -6 route || true
+          echo '--- listeners ---'
+          ss -ltnp || true
+
+          if systemctl is-active --quiet nginx 2>/dev/null; then
+            green NGINX_SERVICE active
+          else
+            red NGINX_SERVICE inactive_or_missing
+          fi
+
+          if curl -fsS --max-time 5 http://127.0.0.1:8080/ >/dev/null 2>&1; then
+            green FDROID_ORIGIN_HTTP '127.0.0.1:8080 responds'
+          else
+            red FDROID_ORIGIN_HTTP '127.0.0.1:8080 not responding'
+          fi
+
+          if [ -s /srv/kai9000/fdroid/repo/index-v1.jar ] || [ -s /srv/kai9000/fdroid/index-v1.jar ]; then
+            green FDROID_INDEX present
+          else
+            yellow FDROID_INDEX 'not staged on origin yet'
+          fi
+
+          if systemctl is-active --quiet cloudflared 2>/dev/null; then
+            green CLOUDFLARED_SERVICE active
+          elif pgrep -x cloudflared >/dev/null 2>&1; then
+            green CLOUDFLARED_PROCESS running
+          else
+            yellow CLOUDFLARED_SERVICE 'not active yet'
+          fi
+
+          api_ok=0
+          for port in 8789 8791 8000; do
+            if body="$(curl -fsS --max-time 5 "http://127.0.0.1:${port}/health" 2>/dev/null)"; then
+              green ANTENNA_HEALTH "port=$port body=${body:0:180}"
+              api_ok=1
+              break
+            fi
+          done
+          [ "$api_ok" -eq 1 ] || yellow ANTENNA_HEALTH 'no /health response on 8789, 8791, or 8000'
+
+          systemctl is-system-running --wait 2>/dev/null || true
+          if [ "$fail" -ne 0 ]; then
+            echo 'REMOTE_UBUNTU26_SMOKE_RED'
+            exit 50
+          fi
+          echo 'REMOTE_UBUNTU26_SMOKE_GREEN'
+          REMOTE
+          chmod +x "$REMOTE_SCRIPT"
+
+          # This is a smoke test, not a deploy. gcloud may create a short-lived SSH
+          # credential for IAP/OS Login; it does not alter application configuration.
+          gcloud compute scp "$REMOTE_SCRIPT" "$INSTANCE:/tmp/kai9000-remote-smoke.sh" \
+            --project="$GCP_PROJECT_ID" --zone="$ZONE" --tunnel-through-iap --quiet
+          gcloud compute ssh "$INSTANCE" \
+            --project="$GCP_PROJECT_ID" --zone="$ZONE" --tunnel-through-iap --quiet \
+            --command='bash /tmp/kai9000-remote-smoke.sh; rc=$?; rm -f /tmp/kai9000-remote-smoke.sh; exit $rc'
