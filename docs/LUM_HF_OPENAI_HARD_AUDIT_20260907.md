@@ -1,77 +1,104 @@
 # KAI 9000 Lum + Hugging Face + OpenAI hard audit
 
 Milestone: `KAI9000_LUM_HF_OPENAI_CATHEDRAL_20260907`
-
-This document is intentionally created on the testing lineage before any promotion. It records the audit gate and the exact non-null findings that require mutation.
+Status: `MUTATION_BRANCH_GREEN_PENDING_CROWN_MERGE`
 
 ## Source-of-truth hierarchy
 
 1. Professor holds the crown and final authority.
 2. KAI 9000 APK is the active mutation target.
 3. GitHub is canonical versioned source history.
-4. Google Drive is the recovery mirror and artifact source of truth.
+4. Google Drive is the recovery mirror and approved artifact archive.
 5. Cloudflare is the public edge.
-6. Remote GitHub terminal / Codespaces is the development terminal.
-7. Vercel is retired and forbidden.
-8. Local Termux is retired from the active architecture.
-9. `KAI9000_LUM_MAGIC_GRIMOIRE_HTMX_NPM_SOT_20260907` remains the deterministic Grimoire reference, but historical Termux/local-server notes inside it are not active deployment doctrine.
+6. Remote GitHub Codespaces/browser terminal is the development terminal.
+7. GitHub Actions is the remote build/test/release forge.
+8. Vercel is retired and forbidden.
+9. Local Termux is retired from the active architecture.
+10. `KAI9000_LUM_MAGIC_GRIMOIRE_HTMX_NPM_SOT_20260907` remains the deterministic Grimoire reference; historical Termux/local-server notes inside it do not override the Crown Lock.
 
-## Hard-audit findings
+## Source-of-truth sanity
 
-### PASS: Grimoire integrity
+- Google Drive folder `KAI9000_LUM_MAGIC_GRIMOIRE_HTMX_NPM_SOT_20260907` is present under the KAI 9000 source-of-truth archive.
+- Its manifest declares `GREEN_10_OF_10` and exact jQuery/HTMX pins.
+- The downloaded Drive `manifest.json` SHA-256 was recomputed as `61a513867f6ccadf57afeb1fe59251cdd525fe43534f4f03e248f23d4f707327`, exactly matching the package `SHA256SUMS` entry.
+- The Grimoire audit itself records a 10/10 deterministic/syntax/safety pass.
+- The latest Crown Lock milestone was not found as a standalone Drive item during the initial audit, so this reroll creates a new Drive cathedral folder for the current agent milestone rather than pretending Drive was already current.
 
-The Drive Grimoire SOT is sealed GREEN 10/10 for deterministic generation, syntax, regression tests, dynamic-code safety, and companion consistency. Its local HTMX/Termux notes are historical implementation boundaries rather than current deployment authority.
+## Hugging Face audit evidence
 
-### PASS: OpenAI Agents SDK version
+Authenticated Hugging Face account context was successfully verified without exposing the OAuth credential. Hub metadata was inspected for:
 
-`openai-agents==0.22.0` remains the current released SDK baseline inspected for this audit.
+- `openai/gpt-oss-20b`: Apache-2.0, text generation, endpoints compatible, multiple live Inference Providers.
+- `openai/gpt-oss-120b`: Apache-2.0, text generation, endpoints compatible, multiple live Inference Providers.
+- `Qwen/Qwen2.5-3B-Instruct`: Transformers/Safetensors text-generation model; Hub metadata reports `license: other`, therefore permissive redistribution must not be assumed without license review.
 
-### PASS: Lum secret boundary
+Hugging Face Inference Providers currently expose an OpenAI-compatible Responses API. Provider selection supports no suffix / `:fastest`, `:cheapest`, `:preferred`, or an explicit provider. KAI keeps silent cross-provider replay disabled.
 
-The in-app Lum agent keeps provider credentials server-side and tracing disabled by default. The Professor remains final authority; Lum does not self-authorize mutation or ULTIMA.
+## OpenAI audit evidence
 
-### FINDING 01: stale OpenAI model default
+The current OpenAI Agents SDK release inspected for this audit is `openai-agents==0.22.0`. Current SDK documentation confirms:
 
-`remote_ai.py` still defaulted to `gpt-6-astra`, which conflicts with the current Lum doctrine and current OpenAI model catalog. The canonical fast/default model is `gpt-5.6-luna`; heavy architecture/debug/audit work escalates to `gpt-5.6-sol`.
+- OpenAI Responses is the default API path for OpenAI models;
+- `gpt-5.6-luna` is the fast/default agent model with reasoning effort `none` and low verbosity;
+- `gpt-5.6-sol` is the explicit frontier/heavy model;
+- Responses WebSocket transport is supported through `set_default_openai_responses_transport("websocket")`;
+- tracing is enabled by SDK default unless explicitly disabled, so KAI continues to disable it by default for source/tool privacy;
+- `store` is an explicit model setting and KAI keeps it `false`.
 
-### FINDING 02: Lum did not implement the Luna -> Sol escalation contract
+## Original NON-NULL findings and disposition
 
-`lum_agent/agent.py` always used Luna with reasoning effort `none`. Current doctrine requires speed-first Luna plus explicit or heuristic Sol escalation for heavyweight work.
+| Finding | Result | Mutation |
+|---|---|---|
+| stale `gpt-6-astra` default in `remote_ai.py` | FIXED | replaced with `gpt-5.6-luna` |
+| Lum always used Luna/none | FIXED | Luna fast path + Sol medium heavy escalation + `/luna`/`/sol` overrides |
+| Responses websocket doctrine not wired | FIXED | configurable `LUM_OPENAI_TRANSPORT`, default `websocket` |
+| no Hugging Face skill | FIXED | added `huggingface-forge` |
+| no current Crown/source-of-truth skill | FIXED | added `source-of-truth` |
+| no OpenAI routing skill | FIXED | added `openai-router` |
+| Android skill missing current deployment doctrine | FIXED | rerolled `android-backend` |
+| no-key fallback referenced retired local/Ollama lane | FIXED | deterministic application lane wording only |
+| runtime package metadata described local Ollama as active | FIXED | version `3.5.0` metadata aligned to current APK/provider doctrine |
 
-### FINDING 03: OpenAI Responses websocket doctrine was not wired
+## 10-pass hard audit
 
-The current Agents SDK supports the Responses API over websocket transport. KAI prefers websocket transport for persistent interactive Lum use while retaining HTTP as a configurable fallback.
+| Pass | Gate | Result | Evidence |
+|---|---|---|---|
+| 01 | Crown authority | GREEN | Professor final authority; no Lum self-approval or ULTIMA self-cast. |
+| 02 | Source-of-truth integrity | GREEN | Drive Grimoire manifest SHA matches `SHA256SUMS`; GitHub remains canonical version history. |
+| 03 | OpenAI model doctrine | GREEN | Luna default / Sol heavy route; stale model removed. |
+| 04 | OpenAI Responses transport | GREEN | websocket default wired with HTTP runtime fallback. |
+| 05 | Hugging Face Forge doctrine | GREEN | provenance/license/revision/provider/trust rules added. |
+| 06 | Secret boundary | GREEN | credential patterns guarded; no provider secrets added to code/docs. |
+| 07 | Python 3.11 | GREEN | GitHub Actions run `34165689601`, compile + focused tests + invariants + secret guard passed. |
+| 08 | Python 3.14 | GREEN | GitHub Actions run `34165689601`, compile + focused tests + invariants + secret guard passed. |
+| 09 | Provider failover boundary | GREEN | OpenAI preferred when configured; Hugging Face explicit/secondary; silent post-error replay remains false. |
+| 10 | APK deployment doctrine | GREEN | remote GitHub terminal + Actions + Cloudflare edge; Vercel forbidden; local Termux retired. |
 
-### FINDING 04: no Hugging Face Forge skill in the Lum registry
+## Files mutated
 
-Hugging Face is connected and authenticated, but Lum had no dedicated skill describing provenance, license, immutable revision, provider routing, or `trust_remote_code` boundaries.
+- `lum_agent/agent.py`
+- `lum_agent/doctrine.py`
+- `lum_agent/router.py`
+- `lum_agent/skills/source-of-truth/SKILL.md`
+- `lum_agent/skills/openai-router/SKILL.md`
+- `lum_agent/skills/huggingface-forge/SKILL.md`
+- `lum_agent/skills/android-backend/SKILL.md`
+- `remote_ai.py`
+- `tests/test_lum_agent.py`
+- `pyproject.toml`
+- `docs/LUM_AGENT_DOCTRINE_20260907.md`
+- `docs/LUM_AGENT_SKILL_CHAIN.md`
+- `.github/workflows/lum-hf-openai-cathedral.yml`
 
-### FINDING 05: current deployment doctrine missing from Lum skills
+## Remaining external / global gates
 
-The Android backend skill did not explicitly encode the Crown Lock, remote GitHub terminal, Cloudflare public edge, Vercel purge, and local-Termux retirement.
+These do **not** invalidate the Lum mutation branch, but prevent claiming the entire KAI 9000 universe is fully promoted:
 
-### FINDING 06: deterministic no-key message referenced retired local/Ollama doctrine
+1. The working lineage repository is still `eggie-admin/hydra-shell-android`; the planned canonical `eggie-admin/KAI9000` repository has not yet been created through the available connector.
+2. The external Vercel GitHub App still emits repository checks/status residue and must be removed outside repository code; tracked separately as Crown blocker issue #23.
+3. No paid/live OpenAI or Hugging Face model call was made during this audit. CI proves code/SDK/route/doctrine behavior without exposing credentials, not live provider billing/network success.
+4. Cloudflare live-publication/TLS/DNS proof is a separate network gate from this Lum agent audit.
 
-The remote provider mock message still described `local deterministic/Ollama lanes`. The active doctrine is the deterministic application lane plus remote provider lanes; local Termux is not part of the active runtime.
+## Promotion law
 
-## Hugging Face evidence used for reroll
-
-- `openai/gpt-oss-120b`: Apache-2.0, endpoints compatible, multiple live Inference Providers.
-- `openai/gpt-oss-20b`: Apache-2.0, endpoints compatible, multiple live Inference Providers.
-- `Qwen/Qwen2.5-3B-Instruct`: Transformers/Safetensors text-generation model; its Hub metadata reports `license: other`, so it must not be treated as a permissively licensed default without license review.
-- Hugging Face Responses API is beta and uses `https://router.huggingface.co/v1/responses` / OpenAI-compatible clients. Provider suffix policies include `:fastest`, `:cheapest`, `:preferred`, or an explicit provider.
-
-## Mutation decision
-
-Sanity check is **NON-NULL**, therefore this audit authorizes the testing-branch reroll requested by the Professor:
-
-- add `source-of-truth` skill;
-- add `openai-router` skill;
-- add `huggingface-forge` skill;
-- reroll `android-backend` skill;
-- implement Luna/Sol routing in Lum;
-- enable configurable OpenAI Responses websocket transport;
-- correct the stale remote OpenAI model default;
-- remove retired local/Ollama wording from the remote provider fallback.
-
-No merge to `main`, publication, paid provider call, Hugging Face model download, or ULTIMA self-approval is authorized by this audit alone.
+This branch is GREEN for code + doctrine + Python 3.11/3.14 CI. It is **not merged automatically**. Professor approval remains required to merge into `testing/luhm-os-android`, and later promotion to the canonical KAI 9000 repository remains a separate Crown action.
