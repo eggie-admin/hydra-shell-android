@@ -10,14 +10,15 @@ body{font-family:system-ui,sans-serif;background:#0d1117;color:#e6edf3;margin:20
 </head>
 <body>
 <h1>🔷 KAI9000 Magic Cockpit</h1>
-<p class="small">jQuery cockpit → Python 3/FastAPI policy kernel → OpenAI coding planner + local KAI workers. Browser code never owns credentials, filesystem policy, approval, or rollback.</p>
+<p class="small">jQuery cockpit → Python 3/FastAPI policy kernel → doctrine-driven Lum Agents SDK + local KAI workers. Browser code never owns credentials, filesystem policy, approval, or rollback.</p>
 
 <div class="grid">
   <div class="card">
-    <h2>OpenAI Coding Chat</h2>
-    <textarea id="magicPrompt" rows="8" placeholder="Ask for a coding plan, inspection, patch strategy, or validation path"></textarea>
-    <button id="askOpenAI">Ask OpenAI</button>
-    <p class="small">If <code>OPENAI_API_KEY</code> is absent, Python returns deterministic mock guidance instead of leaking a key into the UI.</p>
+    <h2>Lum Python Coding Agent</h2>
+    <div id="lumStatus" class="status">loading Lum status…</div>
+    <textarea id="magicPrompt" rows="8" placeholder="Ask Lum to inspect Python, explain a class, debug a failure, propose a patch, or load a doctrine skill"></textarea>
+    <button id="askOpenAI">Ask Lum</button>
+    <p class="small">Server-side OpenAI Agents SDK. Default model: GPT-5.6 Luna, reasoning none, low verbosity. Existing <code>OPENAI_API_KEY</code> stays server-side. Lum can inspect and propose; mutation remains behind the human-approved spell gateway.</p>
   </div>
 
   <div class="card">
