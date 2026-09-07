@@ -1,20 +1,41 @@
 {
-  "schema": "kai9000.fdroid-publication.v3",
-  "date": "2026-09-06",
-  "state": "PUBLICATION_READY_AWAITING_INTERACTIVE_OAUTH_CAST",
+  "schema": "kai9000.fdroid-publication.v4",
+  "date": "2026-09-07",
+  "state": "SIGNED_V6_V7_READY_AWAITING_INTERACTIVE_OAUTH_CAST",
   "repo_url": "https://fdroid.eggiebagelface.art/fdroid/repo/",
   "package_id": "art.eggiebagelface.videoforge.dev",
-  "version": "0.6.0-dev",
-  "version_code": 6,
+  "version": "0.6.1-dev",
+  "version_code": 7,
+  "available_versions": [6, 7],
   "signed_bundle": {
-    "name": "KAI9000_FDROID_SIGNED_20260906.zip",
-    "sha256": "fa350eeb2a2945b3b0e664f459ae1706cd3c19d0c02913e799e7ea005c6f3028",
-    "drive_file_id": "1IA_xHWZsJo9Ot2wM3GGLpsIYIzOvC9Gv",
+    "name": "KAI9000_FDROID_SIGNED_V6_V7_20260907.zip",
+    "sha256": "6cb100f525229e5d6445aa8f2dfb5f39b8895073efb278fc39f609cc64799b7d",
+    "size_bytes": 56826920,
+    "drive_file_id": "1_jZRVqktQoMowxSxCPS54FFh_YZbVvP9",
     "drive_source_of_truth_folder_id": "1AD_KgcM32sgli_pSSub0MXf-W0tPWIHr"
+  },
+  "apk_evidence": {
+    "6": {
+      "version": "0.6.0-dev",
+      "sha256": "52bfcceed893a380def0c7ad472a81931ac39bed925c67830dee3d55f15efdbc",
+      "v2_signature_verified": true
+    },
+    "7": {
+      "version": "0.6.1-dev",
+      "sha256": "11f88327d535f3af58815d6606d55475b81996e1ed5494d5ebd26d6bcf6ab283",
+      "v2_signature_verified": true
+    }
+  },
+  "supersedes": {
+    "bundle": "KAI9000_FDROID_SIGNED_20260906.zip",
+    "sha256": "fa350eeb2a2945b3b0e664f459ae1706cd3c19d0c02913e799e7ea005c6f3028",
+    "reason": "The previous v6 APK did not verify with the official Android Build Tools 36.1.0 apksigner. v6 and v7 were re-signed from their clean CI-staged APKs with the same persistent APK identity and re-indexed with the same persistent F-Droid repository identity."
   },
   "trust": {
     "apk_signer_sha256": "A5E9364D5C21A119FE1D17FD39EE7BAE8192A872CE58A3E7A865248E0B070407",
     "repo_fingerprint_sha256": "BFB900A9EC913D35C22F1DC3DE7B152D1AF5CA11B7B07E5FAFDD06B44811F66D",
+    "apk_v2_signature_verified": [6, 7],
+    "fdroid_index_jar_signature_verified": true,
     "fdroid_signed": true,
     "private_signing_keys_required_for_publication_preflight": false
   },
@@ -49,7 +70,7 @@
   },
   "live_cast": {
     "script": "scripts/cast-ultima-live.sh",
-    "signed_bundle_default_on_termux": "~/storage/downloads/KAI9000_FDROID_SIGNED_20260906.zip",
+    "signed_bundle_default_on_termux": "~/storage/downloads/KAI9000_FDROID_SIGNED_V6_V7_20260907.zip",
     "cloudflare_tunnel_name": "kai9000-fdroid-origin",
     "cloudflare_account_certificate_stays_on_operator": true,
     "tunnel_specific_runtime_credential_only_on_origin": true,
