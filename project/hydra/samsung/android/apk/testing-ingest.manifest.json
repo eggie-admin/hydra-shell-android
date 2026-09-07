@@ -40,28 +40,51 @@
     "parallel_preflight_and_apk_build": true
   },
   "donors": [
-    {"branch": "audit/full-mutation-2026-08-05", "mode": "selected_transplant"},
-    {"branch": "experiment/knox-termux-mutation-001", "mode": "manual_tool_only"},
-    {"branch": "hydra-ollama-local-001", "mode": "selected_transplant"},
-    {"branch": "kai9000-media-forge", "mode": "selected_transplant"},
-    {"branch": "kai9000-samsung-agent-rss-merge-010", "mode": "selected_transplant_after_divergence"},
-    {"branch": "video-forge-cathedral-npm-fdroid", "mode": "selected_transplant"}
+    {
+      "branch": "audit/full-mutation-2026-08-05",
+      "mode": "selected_transplant"
+    },
+    {
+      "branch": "experiment/knox-termux-mutation-001",
+      "mode": "manual_tool_only"
+    },
+    {
+      "branch": "hydra-ollama-local-001",
+      "mode": "selected_transplant"
+    },
+    {
+      "branch": "kai9000-media-forge",
+      "mode": "selected_transplant"
+    },
+    {
+      "branch": "kai9000-samsung-agent-rss-merge-010",
+      "mode": "selected_transplant_after_divergence"
+    },
+    {
+      "branch": "video-forge-cathedral-npm-fdroid",
+      "mode": "selected_transplant"
+    }
   ],
   "external_references": {
     "samsung_frontend": {
       "repository": "eggie-admin/vue-headless-cms",
       "branch": "samsung-sm-x400-build-candidate",
-      "commit": "88be3ea5d9bcdecfcaf035b043cd112002dc06d7",
+      "commit": "06947ad9c0167bb28ac60f9281e3d348dbb6fe51",
       "integration": "pinned_checkout_at_build_time",
       "hardening_doctrine": "docs/KAI9000_ANDROID_HARDENING_10PASS_20260907.md",
-      "control_receiver_exported": false
+      "control_receiver_exported": false,
+      "npm_lock_sha256": "7929d5c53793563492ff0f5b39278904ecfa5508b10071d5b6d4b0b268fe653c"
     },
     "godot_ai_forge": {
       "repository": "eggie-admin/amplify-godot-engine-template",
       "branch": "testing/jrpg-dating-sim",
       "commit": "c77465fb2884cbf33061b98a9fb08f4a03cccf20",
       "mode": "reference_not_runtime_copy",
-      "features": ["godot_android_export", "lum_spell_doctrine", "jquery_bridge"]
+      "features": [
+        "godot_android_export",
+        "lum_spell_doctrine",
+        "jquery_bridge"
+      ]
     }
   },
   "testing_toolchain": {
@@ -74,7 +97,8 @@
     "jdk": 17,
     "python": "3.14",
     "node": "24.18.0",
-    "npm": "12.0.2"
+    "npm": "12.0.2",
+    "npm_lock_sha256": "7929d5c53793563492ff0f5b39278904ecfa5508b10071d5b6d4b0b268fe653c"
   },
   "visual_reference": {
     "manifest": "project/hydra/samsung/android/apk/lum-mona-outfit.reference.json",

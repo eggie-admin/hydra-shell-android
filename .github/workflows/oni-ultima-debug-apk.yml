@@ -40,7 +40,7 @@ concurrency:
 
 env:
   DONOR_REPO: eggie-admin/vue-headless-cms
-  DONOR_REF: 88be3ea5d9bcdecfcaf035b043cd112002dc06d7
+  DONOR_REF: 06947ad9c0167bb28ac60f9281e3d348dbb6fe51
   GODOT_RELEASE: 4.7.2-stable
   GODOT_TEMPLATE_VERSION: 4.7.2.stable
   GODOT_EDITOR_SHA256: cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4
@@ -131,7 +131,7 @@ jobs:
           PY
 
           grep -q '"schema": "kai9000.android-testing-ingest.v3"' project/hydra/samsung/android/apk/testing-ingest.manifest.json
-          grep -q '88be3ea5d9bcdecfcaf035b043cd112002dc06d7' project/hydra/samsung/android/apk/testing-ingest.manifest.json
+          grep -q '06947ad9c0167bb28ac60f9281e3d348dbb6fe51' project/hydra/samsung/android/apk/testing-ingest.manifest.json
           echo 'TEN_PASS_DOCTRINE_GREEN'
 
   android-debug:
@@ -298,7 +298,7 @@ jobs:
         run: |
           set -euo pipefail
           npm install --global npm@12.0.2 --no-audit --no-fund
-          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+          echo '7929d5c53793563492ff0f5b39278904ecfa5508b10071d5b6d4b0b268fe653c  package-lock.json' | sha256sum --check --strict
           npm ci --ignore-scripts --no-audit --no-fund
           mkdir -p "$GITHUB_WORKSPACE/build/provenance"
           sha256sum package-lock.json | tee "$GITHUB_WORKSPACE/build/provenance/npm-package-lock.sha256"
