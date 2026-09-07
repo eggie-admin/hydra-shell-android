@@ -19,7 +19,11 @@ on:
       - 'ultima/ollama-ffmpeg-antenna-v3/gateway.py'
       - 'ultima/ollama-ffmpeg-antenna-v3/magic_server.py'
       - 'ultima/ollama-ffmpeg-antenna-v3/pyproject.toml'
+      - 'ultima/ollama-ffmpeg-antenna-v3/lum_agent/**'
+      - 'ultima/ollama-ffmpeg-antenna-v3/static/index.html'
+      - 'ultima/ollama-ffmpeg-antenna-v3/static/app.jquery.js'
       - 'ultima/ollama-ffmpeg-antenna-v3/tests/test_gateway.py'
+      - 'ultima/ollama-ffmpeg-antenna-v3/tests/test_lum_agent.py'
   workflow_dispatch:
 
 permissions:
@@ -148,8 +152,8 @@ jobs:
           grep -q 'FINAL_FORM_GREEN' scripts/final-form-device-verify.sh
           echo 'SAMSUNG_FINAL_EVIDENCE_GATE_ARMED'
 
-  antenna-gateway-preflight:
-    name: Four-lane antenna gateway Python ${{ matrix.python-version }}
+  antenna-lum-preflight:
+    name: Antenna + Lum Python ${{ matrix.python-version }}
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
@@ -165,15 +169,23 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install antenna runtime
+      - name: Install pinned antenna and Lum runtime
         shell: bash
         run: |
           set -euo pipefail
           python -m pip install -e . pytest
+          python - <<'PY'
+          import importlib.metadata as m
+          assert m.version('openai-agents') == '0.22.0'
+          print('ULTIMA_OPENAI_AGENTS_PIN_GREEN')
+          PY
 
-      - name: Compile and exercise four-lane gateway
+      - name: Compile and exercise antenna plus Lum
         shell: bash
         env:
+          OPENAI_API_KEY: ''
+          LUM_OPENAI_MODEL: gpt-5.6-luna
+          LUM_OPENAI_TRACING: '0'
           KAI_GOOGLE_AUTH: auto
           GOOGLE_CLOUD_PROJECT: ''
           GCP_PROJECT: ''
@@ -183,7 +195,8 @@ jobs:
         run: |
           set -euo pipefail
           python -m py_compile gateway.py magic_server.py remote_ai.py main.py
-          python -m pytest -q tests/test_gateway.py tests/test_ci_smoke.py tests/test_ci_magic.py
+          python -m compileall -q lum_agent tests/test_lum_agent.py
+          python -m pytest -q tests/test_lum_agent.py tests/test_gateway.py tests/test_ci_smoke.py tests/test_ci_magic.py
           python - <<'PY'
           from fastapi.testclient import TestClient
           import magic_server
@@ -196,6 +209,20 @@ jobs:
           assert client.post('/providers/google/generate', json={'prompt': 'smoke'}).status_code == 503
           assert client.get('/api/jobs').status_code == 200
 
+          lum = client.get('/api/lum/status')
+          assert lum.status_code == 200
+          status = lum.json()
+          assert status['agent'] == 'KAI9000-Lum-InApp'
+          assert status['model'] == 'gpt-5.6-luna'
+          assert status['reasoning_effort'] == 'none'
+          assert status['credential_exposed_to_client'] is False
+          assert status['self_approval'] is False
+          assert 'python-core' in status['skills']
+          assert 'python-debug' in status['skills']
+          chat = client.post('/api/lum/chat', json={'message': 'Explain Python class doctrine'})
+          assert chat.status_code == 200
+          assert chat.json()['mode'] == 'deterministic_mock'
+
           with client.websocket_connect('/ws') as ws:
               assert ws.receive_json()['type'] == 'hello'
               ws.send_json({'type': 'ping'})
@@ -206,10 +233,10 @@ jobs:
               assert event['type'] == 'provider.error'
               assert event['code'] == 'google_not_configured'
 
-          print('ULTIMA_ANTENNA_GATEWAY_GREEN')
+          print('ULTIMA_ANTENNA_LUM_GREEN')
           PY
 
-      - name: Verify server-only Google credential doctrine
+      - name: Verify server-only provider and approval doctrine
         shell: bash
         run: |
           set -euo pipefail
@@ -217,22 +244,30 @@ jobs:
           grep -q 'android_provider_credentials' gateway.py
           grep -q 'secrets_exposed' gateway.py
           grep -q 'blocked_pending_policy' gateway.py
+          grep -q 'gpt-5.6-luna' lum_agent/agent.py
+          grep -q 'reasoning.*none' lum_agent/agent.py
+          grep -q 'self_approval.*False' lum_agent/router.py
+          grep -q 'execution.*NOT_EXECUTED' lum_agent/tools.py
+          grep -q 'human approval' lum_agent/skills/prime/SKILL.md
+          ! grep -Eq 'sk-[A-Za-z0-9_-]{20,}' lum_agent .env.example static/index.html static/app.jquery.js
           ! grep -Eq 'AIza[0-9A-Za-z_-]{20,}' gateway.py .env.example
-          echo 'ULTIMA_GOOGLE_CREDENTIAL_BOUNDARY_GREEN'
+          echo 'ULTIMA_LUM_AUTHORITY_BOUNDARY_GREEN'
 
   final-form-ready:
-    name: FINAL FORM two-phase live publication and antenna armed
-    needs: [final-form-preflight, antenna-gateway-preflight]
+    name: FINAL FORM two-phase live publication and Lum antenna armed
+    needs: [final-form-preflight, antenna-lum-preflight]
     runs-on: ubuntu-24.04
     steps:
       - name: Seal operator-ready state
         run: |
           echo 'FINAL_FORM_TWO_PHASE_LIVE_PUBLICATION_ARMED'
           echo 'KAI9000_ANTENNA_GATEWAY_ARMED'
+          echo 'KAI9000_LUM_AGENT_ARMED'
+          echo 'Lum uses OpenAI Agents SDK 0.22.0 with gpt-5.6-luna, reasoning none, verbosity low.'
+          echo 'Lum loads doctrine skills on demand and has read/search/AST/compile/proposal tools.'
+          echo 'Lum cannot self-approve mutation; the deterministic magic cast gateway remains authoritative.'
           echo '/api/* REST, /ws control bus, /providers/google/* server adapter, and /providers/gemini/live are CI-proven.'
-          echo 'Google provider credentials remain server-side; Vertex ADC is the preferred GCP path.'
+          echo 'Provider credentials remain server-side; no API key is embedded in Android/browser source.'
           echo 'Phase 1 publishes corrected persistent-signed versionCode 6 only.'
           echo 'After F-Droid import/install proves v6, phase 2 atomically publishes the v6+v7 repository.'
-          echo 'Both APKs use the same persistent Android signer; both indexes use the same persistent F-Droid repository signer.'
-          echo 'F-Droid origin uses a dedicated outbound-only Cloudflare Tunnel and Google IAP-only administration.'
           echo 'FINAL_FORM_GREEN still requires a proven live Google VM, live HTTPS publication, F-Droid import/install proof, and on-device upgrade to versionCode 7.'
