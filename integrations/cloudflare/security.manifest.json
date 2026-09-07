@@ -1,14 +1,14 @@
 {
-  "schema": "kai9000.cloudflare-eap-security.v4",
+  "schema": "kai9000.cloudflare-eap-security.v5",
   "date": "2026-09-06",
   "zone": "eggiebagelface.art",
   "meaning_of_eap": "Edge Access Perimeter",
-  "status": "CLOUDFLARE_OAUTH_BOOTSTRAP_WIRED_NOT_LIVE_GREEN",
+  "status": "CLOUDFLARE_TUNNEL_HIDDEN_ORIGIN_WIRED_NOT_LIVE_GREEN",
   "fqdn_routes": {
     "eggiebagelface.art": {"role": "coming_soon_public_site", "route": "workers_static_assets_custom_domain", "public": true},
     "www.eggiebagelface.art": {"role": "coming_soon_public_site_alias", "route": "workers_static_assets_custom_domain", "public": true},
-    "fdroid.eggiebagelface.art": {"role": "signed_fdroid_repository", "route": "proxied_aaaa_to_gcp_ipv6_origin", "public": true, "access_gate": false},
-    "admin.eggiebagelface.art": {"role": "protected_cockpit", "route": "proxied_cname_to_cloudflare_tunnel", "public_dns": true, "access_gate": true},
+    "fdroid.eggiebagelface.art": {"role": "signed_fdroid_repository", "route": "dedicated_public_cloudflare_tunnel", "public": true, "access_gate": false},
+    "admin.eggiebagelface.art": {"role": "protected_cockpit", "route": "separate_access_protected_cloudflare_tunnel", "public_dns": true, "access_gate": true},
     "lum.eggiebagelface.lan": {"role": "private_cockpit", "route": "private_dns_and_warp_only", "public_dns": false},
     "ai.eggiebagelface.lan": {"role": "private_ai_services", "route": "private_dns_and_warp_only", "public_dns": false}
   },
@@ -19,12 +19,11 @@
     "tls_1_3": true,
     "always_use_https": true,
     "hsts": "enable_only_after_all_https_hosts_proven",
-    "fdroid_encryption_mode": "full_strict",
-    "fdroid_origin_ca": "Cloudflare Origin CA",
-    "fdroid_origin_request_type": "origin-ecc",
-    "fdroid_origin_key": "local_ecdsa_p256_0600",
-    "fdroid_origin_csr_only_to_cloudflare": true,
-    "fdroid_origin_san": "fdroid.eggiebagelface.art"
+    "fdroid_edge_tls": "cloudflare_managed",
+    "fdroid_tunnel_transport": "encrypted_outbound_cloudflared",
+    "fdroid_local_origin_service": "http://127.0.0.1:8080",
+    "origin_ca_required_for_fdroid_tunnel": false,
+    "origin_ca_role": "optional reviewed fallback for future direct origin, not canonical publication path"
   },
   "admin_https_auth": {
     "hostname": "admin.eggiebagelface.art",
@@ -32,7 +31,7 @@
     "active_google_browser_session": "normal_oauth_flow_only",
     "reuse_chatgpt_google_connector_credentials": false,
     "identity_allowlist_required": true,
-    "independent_mfa": "authenticator_app_totp_every_access_login",
+    "independent_mfa": "authenticator_app_totp_or_passkey_policy",
     "google_authenticator_supported": true,
     "country_defense_in_depth": "US",
     "warp_or_device_posture_required": true
@@ -43,8 +42,7 @@
       "minimum_version": "4.119.0",
       "login": "wrangler login --device",
       "helper": "integrations/cloudflare/bootstrap-oauth.sh wrangler-login",
-      "credential_export": false,
-      "keyring_optional_when_supported": true
+      "credential_export": false
     },
     "tunnel_management": {
       "login": "cloudflared tunnel login",
@@ -53,7 +51,11 @@
       "account_certificate_mode": "0600",
       "runtime_credential": "tunnel_specific_only"
     },
-    "api_mcp_oauth": "preferred_when_available_in_operator_product",
+    "google_operator": {
+      "login": "gcloud auth login --no-launch-browser",
+      "helper": "integrations/google-cloud/bootstrap-oauth.sh login-remote",
+      "github_wif_required_for_human_publication": false
+    },
     "cf_api_token_required_for_human_bootstrap": false
   },
   "token_management": {
@@ -63,7 +65,6 @@
     "lost_secret_action": "roll_or_replace_token",
     "bootstrap": "oauth_first",
     "durable_ci_preference": "account_owned_scoped_token_when_unattended_automation_is_required",
-    "separate_lanes_preferred": ["dns_tls", "workers", "zero_trust_access", "origin_ca", "tunnel_runtime"],
     "token_values_model_visible": false,
     "oauth_client_secret_model_visible": false,
     "totp_seed_model_visible": false
@@ -75,23 +76,29 @@
     "signed_bundle_sha256": "fa350eeb2a2945b3b0e664f459ae1706cd3c19d0c02913e799e7ea005c6f3028"
   },
   "network": {
-    "fdroid_origin": "gcp_ipv6_only",
-    "fdroid_public_a_record": false,
-    "fdroid_public_aaaa_record": true,
-    "admin_connector": "cloudflared",
+    "fdroid_origin": "gcp_e2_micro_local_nginx_behind_dedicated_cloudflare_tunnel",
+    "fdroid_public_origin_ip_record": false,
+    "fdroid_inbound_web_ports": false,
+    "fdroid_tunnel_direction": "outbound_only",
+    "google_vm_external_ipv4": false,
+    "google_vm_external_ipv6": "egress_only_not_published",
+    "google_vm_admin": "iap_ssh_only",
+    "admin_connector": "separate_cloudflared_tunnel",
     "client_connector": "Cloudflare One Client/WARP",
-    "tunnel_direction": "outbound_only_from_origin",
     "wan_port_forwarding": false,
-    "ipv4_to_ipv6_http_redirect": false,
     "edge_dual_stack": true,
     "private_lan_public_dns": false
   },
   "doctrine": "docs/CLOUDFLARE_OAUTH_BOOTSTRAP_REROLL_V4.md",
   "green_requires": [
     "wrangler_oauth_identity_proven_on_operator_machine",
+    "google_operator_oauth_identity_proven",
     "edge_tls_settings_active",
-    "fdroid_full_strict_and_origin_ecc_p256_valid",
-    "google_idp_and_independent_totp_mfa_proven",
+    "fdroid_dedicated_tunnel_healthy",
+    "fdroid_origin_has_no_public_dns_ip_record",
+    "fdroid_vm_has_no_inbound_web_firewall_rule",
+    "google_iap_ssh_proven",
+    "google_idp_and_independent_mfa_or_passkey_proven_for_admin",
     "admin_warp_or_device_posture_proven",
     "tunnel_runtime_uses_tunnel_specific_credential",
     "public_fdroid_signed_index_reachable",
