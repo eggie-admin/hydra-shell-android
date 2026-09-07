@@ -1,0 +1,356 @@
+name: KAI 9000 ULTIMA APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [testing/luhm-os-android]
+    paths:
+      - 'backend/**'
+      - 'tools/**'
+      - 'tests/**'
+      - 'ultima/**'
+      - 'integrations/**'
+      - 'lumh-os/**'
+      - 'project/hydra/**'
+      - 'docs/**'
+      - 'release/**'
+      - '.github/workflows/kai9000-ultima-apk.yml'
+  pull_request:
+    branches: [testing/luhm-os-android]
+    paths:
+      - 'backend/**'
+      - 'tools/**'
+      - 'tests/**'
+      - 'ultima/**'
+      - 'integrations/**'
+      - 'lumh-os/**'
+      - 'project/hydra/**'
+      - 'docs/**'
+      - 'release/**'
+      - '.github/workflows/kai9000-ultima-apk.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kai9000-ultima-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DONOR_REPO: eggie-admin/vue-headless-cms
+  DONOR_REF: b507282a963a663c8d9d6c30c5769dbc22141953
+  PACKAGE_ID: art.eggiebagelface.kai9000.dev
+  VERSION_NAME: 0.7.0-dev
+  VERSION_CODE: '7'
+  APK_NAME: kai9000-dev.apk
+  NPM_LOCK_SHA256: 7929d5c53793563492ff0f5b39278904ecfa5508b10071d5b6d4b0b268fe653c
+  GODOT_RELEASE: 4.7.2-stable
+  GODOT_TEMPLATE_VERSION: 4.7.2.stable
+  GODOT_EDITOR_SHA256: cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4
+  GODOT_TEMPLATES_SHA256: f298490b8d44d934be425a5a65a51bf15f422428b229a06a6e11d9ffea248011
+  ANDROID_GRADLE_VERSION: 8.11.1
+  ANDROID_GRADLE_SHA256: f397b287023acdba1e9f6fc5ea72d22dd63669d59ed4a289a29b1a76eee151c6
+
+jobs:
+  doctrine:
+    name: KAI doctrine preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.14'
+          cache: pip
+          cache-dependency-path: |
+            backend/requirements.txt
+            backend/requirements-dev.txt
+
+      - name: Test Python control plane
+        run: |
+          set -euo pipefail
+          python -m pip install -r backend/requirements.txt -r backend/requirements-dev.txt
+          python -m compileall -q backend tools ultima/ollama-ffmpeg-antenna-v3
+          python -m pytest -q backend/tests
+          bash tests/hydra-sanity-audit-test.sh
+
+      - name: Verify KAI identity and hardening doctrine
+        shell: bash
+        run: |
+          set -euo pipefail
+          MANIFEST='project/hydra/samsung/android/apk/testing-ingest.manifest.json'
+          python -m json.tool "$MANIFEST" >/dev/null
+          grep -q '"schema": "kai9000.android-testing-ingest.v4"' "$MANIFEST"
+          grep -q '"android_package_id": "art.eggiebagelface.kai9000.dev"' "$MANIFEST"
+          grep -q '"commit": "b507282a963a663c8d9d6c30c5769dbc22141953"' "$MANIFEST"
+
+          if git ls-files | grep -E '(^|/)(\.secrets|private)/|\.(jks|keystore|p12|pfx|pkcs12|key|pem)$|(^|/)(google-services|service-account|credentials[^/]*)\.json$'; then
+            echo 'Tracked secret/signing material detected' >&2
+            exit 1
+          fi
+          if git grep -nE -- '-----BEGIN ([A-Z0-9 ]+ )?PRIVATE KEY-----|github_pat_[A-Za-z0-9_]{20,}|ghp_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9_-]{20,}|hf_[A-Za-z0-9]{20,}|AIza[0-9A-Za-z_-]{30,}' -- \
+            ':!*.md' ':!*.example' ':!*.template' ':!backend/tests/test_remote_ai_router.py'; then
+            echo 'Secret-like credential material detected' >&2
+            exit 1
+          fi
+          echo 'KAI_DOCTRINE_GREEN'
+
+  apk:
+    name: KAI 9000 Android forge
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - name: Checkout LuHm OS
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+
+      - name: Checkout pinned KAI donor
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          repository: ${{ env.DONOR_REPO }}
+          ref: ${{ env.DONOR_REF }}
+          path: _forge/kai9000
+          persist-credentials: false
+
+      - name: Verify KAI package boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT='_forge/kai9000'
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data=json.loads(Path('_forge/kai9000/release/version.json').read_text())
+          assert data['packageId']=='art.eggiebagelface.kai9000.dev'
+          assert data['version']=='0.7.0-dev'
+          assert data['versionCode']==7
+          PY
+          grep -q 'package/unique_name="art.eggiebagelface.kai9000.dev"' "$ROOT/godot/export_presets.cfg"
+          grep -q 'package/name="KAI 9000 Dev"' "$ROOT/godot/export_presets.cfg"
+          grep -q 'config/name="KAI 9000"' "$ROOT/godot/project.godot"
+          grep -q 'android:exported="false"' "$ROOT/godot/android-plugin/plugin/src/main/AndroidManifest.xml"
+          grep -q 'cleartextTrafficPermitted="false"' "$ROOT/godot/android-plugin/plugin/src/main/res/xml/cathedral_network_security.xml"
+          grep -q '>127.0.0.1<' "$ROOT/godot/android-plugin/plugin/src/main/res/xml/cathedral_network_security.xml"
+          echo 'KAI_ANDROID_BOUNDARY_GREEN'
+
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.14'
+
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '24.18.0'
+
+      - uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+        with:
+          gradle-version: '8.13'
+          cache-cleanup: on-success
+
+      - name: Install Android SDK 36
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" 'platform-tools' 'build-tools;36.1.0' 'platforms;android-36'
+
+      - name: Install verified Godot and pinned Gradle wrapper
+        shell: bash
+        run: |
+          set -euo pipefail
+          CACHE="$RUNNER_TEMP/kai9000-cache"
+          WORK="$RUNNER_TEMP/kai9000-godot"
+          mkdir -p "$CACHE" "$WORK"
+          curl --fail --location --retry 5 --retry-all-errors -o "$CACHE/godot.zip" \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v4.7.2-stable_linux.x86_64.zip"
+          echo "${GODOT_EDITOR_SHA256}  $CACHE/godot.zip" | sha256sum --check --strict
+          curl --fail --location --retry 5 --retry-all-errors -o "$CACHE/templates.tpz" \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v4.7.2-stable_export_templates.tpz"
+          echo "${GODOT_TEMPLATES_SHA256}  $CACHE/templates.tpz" | sha256sum --check --strict
+          curl --fail --location --retry 5 --retry-all-errors -o "$CACHE/gradle.zip" \
+            "https://services.gradle.org/distributions/gradle-${ANDROID_GRADLE_VERSION}-bin.zip"
+          echo "${ANDROID_GRADLE_SHA256}  $CACHE/gradle.zip" | sha256sum --check --strict
+
+          unzip -q "$CACHE/godot.zip" -d "$WORK"
+          chmod +x "$WORK/Godot_v4.7.2-stable_linux.x86_64"
+          echo "GODOT_BIN=$WORK/Godot_v4.7.2-stable_linux.x86_64" >> "$GITHUB_ENV"
+
+          unzip -q "$CACHE/templates.tpz" -d "$WORK/templates"
+          TEMPLATE_DIR="$HOME/.local/share/godot/export_templates/${GODOT_TEMPLATE_VERSION}"
+          mkdir -p "$TEMPLATE_DIR"
+          cp -a "$WORK/templates/templates/." "$TEMPLATE_DIR/"
+
+          PATCH="$WORK/android-source"
+          mkdir -p "$PATCH"
+          unzip -q "$TEMPLATE_DIR/android_source.zip" -d "$PATCH"
+          WRAPPER="$(find "$PATCH" -type f -path '*/gradle/wrapper/gradle-wrapper.properties' -print -quit)"
+          test -n "$WRAPPER"
+          python - "$WRAPPER" "$CACHE/gradle.zip" "$ANDROID_GRADLE_SHA256" <<'PY'
+          from pathlib import Path
+          import sys
+          p=Path(sys.argv[1]); uri=Path(sys.argv[2]).resolve().as_uri(); digest=sys.argv[3]
+          lines=p.read_text().splitlines(); out=[]; saw_sha=False
+          for line in lines:
+              if line.startswith('distributionUrl='): out.append('distributionUrl='+uri)
+              elif line.startswith('distributionSha256Sum='):
+                  out.append('distributionSha256Sum='+digest); saw_sha=True
+              else: out.append(line)
+          if not saw_sha: out.append('distributionSha256Sum='+digest)
+          p.write_text('\n'.join(out)+'\n')
+          PY
+          rm -f "$TEMPLATE_DIR/android_source.zip"
+          (cd "$PATCH" && zip -q -r "$TEMPLATE_DIR/android_source.zip" .)
+
+      - name: Build bundled Vue cockpit
+        working-directory: _forge/kai9000/apps
+        run: |
+          set -euo pipefail
+          npm install --global npm@12.0.2 --no-audit --no-fund
+          echo "${NPM_LOCK_SHA256}  package-lock.json" | sha256sum --check --strict
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run build --workspace=video-forge-ui
+          test -f forge-ui/dist/index.html
+
+      - name: Build Android plugin and run architecture gates
+        working-directory: _forge/kai9000
+        run: |
+          set -euo pipefail
+          rm -rf godot/android-plugin/plugin/src/main/assets/cms
+          mkdir -p godot/android-plugin/plugin/src/main/assets/cms
+          cp -a apps/forge-ui/dist/. godot/android-plugin/plugin/src/main/assets/cms/
+          gradle -p godot/android-plugin :plugin:assemble
+          test -f godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-debug.aar
+          rm -rf godot/addons/CathedralAndroid
+          mkdir -p godot/addons/CathedralAndroid/bin/debug godot/addons/CathedralAndroid/bin/release
+          cp -a godot/android-plugin/plugin/export_scripts_template/. godot/addons/CathedralAndroid/
+          cp godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-debug.aar godot/addons/CathedralAndroid/bin/debug/
+          cp godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-release.aar godot/addons/CathedralAndroid/bin/release/
+          python scripts/cathedral_full_sanity.py
+          python scripts/samsung_edge_sanity.py
+
+      - name: Configure one-run debug signing
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.config/godot" build/android
+          cat > "$HOME/.config/godot/editor_settings-4.tres" <<EOF
+          [gd_resource type="EditorSettings" format=3]
+          [resource]
+          export/android/android_sdk_path = "$ANDROID_HOME"
+          export/android/java_sdk_path = "$JAVA_HOME"
+          EOF
+          KEYSTORE="$RUNNER_TEMP/kai9000-dev.keystore"
+          keytool -genkeypair -keystore "$KEYSTORE" -storepass android \
+            -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 \
+            -validity 10000 -dname 'CN=KAI 9000 Dev,O=LuHm OS,C=US'
+          echo "GODOT_ANDROID_KEYSTORE_DEBUG_PATH=$KEYSTORE" >> "$GITHUB_ENV"
+          echo 'GODOT_ANDROID_KEYSTORE_DEBUG_USER=androiddebugkey' >> "$GITHUB_ENV"
+          echo 'GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD=android' >> "$GITHUB_ENV"
+
+      - name: Export KAI 9000 APK
+        working-directory: _forge/kai9000
+        run: |
+          set -euo pipefail
+          "$GODOT_BIN" --headless --editor --path godot --quit
+          "$GODOT_BIN" --headless --path godot --install-android-build-template \
+            --export-debug 'Android Debug' "$GITHUB_WORKSPACE/build/android/$APK_NAME"
+          test -s "$GITHUB_WORKSPACE/build/android/$APK_NAME"
+
+      - name: Verify APK identity, signature, ABI and CMS
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="build/android/$APK_NAME"
+          TOOLS="$ANDROID_HOME/build-tools/36.1.0"
+          "$TOOLS/apksigner" verify --verbose --print-certs "$APK" | tee build/android/signature.txt
+          "$TOOLS/zipalign" -c -P 16 -v 4 "$APK" | tee build/android/zipalign.txt
+          "$TOOLS/aapt" dump badging "$APK" | tee build/android/badging.txt
+          unzip -l "$APK" | tee build/android/contents.txt
+          sha256sum "$APK" | tee build/android/sha256.txt
+          grep -q "package: name='$PACKAGE_ID' versionCode='$VERSION_CODE' versionName='$VERSION_NAME'" build/android/badging.txt
+          grep -q 'lib/arm64-v8a/' build/android/contents.txt
+          grep -q 'assets/cms/index.html' build/android/contents.txt
+          echo 'KAI_APK_GREEN'
+
+      - name: Upload KAI 9000 APK
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: kai9000-dev-${{ github.run_number }}
+          path: |
+            build/android/${{ env.APK_NAME }}
+            build/android/sha256.txt
+            build/android/signature.txt
+            build/android/zipalign.txt
+            build/android/badging.txt
+            build/android/contents.txt
+          if-no-files-found: error
+          retention-days: 7
+
+  fdroid:
+    name: KAI F-Droid staging
+    needs: [apk]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          repository: ${{ env.DONOR_REPO }}
+          ref: ${{ env.DONOR_REF }}
+          path: _forge/kai9000
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.14'
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
+        with:
+          name: kai9000-dev-${{ github.run_number }}
+          path: build/apk
+      - name: Stage KAI binary repo input
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="$(find build/apk -name '*.apk' -print -quit)"
+          test -s "$APK"
+          python _forge/kai9000/scripts/stage_fdroid_repo.py \
+            --apk "$APK" --output build/fdroid \
+            --package "$PACKAGE_ID" --version-code "$VERSION_CODE"
+          test -s "build/fdroid/repo/${PACKAGE_ID}_${VERSION_CODE}.apk"
+          test -s "build/fdroid/metadata/${PACKAGE_ID}.yml"
+          echo 'KAI_FDROID_STAGED'
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: kai9000-fdroid-${{ github.run_number }}
+          path: build/fdroid/**
+          if-no-files-found: error
+          retention-days: 14
+
+  ultima:
+    name: KAI 9000 Final ULTIMA
+    if: always()
+    needs: [doctrine, apk, fdroid]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require all KAI gates green
+        env:
+          DOCTRINE: ${{ needs.doctrine.result }}
+          APK: ${{ needs.apk.result }}
+          FDROID: ${{ needs.fdroid.result }}
+        run: |
+          set -euo pipefail
+          printf 'Doctrine=%s APK=%s F-Droid=%s\n' "$DOCTRINE" "$APK" "$FDROID"
+          test "$DOCTRINE" = success
+          test "$APK" = success
+          test "$FDROID" = success
+          echo 'KAI9000_ULTIMA_GREEN'
