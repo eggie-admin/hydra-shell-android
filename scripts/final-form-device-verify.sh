@@ -22,6 +22,32 @@ public_probe() {
   echo 'FDROID_PUBLIC_HTTPS_GREEN'
 }
 
+public_index_codes() {
+  python3 - "$WORK/index-v1.json" "$PACKAGE_ID" <<'PY'
+import json, sys
+p, package = sys.argv[1:]
+idx = json.load(open(p, encoding='utf-8'))
+codes = sorted(int(v['versionCode']) for v in idx['packages'][package])
+print(','.join(map(str, codes)))
+PY
+}
+
+require_public_phase() {
+  local phase="$1" codes expected
+  public_probe
+  codes="$(public_index_codes)"
+  case "$phase" in
+    baseline) expected="6" ;;
+    upgrade) expected="6,7" ;;
+    *) echo "RED: unknown public phase $phase" >&2; return 8 ;;
+  esac
+  [ "$codes" = "$expected" ] || {
+    echo "RED: public repo phase mismatch; expected versionCodes $expected, got $codes" >&2
+    return 8
+  }
+  echo "FDROID_PUBLIC_PHASE_GREEN=$phase"
+}
+
 installed_version_code() {
   local dump=""
   if command -v dumpsys >/dev/null 2>&1; then
@@ -30,11 +56,14 @@ installed_version_code() {
   if [ -z "$dump" ] && command -v pm >/dev/null 2>&1; then
     dump="$(pm dump "$PACKAGE_ID" 2>/dev/null || true)"
   fi
+  if [ -z "$dump" ] && command -v cmd >/dev/null 2>&1; then
+    dump="$(cmd package dump "$PACKAGE_ID" 2>/dev/null || true)"
+  fi
   printf '%s\n' "$dump" | sed -n 's/.*versionCode=\([0-9][0-9]*\).*/\1/p' | head -n1
 }
 
 open_repo() {
-  public_probe
+  require_public_phase baseline
   local uri="$REPO_URL?fingerprint=$REPO_FP"
   echo "repo_uri=$uri"
   if command -v termux-open-url >/dev/null 2>&1; then
@@ -46,46 +75,50 @@ open_repo() {
     return 4
   fi
   echo 'FDROID_IMPORT_UI_OPENED'
-  echo 'Confirm the fingerprint in F-Droid and add the repository.'
+  echo 'Confirm the pinned fingerprint in F-Droid and add the repository.'
 }
 
-check_install() {
-  public_probe
+check_baseline_install() {
+  require_public_phase baseline
   local vc
   vc="$(installed_version_code)"
   [ -n "$vc" ] || { echo "RED: $PACKAGE_ID is not visible as installed" >&2; return 5; }
   echo "installed_version_code=$vc"
-  if [ "$vc" -lt "$BASELINE_VERSION_CODE" ]; then
-    echo "RED: installed versionCode $vc is below baseline $BASELINE_VERSION_CODE" >&2
+  [ "$vc" -eq "$BASELINE_VERSION_CODE" ] || {
+    echo "RED: baseline proof requires exactly versionCode $BASELINE_VERSION_CODE; found $vc" >&2
     return 6
-  fi
+  }
   echo 'FDROID_IMPORT_VERIFIED'
+  echo 'BASELINE_V6_INSTALLED'
 }
 
 check_upgrade() {
-  public_probe
+  require_public_phase upgrade
   local vc
   vc="$(installed_version_code)"
   [ -n "$vc" ] || { echo "RED: $PACKAGE_ID is not visible as installed" >&2; return 5; }
   echo "installed_version_code=$vc"
-  if [ "$vc" -lt "$UPGRADE_VERSION_CODE" ]; then
-    echo "RED: upgrade not proven; need installed versionCode >= $UPGRADE_VERSION_CODE" >&2
+  [ "$vc" -eq "$UPGRADE_VERSION_CODE" ] || {
+    echo "RED: upgrade proof requires exactly versionCode $UPGRADE_VERSION_CODE; found $vc" >&2
     return 7
-  fi
+  }
   echo 'FDROID_IMPORT_VERIFIED'
   echo 'UPGRADE_VERIFIED'
   echo 'FINAL_FORM_GREEN'
 }
 
 case "$MODE" in
-  public)
-    public_probe
+  public-baseline)
+    require_public_phase baseline
+    ;;
+  public-upgrade)
+    require_public_phase upgrade
     ;;
   import)
     open_repo
     ;;
-  install-check)
-    check_install
+  baseline-check|install-check)
+    check_baseline_install
     ;;
   upgrade-check)
     check_upgrade
@@ -100,7 +133,7 @@ case "$MODE" in
     echo "installed_version_code=${vc:-NONE}"
     ;;
   *)
-    echo "usage: $0 {status|public|import|install-check|upgrade-check}" >&2
+    echo "usage: $0 {status|public-baseline|import|baseline-check|public-upgrade|upgrade-check}" >&2
     exit 2
     ;;
 esac
