@@ -16,11 +16,17 @@ EXPECTED_REPO_FP="BFB900A9EC913D35C22F1DC3DE7B152D1AF5CA11B7B07E5FAFDD06B44811F6
 
 usage() {
   cat <<EOF
-usage: GCP_PROJECT=<project-id> $0 [--bundle PATH] [--project ID]
+usage: $0 [--bundle PATH] [--project ID]
 
-Prerequisite interactive logins:
-  bash integrations/cloudflare/bootstrap-oauth.sh tunnel-login
-  bash integrations/google-cloud/bootstrap-oauth.sh login-remote
+The cast self-bootstraps human OAuth when required:
+  Cloudflare: cloudflared tunnel login
+  Google:     gcloud auth login --no-launch-browser
+
+Google project selection order:
+  1. --project
+  2. GCP_PROJECT
+  3. active gcloud configured project
+  4. the only project visible to the active Google identity
 
 Default signed bundle path:
   $HOME/storage/downloads/KAI9000_FDROID_SIGNED_20260906.zip
@@ -36,21 +42,54 @@ while (($#)); do
   esac
 done
 
-[ -n "$PROJECT" ] || { echo 'RED: set GCP_PROJECT or pass --project' >&2; exit 2; }
 [ -s "$BUNDLE" ] || { echo "RED: signed bundle not found: $BUNDLE" >&2; exit 2; }
 
 for cmd in gcloud cloudflared python3 sha256sum unzip tar curl; do
   command -v "$cmd" >/dev/null || { echo "RED: missing command: $cmd" >&2; exit 3; }
 done
 
-# Human OAuth only. Never print or export tokens/cookies/credential JSON content.
-ACTIVE_GCLOUD="$(gcloud auth list --filter=status:ACTIVE --format='value(account)' | head -n1)"
-[ -n "$ACTIVE_GCLOUD" ] || { echo 'RED: no active gcloud OAuth identity' >&2; exit 4; }
-test -s "$HOME/.cloudflared/cert.pem" || { echo 'RED: cloudflared account cert absent; run tunnel-login first' >&2; exit 4; }
-chmod 600 "$HOME/.cloudflared/cert.pem"
-
+# Human OAuth only. Never print/export bearer tokens, browser cookies, OAuth refresh tokens,
+# credential JSON contents, Cloudflare account cert contents, or signing-key material.
+ACTIVE_GCLOUD="$(gcloud auth list --filter=status:ACTIVE --format='value(account)' 2>/dev/null | head -n1 || true)"
+if [ -z "$ACTIVE_GCLOUD" ]; then
+  echo 'Google Cloud operator OAuth is absent. Starting browser-assisted login.'
+  bash "$REPO_ROOT/integrations/google-cloud/bootstrap-oauth.sh" login-remote
+  ACTIVE_GCLOUD="$(gcloud auth list --filter=status:ACTIVE --format='value(account)' 2>/dev/null | head -n1 || true)"
+fi
+[ -n "$ACTIVE_GCLOUD" ] || { echo 'RED: Google OAuth login did not produce an active identity' >&2; exit 4; }
 echo 'GOOGLE_OPERATOR_OAUTH_PRESENT'
+
+if [ ! -s "$HOME/.cloudflared/cert.pem" ]; then
+  echo 'Cloudflare Tunnel operator OAuth is absent. Starting browser authorization.'
+  bash "$REPO_ROOT/integrations/cloudflare/bootstrap-oauth.sh" tunnel-login
+fi
+test -s "$HOME/.cloudflared/cert.pem" || { echo 'RED: Cloudflare tunnel login did not produce cert.pem' >&2; exit 4; }
+chmod 600 "$HOME/.cloudflared/cert.pem"
 echo 'CLOUDFLARE_TUNNEL_OAUTH_PRESENT'
+
+# Resolve the Google project without guessing across multiple projects.
+if [ -z "$PROJECT" ]; then
+  CONFIGURED_PROJECT="$(gcloud config get-value project 2>/dev/null || true)"
+  if [ -n "$CONFIGURED_PROJECT" ] && [ "$CONFIGURED_PROJECT" != '(unset)' ]; then
+    PROJECT="$CONFIGURED_PROJECT"
+  else
+    mapfile -t VISIBLE_PROJECTS < <(gcloud projects list --format='value(projectId)' 2>/dev/null | sed '/^$/d')
+    if [ "${#VISIBLE_PROJECTS[@]}" -eq 1 ]; then
+      PROJECT="${VISIBLE_PROJECTS[0]}"
+    elif [ "${#VISIBLE_PROJECTS[@]}" -eq 0 ]; then
+      echo 'RED: active Google identity has no visible project; create/select a project first' >&2
+      exit 4
+    else
+      echo 'RED: multiple Google Cloud projects are visible; rerun with --project PROJECT_ID' >&2
+      printf 'visible_project=%s\n' "${VISIBLE_PROJECTS[@]}" >&2
+      exit 4
+    fi
+  fi
+fi
+
+gcloud projects describe "$PROJECT" --format='value(projectId)' >/dev/null
+GCP_PROJECT="$PROJECT" gcloud config set project "$PROJECT" >/dev/null
+echo "GOOGLE_PROJECT_SELECTED=$PROJECT"
 
 ACTUAL_BUNDLE_SHA="$(sha256sum "$BUNDLE" | awk '{print $1}')"
 [ "$ACTUAL_BUNDLE_SHA" = "$EXPECTED_BUNDLE_SHA256" ] || {
@@ -82,12 +121,12 @@ test -s "$WORK/signed/repo/repo-fingerprint-sha256.txt"
 grep -qi "$EXPECTED_REPO_FP" "$WORK/signed/repo/repo-fingerprint-sha256.txt"
 tar -C "$WORK/signed/repo" -czf "$WORK/repo.tar.gz" .
 
-# Provision/reconcile Google strict-free origin. It removes the legacy public-web rule
+# Provision/reconcile Google strict-free origin. It removes legacy public web ingress
 # and proves IAP-only SSH plus loopback nginx.
 GCP_PROJECT="$PROJECT" GCP_ZONE="$ZONE" KAI_GCP_INSTANCE="$INSTANCE" \
   bash "$REPO_ROOT/integrations/google-cloud/provision-strict-free-vm.sh"
 
-# Create or reuse a locally-managed F-Droid tunnel under the operator's OAuth-authorized cert.
+# Create or reuse a locally-managed F-Droid tunnel under the operator OAuth account cert.
 TUNNEL_ID="$(cloudflared tunnel list --output json | python3 -c '
 import json,sys
 name=sys.argv[1]
@@ -115,9 +154,8 @@ test -s "$CRED" || { echo "RED: tunnel credential missing: $CRED" >&2; exit 6; }
 chmod 600 "$CRED"
 echo "FDROID_TUNNEL_ID=$TUNNEL_ID"
 
-# Create the canonical CNAME. This never prints the tunnel credential.
-# If a conflicting legacy A/AAAA exists, cloudflared will fail closed; remove that stale
-# record in the authenticated Cloudflare dashboard and rerun rather than overwriting blindly.
+# Create canonical CNAME. If a conflicting old A/AAAA exists, fail closed rather than
+# overwrite a live record blindly.
 cloudflared tunnel route dns "$TUNNEL_ID" "$FDROID_HOST"
 echo 'FDROID_TUNNEL_DNS_ROUTE_GREEN'
 
@@ -131,8 +169,8 @@ ingress:
   - service: http_status:404
 EOF
 
-# Transfer only public signed repo data + this tunnel's runtime credential over Google IAP.
-# The Cloudflare account-wide cert.pem never leaves the operator machine.
+# Transfer only public signed repo data plus this one tunnel runtime credential through
+# Google IAP. The Cloudflare account-wide cert.pem never leaves the operator machine.
 gcloud compute scp "$WORK/repo.tar.gz" \
   "$INSTANCE:/tmp/kai9000-repo.tar.gz" \
   --project="$PROJECT" --zone="$ZONE" --tunnel-through-iap
@@ -155,7 +193,6 @@ sudo install -d -m 0700 /etc/cloudflared
 sudo install -m 0600 "/tmp/__TUNNEL_ID__.json" "/etc/cloudflared/__TUNNEL_ID__.json"
 sudo install -m 0600 /tmp/kai9000-cloudflared.yml /etc/cloudflared/config.yml
 
-# Official Cloudflare Debian repository.
 sudo install -d -m 0755 /usr/share/keyrings
 curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | sudo tee /usr/share/keyrings/cloudflare-main.gpg >/dev/null
 echo 'deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared any main' | sudo tee /etc/apt/sources.list.d/cloudflared.list >/dev/null
@@ -216,7 +253,6 @@ gcloud compute ssh "$INSTANCE" \
   --project="$PROJECT" --zone="$ZONE" --tunnel-through-iap \
   --command="$REMOTE_SCRIPT"
 
-# Confirm the Cloudflare control plane sees a connector, then wait synchronously for public DNS/TLS.
 cloudflared tunnel info "$TUNNEL_ID" >/dev/null
 echo 'FDROID_TUNNEL_CONTROL_PLANE_GREEN'
 
@@ -227,7 +263,7 @@ for _ in $(seq 1 18); do
   sleep 5
 done
 [ "$PUBLIC_FP" = "$EXPECTED_REPO_FP" ] || {
-  echo 'RED: tunnel is configured but public F-Droid fingerprint is not reachable yet' >&2
+  echo 'RED: tunnel configured but public F-Droid fingerprint is not reachable yet' >&2
   exit 7
 }
 
