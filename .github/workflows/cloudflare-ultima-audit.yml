@@ -1,0 +1,70 @@
+name: Cloudflare ULTIMA Audit
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - testing/luhm-os-android
+    paths:
+      - 'site/coming-soon/**'
+      - 'docs/CLOUDFLARE_ULTIMA_CROWN_20260907.md'
+      - '.github/workflows/cloudflare-ultima-audit.yml'
+  push:
+    branches:
+      - testing/luhm-os-android
+    paths:
+      - 'site/coming-soon/**'
+      - 'docs/CLOUDFLARE_ULTIMA_CROWN_20260907.md'
+      - '.github/workflows/cloudflare-ultima-audit.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cloudflare-ultima-audit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.18.0'
+
+      - name: Static and doctrine invariants
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s site/coming-soon/public/index.html
+          test -s site/coming-soon/public/robots.txt
+          test -s site/coming-soon/wrangler.preview.jsonc
+          test -s site/coming-soon/wrangler.production.jsonc
+          test -s docs/CLOUDFLARE_ULTIMA_CROWN_20260907.md
+
+          grep -q 'eggiebagelface.art' site/coming-soon/public/index.html
+          grep -q 'noindex,nofollow,noarchive' site/coming-soon/public/index.html
+          grep -q '"pattern": "eggiebagelface.art"' site/coming-soon/wrangler.production.jsonc
+          grep -q '"pattern": "www.eggiebagelface.art"' site/coming-soon/wrangler.production.jsonc
+
+          ! grep -RniE '<script|javascript:|https?://[^ ]+' site/coming-soon/public/index.html
+          ! grep -RniE 'BEGIN .*PRIVATE KEY|OPENAI_API_KEY|HF_TOKEN' site/coming-soon
+          ! grep -RniE 'vercel\.app|@vercel|npx[[:space:]]+vercel|vercel[[:space:]]+deploy|com\.termux|/data/data/com\.termux|termux-open' site/coming-soon
+
+          echo 'CLOUDFLARE_CROWN_INVARIANTS_GREEN'
+
+      - name: Wrangler preview dry run
+        working-directory: site/coming-soon
+        shell: bash
+        run: npx --yes wrangler@4.119.0 deploy --dry-run --config wrangler.preview.jsonc
+
+      - name: Wrangler production dry run
+        working-directory: site/coming-soon
+        shell: bash
+        run: npx --yes wrangler@4.119.0 deploy --dry-run --config wrangler.production.jsonc
+
+      - name: ULTIMA repository verdict
+        run: echo 'CLOUDFLARE_ULTIMA_REPO_GREEN'
