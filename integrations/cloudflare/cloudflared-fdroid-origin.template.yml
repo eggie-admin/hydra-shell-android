@@ -1,0 +1,22 @@
+# KAI 9000 public F-Droid origin tunnel
+# Dedicated tunnel, separate from admin/LAN access.
+# Do not commit the real tunnel credential JSON.
+
+tunnel: ${CF_FDROID_TUNNEL_ID}
+credentials-file: ${CF_FDROID_TUNNEL_CREDENTIALS_FILE}
+protocol: quic
+
+ingress:
+  # Public repository. No Cloudflare Access identity gate belongs on this hostname.
+  # cloudflared and nginx run on the same Google VM, so loopback HTTP is the simplest origin leg.
+  - hostname: fdroid.eggiebagelface.art
+    service: http://127.0.0.1:8080
+
+  - service: http_status:404
+
+# Security doctrine:
+# - no public A/AAAA record for the Google origin
+# - no inbound web firewall rule on the VM
+# - tunnel is outbound-only
+# - admin.eggiebagelface.art uses a different tunnel and Access/WARP policy
+# - the public F-Droid repository itself remains unauthenticated so F-Droid clients can sync
