@@ -9,8 +9,25 @@ local.properties
 .env
 .env.*
 !.env.example
+.secrets/
+private/
 gha-creds-*.json
+credentials*.json
+service-account*.json
 .cloudflared/
+
+# Private keys / signing containers
+*.key
+*.pem
+*.p12
+*.pfx
+*.pkcs12
+*.jks
+*.keystore
+id_rsa
+id_rsa.*
+id_ed25519
+id_ed25519.*
 
 # Log/OS Files
 *.log
@@ -29,10 +46,6 @@ output-metadata.json
 misc.xml
 deploymentTargetDropDown.xml
 render.experimental.xml
-
-# Keystore files
-*.jks
-*.keystore
 
 # Google Services (e.g. APIs or Firebase)
 google-services.json
