@@ -1,17 +1,26 @@
 {
-  "schema": "kai9000.fdroid-publication.v4",
+  "schema": "kai9000.fdroid-publication.v5",
   "date": "2026-09-07",
-  "state": "SIGNED_V6_V7_READY_AWAITING_INTERACTIVE_OAUTH_CAST",
+  "state": "SIGNED_BASELINE_AND_UPGRADE_READY_AWAITING_INTERACTIVE_OAUTH_CAST",
   "repo_url": "https://fdroid.eggiebagelface.art/fdroid/repo/",
   "package_id": "art.eggiebagelface.videoforge.dev",
-  "version": "0.6.1-dev",
-  "version_code": 7,
-  "available_versions": [6, 7],
-  "signed_bundle": {
-    "name": "KAI9000_FDROID_SIGNED_V6_V7_20260907.zip",
-    "sha256": "6cb100f525229e5d6445aa8f2dfb5f39b8895073efb278fc39f609cc64799b7d",
-    "size_bytes": 56826920,
-    "drive_file_id": "1_jZRVqktQoMowxSxCPS54FFh_YZbVvP9",
+  "publication_phases": {
+    "baseline": {
+      "version": "0.6.0-dev",
+      "version_code": 6,
+      "bundle_name": "KAI9000_FDROID_SIGNED_BASELINE_V6_20260907.zip",
+      "bundle_sha256": "703ba08ca4c030c5cf0a553ece8da8e910c3b48549f10bfe02b9feb4c938547d",
+      "bundle_size_bytes": 28416232,
+      "drive_file_id": "16WTaD2zE25TzkbTDU_IcE82k_JJyMJxd"
+    },
+    "upgrade": {
+      "version": "0.6.1-dev",
+      "version_code": 7,
+      "bundle_name": "KAI9000_FDROID_SIGNED_V6_V7_20260907.zip",
+      "bundle_sha256": "6cb100f525229e5d6445aa8f2dfb5f39b8895073efb278fc39f609cc64799b7d",
+      "bundle_size_bytes": 56826920,
+      "drive_file_id": "1_jZRVqktQoMowxSxCPS54FFh_YZbVvP9"
+    },
     "drive_source_of_truth_folder_id": "1AD_KgcM32sgli_pSSub0MXf-W0tPWIHr"
   },
   "apk_evidence": {
@@ -29,7 +38,7 @@
   "supersedes": {
     "bundle": "KAI9000_FDROID_SIGNED_20260906.zip",
     "sha256": "fa350eeb2a2945b3b0e664f459ae1706cd3c19d0c02913e799e7ea005c6f3028",
-    "reason": "The previous v6 APK did not verify with the official Android Build Tools 36.1.0 apksigner. v6 and v7 were re-signed from their clean CI-staged APKs with the same persistent APK identity and re-indexed with the same persistent F-Droid repository identity."
+    "reason": "The previous v6 APK did not verify with the official Android Build Tools 36.1.0 apksigner. Corrected v6 and v7 APKs were re-signed from clean CI-staged inputs with the same persistent APK identity and indexed with the same persistent F-Droid repository identity."
   },
   "trust": {
     "apk_signer_sha256": "A5E9364D5C21A119FE1D17FD39EE7BAE8192A872CE58A3E7A865248E0B070407",
@@ -70,13 +79,24 @@
   },
   "live_cast": {
     "script": "scripts/cast-ultima-live.sh",
-    "signed_bundle_default_on_termux": "~/storage/downloads/KAI9000_FDROID_SIGNED_V6_V7_20260907.zip",
+    "default_phase": "baseline",
+    "baseline_bundle_default_on_termux": "~/storage/downloads/KAI9000_FDROID_SIGNED_BASELINE_V6_20260907.zip",
+    "upgrade_bundle_default_on_termux": "~/storage/downloads/KAI9000_FDROID_SIGNED_V6_V7_20260907.zip",
     "cloudflare_tunnel_name": "kai9000-fdroid-origin",
     "cloudflare_account_certificate_stays_on_operator": true,
     "tunnel_specific_runtime_credential_only_on_origin": true,
     "atomic_repo_swap": true,
     "public_fingerprint_must_match_before_fdroid_published": true
   },
+  "final_sequence": [
+    "publish baseline v6 bundle",
+    "import repository and install versionCode 6",
+    "publish upgrade v6+v7 bundle",
+    "refresh F-Droid repository",
+    "upgrade installed package to versionCode 7",
+    "verify installed versionCode 7",
+    "FINAL_FORM_GREEN"
+  ],
   "required_before_fdroid_published": [
     "Cloudflare tunnel OAuth login proven",
     "gcloud human OAuth login proven",
