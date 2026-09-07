@@ -1,7 +1,7 @@
 {
-  "schema": "kai9000.cloudflare-dns-security-template.v2",
+  "schema": "kai9000.cloudflare-dns-security-template.v3",
   "zone": "eggiebagelface.art",
-  "mode": "split_by_fqdn_role",
+  "mode": "tunnel_origin_hidden",
   "managed_bindings": [
     {
       "hostname": "eggiebagelface.art",
@@ -18,27 +18,27 @@
   ],
   "records": [
     {
-      "type": "AAAA",
+      "type": "CNAME",
       "name": "fdroid.eggiebagelface.art",
-      "content": "<GCP_VM_EXTERNAL_IPV6>",
+      "content": "<CF_FDROID_TUNNEL_ID>.cfargotunnel.com",
       "proxied": true,
       "ttl": 1,
-      "purpose": "public signed F-Droid repository on IPv6-only origin"
+      "purpose": "public signed F-Droid repository through dedicated outbound-only Tunnel"
     },
     {
       "type": "CNAME",
       "name": "admin.eggiebagelface.art",
-      "content": "<CF_TUNNEL_ID>.cfargotunnel.com",
+      "content": "<CF_ADMIN_TUNNEL_ID>.cfargotunnel.com",
       "proxied": true,
       "ttl": 1,
-      "purpose": "Access/WARP-protected admin cockpit through Cloudflare Tunnel"
+      "purpose": "Access/WARP-protected admin cockpit through separate Cloudflare Tunnel"
     },
     {
       "type": "CAA",
       "name": "eggiebagelface.art",
       "tag": "issue",
       "value": "letsencrypt.org",
-      "purpose": "authorize browser-trusted fallback origin issuance; Cloudflare may synthesize CAA needed for managed edge certificates"
+      "purpose": "authorize browser-trusted fallback issuance; Cloudflare managed edge certificates remain provider-managed"
     }
   ],
   "dnssec": {
@@ -48,33 +48,30 @@
     "public_key_role": "DNSSEC authenticates the zone; it is not the TLS private key",
     "tlsa_for_proxied_https": false
   },
-  "origin_tls": {
-    "fdroid_key": "locally generated ECDSA P-256 private key",
-    "fdroid_csr": "send public-key CSR only to Cloudflare Origin CA",
-    "fdroid_certificate": "Cloudflare Origin CA origin-ecc, SAN fdroid.eggiebagelface.art, 365-day preferred rotation",
-    "fallback": "Lets Encrypt ECDSA DNS-01 for any reviewed direct-browser origin"
+  "fdroid_tunnel": {
+    "public_hostname": "fdroid.eggiebagelface.art",
+    "local_service": "http://127.0.0.1:8080",
+    "access_gate": false,
+    "origin_ip_in_public_dns": false,
+    "inbound_web_firewall": false,
+    "separate_from_admin_tunnel": true
   },
   "ipv6_policy": {
     "cloudflare_edge": "dual_stack",
-    "fdroid_origin": "IPv6_only",
-    "fdroid_public_a_record": false,
-    "fdroid_public_aaaa_record": true,
-    "ipv4_to_ipv6_http_redirect": false,
-    "reason": "IP family is selected before HTTP; Cloudflare accepts IPv4/IPv6 clients and connects to the only published fdroid origin family, IPv6"
+    "google_vm_external_ipv6": "egress_only_for_cloudflared",
+    "origin_ipv6_published_in_dns": false,
+    "public_origin_a_or_aaaa": false,
+    "ipv4_to_ipv6_http_redirect": false
   },
   "private_dns": {
     "public_records_for_lan": false,
-    "names": [
-      "lum.eggiebagelface.lan",
-      "ai.eggiebagelface.lan"
-    ],
+    "names": ["lum.eggiebagelface.lan", "ai.eggiebagelface.lan"],
     "route": "private resolver via WARP/Zero Trust tunnel"
   },
   "forbidden": [
     "manual A/CNAME record on Workers custom-domain hostnames",
-    "public A record for fdroid origin",
+    "public A or AAAA record exposing the Google F-Droid origin",
     "public .lan records",
-    "unproxied fdroid origin AAAA without explicit review",
     "TLSA pinning of Cloudflare-proxied HTTPS",
     "manual DNSKEY publication",
     "Cloudflare edge private-key export",
