@@ -2,11 +2,13 @@ from __future__ import annotations
 
 import os
 import re
+from pathlib import Path
 from typing import Any
 
 from agents import (
     Agent,
     Runner,
+    SQLiteSession,
     set_default_openai_responses_transport,
     set_tracing_disabled,
 )
@@ -24,6 +26,11 @@ LUM_TRANSPORT = os.environ.get("LUM_OPENAI_TRANSPORT", "websocket").strip().lowe
 if LUM_TRANSPORT not in {"http", "websocket"}:
     LUM_TRANSPORT = "websocket"
 
+LUM_SESSION_DB = os.environ.get(
+    "KAI_LUM_SESSION_DB", "/tmp/kai9000-lum-sessions.sqlite3"
+).strip()
+SESSION_ID_PATTERN = re.compile(r"^[A-Za-z0-9._-]{1,64}$")
+
 HEAVY_TASK_PATTERN = re.compile(
     r"\b(?:"
     r"deep research|architecture|architect|hard audit|10[- ]?pass|root cause|"
@@ -40,6 +47,20 @@ set_default_openai_responses_transport(LUM_TRANSPORT)
 # Source/code payloads may be sensitive even when they are not credentials. Keep
 # OpenAI Agents tracing off unless the operator explicitly opts in at runtime.
 set_tracing_disabled(os.environ.get("LUM_OPENAI_TRACING", "0") != "1")
+
+
+def validate_session_id(session_id: str) -> str:
+    value = session_id.strip()
+    if not SESSION_ID_PATTERN.fullmatch(value):
+        raise ValueError("session_id must be 1-64 characters: letters, numbers, dot, underscore, hyphen")
+    return value
+
+
+def _build_session(session_id: str) -> SQLiteSession:
+    value = validate_session_id(session_id)
+    if LUM_SESSION_DB != ":memory:":
+        Path(LUM_SESSION_DB).expanduser().resolve().parent.mkdir(parents=True, exist_ok=True)
+    return SQLiteSession(value, LUM_SESSION_DB)
 
 
 def route_lum_message(message: str) -> dict[str, str]:
@@ -96,7 +117,8 @@ def build_lum_agent(
     )
 
 
-def run_lum(message: str) -> dict[str, Any]:
+def run_lum(message: str, *, session_id: str = "kai9000-default") -> dict[str, Any]:
+    session_id = validate_session_id(session_id)
     route = route_lum_message(message)
 
     if not os.environ.get("OPENAI_API_KEY"):
@@ -109,6 +131,8 @@ def run_lum(message: str) -> dict[str, Any]:
             "reasoning_effort": route["reasoning_effort"],
             "route": route["route"],
             "transport": LUM_TRANSPORT,
+            "session_id": session_id,
+            "session_memory": "sqlite_when_openai_ready",
             "assistant": (
                 "LuHm OS OpenAI credential is not available to this runtime. "
                 "I can still expose doctrine, skills, inspection tools, and the deterministic "
@@ -121,7 +145,13 @@ def run_lum(message: str) -> dict[str, Any]:
     agent = build_lum_agent(
         model=route["model"], reasoning_effort=route["reasoning_effort"]
     )
-    result = Runner.run_sync(agent, route["message"], max_turns=LUM_MAX_TURNS)
+    session = _build_session(session_id)
+    result = Runner.run_sync(
+        agent,
+        route["message"],
+        max_turns=LUM_MAX_TURNS,
+        session=session,
+    )
     return {
         "ok": True,
         "mode": "openai_agents_sdk",
@@ -130,6 +160,8 @@ def run_lum(message: str) -> dict[str, Any]:
         "reasoning_effort": route["reasoning_effort"],
         "route": route["route"],
         "transport": LUM_TRANSPORT,
+        "session_id": session_id,
+        "session_memory": "sqlite",
         "assistant": str(result.final_output or "").strip(),
         "last_agent": result.last_agent.name,
         "skills": [item["name"] for item in list_skills()],
