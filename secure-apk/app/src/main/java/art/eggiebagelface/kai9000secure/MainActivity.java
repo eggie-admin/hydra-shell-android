@@ -93,7 +93,7 @@ public final class MainActivity extends Activity {
                 c.setUseCaches(false);
                 int code = c.getResponseCode();
                 try (InputStream in = code >= 400 ? c.getErrorStream() : c.getInputStream()) {
-                    result = code + " " + new String(in.readAllBytes(), StandardCharsets.UTF_8);
+                    result = code + " " + readUtf8(in);
                 }
                 c.disconnect();
             } catch (Exception e) {
@@ -102,5 +102,16 @@ public final class MainActivity extends Activity {
             String finalResult = result;
             runOnUiThread(() -> status.setText(finalResult));
         });
+    }
+
+    private static String readUtf8(InputStream in) throws IOException {
+        if (in == null) return "";
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        byte[] buffer = new byte[4096];
+        int n;
+        while ((n = in.read(buffer)) != -1) {
+            out.write(buffer, 0, n);
+        }
+        return new String(out.toByteArray(), StandardCharsets.UTF_8);
     }
 }

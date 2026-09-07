@@ -53,13 +53,13 @@ public final class LocalHttpServer {
     }
 
     private void handle(Socket socket) {
-        try (socket;
-             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
-             OutputStream out = socket.getOutputStream()) {
+        try (Socket s = socket;
+             BufferedReader reader = new BufferedReader(new InputStreamReader(s.getInputStream(), StandardCharsets.UTF_8));
+             OutputStream out = s.getOutputStream()) {
 
-            socket.setSoTimeout(4000);
+            s.setSoTimeout(4000);
             String requestLine = reader.readLine();
-            if (requestLine == null || requestLine.isBlank()) return;
+            if (requestLine == null || requestLine.trim().isEmpty()) return;
 
             String[] parts = requestLine.split(" ");
             if (parts.length < 2) {
@@ -131,7 +131,7 @@ public final class LocalHttpServer {
             }
 
             if ("POST".equals(method)) {
-                JSONObject incoming = body.isBlank() ? new JSONObject() : new JSONObject(body);
+                JSONObject incoming = body.trim().isEmpty() ? new JSONObject() : new JSONObject(body);
                 Object value = incoming.opt("value");
                 String encoded = JSONObject.valueToString(value);
                 db.put(key, encoded);
