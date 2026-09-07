@@ -66,35 +66,39 @@ jobs:
           python -m pytest -q tests/test_gateway.py tests/test_ci_smoke.py tests/test_ci_magic.py
           echo 'ANTENNA_GATEWAY_TESTS_GREEN'
 
-      - name: Verify composed FastAPI application routes
+      - name: Verify composed FastAPI application by behavior
         shell: bash
         env:
           KAI_GOOGLE_AUTH: auto
           GOOGLE_CLOUD_PROJECT: ''
+          GCP_PROJECT: ''
+          GCP_PROJECT_ID: ''
           GEMINI_API_KEY: ''
           GOOGLE_API_KEY: ''
         run: |
           set -euo pipefail
           python - <<'PY'
+          from fastapi.testclient import TestClient
           import magic_server
-          paths = {
-              path
-              for route in magic_server.APP.routes
-              if (path := getattr(route, 'path', None))
-          }
-          required = {
-              '/health',
-              '/api/jobs',
-              '/api/status',
-              '/api/director',
-              '/api/providers/route',
-              '/ws',
-              '/providers/google/health',
-              '/providers/google/generate',
-              '/providers/gemini/live',
-          }
-          missing = sorted(required - paths)
-          assert not missing, missing
+
+          client = TestClient(magic_server.APP)
+          assert client.get('/api/status').status_code == 200
+          assert client.get('/providers/google/health').status_code == 200
+          assert client.post('/api/providers/route', json={'kind': 'status', 'prefer': 'auto'}).status_code == 200
+          assert client.post('/api/director', json={'message': 'smoke', 'mode': 'auto'}).status_code == 200
+          assert client.post('/providers/google/generate', json={'prompt': 'smoke'}).status_code == 503
+          assert client.get('/api/jobs').status_code == 200
+
+          with client.websocket_connect('/ws') as ws:
+              assert ws.receive_json()['type'] == 'hello'
+              ws.send_json({'type': 'ping'})
+              assert ws.receive_json()['type'] == 'pong'
+
+          with client.websocket_connect('/providers/gemini/live') as ws:
+              event = ws.receive_json()
+              assert event['type'] == 'provider.error'
+              assert event['code'] == 'google_not_configured'
+
           print('ANTENNA_COMPOSED_APP_GREEN')
           PY
 
