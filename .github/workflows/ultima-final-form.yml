@@ -240,16 +240,27 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          grep -q 'vertexai=True' gateway.py
-          grep -q 'android_provider_credentials' gateway.py
-          grep -q 'secrets_exposed' gateway.py
-          grep -q 'blocked_pending_policy' gateway.py
-          grep -q 'gpt-5.6-luna' lum_agent/agent.py
-          grep -q 'reasoning.*none' lum_agent/agent.py
-          grep -q 'self_approval.*False' lum_agent/router.py
-          grep -q 'execution.*NOT_EXECUTED' lum_agent/tools.py
-          grep -q 'human approval' lum_agent/skills/prime/SKILL.md
-          ! grep -Eq 'sk-[A-Za-z0-9_-]{20,}' lum_agent .env.example static/index.html static/app.jquery.js
+          python - <<'PY'
+          from pathlib import Path
+
+          gateway = Path('gateway.py').read_text(encoding='utf-8')
+          agent = Path('lum_agent/agent.py').read_text(encoding='utf-8')
+          router = Path('lum_agent/router.py').read_text(encoding='utf-8')
+          tools = Path('lum_agent/tools.py').read_text(encoding='utf-8')
+          prime = Path('lum_agent/skills/prime/SKILL.md').read_text(encoding='utf-8').casefold()
+
+          assert 'vertexai=True' in gateway
+          assert 'android_provider_credentials' in gateway
+          assert 'secrets_exposed' in gateway
+          assert 'blocked_pending_policy' in gateway
+          assert 'gpt-5.6-luna' in agent
+          assert '"reasoning": {"effort": "none"}' in agent
+          assert '"self_approval": False' in router
+          assert '"execution": "NOT_EXECUTED"' in tools
+          assert 'human approval' in prime
+          print('ULTIMA_LUM_STRUCTURED_DOCTRINE_ASSERTIONS_GREEN')
+          PY
+          ! grep -REq 'sk-[A-Za-z0-9_-]{20,}' lum_agent .env.example static/index.html static/app.jquery.js
           ! grep -Eq 'AIza[0-9A-Za-z_-]{20,}' gateway.py .env.example
           echo 'ULTIMA_LUM_AUTHORITY_BOUNDARY_GREEN'
 
