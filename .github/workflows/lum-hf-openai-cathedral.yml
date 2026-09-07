@@ -4,11 +4,13 @@ on:
   push:
     branches:
       - mutation/lum-hf-openai-cathedral-20260907
+      - mutation/kai9000-inapp-chat-cockpit-20260907
     paths:
       - 'ultima/ollama-ffmpeg-antenna-v3/lum_agent/**'
       - 'ultima/ollama-ffmpeg-antenna-v3/remote_ai.py'
       - 'ultima/ollama-ffmpeg-antenna-v3/pyproject.toml'
       - 'ultima/ollama-ffmpeg-antenna-v3/tests/test_lum_agent.py'
+      - 'ultima/ollama-ffmpeg-antenna-v3/static/**'
       - 'backend/tests/test_remote_ai_router.py'
       - 'docs/LUM_AGENT_DOCTRINE_20260907.md'
       - 'docs/LUM_AGENT_SKILL_CHAIN.md'
@@ -62,6 +64,41 @@ jobs:
             ultima/ollama-ffmpeg-antenna-v3/tests/test_lum_agent.py \
             backend/tests/test_remote_ai_router.py
 
+      - name: Cockpit JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check ultima/ollama-ffmpeg-antenna-v3/static/app.jquery.js
+
+      - name: Cockpit session and asset invariants
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          root = Path('ultima/ollama-ffmpeg-antenna-v3')
+          html = (root / 'static/index.html').read_text()
+          js = (root / 'static/app.jquery.js').read_text()
+          agent = (root / 'lum_agent/agent.py').read_text()
+
+          assert 'lumChatLog' in html
+          assert 'CROWN: PROFESSOR' in html
+          assert 'session_id' in js
+          assert 'localStorage' in js
+          assert 'SQLiteSession' in agent
+          assert 'KAI_LUM_SESSION_DB' in agent
+          assert 'Local Ollama' not in html
+
+          icons = root / 'static/vendor/kai-icons'
+          for name in ['spell-book.svg', 'magic-swirl.svg', 'floating-crystal.svg', 'jewel-crown.svg', 'ATTRIBUTION.md']:
+              assert (icons / name).is_file(), name
+          attribution = (icons / 'ATTRIBUTION.md').read_text()
+          assert 'Creative Commons Attribution 3.0' in attribution
+          assert 'Game-icons.net' in attribution
+          print('KAI9000_INAPP_CHAT_COCKPIT_GREEN')
+          PY
+
       - name: Doctrine and provider invariants
         shell: bash
         run: |
@@ -106,6 +143,7 @@ jobs:
           set -euo pipefail
           ! grep -RniE 'sk-[A-Za-z0-9_-]{20,}|hf_[A-Za-z0-9]{20,}|BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY' \
             ultima/ollama-ffmpeg-antenna-v3/lum_agent \
+            ultima/ollama-ffmpeg-antenna-v3/static \
             docs/LUM_AGENT_DOCTRINE_20260907.md \
             docs/LUM_AGENT_SKILL_CHAIN.md \
             docs/LUM_HF_OPENAI_HARD_AUDIT_20260907.md
