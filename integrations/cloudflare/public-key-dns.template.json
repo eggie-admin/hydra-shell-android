@@ -1,0 +1,48 @@
+{
+  "schema": "kai9000.cloudflare-public-key-dns.v1",
+  "zone": "eggiebagelface.art",
+  "purpose": "Public-key and certificate-policy DNS template. Contains no private key or token values.",
+  "dnssec": {
+    "required": true,
+    "registrar_ds_validation_required": true,
+    "note": "Cloudflare manages DNSKEY material. Do not hand-author DNSKEY records."
+  },
+  "records": [
+    {
+      "type": "CAA",
+      "name": "@",
+      "flags": 0,
+      "tag": "issue",
+      "value": "letsencrypt.org",
+      "enabled_only_when": "This authorization is compatible with the active Cloudflare edge-certificate product and does not block Cloudflare renewal."
+    },
+    {
+      "type": "CAA",
+      "name": "@",
+      "flags": 0,
+      "tag": "issuewild",
+      "value": "letsencrypt.org",
+      "enabled_only_when": "A wildcard certificate lane is intentionally used and Cloudflare renewal remains permitted."
+    },
+    {
+      "type": "SSHFP",
+      "name": "<ssh-host>",
+      "algorithm": 4,
+      "fingerprint_type": 2,
+      "fingerprint": "<SHA256_PUBLIC_KEY_FINGERPRINT_HEX>",
+      "note": "Publish only a public SSH host-key fingerprint. Never publish a private key."
+    }
+  ],
+  "forbidden": [
+    "private_keys",
+    "api_tokens",
+    "oauth_client_secrets",
+    "totp_seeds",
+    "passwords",
+    "plaintext_signing_keys"
+  ],
+  "tlsa": {
+    "cloudflare_proxied_https": "not_used_in_baseline",
+    "reason": "Cloudflare terminates and rotates public edge TLS certificates."
+  }
+}
