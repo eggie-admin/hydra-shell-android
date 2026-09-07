@@ -38,7 +38,7 @@ concurrency:
 
 env:
   DONOR_REPO: eggie-admin/vue-headless-cms
-  DONOR_REF: b507282a963a663c8d9d6c30c5769dbc22141953
+  DONOR_REF: 6c8c43fe05d14523969d9fdc9429f6feb2c26465
   PACKAGE_ID: art.eggiebagelface.kai9000.dev
   VERSION_NAME: 0.7.0-dev
   VERSION_CODE: '7'
@@ -85,7 +85,7 @@ jobs:
           python -m json.tool "$MANIFEST" >/dev/null
           grep -q '"schema": "kai9000.android-testing-ingest.v4"' "$MANIFEST"
           grep -q '"android_package_id": "art.eggiebagelface.kai9000.dev"' "$MANIFEST"
-          grep -q '"commit": "b507282a963a663c8d9d6c30c5769dbc22141953"' "$MANIFEST"
+          grep -q '"commit": "6c8c43fe05d14523969d9fdc9429f6feb2c26465"' "$MANIFEST"
 
           if git ls-files | grep -E '(^|/)(\.secrets|private)/|\.(jks|keystore|p12|pfx|pkcs12|key|pem)$|(^|/)(google-services|service-account|credentials[^/]*)\.json$'; then
             echo 'Tracked secret/signing material detected' >&2
