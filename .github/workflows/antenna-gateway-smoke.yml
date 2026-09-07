@@ -1,0 +1,108 @@
+name: KAI9000 Antenna Gateway Smoke
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - testing/luhm-os-android
+    paths:
+      - '.github/workflows/antenna-gateway-smoke.yml'
+      - 'ultima/ollama-ffmpeg-antenna-v3/gateway.py'
+      - 'ultima/ollama-ffmpeg-antenna-v3/magic_server.py'
+      - 'ultima/ollama-ffmpeg-antenna-v3/pyproject.toml'
+      - 'ultima/ollama-ffmpeg-antenna-v3/.env.example'
+      - 'ultima/ollama-ffmpeg-antenna-v3/tests/test_gateway.py'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kai9000-antenna-gateway-${{ github.ref }}-${{ matrix.python-version }}
+  cancel-in-progress: true
+
+jobs:
+  gateway-smoke:
+    name: Antenna contract Python ${{ matrix.python-version }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.14']
+    defaults:
+      run:
+        working-directory: ultima/ollama-ffmpeg-antenna-v3
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install antenna runtime and test harness
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install -e . pytest
+
+      - name: Compile gateway
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile gateway.py magic_server.py remote_ai.py main.py
+          echo 'ANTENNA_GATEWAY_COMPILE_GREEN'
+
+      - name: Run four-lane contract tests
+        shell: bash
+        env:
+          KAI_GOOGLE_AUTH: auto
+          GOOGLE_CLOUD_PROJECT: ''
+          GCP_PROJECT: ''
+          GCP_PROJECT_ID: ''
+          GEMINI_API_KEY: ''
+          GOOGLE_API_KEY: ''
+        run: |
+          set -euo pipefail
+          python -m pytest -q tests/test_gateway.py tests/test_ci_smoke.py tests/test_ci_magic.py
+          echo 'ANTENNA_GATEWAY_TESTS_GREEN'
+
+      - name: Verify composed FastAPI application routes
+        shell: bash
+        env:
+          KAI_GOOGLE_AUTH: auto
+          GOOGLE_CLOUD_PROJECT: ''
+          GEMINI_API_KEY: ''
+          GOOGLE_API_KEY: ''
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import magic_server
+          paths = {route.path for route in magic_server.APP.routes}
+          required = {
+              '/health',
+              '/api/jobs',
+              '/api/status',
+              '/api/director',
+              '/api/providers/route',
+              '/ws',
+              '/providers/google/health',
+              '/providers/google/generate',
+              '/providers/gemini/live',
+          }
+          missing = sorted(required - paths)
+          assert not missing, missing
+          print('ANTENNA_COMPOSED_APP_GREEN')
+          PY
+
+      - name: Seal smoke evidence
+        shell: bash
+        run: |
+          cat <<'EOF'
+          KAI9000_ANTENNA_GATEWAY_SMOKE_GREEN
+          /api/* -> HTTPS REST contract armed
+          /ws -> Samsung control/status WebSocket armed
+          /providers/google/* -> Vertex ADC first; server credentials only
+          /providers/gemini/live -> server-to-server Gemini Live bridge armed
+          Provider tool calls -> blocked pending Python policy
+          No live Google credential or provider call was used in this CI smoke.
+          EOF
