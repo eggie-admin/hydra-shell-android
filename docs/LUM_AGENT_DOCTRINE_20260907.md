@@ -1,29 +1,64 @@
 # KAI9000 Lum In-App Agent Doctrine
 
-Status: CODE_AND_CI_GREEN
+Status: CROWN_REROLL_TESTING
 Date: 2026-09-07
+Milestone: `KAI9000_LUM_HF_OPENAI_CATHEDRAL_20260907`
 
-## Identity
+## Identity and Crown
 
-- App-side agent name: `KAI9000-Lum-InApp`
-- Credential contract: reuse existing protected server-side `OPENAI_API_KEY`
-- No new OpenAI key is required by this architecture.
-- No claim is made that the remote OpenAI Platform key label was renamed.
+- App-side agent name: `KAI9000-Lum-InApp`.
+- Professor is the crown holder and final human authority.
+- KAI 9000 APK is the active mutation target.
+- Lum may inspect, reason, test, draft, and propose. Lum does not self-authorize merge, publication, release, spending, destructive mutation, or ULTIMA.
 
-## Runtime
+## Source of truth
 
-- OpenAI Agents SDK: `openai-agents==0.22.0`
-- Default model: `gpt-5.6-luna`
-- Reasoning effort: `none`
-- Verbosity: `low`
-- Tracing: disabled by default
-- Store: false
-- Agent max turns: 8 by default
+- GitHub = canonical versioned source history.
+- Google Drive = recovery mirror / approved artifact archive.
+- Cloudflare = public edge.
+- GitHub Codespaces/browser terminal = remote development terminal.
+- GitHub Actions = remote build/test/release forge.
+- Vercel = retired and forbidden.
+- Local Termux = retired from the active architecture.
+- `KAI9000_LUM_MAGIC_GRIMOIRE_HTMX_NPM_SOT_20260907` remains the deterministic Grimoire reference; older Termux/local-server notes inside that package are historical boundaries, not current deployment authority.
 
-## Python-first skill chain
+## OpenAI runtime
+
+- OpenAI Agents SDK: `openai-agents==0.22.0`.
+- Default model: `gpt-5.6-luna`.
+- Default reasoning effort: `none`.
+- Default verbosity: `low`.
+- Heavy model: `gpt-5.6-sol`.
+- Heavy reasoning effort: `medium`.
+- Explicit overrides: `/luna` and `/sol`.
+- API shape: Responses API through the Agents SDK.
+- Preferred transport: Responses WebSocket (`LUM_OPENAI_TRANSPORT=websocket`).
+- HTTP fallback: `LUM_OPENAI_TRANSPORT=http`.
+- Tracing: disabled by default.
+- Store: false.
+- Agent max turns: 8 by default, bounded to 1-16.
+
+Heavy escalation is reserved for hard architecture audits, deep/root-cause debugging, migrations, dependency conflicts, threat/security review, complex compile/build failures, and explicit 10-pass/deep-research work.
+
+## Hugging Face Forge
+
+Hugging Face is a model/discovery/provenance Forge and an explicit advisory provider lane. It is not Crown authority.
+
+Current audit anchors:
+
+- `openai/gpt-oss-20b`: Apache-2.0, endpoints-compatible text-generation model.
+- `openai/gpt-oss-120b`: Apache-2.0, endpoints-compatible text-generation model.
+- `Qwen/Qwen2.5-3B-Instruct`: Hub metadata currently reports `license: other`; redistribution/use must not be assumed permissive without license review.
+
+Hugging Face Inference Providers may use the OpenAI-compatible Responses API. Provider selection can be `:fastest`, `:cheapest`, `:preferred`, or an explicit provider. No provider selection changes KAI authority.
+
+No silent OpenAI -> Hugging Face replay occurs after a provider error.
+
+## Skill chain
 
 ```text
-DOCTRINE
+CROWN / SOURCE OF TRUTH
+  -> DOCTRINE
   -> INSPECT
   -> OUTLINE / READ
   -> DEBUG
@@ -36,6 +71,9 @@ DOCTRINE
 Bundled skills:
 
 - `prime`
+- `source-of-truth`
+- `openai-router`
+- `huggingface-forge`
 - `python-core`
 - `python-debug`
 - `json-boundary`
@@ -54,18 +92,14 @@ Bundled tools:
 
 ## Authority boundary
 
-Lum is a reasoning, inspection, debugging, and proposal agent. It does not directly own mutation authority.
-
-The existing deterministic magic cast gateway remains authoritative for mutation. `WRITE_FILE` requires application-controlled human approval and SHA/checkpoint protection. ULTIMA remains human-only and disabled in the in-app agent runtime.
+The deterministic application remains authoritative for external mutation. `WRITE_FILE` and other approval-bearing casts require application-controlled human approval and checkpoint/SHA protection. ULTIMA remains human-only and cannot be self-approved by Lum.
 
 ## Secret boundary
 
-Provider credentials remain server-side. They are never embedded into Android assets, HTML, JavaScript, Git, agent doctrine, logs, or Drive manifests.
+Provider credentials remain outside the APK and outside model-visible state. They are never embedded into Android assets, HTML, JavaScript, Git, agent doctrine, logs, or Drive manifests. `HF_TOKEN`, `OPENAI_API_KEY`, signing keys, private keys, cookies, and bearer tokens are never skill content.
 
-## CI evidence
+## Verification boundary
 
-Antenna + Lum smoke run `34158459126` passed on Python 3.11 and Python 3.14.
+Repository/CI GREEN is not live-provider GREEN. A no-key test proves structure, deterministic behavior, compile/test gates, routes, and authority boundaries only. Live OpenAI or Hugging Face success requires a separate provider request executed with protected runtime credentials and evidence.
 
-ULTIMA Final Form run `34158801803` passed on commit `35ce6524b031b5cbc395b2e168e74d246f8de9de` after replacing a brittle grep assertion with deterministic Python source assertions.
-
-The CI smoke deliberately supplied no OpenAI API key. Therefore this seal proves app structure, SDK installation, compile, tests, FastAPI routes, doctrine boundaries, and deterministic no-key behavior. It does not claim a live OpenAI model request succeeded.
+The pre-reroll CI evidence from the previous seal remains historical. This reroll requires fresh Python 3.11 + 3.14 compile/tests before promotion.
