@@ -1,11 +1,12 @@
 [project]
 name = "kai9000-ultima-ollama-ffmpeg-antenna"
-version = "3.1.0"
-description = "KAI 9000 jQuery cockpit with Python3/FastAPI magic coding, local Ollama, and FFmpeg antenna"
+version = "3.3.0"
+description = "KAI 9000 jQuery cockpit with Python3/FastAPI magic coding, local Ollama, FFmpeg, and Google/Gemini antenna gateway"
 requires-python = ">=3.10"
 dependencies = [
   "fastapi",
   "uvicorn[standard]",
   "pydantic",
   "httpx",
+  "google-genai",
 ]
