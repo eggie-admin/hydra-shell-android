@@ -141,7 +141,7 @@ public final class LocalHttpServer {
             if ("POST".equals(method)) {
                 JSONObject incoming = body.trim().isEmpty() ? new JSONObject() : new JSONObject(body);
                 Object value = incoming.opt("value");
-                String encoded = JSONObject.valueToString(value);
+                String encoded = encodeJsonValue(value);
                 db.put(key, encoded);
                 db.event("kv_set", new JSONObject().put("key", key).toString());
                 writeJson(out, 200, new JSONObject().put("ok", true).put("key", key).put("value", value));
@@ -150,6 +150,13 @@ public final class LocalHttpServer {
         }
 
         writeJson(out, 404, new JSONObject().put("ok", false).put("error", "not found"));
+    }
+
+    private static String encodeJsonValue(Object value) {
+        if (value == null || value == JSONObject.NULL) return "null";
+        if (value instanceof Number || value instanceof Boolean) return String.valueOf(value);
+        if (value instanceof JSONObject || value instanceof org.json.JSONArray) return value.toString();
+        return JSONObject.quote(String.valueOf(value));
     }
 
     private static void writeJson(OutputStream out, int status, JSONObject body) throws IOException {
