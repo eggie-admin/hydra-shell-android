@@ -34,18 +34,35 @@ class Kai9000GatewayTests(unittest.TestCase):
         self.app = app
         self.client = TestClient(app)
 
-    def test_four_lane_contract_is_mounted(self):
-        paths = {path for route in self.app.routes if (path := getattr(route, "path", None))}
-        required = {
-            "/api/status",
-            "/api/director",
-            "/api/providers/route",
-            "/ws",
-            "/providers/google/health",
-            "/providers/google/generate",
-            "/providers/gemini/live",
-        }
-        self.assertTrue(required.issubset(paths), sorted(required - paths))
+    def test_four_lane_contract_is_live(self):
+        with no_google_credentials():
+            status = self.client.get("/api/status")
+            route = self.client.post(
+                "/api/providers/route", json={"kind": "status", "prefer": "auto"}
+            )
+            director = self.client.post(
+                "/api/director", json={"message": "smoke", "mode": "auto"}
+            )
+            google_health = self.client.get("/providers/google/health")
+            google_generate = self.client.post(
+                "/providers/google/generate", json={"prompt": "smoke"}
+            )
+
+        self.assertEqual(status.status_code, 200)
+        self.assertEqual(route.status_code, 200)
+        self.assertEqual(director.status_code, 200)
+        self.assertEqual(google_health.status_code, 200)
+        self.assertEqual(google_generate.status_code, 503)
+
+        with no_google_credentials(), self.client.websocket_connect("/ws") as websocket:
+            self.assertEqual(websocket.receive_json()["type"], "hello")
+
+        with no_google_credentials(), self.client.websocket_connect(
+            "/providers/gemini/live"
+        ) as websocket:
+            event = websocket.receive_json()
+            self.assertEqual(event["type"], "provider.error")
+            self.assertEqual(event["code"], "google_not_configured")
 
     def test_status_never_exposes_provider_credentials(self):
         with no_google_credentials():
