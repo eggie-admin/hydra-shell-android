@@ -1,0 +1,48 @@
+name: Export Android Signing Tools
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - testing/luhm-os-android
+    paths:
+      - '.github/workflows/export-android-signing-tools.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  export-tools:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Install Android build-tools 36.1.0
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" 'build-tools;36.1.0'
+
+      - name: Package official signing tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          SRC="$ANDROID_HOME/build-tools/36.1.0"
+          OUT="$GITHUB_WORKSPACE/android-signing-tools-36.1.0"
+          mkdir -p "$OUT/lib"
+          cp "$SRC/apksigner" "$OUT/"
+          cp "$SRC/lib/apksigner.jar" "$OUT/lib/"
+          cp "$SRC/zipalign" "$OUT/"
+          chmod +x "$OUT/apksigner" "$OUT/zipalign"
+          (cd "$OUT" && sha256sum apksigner lib/apksigner.jar zipalign > SHA256SUMS)
+          "$OUT/apksigner" version
+          "$OUT/zipalign" -h >/dev/null 2>&1 || true
+
+      - name: Upload official signing tools
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-signing-tools-36.1.0-linux
+          path: android-signing-tools-36.1.0/**
+          if-no-files-found: error
+          retention-days: 7
