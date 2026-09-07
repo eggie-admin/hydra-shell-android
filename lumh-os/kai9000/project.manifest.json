@@ -1,12 +1,35 @@
 {
-  "schema": "lumh-os.kai9000.project.v3",
+  "schema": "lumh-os.kai9000.project.v4",
   "name": "KAI 9000",
-  "role": "local-first AI and media subsystem",
+  "role": "APK-first remote-orchestrated AI and media subsystem",
+  "active_mutation_target": "KAI9000_APK",
+  "crown_holder": "Professor",
   "source_path": "ultima/ollama-ffmpeg-antenna-v3",
   "identity": {
     "business_domain": "eggiebagelface.art",
     "fdroid_host": "fdroid.eggiebagelface.art",
     "fdroid_repo_url": "https://fdroid.eggiebagelface.art/fdroid/repo/"
+  },
+  "source_of_truth": {
+    "git": "canonical_versioned_source_history",
+    "current_lineage_repository": "eggie-admin/hydra-shell-android",
+    "current_testing_branch": "testing/luhm-os-android",
+    "current_mutation_branch": "mutation/lum-hf-openai-cathedral-20260907",
+    "planned_canonical_repository": "eggie-admin/KAI9000",
+    "planned_canonical_repository_status": "NOT_YET_CREATED_THROUGH_AVAILABLE_CONNECTOR",
+    "google_drive": "recovery_mirror_and_approved_artifact_archive",
+    "chatgpt_file_library": "source_material_inventory_not_final_authority"
+  },
+  "active_architecture": {
+    "android": "Samsung KAI app cockpit/client",
+    "development_terminal": "GitHub Codespaces/browser terminal",
+    "build_test_release_forge": "GitHub Actions",
+    "public_edge": "Cloudflare",
+    "python": "primary automation and agent runtime language",
+    "json": "portable process/language/provider boundary",
+    "local_termux": "RETIRED_FROM_ACTIVE_ARCHITECTURE",
+    "vercel": "FORBIDDEN_RETIRED_PURGE",
+    "local_ollama_control_plane": "RETIRED_FROM_ACTIVE_APK_DOCTRINE"
   },
   "magic": {
     "blue": {
@@ -33,18 +56,10 @@
   },
   "ultima": {
     "mode": "full_spectrum_goal_convergence",
-    "meaning": "all required magic colors converge through vendor APIs, AI routing, RSS/events and Base64+JSON manifests toward one verified final goal",
+    "meaning": "all required lanes converge through typed adapters, AI routing, events and verified manifests toward one final goal",
     "all_colors_capable": true,
     "every_cast_requires_every_vendor": false,
     "unused_lane_status": "not_required",
-    "pipeline": [
-      "vendor_api_adapters",
-      "ai_normalization_router",
-      "rss_event_feed",
-      "base64_json_envelope",
-      "goal_manifest",
-      "final_verified_outcome"
-    ],
     "event_schema": "kai9000.ultima.event.v1",
     "provider_event_schema": "kai9000.provider-event.v1",
     "envelope_schema": "kai9000.ultima.envelope.v1",
@@ -52,16 +67,20 @@
     "base64_is_encryption": false,
     "secrets_in_base64_forbidden": true,
     "required_lane_failure_blocks_green": true,
-    "required_lane_pending_blocks_green": true
+    "required_lane_pending_blocks_green": true,
+    "human_final_authority": true
   },
   "doctrine": {
     "ai_logic": "lumh-os/kai9000/AI_MAGIC_DOCTRINE.md",
+    "lum_agent": "docs/LUM_AGENT_DOCTRINE_20260907.md",
+    "lum_skill_chain": "docs/LUM_AGENT_SKILL_CHAIN.md",
+    "lum_hf_openai_audit": "docs/LUM_HF_OPENAI_HARD_AUDIT_20260907.md",
     "api_constellation": "docs/API_TRINITY_DOCTRINE.md",
     "huggingface_api": "docs/HUGGINGFACE_API_REROLL.md",
     "vendor_api_manifest": "integrations/vendor-apis.manifest.json",
     "business_identity": "docs/EGGIEBAGELFACE_ART_IDENTITY.md",
     "fdroid_final_form": "docs/FDROID_FINAL_FORM.md",
-    "policy_authority": "server_side_registry",
+    "policy_authority": "deterministic_application_registry",
     "risk_axis": "R0-R4_separate_from_magic_color",
     "model_may_self_authorize": false,
     "arbitrary_model_code_execution": false,
@@ -71,100 +90,86 @@
     "execution_evidence_required_for_green": true,
     "ultima_green_requires_verified_final_goal": true,
     "android_goal_requires_installable_apk": true,
-    "external_hosting_status_is_authoritative": false,
-    "android_green_authority": [
-      "repository_ci",
-      "reproducible_android_build",
-      "installable_apk_evidence",
-      "package_identity_evidence",
-      "device_or_emulator_validation"
-    ]
+    "external_hosting_status_is_authoritative": false
   },
   "runtime": {
     "orchestrator": "python3",
     "command_front_door": "npm",
-    "remote_ai_endpoint": "http://127.0.0.1:8797/api/remote-ai/chat",
+    "lum_agent_endpoint": "/api/lum/chat",
+    "remote_ai_endpoint": "/api/remote-ai/chat",
     "remote_ai_provider_mode": "auto",
-    "remote_ai_auto_order": ["openai", "huggingface", "deterministic_mock"],
+    "remote_ai_auto_order": [
+      "openai",
+      "huggingface",
+      "deterministic_mock"
+    ],
     "silent_cross_provider_failover": false,
-    "ollama": "http://127.0.0.1:11434",
-    "ffmpeg": "local_binary",
-    "ffprobe": "local_binary",
-    "comfyui_optional": "http://127.0.0.1:8188",
-    "antenna": "http://127.0.0.1:8797"
+    "ffmpeg_role": "bounded media worker/tool behind application policy",
+    "antenna_role": "remote provider and event gateway behind application policy"
   },
   "remote": {
     "github": {
       "repository": "eggie-admin/hydra-shell-android",
-      "branch": "testing/luhm-os-android",
-      "role": "versioned_source_of_truth_and_ci_evidence"
+      "branch": "mutation/lum-hf-openai-cathedral-20260907",
+      "role": "current versioned mutation lineage and CI evidence",
+      "terminal": "Codespaces/browser terminal",
+      "actions": "build_test_release_forge"
     },
     "openai": {
-      "role": "primary_spell_compiler_coding_reasoning_and_typed_tool_requester",
-      "magic_color": null,
+      "role": "primary Lum reasoning and typed-tool planning provider",
       "api": "responses",
+      "agents_sdk": "0.22.0",
       "endpoint": "https://api.openai.com/v1/responses",
-      "default_model": "gpt-6-astra",
+      "default_model": "gpt-5.6-luna",
+      "default_reasoning_effort": "none",
+      "heavy_model": "gpt-5.6-sol",
+      "heavy_reasoning_effort": "medium",
+      "explicit_overrides": [
+        "/luna",
+        "/sol"
+      ],
+      "preferred_transport": "websocket",
+      "http_fallback": true,
       "credential_env": "OPENAI_API_KEY",
       "store_default": false,
+      "tracing_default": false,
       "typed_tools_only": true,
       "credentials_visible_to_model": false
     },
     "hugging_face": {
-      "role": "open_model_forge_catalog_and_alternate_remote_inference_lane",
-      "magic_color": null,
+      "role": "model Forge, provenance catalog and explicit advisory remote inference lane",
       "api_base": "https://router.huggingface.co/v1",
       "responses_endpoint": "https://router.huggingface.co/v1/responses",
-      "chat_endpoint": "https://router.huggingface.co/v1/chat/completions",
       "default_model": "openai/gpt-oss-120b:fastest",
       "lower_latency_candidate": "openai/gpt-oss-20b:fastest",
       "credential_env": "HF_TOKEN",
-      "credential_strategy": "fine_grained_inference_provider_token_or_ci_trusted_publisher",
       "runtime_authority": false,
       "secret_store": false,
       "auto_download": false,
       "auto_execute_remote_code": false,
+      "trust_remote_code_default": false,
       "revision_pin_required_for_downloads": true,
+      "license_review_required": true,
       "credentials_visible_to_model": false
     },
     "cloudflare": {
-      "role": "public_dns_https_and_tunnel_gate",
+      "role": "public DNS/HTTPS/edge gate",
       "zone": "eggiebagelface.art",
-      "fdroid_hostname": "fdroid.eggiebagelface.art",
-      "credential_strategy": "least_privilege_api_tokens",
-      "durable_ci_preference": "account_owned_api_token_when_supported",
+      "credential_strategy": "least_privilege_api_tokens_or_interactive_oauth",
       "global_api_key_automation": false,
       "credentials_visible_to_model": false
     },
-    "google_cloud": {
-      "role": "white_magic_cloud_service_lane",
-      "github_auth": "workload_identity_federation_oidc",
-      "preferred_access": "direct_resource_access",
-      "service_account_impersonation": "only_when_required",
-      "long_lived_service_account_json_in_repo": false,
-      "least_privilege": true,
-      "credentials_visible_to_model": false
-    },
     "google_drive": {
-      "role": "sealed_recovery_and_artifact_mirror",
+      "role": "sealed recovery and approved artifact mirror",
       "secrets_allowed": false,
       "iam_equivalent_to_google_cloud": false
     }
   },
-  "ingestion": {
-    "strategy": "reference_not_copy",
-    "subsystem_manifest": "ultima/ollama-ffmpeg-antenna-v3/KAI9000_ULTIMA_OLLAMA_FFMPEG_ANTENNA_V3.manifest.json",
-    "graceful_offline": true,
-    "remote_shell": false,
-    "public_ollama_exposure": false
-  },
   "authority": {
     "final": "Professor",
-    "local_ai_boss": "Ollama",
-    "openai_agent_role": "primary_remote_spell_compiler_and_typed_tool_requester",
-    "hugging_face_role": "forge_catalog_and_alternate_remote_inference_not_policy_authority",
-    "cloudflare_role": "dns_https_tunnel_gate_not_policy_authority",
-    "google_cloud_role": "white_magic_provider_not_policy_authority",
-    "policy_registry_role": "capability_risk_provider_routing_and_approval_authority"
+    "lum_role": "primary in-app reasoning/orchestration agent under Crown policy",
+    "hugging_face_role": "Forge catalog and alternate explicit inference lane, never policy authority",
+    "cloudflare_role": "public edge, never policy authority",
+    "policy_registry_role": "capability, risk, provider routing, approval and execution-evidence authority"
   }
 }
