@@ -9,14 +9,24 @@ INSTANCE="${KAI_GCP_INSTANCE:-kai9000-free}"
 TUNNEL_NAME="${CF_FDROID_TUNNEL_NAME:-kai9000-fdroid-origin}"
 FDROID_HOST="fdroid.eggiebagelface.art"
 PUBLIC_URL="https://${FDROID_HOST}/fdroid/repo"
-BUNDLE="${KAI_SIGNED_BUNDLE:-$HOME/storage/downloads/KAI9000_FDROID_SIGNED_20260906.zip}"
-EXPECTED_BUNDLE_SHA256="fa350eeb2a2945b3b0e664f459ae1706cd3c19d0c02913e799e7ea005c6f3028"
+PHASE="${KAI_PUBLICATION_PHASE:-baseline}"
+BUNDLE="${KAI_SIGNED_BUNDLE:-}"
 EXPECTED_APK_SIGNER="A5E9364D5C21A119FE1D17FD39EE7BAE8192A872CE58A3E7A865248E0B070407"
 EXPECTED_REPO_FP="BFB900A9EC913D35C22F1DC3DE7B152D1AF5CA11B7B07E5FAFDD06B44811F66D"
 
+BASELINE_NAME="KAI9000_FDROID_SIGNED_BASELINE_V6_20260907.zip"
+BASELINE_SHA="703ba08ca4c030c5cf0a553ece8da8e910c3b48549f10bfe02b9feb4c938547d"
+BASELINE_STATUS="FINAL_FORM_BASELINE_V6_STATUS.json"
+BASELINE_STATE="FDROID_SIGNED_BASELINE_V6_READY"
+
+UPGRADE_NAME="KAI9000_FDROID_SIGNED_V6_V7_20260907.zip"
+UPGRADE_SHA="6cb100f525229e5d6445aa8f2dfb5f39b8895073efb278fc39f609cc64799b7d"
+UPGRADE_STATUS="FINAL_FORM_SIGNED_V6_V7_STATUS.json"
+UPGRADE_STATE="FDROID_SIGNED_V6_V7_READY"
+
 usage() {
   cat <<EOF
-usage: $0 [--bundle PATH] [--project ID]
+usage: $0 [--phase baseline|upgrade] [--bundle PATH] [--project ID]
 
 The cast self-bootstraps human OAuth when required:
   Cloudflare: cloudflared tunnel login
@@ -28,13 +38,15 @@ Google project selection order:
   3. active gcloud configured project
   4. the only project visible to the active Google identity
 
-Default signed bundle path:
-  $HOME/storage/downloads/KAI9000_FDROID_SIGNED_20260906.zip
+Default publication sequence:
+  baseline -> $HOME/storage/downloads/$BASELINE_NAME
+  upgrade  -> $HOME/storage/downloads/$UPGRADE_NAME
 EOF
 }
 
 while (($#)); do
   case "$1" in
+    --phase) PHASE="${2:-}"; shift 2 ;;
     --bundle) BUNDLE="${2:-}"; shift 2 ;;
     --project) PROJECT="${2:-}"; shift 2 ;;
     -h|--help) usage; exit 0 ;;
@@ -42,7 +54,29 @@ while (($#)); do
   esac
 done
 
-[ -s "$BUNDLE" ] || { echo "RED: signed bundle not found: $BUNDLE" >&2; exit 2; }
+case "$PHASE" in
+  baseline)
+    EXPECTED_BUNDLE_SHA256="$BASELINE_SHA"
+    STATUS_FILE="$BASELINE_STATUS"
+    EXPECTED_STATE="$BASELINE_STATE"
+    EXPECTED_VERSION_CODE=6
+    DEFAULT_BUNDLE="$HOME/storage/downloads/$BASELINE_NAME"
+    ;;
+  upgrade)
+    EXPECTED_BUNDLE_SHA256="$UPGRADE_SHA"
+    STATUS_FILE="$UPGRADE_STATUS"
+    EXPECTED_STATE="$UPGRADE_STATE"
+    EXPECTED_VERSION_CODE=7
+    DEFAULT_BUNDLE="$HOME/storage/downloads/$UPGRADE_NAME"
+    ;;
+  *)
+    echo "RED: --phase must be baseline or upgrade" >&2
+    exit 2
+    ;;
+esac
+
+BUNDLE="${BUNDLE:-$DEFAULT_BUNDLE}"
+[ -s "$BUNDLE" ] || { echo "RED: signed $PHASE bundle not found: $BUNDLE" >&2; exit 2; }
 
 for cmd in gcloud cloudflared python3 sha256sum unzip tar curl; do
   command -v "$cmd" >/dev/null || { echo "RED: missing command: $cmd" >&2; exit 3; }
@@ -93,25 +127,30 @@ echo "GOOGLE_PROJECT_SELECTED=$PROJECT"
 
 ACTUAL_BUNDLE_SHA="$(sha256sum "$BUNDLE" | awk '{print $1}')"
 [ "$ACTUAL_BUNDLE_SHA" = "$EXPECTED_BUNDLE_SHA256" ] || {
-  echo "RED: signed bundle SHA-256 mismatch" >&2
+  echo "RED: signed $PHASE bundle SHA-256 mismatch" >&2
   exit 5
 }
-echo 'SIGNED_BUNDLE_SHA256_GREEN'
+echo "SIGNED_BUNDLE_SHA256_GREEN phase=$PHASE"
 
 WORK="$(mktemp -d "${TMPDIR:-/tmp}/kai9000-live.XXXXXX")"
 trap 'rm -rf "$WORK"' EXIT INT TERM
 unzip -q "$BUNDLE" -d "$WORK/signed"
 
-test -s "$WORK/signed/FINAL_FORM_SIGNED_STATUS.json"
+test -s "$WORK/signed/$STATUS_FILE"
 test -d "$WORK/signed/repo"
-python3 - "$WORK/signed/FINAL_FORM_SIGNED_STATUS.json" "$EXPECTED_APK_SIGNER" "$EXPECTED_REPO_FP" <<'PY'
+python3 - "$WORK/signed/$STATUS_FILE" "$PHASE" "$EXPECTED_STATE" "$EXPECTED_VERSION_CODE" "$EXPECTED_APK_SIGNER" "$EXPECTED_REPO_FP" <<'PY'
 import json, sys
-p, apk, repo = sys.argv[1:]
+p, phase, state, expected_code, apk, repo = sys.argv[1:]
 s = json.load(open(p, encoding='utf-8'))
-assert s.get('state') == 'FDROID_SIGNED'
-assert s.get('fdroid_signed') is True
+assert s.get('state') == state
+assert s.get('signed_repo') is True
 assert s.get('apk_signer_sha256', '').upper() == apk
 assert s.get('repo_fingerprint_sha256', '').upper() == repo
+code = int(expected_code)
+if phase == 'baseline':
+    assert int(s.get('version_code')) == code
+else:
+    assert int(s.get('latest_version_code')) == code
 print('PERSISTENT_SIGNED_EVIDENCE_GREEN')
 PY
 
@@ -119,6 +158,18 @@ test -s "$WORK/signed/repo/index-v1.jar"
 test -s "$WORK/signed/repo/index-v1.json"
 test -s "$WORK/signed/repo/repo-fingerprint-sha256.txt"
 grep -qi "$EXPECTED_REPO_FP" "$WORK/signed/repo/repo-fingerprint-sha256.txt"
+python3 - "$WORK/signed/repo/index-v1.json" "$PHASE" <<'PY'
+import json, sys
+idx=json.load(open(sys.argv[1], encoding='utf-8'))
+vs=idx['packages']['art.eggiebagelface.videoforge.dev']
+codes=sorted(int(v['versionCode']) for v in vs)
+if sys.argv[2] == 'baseline':
+    assert codes == [6], codes
+else:
+    assert codes == [6,7], codes
+print('LOCAL_INDEX_PHASE_GREEN', codes)
+PY
+
 tar -C "$WORK/signed/repo" -czf "$WORK/repo.tar.gz" .
 
 # Provision/reconcile Google strict-free origin. It removes legacy public web ingress
@@ -154,10 +205,15 @@ test -s "$CRED" || { echo "RED: tunnel credential missing: $CRED" >&2; exit 6; }
 chmod 600 "$CRED"
 echo "FDROID_TUNNEL_ID=$TUNNEL_ID"
 
-# Create canonical CNAME. If a conflicting old A/AAAA exists, fail closed rather than
-# overwrite a live record blindly.
-cloudflared tunnel route dns "$TUNNEL_ID" "$FDROID_HOST"
-echo 'FDROID_TUNNEL_DNS_ROUTE_GREEN'
+if [ "$PHASE" = baseline ]; then
+  if cloudflared tunnel route dns "$TUNNEL_ID" "$FDROID_HOST"; then
+    echo 'FDROID_TUNNEL_DNS_ROUTE_GREEN'
+  else
+    echo 'YELLOW: DNS route create returned non-zero; public fingerprint proof will decide whether an existing route is valid' >&2
+  fi
+else
+  echo 'FDROID_TUNNEL_DNS_ROUTE_REUSED'
+fi
 
 cat >"$WORK/config.yml" <<EOF
 tunnel: $TUNNEL_ID
@@ -257,7 +313,7 @@ cloudflared tunnel info "$TUNNEL_ID" >/dev/null
 echo 'FDROID_TUNNEL_CONTROL_PLANE_GREEN'
 
 PUBLIC_FP=""
-for _ in $(seq 1 18); do
+for _ in $(seq 1 24); do
   PUBLIC_FP="$(curl -fsSL --max-time 15 "$PUBLIC_URL/repo-fingerprint-sha256.txt" 2>/dev/null | tr -d ':[:space:]' | tr '[:lower:]' '[:upper:]' || true)"
   [ "$PUBLIC_FP" = "$EXPECTED_REPO_FP" ] && break
   sleep 5
@@ -268,14 +324,39 @@ done
 }
 
 curl -fsSL --max-time 30 "$PUBLIC_URL/index-v1.jar" -o "$WORK/public-index-v1.jar"
-curl -fsSL --max-time 30 "$PUBLIC_URL/index-v1.json" -o "$WORK/public-index-v1.json"
+PUBLIC_INDEX_GREEN=0
+for _ in $(seq 1 24); do
+  if curl -fsSL --max-time 30 "$PUBLIC_URL/index-v1.json" -o "$WORK/public-index-v1.json"; then
+    if python3 - "$WORK/public-index-v1.json" "$PHASE" <<'PY'
+import json, sys
+idx=json.load(open(sys.argv[1], encoding='utf-8'))
+codes=sorted(int(v['versionCode']) for v in idx['packages']['art.eggiebagelface.videoforge.dev'])
+expected=[6] if sys.argv[2]=='baseline' else [6,7]
+assert codes == expected, (codes, expected)
+print('PUBLIC_INDEX_PHASE_GREEN', codes)
+PY
+    then
+      PUBLIC_INDEX_GREEN=1
+      break
+    fi
+  fi
+  sleep 5
+done
+[ "$PUBLIC_INDEX_GREEN" -eq 1 ] || { echo "RED: public index did not converge to $PHASE phase" >&2; exit 8; }
 test -s "$WORK/public-index-v1.jar"
 test -s "$WORK/public-index-v1.json"
 
 echo 'FDROID_PUBLISHED'
+echo "publication_phase=$PHASE"
 echo "repo_url=${PUBLIC_URL}/"
 echo "repo_fingerprint_sha256=$EXPECTED_REPO_FP"
 echo 'origin_public_ip_record=NONE'
 echo 'origin_web_ingress=NONE'
 echo 'google_admin=IAP_ONLY'
-echo 'next_gate=FDROID_IMPORT_VERIFIED then UPGRADE_VERIFIED'
+if [ "$PHASE" = baseline ]; then
+  echo 'FDROID_BASELINE_V6_PUBLISHED'
+  echo 'next_gate=FDROID_IMPORT_VERIFIED with installed versionCode 6'
+else
+  echo 'FDROID_UPGRADE_V7_PUBLISHED'
+  echo 'next_gate=UPGRADE_VERIFIED with installed versionCode 7'
+fi
