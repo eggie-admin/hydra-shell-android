@@ -16,10 +16,7 @@
   "device_contract": {
     "manufacturer": "Samsung",
     "model": "Samsung Android 16 arm64 family",
-    "reference_models": [
-      "SM-S721U1",
-      "SM-X400"
-    ],
+    "reference_models": ["SM-S721U1", "SM-X400"],
     "android": 16,
     "abi": "arm64-v8a",
     "secure_folder_role": "cockpit_client",
@@ -55,7 +52,7 @@
     "samsung_frontend": {
       "repository": "eggie-admin/vue-headless-cms",
       "branch": "samsung-sm-x400-build-candidate",
-      "commit": "b507282a963a663c8d9d6c30c5769dbc22141953",
+      "commit": "6c8c43fe05d14523969d9fdc9429f6feb2c26465",
       "integration": "pinned_checkout_at_build_time",
       "hardening_doctrine": "docs/KAI9000_ANDROID_HARDENING_10PASS_20260907.md",
       "control_receiver_exported": false,
