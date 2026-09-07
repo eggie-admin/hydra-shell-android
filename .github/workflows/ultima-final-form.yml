@@ -15,6 +15,7 @@ on:
       - 'integrations/google-cloud/provision-strict-free-vm.sh'
       - 'integrations/google-cloud/nginx-fdroid-origin.conf'
       - 'scripts/cast-ultima-live.sh'
+      - 'scripts/final-form-device-verify.sh'
   workflow_dispatch:
 
 permissions:
@@ -107,6 +108,18 @@ jobs:
           grep -q 'origin_public_ip_record=NONE' scripts/cast-ultima-live.sh
           echo 'ULTIMA_LIVE_CAST_SCRIPT_GREEN'
 
+      - name: Verify Samsung import and upgrade evidence gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash -n scripts/final-form-device-verify.sh
+          grep -q 'art.eggiebagelface.videoforge.dev' scripts/final-form-device-verify.sh
+          grep -q 'BFB900A9EC913D35C22F1DC3DE7B152D1AF5CA11B7B07E5FAFDD06B44811F66D' scripts/final-form-device-verify.sh
+          grep -q 'FDROID_IMPORT_VERIFIED' scripts/final-form-device-verify.sh
+          grep -q 'UPGRADE_VERIFIED' scripts/final-form-device-verify.sh
+          grep -q 'FINAL_FORM_GREEN' scripts/final-form-device-verify.sh
+          echo 'SAMSUNG_FINAL_EVIDENCE_GATE_ARMED'
+
   final-form-ready:
     name: FINAL FORM live publication armed
     needs: final-form-preflight
@@ -118,4 +131,5 @@ jobs:
           echo 'F-Droid origin is designed for a dedicated outbound-only Cloudflare Tunnel.'
           echo 'Google VM web ingress is closed; administration is Google IAP SSH only.'
           echo 'Human bootstrap uses Cloudflare OAuth + gcloud OAuth; no copied API token is required.'
+          echo 'Samsung finalizer is armed for fingerprint-pinned repo import and versionCode upgrade proof.'
           echo 'FINAL_FORM_GREEN still requires live HTTPS publication, F-Droid import proof, and signed upgrade proof.'
