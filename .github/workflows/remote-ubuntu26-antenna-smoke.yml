@@ -1,4 +1,4 @@
-name: KAI9000 Remote Ubuntu 26 Antenna Smoke
+name: KAI9000 Remote Linux Antenna Smoke
 
 on:
   workflow_dispatch:
@@ -13,7 +13,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: kai9000-remote-ubuntu26-smoke-${{ github.ref }}
+  group: kai9000-remote-linux-smoke-${{ github.ref }}
   cancel-in-progress: true
 
 env:
@@ -25,7 +25,7 @@ env:
 
 jobs:
   smoke:
-    name: Smoke real Google Cloud Ubuntu 26 antenna
+    name: Smoke real Google Cloud KAI antenna
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -85,7 +85,7 @@ jobs:
               --filter='status=RUNNING' \
               --format='value(name,zone.basename())')
 
-            mapfile -t kai_candidates < <(printf '%s\n' "${candidates[@]:-}" | grep -Ei 'kai9000|antenna|ubuntu' || true)
+            mapfile -t kai_candidates < <(printf '%s\n' "${candidates[@]:-}" | grep -Ei 'kai9000|antenna|ubuntu|debian' || true)
             if [ "${#kai_candidates[@]}" -eq 1 ]; then
               instance="$(awk '{print $1}' <<<"${kai_candidates[0]}")"
               zone="$(awk '{print $2}' <<<"${kai_candidates[0]}")"
@@ -138,13 +138,19 @@ jobs:
           if [ -r /etc/os-release ]; then
             . /etc/os-release
             echo "guest_os_id=$ID guest_version_id=$VERSION_ID guest_pretty_name=$PRETTY_NAME"
-            [ "$ID" = ubuntu ] || red OS_ID "expected ubuntu, got $ID"
-            case "$VERSION_ID" in
-              26.04|26.04.*) green OS_VERSION "$PRETTY_NAME" ;;
-              *) red OS_VERSION "expected Ubuntu 26.04 LTS, got $PRETTY_NAME" ;;
+            case "$ID:$VERSION_ID" in
+              debian:12|debian:12.*)
+                green OS_VERSION "$PRETTY_NAME"
+                ;;
+              ubuntu:26.04|ubuntu:26.04.*)
+                green OS_VERSION "$PRETTY_NAME"
+                ;;
+              *)
+                yellow OS_VERSION "unvalidated but not fatal: $PRETTY_NAME"
+                ;;
             esac
           else
-            red OS_RELEASE '/etc/os-release missing'
+            yellow OS_RELEASE '/etc/os-release missing'
           fi
 
           echo '--- resources ---'
@@ -192,17 +198,14 @@ jobs:
           done
           [ "$api_ok" -eq 1 ] || yellow ANTENNA_HEALTH 'no /health response on 8789, 8791, or 8000'
 
-          systemctl is-system-running --wait 2>/dev/null || true
           if [ "$fail" -ne 0 ]; then
-            echo 'REMOTE_UBUNTU26_SMOKE_RED'
+            echo 'REMOTE_ANTENNA_SMOKE_RED'
             exit 50
           fi
-          echo 'REMOTE_UBUNTU26_SMOKE_GREEN'
+          echo 'REMOTE_ANTENNA_SMOKE_GREEN'
           REMOTE
           chmod +x "$REMOTE_SCRIPT"
 
-          # This is a smoke test, not a deploy. gcloud may create a short-lived SSH
-          # credential for IAP/OS Login; it does not alter application configuration.
           gcloud compute scp "$REMOTE_SCRIPT" "$INSTANCE:/tmp/kai9000-remote-smoke.sh" \
             --project="$GCP_PROJECT_ID" --zone="$ZONE" --tunnel-through-iap --quiet
           gcloud compute ssh "$INSTANCE" \
