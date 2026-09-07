@@ -2,42 +2,113 @@
 (function ($) {
   "use strict";
 
+  var SESSION_KEY = "kai9000.lum.session.v1";
+
   function show(payload) {
     $("#out").text(typeof payload === "string" ? payload : JSON.stringify(payload, null, 2));
   }
 
-  function api(method, path, body) {
-    return $.ajax({
+  function api(method, path, body, quiet) {
+    var req = $.ajax({
       url: path,
       method: method,
       contentType: "application/json",
       dataType: "json",
       data: body === undefined ? undefined : JSON.stringify(body)
-    }).done(show).fail(function (xhr) {
+    });
+    if (!quiet) { req.done(show); }
+    req.fail(function (xhr) {
       var payload = xhr.responseJSON || {error: xhr.statusText, status: xhr.status};
       show(payload);
     });
+    return req;
   }
 
-  function post(path, body) {
-    return api("POST", path, body);
+  function post(path, body, quiet) {
+    return api("POST", path, body, quiet);
   }
 
   function numericOrNull(value) {
     return value === "" ? null : Number(value);
   }
 
+  function newSessionId() {
+    var tail;
+    if (window.crypto && window.crypto.randomUUID) {
+      tail = window.crypto.randomUUID().replace(/[^A-Za-z0-9_-]/g, "").slice(0, 32);
+    } else {
+      tail = Date.now().toString(36) + Math.random().toString(36).slice(2, 12);
+    }
+    return "kai-s24-" + tail;
+  }
+
+  function getSessionId() {
+    var current = window.localStorage.getItem(SESSION_KEY);
+    if (!current || !/^[A-Za-z0-9._-]{1,64}$/.test(current)) {
+      current = newSessionId();
+      window.localStorage.setItem(SESSION_KEY, current);
+    }
+    return current;
+  }
+
+  function setSessionLabel() {
+    $("#lumSessionLabel").text(getSessionId());
+  }
+
+  function appendMessage(role, text) {
+    var $msg = $("<div>").addClass("msg " + (role === "user" ? "user" : "lum"));
+    $("<span>").addClass("who").text(role === "user" ? "Professor" : "Lum").appendTo($msg);
+    $msg.append(document.createTextNode(text || ""));
+    $("#lumChatLog").append($msg);
+    var log = document.getElementById("lumChatLog");
+    if (log) { log.scrollTop = log.scrollHeight; }
+  }
+
+  function resetChatView() {
+    $("#lumChatLog").empty();
+    appendMessage("lum", "New KAI 9000 session opened. Crown authority remains with Professor.");
+    $("#lumRoute").text("route: waiting");
+    setSessionLabel();
+  }
+
   function refreshLumStatus() {
-    api("GET", "/api/lum/status").done(function (data) {
+    api("GET", "/api/lum/status", undefined, true).done(function (data) {
       var state = data.credential_configured ? "OPENAI READY" : "DETERMINISTIC MOCK";
       $("#lumStatus").text(
-        data.agent + " · " + data.model + " · " + state + " · self-approval OFF"
+        data.agent + " · " + data.default_model + " / " + data.heavy_model + " · " + data.transport + " · " + state
       );
+      $("#providerChip").text("LUM: " + state);
+      $("#lumRoute").text("route: " + data.default_model + " → " + data.heavy_model);
     });
   }
 
+  function sendLumMessage(text) {
+    var message = (text === undefined ? $("#magicPrompt").val() : text).trim();
+    if (!message) { return; }
+    appendMessage("user", message);
+    $("#magicPrompt").val("").prop("disabled", true);
+    $("#askOpenAI").prop("disabled", true).text("Casting…");
+
+    post("/api/lum/chat", {message: message, session_id: getSessionId()}, true)
+      .done(function (data) {
+        appendMessage("lum", data.assistant || "No assistant text returned.");
+        $("#lumRoute").text(
+          "route: " + (data.route || "unknown") + " · " + (data.model || data.planned_model || "deterministic")
+        );
+        show(data);
+      })
+      .fail(function (xhr) {
+        var detail = (xhr.responseJSON && xhr.responseJSON.detail) || xhr.statusText || "Lum request failed";
+        appendMessage("lum", "RED: " + (typeof detail === "string" ? detail : JSON.stringify(detail)));
+      })
+      .always(function () {
+        $("#magicPrompt").prop("disabled", false).focus();
+        $("#askOpenAI").prop("disabled", false).text("Cast Message");
+      });
+  }
+
   function refreshSpells() {
-    api("GET", "/api/magic/spells").done(function (data) {
+    api("GET", "/api/magic/spells", undefined, true).done(function (data) {
       var $list = $("#spellList").empty();
       $.each(data.spells || {}, function (name, spec) {
         var approval = spec.approval ? " approval" : " auto";
@@ -55,11 +126,28 @@
   }
 
   $(function () {
+    setSessionLabel();
     refreshLumStatus();
     refreshSpells();
 
-    $("#askOpenAI").on("click", function () {
-      post("/api/lum/chat", {message: $("#magicPrompt").val()});
+    $("#askOpenAI").on("click", function () { sendLumMessage(); });
+
+    $("#magicPrompt").on("keydown", function (event) {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        sendLumMessage();
+      }
+    });
+
+    $("#newLumSession").on("click", function () {
+      window.localStorage.setItem(SESSION_KEY, newSessionId());
+      resetChatView();
+    });
+
+    $(".quickPrompt").on("click", function () {
+      var prompt = String($(this).data("prompt") || "");
+      $("#magicPrompt").val(prompt);
+      sendLumMessage(prompt);
     });
 
     $("#prepareCast").on("click", function () {
@@ -128,10 +216,6 @@
 
     $("#backup").on("click", function () {
       post("/api/backup", {job_id: $("#job").val(), include_source_mp4: false});
-    });
-
-    $("#askOllama").on("click", function () {
-      post("/api/antenna/ollama/chat", {message: $("#ollamaPrompt").val()});
     });
   });
 })(window.jQuery);
