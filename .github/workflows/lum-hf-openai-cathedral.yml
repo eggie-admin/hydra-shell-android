@@ -1,0 +1,111 @@
+name: Lum HF OpenAI Cathedral
+
+on:
+  push:
+    branches:
+      - mutation/lum-hf-openai-cathedral-20260907
+    paths:
+      - 'ultima/ollama-ffmpeg-antenna-v3/lum_agent/**'
+      - 'ultima/ollama-ffmpeg-antenna-v3/remote_ai.py'
+      - 'ultima/ollama-ffmpeg-antenna-v3/pyproject.toml'
+      - 'ultima/ollama-ffmpeg-antenna-v3/tests/test_lum_agent.py'
+      - 'backend/tests/test_remote_ai_router.py'
+      - 'docs/LUM_AGENT_DOCTRINE_20260907.md'
+      - 'docs/LUM_AGENT_SKILL_CHAIN.md'
+      - 'docs/LUM_HF_OPENAI_HARD_AUDIT_20260907.md'
+      - '.github/workflows/lum-hf-openai-cathedral.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  hard-audit:
+    name: Python ${{ matrix.python-version }} hard audit
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.14']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install tested runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install pytest
+          python -m pip install -e ultima/ollama-ffmpeg-antenna-v3
+
+      - name: Compile Crown-routed Lum
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile \
+            ultima/ollama-ffmpeg-antenna-v3/lum_agent/agent.py \
+            ultima/ollama-ffmpeg-antenna-v3/lum_agent/doctrine.py \
+            ultima/ollama-ffmpeg-antenna-v3/lum_agent/router.py \
+            ultima/ollama-ffmpeg-antenna-v3/lum_agent/tools.py \
+            ultima/ollama-ffmpeg-antenna-v3/remote_ai.py
+
+      - name: Focused Lum and provider tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          pytest -q \
+            ultima/ollama-ffmpeg-antenna-v3/tests/test_lum_agent.py \
+            backend/tests/test_remote_ai_router.py
+
+      - name: Doctrine and provider invariants
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          root = Path('ultima/ollama-ffmpeg-antenna-v3')
+          agent = (root / 'lum_agent/agent.py').read_text()
+          doctrine = (root / 'lum_agent/doctrine.py').read_text()
+          remote = (root / 'remote_ai.py').read_text()
+          pyproject = (root / 'pyproject.toml').read_text()
+
+          assert 'gpt-5.6-luna' in agent
+          assert 'gpt-5.6-sol' in agent
+          assert 'set_default_openai_responses_transport' in agent
+          assert 'huggingface-forge' in doctrine
+          assert 'source-of-truth' in doctrine
+          assert 'openai-router' in doctrine
+          assert 'gpt-6-astra' not in remote
+          assert 'gpt-5.6-luna' in remote
+          assert 'openai/gpt-oss-120b:fastest' in remote
+          assert 'openai-agents==0.22.0' in pyproject
+
+          skills = root / 'lum_agent/skills'
+          assert (skills / 'source-of-truth/SKILL.md').is_file()
+          assert (skills / 'openai-router/SKILL.md').is_file()
+          assert (skills / 'huggingface-forge/SKILL.md').is_file()
+
+          sot = (skills / 'source-of-truth/SKILL.md').read_text()
+          assert 'Vercel is retired and forbidden' in sot
+          assert 'Local Termux is retired' in sot
+          assert 'GitHub is canonical' in sot
+          assert 'Cloudflare = public edge' in sot
+
+          print('LUM_HF_OPENAI_CATHEDRAL_GREEN')
+          PY
+
+      - name: Secret-shape guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          ! grep -RniE 'sk-[A-Za-z0-9_-]{20,}|hf_[A-Za-z0-9]{20,}|BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY' \
+            ultima/ollama-ffmpeg-antenna-v3/lum_agent \
+            docs/LUM_AGENT_DOCTRINE_20260907.md \
+            docs/LUM_AGENT_SKILL_CHAIN.md \
+            docs/LUM_HF_OPENAI_HARD_AUDIT_20260907.md
