@@ -10,3 +10,18 @@ dependencies = [
   "httpx",
   "google-genai",
 ]
+
+[tool.setuptools]
+packages = ["ai_feed"]
+py-modules = [
+  "antenna",
+  "comfy_batch",
+  "doctor",
+  "drive_backup",
+  "gateway",
+  "magic_chat",
+  "magic_server",
+  "main",
+  "remote_ai",
+  "remote_pull",
+]
