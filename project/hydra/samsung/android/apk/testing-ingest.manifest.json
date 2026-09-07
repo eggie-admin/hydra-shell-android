@@ -1,6 +1,6 @@
 {
-  "schema": "kai9000.android-testing-ingest.v2",
-  "date": "2026-09-06",
+  "schema": "kai9000.android-testing-ingest.v3",
+  "date": "2026-09-07",
   "project": {
     "os": "LuHm OS",
     "working_title": "KAI 9000"
@@ -11,7 +11,11 @@
   "consolidated_donor_commit": "70eafa7bcaa62786593922bdcc7e1706cba0bf04",
   "device_contract": {
     "manufacturer": "Samsung",
-    "model": "SM-X400",
+    "model": "Samsung Android 16 arm64 family",
+    "reference_models": [
+      "SM-S721U1",
+      "SM-X400"
+    ],
     "android": 16,
     "abi": "arm64-v8a",
     "secure_folder_role": "cockpit_client",
@@ -47,8 +51,10 @@
     "samsung_frontend": {
       "repository": "eggie-admin/vue-headless-cms",
       "branch": "samsung-sm-x400-build-candidate",
-      "commit": "86507ed7c72650ff508eb9a1a9e52842eb50e821",
-      "integration": "pinned_checkout_at_build_time"
+      "commit": "88be3ea5d9bcdecfcaf035b043cd112002dc06d7",
+      "integration": "pinned_checkout_at_build_time",
+      "hardening_doctrine": "docs/KAI9000_ANDROID_HARDENING_10PASS_20260907.md",
+      "control_receiver_exported": false
     },
     "godot_ai_forge": {
       "repository": "eggie-admin/amplify-godot-engine-template",
@@ -83,10 +89,13 @@
     "secure_folder_sui",
     "arbitrary_model_shell",
     "openai_api_keys_in_source_or_apk",
-    "proprietary_game_runtime_assets"
+    "private_keys_in_source_or_apk",
+    "proprietary_game_runtime_assets",
+    "exported_control_receivers"
   ],
   "ci_authority": {
     "external_hosting_status_is_authoritative": false,
+    "private_release_repository_visibility": "private_or_equivalent_restricted_source_of_truth",
     "authoritative_evidence": [
       "repository_ci",
       "reproducible_android_build",
@@ -110,7 +119,11 @@
       "loopback_binding_verified",
       "secret_scan_green",
       "proprietary_asset_scan_green",
-      "secure_folder_client_boundary_verified"
+      "secure_folder_client_boundary_verified",
+      "non_exported_control_receiver_verified",
+      "immutable_action_pins_green",
+      "persistent_release_signing_for_release_only",
+      "private_or_restricted_source_of_truth_for_release"
     ]
   }
 }
