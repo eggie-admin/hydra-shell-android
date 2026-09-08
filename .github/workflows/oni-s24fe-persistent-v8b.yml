@@ -11,7 +11,7 @@ permissions:
 
 env:
   DONOR_REPO: eggie-admin/vue-headless-cms
-  DONOR_REF: fix/s24fe-persistent-portrait-v8
+  DONOR_REF: 18f03c5cc7e818174b03ae432f6a7af419e4dd79
   GODOT_RELEASE: 4.7.2-stable
   GODOT_TEMPLATE_VERSION: 4.7.2.stable
   GODOT_EDITOR_SHA256: cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4
@@ -28,27 +28,30 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: ${{ env.DONOR_REPO }}
           ref: ${{ env.DONOR_REF }}
           path: _forge/vue-headless-cms
-      - uses: actions/setup-java@v4
+          persist-credentials: false
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
         with:
           distribution: temurin
           java-version: '17'
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: '3.14'
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '24.18.0'
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4.4.3
         with:
           gradle-version: '8.13'
 
-      - name: Verify ordinary-app contract
+      - name: Verify ordinary-app and private-control contract
         shell: bash
         run: |
           set -euo pipefail
@@ -59,6 +62,9 @@ jobs:
           v=json.loads((r/'release/version.json').read_text())
           p=(r/'godot/export_presets.cfg').read_text()
           g=(r/'godot/project.godot').read_text()
+          m=(r/'godot/android-plugin/plugin/src/main/AndroidManifest.xml').read_text()
+          w=(r/'godot/android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralWidgetProvider.kt').read_text()
+          a=(r/'godot/android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralWidgetActionReceiver.kt').read_text()
           assert v['packageId']=='art.eggiebagelface.videoforge.dev'
           assert v['versionCode']==8 and v['version']=='0.6.2-dev'
           for s in [
@@ -71,7 +77,12 @@ jobs:
             'size/viewport_width=1080','size/viewport_height=1920',
             'handheld/orientation=1','stretch/mode="canvas_items"','stretch/aspect="expand"'
           ]: assert s in g, s
-          print('ORDINARY_APP_SOURCE_GREEN')
+          assert 'CathedralWidgetProvider' in m and 'android:exported="true"' in m
+          assert 'CathedralWidgetActionReceiver' in m and 'android:exported="false"' in m
+          assert 'Intent(context, CathedralWidgetActionReceiver::class.java)' in w
+          assert 'this !is CathedralWidgetActionReceiver' in w
+          assert 'class CathedralWidgetActionReceiver : CathedralWidgetProvider()' in a
+          print('ORDINARY_APP_PRIVATE_CONTROL_SOURCE_GREEN')
           PY
 
       - name: Install Android SDK 36
@@ -182,7 +193,8 @@ jobs:
             echo 'ERROR: APK still advertises itself as Android HOME/system launcher' >&2; exit 1
           fi
           grep -q 'android.hardware.screen.portrait' build/android/badging.txt
-          echo 'S24FE_V8B_ORDINARY_APP_GREEN'
+          grep -q 'CathedralWidgetActionReceiver' build/android/manifest.txt
+          echo 'S24FE_V8B_ORDINARY_APP_PRIVATE_CONTROL_GREEN'
 
       - name: Add phone persistence probe
         shell: bash
@@ -200,7 +212,7 @@ jobs:
           SH
           chmod +x build/android/kai9000-phone-verify.sh
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: kai9000-s24fe-v8b-${{ github.run_number }}
           path: build/android/**
