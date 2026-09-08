@@ -17,67 +17,25 @@
     "repository": "eggie-admin/hydra-shell-android",
     "branch": "main",
     "pre_audit_source_sha": "fff5c5957619f2a87aecaa6355f3e849a2770c93",
+    "first_ultima_source_sha": "1f180c04d312045dcacc75db2bddedc27f61e9c0",
+    "first_ultima_run": 34177515509,
     "donor_repository": "eggie-admin/vue-headless-cms",
     "donor_ref": "903de4857f7554067a9cbfd2912202632f62c459",
+    "donor_savepoint": "savepoint/kai9000-witching-hour-donor-green-20260907",
     "donor_validation_pr": 15,
     "donor_forge_run": 34177248315,
     "donor_android_run": 34177248320
   },
   "passes": [
-    {
-      "pass": 1,
-      "name": "canonical_release_truth",
-      "status": "GREEN",
-      "requires": ["package identity", "version truth", "pinned donor", "canonical main branch"]
-    },
-    {
-      "pass": 2,
-      "name": "runtime_identity_coherence",
-      "status": "GREEN",
-      "requires": ["FastAPI KAI 9000 identity", "runtime version 1.0.0", "Godot/F-Droid/Python release truth"]
-    },
-    {
-      "pass": 3,
-      "name": "secrets_and_release_signing_boundary",
-      "status": "GREEN",
-      "requires": ["no private key in Git", "no private key in Drive", "persistent release certificate pinned", "staging signer separated from final signer"]
-    },
-    {
-      "pass": 4,
-      "name": "android_component_and_permission_boundary",
-      "status": "GREEN",
-      "requires": ["widget receiver non-exported", "RUN_COMMAND permission explicit", "arm64 release package truth"]
-    },
-    {
-      "pass": 5,
-      "name": "dependency_and_supply_chain_immutability",
-      "status": "GREEN",
-      "requires": ["immutable GitHub Action SHAs", "Node 24.18.0", "npm 12.0.2", "committed lock hash", "verified Godot/Gradle hashes"]
-    },
-    {
-      "pass": 6,
-      "name": "webview_network_and_origin_boundary",
-      "status": "GREEN",
-      "requires": ["global cleartext denied", "loopback-only cleartext exception", "asset-loader HTTPS origin", "file/content access denied", "third-party cookies denied", "origin-locked native messages"]
-    },
-    {
-      "pass": 7,
-      "name": "native_termux_command_boundary",
-      "status": "GREEN",
-      "requires": ["fixed cathedral-control path", "fixed command argument array", "no Runtime.exec", "message-size and message-type gates"]
-    },
-    {
-      "pass": 8,
-      "name": "ai_control_plane_policy_boundary",
-      "status": "GREEN",
-      "requires": ["typed AgentDecision", "model cannot execute shell/tools directly", "Python policy overwrites risk and confirmation", "high-risk upload confirmation required"]
-    },
-    {
-      "pass": 9,
-      "name": "reproducibility_artifact_and_rollback_evidence",
-      "status": "GREEN",
-      "requires": ["APK identity", "APK v2 signature candidate", "16 KiB alignment", "arm64 ABI", "CMS bundled offline", "F-Droid staging", "immutable savepoint"]
-    },
+    {"pass": 1, "name": "canonical_release_truth", "status": "GREEN", "requires": ["package identity", "version truth", "pinned donor", "canonical main branch"]},
+    {"pass": 2, "name": "runtime_identity_coherence", "status": "GREEN", "requires": ["FastAPI KAI 9000 identity", "runtime version 1.0.0", "Godot/F-Droid/Python release truth"]},
+    {"pass": 3, "name": "secrets_and_release_signing_boundary", "status": "GREEN", "requires": ["no private key in Git", "no private key in Drive", "persistent release certificate pinned", "staging signer separated from final signer"]},
+    {"pass": 4, "name": "android_component_and_permission_boundary", "status": "GREEN", "requires": ["widget receiver non-exported", "RUN_COMMAND permission explicit", "arm64 release package truth"]},
+    {"pass": 5, "name": "dependency_and_supply_chain_immutability", "status": "GREEN", "requires": ["immutable GitHub Action SHAs", "Node 24.18.0", "npm 12.0.2", "committed lock hash", "verified Godot/Gradle hashes"]},
+    {"pass": 6, "name": "webview_network_and_origin_boundary", "status": "GREEN", "requires": ["global cleartext denied", "loopback-only cleartext exception", "asset-loader HTTPS origin", "file/content access denied", "third-party cookies denied", "origin-locked native messages"]},
+    {"pass": 7, "name": "native_termux_command_boundary", "status": "GREEN", "requires": ["fixed cathedral-control path", "fixed command argument array", "no Runtime.exec", "message-size and message-type gates"]},
+    {"pass": 8, "name": "ai_control_plane_policy_boundary", "status": "GREEN", "requires": ["typed AgentDecision", "model cannot execute shell/tools directly", "Python policy overwrites risk and confirmation", "high-risk upload confirmation required"]},
+    {"pass": 9, "name": "reproducibility_artifact_and_rollback_evidence", "status": "GREEN", "requires": ["APK identity", "APK v2 staging signature", "16 KiB alignment", "arm64 ABI", "CMS bundled offline", "F-Droid staging", "immutable donor savepoint"]},
     {
       "pass": 10,
       "name": "repository_governance_and_external_authority",
@@ -91,21 +49,18 @@
     "model": "GPT-5.6 Sol",
     "independent_model_consensus": false,
     "roles": [
-      {
-        "role": "architect",
-        "focus": "source truth, dependency graph, runtime coherence and rollback"
-      },
-      {
-        "role": "adversarial_reviewer",
-        "focus": "secret, network, WebView, Android component, native command and AI-policy trust boundaries"
-      },
-      {
-        "role": "release_judge",
-        "focus": "machine-gate evidence, APK provenance, signing and promotion policy"
-      }
+      {"role": "architect", "focus": "source truth, dependency graph, runtime coherence and rollback"},
+      {"role": "adversarial_reviewer", "focus": "secret, network, WebView, Android component, native command and AI-policy trust boundaries"},
+      {"role": "release_judge", "focus": "machine-gate evidence, APK provenance, signing and promotion policy"}
     ],
     "signoff": "APPROVED_WITH_GOVERNANCE_EXCEPTIONS",
-    "condition": "passes 1-9 must be GREEN and canonical machine CI must be GREEN; pass 10 remains explicitly YELLOW until account-level governance is changed"
+    "condition": "passes 1-9 are GREEN and canonical machine ULTIMA is GREEN; pass 10 remains explicitly YELLOW until account-level governance is changed"
+  },
+  "machine_evidence": {
+    "first_ultima": "GREEN",
+    "first_ultima_run": 34177515509,
+    "donor_forge": "GREEN",
+    "donor_android": "GREEN"
   },
   "legacy_debt": {
     "status": "NON_BLOCKING",
@@ -115,7 +70,7 @@
     ]
   },
   "overall": {
-    "technical_release": "GREEN_PENDING_FINAL_ULTIMA",
+    "technical_release": "GREEN",
     "governance": "YELLOW",
     "promotion_policy": "technical release may seal with governance exceptions recorded; governance exceptions must never be relabeled GREEN without observed account-level changes"
   }

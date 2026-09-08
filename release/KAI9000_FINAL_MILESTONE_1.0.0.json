@@ -12,6 +12,8 @@
     "repository": "eggie-admin/hydra-shell-android",
     "branch": "main",
     "pre_audit_source_sha": "fff5c5957619f2a87aecaa6355f3e849a2770c93",
+    "first_ultima_source_sha": "1f180c04d312045dcacc75db2bddedc27f61e9c0",
+    "first_ultima_run": 34177515509,
     "donor_repository": "eggie-admin/vue-headless-cms",
     "donor_ref": "903de4857f7554067a9cbfd2912202632f62c459",
     "donor_validation_pr": 15,
@@ -55,7 +57,9 @@
   },
   "audit": {
     "technical_passes_green_required": 9,
-    "technical_release_status": "GREEN_PENDING_FINAL_ULTIMA",
+    "technical_release_status": "GREEN",
+    "first_ultima_run": 34177515509,
+    "first_ultima_source_sha": "1f180c04d312045dcacc75db2bddedc27f61e9c0",
     "governance_status": "YELLOW",
     "governance_exceptions": [
       "repository visibility observed public",
@@ -72,7 +76,7 @@
   },
   "promotion": {
     "automatic": false,
-    "status": "witching_hour_audit_staged",
+    "status": "witching_hour_ultima_green",
     "requires": [
       "release_source_truth_green",
       "hard_10pass_doctrine_valid",
@@ -85,7 +89,7 @@
       "apk_v2_or_later_signature_green",
       "fdroid_stage_green",
       "persistent_release_signature_green",
-      "final_apk_sha256_recorded"
+      "final_apk_sha256_recorded_in_seal"
     ]
   }
 }
