@@ -13,6 +13,15 @@ RUNTIME = ROOT / "ultima" / "ollama-ffmpeg-antenna-v3"
 RUNTIME_MANIFEST = RUNTIME / "KAI9000_ULTIMA_OLLAMA_FFMPEG_ANTENNA_V3.manifest.json"
 MAIN_PY = RUNTIME / "main.py"
 
+# Exact fake credentials intentionally used by tests that verify prompt-secret
+# rejection. Only these literal values at these literal paths are scrubbed from
+# the scanner input. Any other secret-shaped value in the same file still fails.
+SYNTHETIC_SECRET_FIXTURES = {
+    Path("backend/tests/test_remote_ai_router.py"): (
+        "hf_abcdefghijklmnopqrstuvwxyz1234567890",
+    ),
+}
+
 
 def fail(message: str) -> None:
     print(f"CI GUARD RED: {message}", file=sys.stderr)
@@ -101,9 +110,14 @@ def secret_scan() -> None:
             text = path.read_text(encoding="utf-8")
         except UnicodeDecodeError:
             continue
+
+        relative = path.relative_to(ROOT)
+        for synthetic_value in SYNTHETIC_SECRET_FIXTURES.get(relative, ()):
+            text = text.replace(synthetic_value, "SYNTHETIC_SECRET_FIXTURE")
+
         for label, pattern in patterns.items():
             if pattern.search(text):
-                fail(f"secret-shaped value ({label}) in {path.relative_to(ROOT)}")
+                fail(f"secret-shaped value ({label}) in {relative}")
 
 
 def main() -> None:
