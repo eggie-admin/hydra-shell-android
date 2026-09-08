@@ -1,6 +1,6 @@
 {
-  "schema": "kai9000.final-release.v1",
-  "milestone": "KAI9000_FINAL_MILESTONE_GREEN_20260908",
+  "schema": "kai9000.final-release.v2",
+  "milestone": "KAI9000_WITCHING_HOUR_ULTIMA_GREEN_20260907",
   "release": {
     "name": "KAI 9000",
     "package_id": "art.eggiebagelface.kai9000",
@@ -11,8 +11,11 @@
   "source": {
     "repository": "eggie-admin/hydra-shell-android",
     "branch": "main",
+    "pre_audit_source_sha": "fff5c5957619f2a87aecaa6355f3e849a2770c93",
     "donor_repository": "eggie-admin/vue-headless-cms",
-    "donor_ref": "6d1b65f51d8c28193d056b4f96f869508e9888f1"
+    "donor_ref": "903de4857f7554067a9cbfd2912202632f62c459",
+    "donor_validation_pr": 15,
+    "audit_doctrine": "release/KAI9000_WITCHING_HOUR_10PASS_20260907.json"
   },
   "gui": {
     "render_owner": "jquery_plugin",
@@ -21,14 +24,26 @@
     "jquery_ui": "1.14.2",
     "bootstrap": "5.3.8",
     "avatar": "Lum bundled offline",
-    "runtime_cdn_dependencies": false
+    "runtime_cdn_dependencies": false,
+    "legacy_vue_runtime_authority": false
+  },
+  "runtime": {
+    "python_control_plane": "FastAPI",
+    "runtime_name": "KAI 9000 Control",
+    "runtime_version": "1.0.0",
+    "loopback_first": true,
+    "model_decision_contract": "typed AgentDecision with Python policy authority"
   },
   "android": {
     "min_sdk": 29,
     "target_sdk": 36,
     "abi": "arm64-v8a",
     "loopback_first": true,
-    "control_receiver_exported": false
+    "control_receiver_exported": false,
+    "webview_file_access": false,
+    "webview_content_access": false,
+    "third_party_cookies": false,
+    "webmessage_origin_locked": true
   },
   "signing": {
     "ci_role": "staging_signature_only",
@@ -38,11 +53,31 @@
     "final_certificate_sha256": "2a318812c5507548b31aa6430cd7ab29ca9e8b0afc4f1218e939242218d9bffe",
     "identity_status": "sealed"
   },
+  "audit": {
+    "technical_passes_green_required": 9,
+    "technical_release_status": "GREEN_PENDING_FINAL_ULTIMA",
+    "governance_status": "YELLOW",
+    "governance_exceptions": [
+      "repository visibility observed public",
+      "main branch observed unprotected",
+      "legacy Vercel status remains non-authoritative"
+    ],
+    "ai_chain": {
+      "mode": "single_model_multi_role_review",
+      "model": "GPT-5.6 Sol",
+      "independent_model_consensus": false,
+      "signoff": "APPROVED_WITH_GOVERNANCE_EXCEPTIONS",
+      "machine_ci_authoritative": true
+    }
+  },
   "promotion": {
     "automatic": false,
-    "status": "release_signing_identity_sealed",
+    "status": "witching_hour_audit_staged",
     "requires": [
       "release_source_truth_green",
+      "hard_10pass_doctrine_valid",
+      "passes_1_through_9_green",
+      "governance_exceptions_explicit",
       "jquery_cockpit_green",
       "python_control_plane_green",
       "android_plugin_green",
