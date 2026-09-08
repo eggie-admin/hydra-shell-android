@@ -21,7 +21,8 @@
     "donor_hotfix_head": "c9ce638454fbd62b1793a84a4039a933e0f10975",
     "donor_hotfix_forge_run": 34182583449,
     "donor_hotfix_android_run": 34182583489,
-    "audit_doctrine": "release/KAI9000_WITCHING_HOUR_10PASS_20260907.json"
+    "audit_doctrine": "release/KAI9000_WITCHING_HOUR_10PASS_20260907.json",
+    "ultima_recast_sequence": 2
   },
   "gui": {
     "render_owner": "jquery_plugin",
