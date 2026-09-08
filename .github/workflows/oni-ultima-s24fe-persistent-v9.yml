@@ -22,7 +22,8 @@ env:
   SOURCE_ARTIFACT: kai9000-s24fe-v8b-2
   SOURCE_ARTIFACT_DIGEST: sha256:b3be7f20699c657572ac33896a3476623fff2e3366ff25d0115a4ebcdb3b38e2
   DONOR_REPO: eggie-admin/vue-headless-cms
-  DONOR_REF: 18f03c5cc7e818174b03ae432f6a7af419e4dd79
+  APK_DONOR_REF: 18f03c5cc7e818174b03ae432f6a7af419e4dd79
+  FDROID_REF: cace25babe428acde534dd47ba4fe44867a4ad75
   PACKAGE_ID: art.eggiebagelface.videoforge.dev
   VERSION_CODE: '8'
   VERSION_NAME: 0.6.2-dev
@@ -39,12 +40,20 @@ jobs:
           persist-credentials: false
           fetch-depth: 2
 
-      - name: Checkout pinned S24 FE persistence donor
+      - name: Checkout exact APK persistence donor
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: ${{ env.DONOR_REPO }}
-          ref: ${{ env.DONOR_REF }}
+          ref: ${{ env.APK_DONOR_REF }}
           path: _forge/vue-headless-cms
+          persist-credentials: false
+
+      - name: Checkout F-Droid staging provenance
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: ${{ env.DONOR_REPO }}
+          ref: ${{ env.FDROID_REF }}
+          path: _fdroid/vue-headless-cms
           persist-credentials: false
 
       - name: Set up Python 3.14
@@ -52,7 +61,7 @@ jobs:
         with:
           python-version: '3.14'
 
-      - name: Verify latest ordinary-app portrait doctrine
+      - name: Verify exact ordinary-app portrait doctrine
         shell: bash
         run: |
           set -euo pipefail
@@ -106,6 +115,19 @@ jobs:
           grep -q 'setAcceptThirdPartyCookies(view, false)' "$PLUGIN"
           echo 'ULTIMA_ANDROID_BOUNDARIES_GREEN'
 
+      - name: Verify F-Droid staging provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          SCRIPT='_fdroid/vue-headless-cms/scripts/stage_fdroid_repo.py'
+          META="_fdroid/vue-headless-cms/fdroid/metadata/${PACKAGE_ID}.yml"
+          test -s "$SCRIPT"
+          test -s "$META"
+          grep -q 'ROOT = Path(__file__).resolve().parents\[1\]' "$SCRIPT"
+          grep -q '^CurrentVersion: 0.6.2-dev$' "$META"
+          grep -q '^CurrentVersionCode: 8$' "$META"
+          echo 'ULTIMA_FDROID_PROVENANCE_GREEN'
+
       - name: Download exact green v8b APK artifact
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
@@ -152,7 +174,7 @@ jobs:
         run: |
           set -euo pipefail
           APK="$(find build/source -type f -name '*.apk' -print -quit)"
-          python _forge/vue-headless-cms/scripts/stage_fdroid_repo.py \
+          python _fdroid/vue-headless-cms/scripts/stage_fdroid_repo.py \
             --apk "$APK" \
             --output "$GITHUB_WORKSPACE/build/fdroid-stage" \
             --package "$PACKAGE_ID" \
@@ -161,6 +183,8 @@ jobs:
           test -s "build/fdroid-stage/repo/${PACKAGE_ID}_${VERSION_CODE}.apk"
           test -s "build/fdroid-stage/metadata/${PACKAGE_ID}.yml"
           test -s build/fdroid-stage/SHA256SUMS
+          grep -q '^CurrentVersion: 0.6.2-dev$' "build/fdroid-stage/metadata/${PACKAGE_ID}.yml"
+          grep -q '^CurrentVersionCode: 8$' "build/fdroid-stage/metadata/${PACKAGE_ID}.yml"
           echo 'ULTIMA_FDROID_STAGE_GREEN'
 
       - name: Write ULTIMA v9 seal
@@ -173,7 +197,8 @@ jobs:
           SOURCE_SHA="$SOURCE_SHA" \
           SOURCE_ARTIFACT="$SOURCE_ARTIFACT" \
           SOURCE_ARTIFACT_DIGEST="$SOURCE_ARTIFACT_DIGEST" \
-          DONOR_REF="$DONOR_REF" \
+          APK_DONOR_REF="$APK_DONOR_REF" \
+          FDROID_REF="$FDROID_REF" \
           PACKAGE_ID="$PACKAGE_ID" \
           VERSION_CODE="$VERSION_CODE" \
           VERSION_NAME="$VERSION_NAME" \
@@ -189,7 +214,8 @@ jobs:
               'source_commit': os.environ['SOURCE_SHA'],
               'source_artifact': os.environ['SOURCE_ARTIFACT'],
               'source_artifact_digest': os.environ['SOURCE_ARTIFACT_DIGEST'],
-              'persistence_donor_commit': os.environ['DONOR_REF'],
+              'apk_donor_commit': os.environ['APK_DONOR_REF'],
+              'fdroid_provenance_commit': os.environ['FDROID_REF'],
               'package_id': os.environ['PACKAGE_ID'],
               'version': os.environ['VERSION_NAME'],
               'version_code': int(os.environ['VERSION_CODE']),
