@@ -1,5 +1,5 @@
 {
-  "schema": "kai9000.android-testing-ingest.v4",
+  "schema": "kai9000.android-testing-ingest.v5",
   "date": "2026-09-07",
   "project": {
     "os": "LuHm OS",
@@ -10,7 +10,7 @@
     "version_code": 7
   },
   "repository": "eggie-admin/hydra-shell-android",
-  "branch": "testing/luhm-os-android",
+  "branch": "main",
   "base_before_audit": "f4ef83e83355fa55fbec093719b7262bb39c45cc",
   "consolidated_donor_commit": "70eafa7bcaa62786593922bdcc7e1706cba0bf04",
   "device_contract": {
@@ -51,12 +51,23 @@
   "external_references": {
     "samsung_frontend": {
       "repository": "eggie-admin/vue-headless-cms",
-      "branch": "samsung-sm-x400-build-candidate",
-      "commit": "9344d12dd0f21ce5547dda531da8d6ff50db3cef",
+      "branch": "kai9000/jquery-avatar-cockpit-20260907",
+      "commit": "7c06bb76d4890c64202b438dd7fab2122db8d4ec",
       "integration": "pinned_checkout_at_build_time",
       "hardening_doctrine": "docs/KAI9000_ANDROID_HARDENING_10PASS_20260907.md",
       "control_receiver_exported": false,
-      "npm_lock_sha256": "7929d5c53793563492ff0f5b39278904ecfa5508b10071d5b6d4b0b268fe653c"
+      "npm_lock_sha256": "7929d5c53793563492ff0f5b39278904ecfa5508b10071d5b6d4b0b268fe653c",
+      "ui_stack": {
+        "render_owner": "jquery_plugin",
+        "plugin": "$.fn.kai9000Cockpit",
+        "jquery": "4.0.0",
+        "jquery_ui": "1.14.2",
+        "bootstrap": "5.3.8",
+        "bootstrap_mode": "verified_build_time_vendor_offline_runtime",
+        "avatar_mode": "embedded_local_webp_from_operator_supplied_reference",
+        "legacy_vue_render_owner": false,
+        "runtime_cdn_dependencies": false
+      }
     },
     "godot_ai_forge": {
       "repository": "eggie-admin/amplify-godot-engine-template",
@@ -116,6 +127,8 @@
     "requires": [
       "ci_guards_green",
       "python_tests_green",
+      "jquery_cockpit_build_green",
+      "avatar_asset_bundled_offline",
       "android_apk_build_green",
       "installable_apk_evidence",
       "package_identity_evidence",
