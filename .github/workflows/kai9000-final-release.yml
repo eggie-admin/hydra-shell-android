@@ -18,7 +18,7 @@ concurrency:
 
 env:
   DONOR_REPO: eggie-admin/vue-headless-cms
-  DONOR_REF: 903de4857f7554067a9cbfd2912202632f62c459
+  DONOR_REF: 574f4f5ae70ce56eca986cd5fb3452aa434ab955
   PACKAGE_ID: art.eggiebagelface.kai9000
   VERSION_NAME: 1.0.0
   VERSION_CODE: '100'
@@ -38,13 +38,13 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           persist-credentials: false
-      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.14'
-      - name: Verify 10-pass release doctrine and repository guards
+      - name: Verify release doctrine and guards
         shell: bash
         run: |
           set -euo pipefail
@@ -63,6 +63,9 @@ jobs:
           assert final['signing']['final_certificate_sha256']==os.environ['RELEASE_CERT_SHA256']
           assert final['signing']['private_key_in_git'] is False
           assert final['signing']['private_key_in_drive'] is False
+          assert final['gui']['global_jquery_published_before_ui'] is True
+          assert final['gui']['visible_boot_error_fallback'] is True
+          assert final['gui']['webview_layout']=='fullscreen'
           passes={p['pass']:p['status'] for p in audit['passes']}
           assert all(passes[n]=='GREEN' for n in range(1,10))
           assert passes[10]=='YELLOW'
@@ -81,17 +84,17 @@ jobs:
     timeout-minutes: 45
     steps:
       - name: Checkout LuHm OS
-        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           persist-credentials: false
-      - name: Checkout pinned hardened donor
-        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - name: Checkout pinned promoted donor
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           repository: ${{ env.DONOR_REPO }}
           ref: ${{ env.DONOR_REF }}
           path: _forge/kai9000
           persist-credentials: false
-      - name: Verify release package and hard boundaries
+      - name: Verify release package and runtime hotfix boundaries
         shell: bash
         run: |
           set -euo pipefail
@@ -107,26 +110,35 @@ jobs:
           grep -q 'package/name="KAI 9000"' "$ROOT/godot/export_presets.cfg"
           grep -q 'APP_VERSION = "1.0.0"' "$ROOT/server/app/main.py"
           grep -q 'FastAPI(title="KAI 9000 Control"' "$ROOT/server/app/main.py"
-          grep -q 'kai9000Cockpit' "$ROOT/apps/forge-ui/src/main.ts"
+          grep -Fq 'kai9000Cockpit' "$ROOT/apps/forge-ui/src/main.ts"
+          grep -Fq '/src/bootstrap.ts' "$ROOT/apps/forge-ui/index.html"
+          grep -Fq ';(window as any).jQuery = $' "$ROOT/apps/forge-ui/src/bootstrap.ts"
+          grep -Fq ';(window as any).$ = $' "$ROOT/apps/forge-ui/src/bootstrap.ts"
+          grep -Fq "void import('./main').catch" "$ROOT/apps/forge-ui/src/bootstrap.ts"
+          grep -Fq 'KAI 9000 BOOT ERROR' "$ROOT/apps/forge-ui/src/bootstrap.ts"
+          PLUGIN="$ROOT/godot/android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralAndroidPlugin.kt"
+          grep -Fq 'ViewGroup.LayoutParams.MATCH_PARENT' "$PLUGIN"
+          grep -Fq 'cms.page.finished' "$PLUGIN"
+          if grep -Fq '0.68f' "$PLUGIN"; then echo 'legacy split WebView found'; exit 1; fi
           grep -q 'android:exported="false"' "$ROOT/godot/android-plugin/plugin/src/main/AndroidManifest.xml"
           grep -q 'cleartextTrafficPermitted="false"' "$ROOT/godot/android-plugin/plugin/src/main/res/xml/cathedral_network_security.xml"
           grep -q '>127.0.0.1<' "$ROOT/godot/android-plugin/plugin/src/main/res/xml/cathedral_network_security.xml"
-          grep -q 'allowFileAccess = false' "$ROOT/godot/android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralAndroidPlugin.kt"
-          grep -q 'allowContentAccess = false' "$ROOT/godot/android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralAndroidPlugin.kt"
-          grep -q 'arrayOf(command)' "$ROOT/godot/android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralWidgetProvider.kt"
-          if grep -q 'Runtime.getRuntime().exec' "$ROOT/godot/android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralWidgetProvider.kt"; then exit 1; fi
-          echo 'KAI9000_HARD_BOUNDARIES_GREEN'
-      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+          grep -Fq 'allowFileAccess = false' "$PLUGIN"
+          grep -Fq 'allowContentAccess = false' "$PLUGIN"
+          grep -Fq 'arrayOf(command)' "$ROOT/godot/android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralWidgetProvider.kt"
+          if grep -Fq 'Runtime.getRuntime().exec' "$ROOT/godot/android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralWidgetProvider.kt"; then exit 1; fi
+          echo 'KAI9000_RUNTIME_HOTFIX_BOUNDARIES_GREEN'
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961
         with:
           distribution: temurin
           java-version: '17'
-      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.14'
-      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: '24.18.0'
-      - uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+      - uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c
         with:
           gradle-version: '8.13'
           cache-cleanup: on-success
@@ -186,7 +198,8 @@ jobs:
           npm ci --ignore-scripts --no-audit --no-fund
           npm run build --workspace=video-forge-ui
           test -f forge-ui/dist/index.html
-          grep -R -q 'KAI 9000' forge-ui/dist
+          grep -R -Fq 'KAI 9000' forge-ui/dist
+          grep -R -Fq 'KAI 9000 BOOT ERROR' forge-ui/dist
       - name: Build plugin and execute hard architecture gates
         working-directory: _forge/kai9000
         shell: bash
@@ -230,7 +243,7 @@ jobs:
           "$GODOT_BIN" --headless --editor --path godot --quit
           "$GODOT_BIN" --headless --path godot --install-android-build-template --export-debug 'Android Release' "$GITHUB_WORKSPACE/build/android/$APK_NAME"
           test -s "$GITHUB_WORKSPACE/build/android/$APK_NAME"
-      - name: Verify APK identity signature ABI CMS and 16 KiB alignment
+      - name: Verify APK identity signature ABI CMS and alignment
         shell: bash
         run: |
           set -euo pipefail
@@ -251,7 +264,7 @@ jobs:
           grep -q 'com.termux.permission.RUN_COMMAND' build/android/manifest.txt
           echo 'KAI9000_HARDENED_APK_GREEN'
       - name: Upload hardened candidate
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
         with:
           name: kai9000-witching-hour-candidate-${{ github.run_number }}
           path: |
@@ -271,19 +284,19 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           persist-credentials: false
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           repository: ${{ env.DONOR_REPO }}
           ref: ${{ env.DONOR_REF }}
           path: _forge/kai9000
           persist-credentials: false
-      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.14'
-      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
         with:
           name: kai9000-witching-hour-candidate-${{ github.run_number }}
           path: build/apk
@@ -297,7 +310,7 @@ jobs:
           test -s "build/fdroid/repo/${PACKAGE_ID}_${VERSION_CODE}.apk"
           test -s "build/fdroid/metadata/${PACKAGE_ID}.yml"
           echo 'KAI9000_HARDENED_FDROID_GREEN'
-      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
         with:
           name: kai9000-witching-hour-fdroid-${{ github.run_number }}
           path: build/fdroid/**
@@ -309,13 +322,13 @@ jobs:
     needs: [doctrine, apk, fdroid]
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           persist-credentials: false
-      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.14'
-      - name: Validate recorded AI review chain cannot override CI
+      - name: Validate AI review record cannot override CI
         run: |
           python - <<'PY'
           import json
