@@ -1,0 +1,81 @@
+{
+  "schema": "kai9000.ultima.seal.v1",
+  "milestone": "KAI9000_WITCHING_HOUR_ULTIMA_WEBVIEW_HOTFIX_GREEN_20260908",
+  "status": {
+    "machine_ultima": "GREEN",
+    "technical_release": "GREEN",
+    "governance": "YELLOW",
+    "physical_device_ui_retest": "PENDING_USER_DEVICE_RETEST"
+  },
+  "canonical_source": {
+    "repository": "eggie-admin/hydra-shell-android",
+    "branch": "main",
+    "ultima_source_sha": "8a1793d2980b0671c739e389a8655381c4bbd790",
+    "workflow": ".github/workflows/kai9000-final-release.yml",
+    "workflow_run_id": 34183284372,
+    "workflow_run_number": 7
+  },
+  "donor_source": {
+    "repository": "eggie-admin/vue-headless-cms",
+    "release_branch": "release/kai9000-1.0.0",
+    "promoted_merge_sha": "574f4f5ae70ce56eca986cd5fb3452aa434ab955",
+    "hotfix_head_sha": "c9ce638454fbd62b1793a84a4039a933e0f10975",
+    "validation_pr": 16,
+    "validated_forge_run": 34182583449,
+    "validated_android_run": 34182583489
+  },
+  "hotfix_contract": {
+    "jquery_global_before_ui": true,
+    "dynamic_cockpit_boot": true,
+    "visible_boot_error_fallback": true,
+    "fullscreen_webview": true,
+    "page_finished_diagnostic": true,
+    "legacy_68_percent_layout_rejected_by_ci": true
+  },
+  "gates": {
+    "doctrine": "GREEN",
+    "apk_forge": "GREEN",
+    "fdroid_stage": "GREEN",
+    "ai_record": "GREEN",
+    "final_ultima": "GREEN",
+    "apk_identity": "GREEN",
+    "apk_v2_signature": "GREEN",
+    "arm64_abi": "GREEN",
+    "cms_bundled_offline": "GREEN",
+    "alignment_16k": "GREEN"
+  },
+  "apk": {
+    "artifact_name": "kai9000-witching-hour-candidate-7",
+    "artifact_id": 10039685316,
+    "artifact_zip_sha256": "ccf03572c4d5d5b5c48762f96a168eeb7996f671cc5d3fdf5517dd45a5b614eb",
+    "file_name": "kai9000-1.0.0-staging.apk",
+    "apk_sha256": "cc273cb0f85b25aaae66065e2bf07f4f7dbdf2aa430531850f15a9ce23994d23",
+    "package_id": "art.eggiebagelface.kai9000",
+    "version_name": "1.0.0",
+    "version_code": 100,
+    "min_sdk": 29,
+    "target_sdk": 36,
+    "label": "KAI 9000",
+    "staging_signer_dn": "CN=KAI 9000 Staging, O=LuHm OS, C=US",
+    "staging_signer_certificate_sha256": "c54d78b60c815ecff898cf08b8f10ea665e0c669ade8838439598d61f9b8f439",
+    "apk_signature_scheme_v2": true
+  },
+  "fdroid": {
+    "artifact_name": "kai9000-witching-hour-fdroid-7",
+    "artifact_id": 10039694607,
+    "artifact_zip_sha256": "9b63508d0cc6aad36931be7c704cedcd34139f43a60949c98b6d72e35bc83142"
+  },
+  "release_signing": {
+    "ci_artifact_role": "staging_only",
+    "persistent_release_certificate_sha256": "2a318812c5507548b31aa6430cd7ab29ca9e8b0afc4f1218e939242218d9bffe",
+    "persistent_release_private_key_in_git": false,
+    "persistent_release_private_key_in_drive": false
+  },
+  "governance_exceptions": [
+    "hydra-shell-android repository observed public",
+    "main branch observed unprotected",
+    "legacy Vercel status remains non-authoritative",
+    "post-hotfix physical device UI retest remains pending"
+  ],
+  "promotion_policy": "machine ULTIMA is sealed GREEN; field UI validation must be GREEN before treating the hotfix as physically validated on the Samsung device"
+}
