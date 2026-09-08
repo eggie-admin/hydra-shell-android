@@ -1,0 +1,64 @@
+{
+  "schema": "kai9000.playtest-install-seal.v1",
+  "milestone": "KAI9000_PLAYTEST_INSTALL_LANE_GREEN_20260908",
+  "status": "SAVEPOINT_SEALED",
+  "sealed_at": "2026-09-08T00:11:00-04:00",
+  "canonical": {
+    "repository": "eggie-admin/hydra-shell-android",
+    "branch": "main",
+    "source_sha": "95bfa40eaa55d959ee838351886d9da6bec573a0",
+    "main_modified_by_playtest": false,
+    "savepoint_branch": "savepoint/KAI9000_PLAYTEST_INSTALL_LANE_GREEN_20260908"
+  },
+  "playtest": {
+    "repository": "eggie-admin/vue-headless-cms",
+    "branch": "playtest/kai9000-webview-hotfix-install-20260908",
+    "source_sha": "e323a8e8d393c0bd73257e52e9435038efe99e12",
+    "savepoint_branch": "savepoint/kai9000-playtest-webview-hotfix-green-20260908",
+    "pull_request": 17,
+    "pull_request_merged": false,
+    "package_id": "art.eggiebagelface.kai9000.playtest",
+    "version_name": "1.0.1-playtest",
+    "version_code": 101,
+    "label": "KAI 9000 Playtest"
+  },
+  "field_fix": {
+    "reason": "avoid Android update rejection caused by historical signer mismatch on the installed canonical package",
+    "strategy": "side_by_side_package_identity",
+    "webview_hotfix_preserved": true,
+    "global_jquery_bootstrap": true,
+    "fullscreen_webview": true,
+    "visible_boot_error_fallback": true
+  },
+  "ci": {
+    "android_run_id": 34185393478,
+    "android_result": "GREEN",
+    "artifact_id": 10040393800,
+    "artifact_digest": "sha256:b851af54f9e6a552e66659bfdda98cefbceaf9dc1680d1bfeacdf7ea1bb32cce",
+    "apk_identity_verified": true,
+    "cms_assets_verified": true,
+    "arm64_verified": true,
+    "alignment_16k_verified": true,
+    "fdroid_stage_verified": true
+  },
+  "apk": {
+    "file_name": "KAI9000-PLAYTEST-WEBVIEW-HOTFIX-1.0.1.apk",
+    "sha256": "664dfe5fa35cb884e6bb02489c6b9aaa412b3d32d95bdedb69eda155930a344a",
+    "signing_role": "ephemeral_playtest_only"
+  },
+  "drive": {
+    "file_id": "1iRyH0l92bNB7YCZOMctC-5fL636ZDwQ0",
+    "url": "https://drive.google.com/file/d/1iRyH0l92bNB7YCZOMctC-5fL636ZDwQ0/view?usp=drivesdk"
+  },
+  "security": {
+    "persistent_release_private_key_in_git": false,
+    "persistent_release_private_key_in_drive": false,
+    "canonical_release_signer_changed": false
+  },
+  "validation": {
+    "machine_build": "GREEN",
+    "physical_install": "PENDING_USER_DEVICE_TEST",
+    "physical_ui": "PENDING_USER_DEVICE_TEST",
+    "promotion_to_canonical": false
+  }
+}
