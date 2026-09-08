@@ -1,0 +1,54 @@
+{
+  "schema": "kai9000.final-release.v1",
+  "milestone": "KAI9000_FINAL_MILESTONE_GREEN_20260908",
+  "release": {
+    "name": "KAI 9000",
+    "package_id": "art.eggiebagelface.kai9000",
+    "version_name": "1.0.0",
+    "version_code": 100,
+    "channel": "final"
+  },
+  "source": {
+    "repository": "eggie-admin/hydra-shell-android",
+    "branch": "main",
+    "donor_repository": "eggie-admin/vue-headless-cms",
+    "donor_ref": "6d1b65f51d8c28193d056b4f96f869508e9888f1"
+  },
+  "gui": {
+    "render_owner": "jquery_plugin",
+    "plugin": "$.fn.kai9000Cockpit",
+    "jquery": "4.0.0",
+    "jquery_ui": "1.14.2",
+    "bootstrap": "5.3.8",
+    "avatar": "Lum bundled offline",
+    "runtime_cdn_dependencies": false
+  },
+  "android": {
+    "min_sdk": 29,
+    "target_sdk": 36,
+    "abi": "arm64-v8a",
+    "loopback_first": true,
+    "control_receiver_exported": false
+  },
+  "signing": {
+    "ci_role": "staging_signature_only",
+    "final_role": "persistent_operator_release_signature",
+    "private_key_in_git": false,
+    "private_key_in_drive": false,
+    "final_certificate_sha256": null
+  },
+  "promotion": {
+    "automatic": false,
+    "requires": [
+      "release_source_truth_green",
+      "jquery_cockpit_green",
+      "python_control_plane_green",
+      "android_plugin_green",
+      "apk_identity_green",
+      "apk_v2_or_later_signature_green",
+      "fdroid_stage_green",
+      "persistent_release_signature_green",
+      "final_apk_sha256_recorded"
+    ]
+  }
+}
