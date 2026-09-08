@@ -3,7 +3,7 @@ name: KAI 9000 ULTIMA APK
 on:
   workflow_dispatch:
   push:
-    branches: [testing/luhm-os-android]
+    branches: [main]
     paths:
       - 'backend/**'
       - 'tools/**'
@@ -16,7 +16,7 @@ on:
       - 'release/**'
       - '.github/workflows/kai9000-ultima-apk.yml'
   pull_request:
-    branches: [testing/luhm-os-android]
+    branches: [main]
     paths:
       - 'backend/**'
       - 'tools/**'
@@ -38,7 +38,7 @@ concurrency:
 
 env:
   DONOR_REPO: eggie-admin/vue-headless-cms
-  DONOR_REF: 9344d12dd0f21ce5547dda531da8d6ff50db3cef
+  DONOR_REF: 7c06bb76d4890c64202b438dd7fab2122db8d4ec
   PACKAGE_ID: art.eggiebagelface.kai9000.dev
   VERSION_NAME: 0.7.0-dev
   VERSION_CODE: '7'
@@ -80,17 +80,16 @@ jobs:
           set -euo pipefail
           MANIFEST='project/hydra/samsung/android/apk/testing-ingest.manifest.json'
           python -m json.tool "$MANIFEST" >/dev/null
-          grep -q '"schema": "kai9000.android-testing-ingest.v4"' "$MANIFEST"
+          grep -q '"schema": "kai9000.android-testing-ingest.v5"' "$MANIFEST"
+          grep -q '"branch": "main"' "$MANIFEST"
           grep -q '"android_package_id": "art.eggiebagelface.kai9000.dev"' "$MANIFEST"
-          grep -q '"commit": "9344d12dd0f21ce5547dda531da8d6ff50db3cef"' "$MANIFEST"
+          grep -q '"commit": "7c06bb76d4890c64202b438dd7fab2122db8d4ec"' "$MANIFEST"
+          grep -Fq '"plugin": "$.fn.kai9000Cockpit"' "$MANIFEST"
           if git ls-files | grep -E '(^|/)(\.secrets|private)/|\.(jks|keystore|p12|pfx|pkcs12|key|pem)$|(^|/)(google-services|service-account|credentials[^/]*)\.json$'; then
             echo 'Tracked secret/signing material detected' >&2
             exit 1
           fi
-          if git grep -nE -- '-----BEGIN ([A-Z0-9 ]+ )?PRIVATE KEY-----|github_pat_[A-Za-z0-9_]{20,}|ghp_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9_-]{20,}|hf_[A-Za-z0-9]{20,}|AIza[0-9A-Za-z_-]{30,}' -- ':!*.md' ':!*.example' ':!*.template' ':!backend/tests/test_remote_ai_router.py'; then
-            echo 'Secret-like credential material detected' >&2
-            exit 1
-          fi
+          python tools/kai9000_ci_guard.py
           echo 'KAI_DOCTRINE_GREEN'
 
   apk:
@@ -109,7 +108,7 @@ jobs:
           ref: ${{ env.DONOR_REF }}
           path: _forge/kai9000
           persist-credentials: false
-      - name: Verify KAI package boundary
+      - name: Verify KAI package and cockpit boundary
         shell: bash
         run: |
           set -euo pipefail
@@ -128,6 +127,14 @@ jobs:
           grep -q 'android:exported="false"' "$ROOT/godot/android-plugin/plugin/src/main/AndroidManifest.xml"
           grep -q 'cleartextTrafficPermitted="false"' "$ROOT/godot/android-plugin/plugin/src/main/res/xml/cathedral_network_security.xml"
           grep -q '>127.0.0.1<' "$ROOT/godot/android-plugin/plugin/src/main/res/xml/cathedral_network_security.xml"
+          grep -Fq 'kai9000Cockpit' "$ROOT/apps/forge-ui/src/main.ts"
+          grep -Fq 'bootstrap/dist/css/bootstrap.min.css' "$ROOT/apps/forge-ui/src/main.ts"
+          grep -Fq 'jquery-ui/ui/widgets/tabs' "$ROOT/apps/forge-ui/src/main.ts"
+          grep -Fq 'data:image/webp;base64,' "$ROOT/apps/forge-ui/src/styles.css"
+          if grep -RInE 'https://(cdn|fonts)\.|fonts\.googleapis\.com' "$ROOT/apps/forge-ui/src" "$ROOT/apps/forge-ui/index.html"; then
+            echo 'Runtime CDN dependency detected in cockpit' >&2
+            exit 1
+          fi
           echo 'KAI_ANDROID_BOUNDARY_GREEN'
       - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
@@ -190,7 +197,7 @@ jobs:
           PY
           rm -f "$TEMPLATE_DIR/android_source.zip"
           (cd "$PATCH" && zip -q -r "$TEMPLATE_DIR/android_source.zip" .)
-      - name: Build bundled Vue cockpit
+      - name: Build bundled jQuery avatar cockpit
         working-directory: _forge/kai9000/apps
         run: |
           set -euo pipefail
