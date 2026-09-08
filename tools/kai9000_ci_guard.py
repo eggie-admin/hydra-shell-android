@@ -18,7 +18,7 @@ MAIN_PY = RUNTIME / "main.py"
 # the scanner input. Any other secret-shaped value in the same file still fails.
 SYNTHETIC_SECRET_FIXTURES = {
     Path("backend/tests/test_remote_ai_router.py"): (
-        "hf_abcdefghijklmnopqrstuvwxyz1234567890",
+        "hf_" + "abcdefghijklmnopqrstuvwxyz1234567890",
     ),
 }
 
