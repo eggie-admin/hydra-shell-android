@@ -35,10 +35,12 @@
     "final_role": "persistent_operator_release_signature",
     "private_key_in_git": false,
     "private_key_in_drive": false,
-    "final_certificate_sha256": null
+    "final_certificate_sha256": "2a318812c5507548b31aa6430cd7ab29ca9e8b0afc4f1218e939242218d9bffe",
+    "identity_status": "sealed"
   },
   "promotion": {
     "automatic": false,
+    "status": "release_signing_identity_sealed",
     "requires": [
       "release_source_truth_green",
       "jquery_cockpit_green",
