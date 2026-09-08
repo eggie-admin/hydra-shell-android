@@ -111,7 +111,8 @@
       "credentials_visible_to_model": false
     },
     "hugging_face": {
-      "role": "open_model_forge_catalog_and_alternate_remote_inference_lane",
+      "role": "forge_and_model_catalog",
+      "remote_inference_role": "alternate_remote_inference_lane",
       "magic_color": null,
       "api_base": "https://router.huggingface.co/v1",
       "responses_endpoint": "https://router.huggingface.co/v1/responses",
@@ -124,7 +125,8 @@
       "secret_store": false,
       "auto_download": false,
       "auto_execute_remote_code": false,
-      "revision_pin_required_for_downloads": true,
+      "revision_pin_required": true,
+      "doctrine": "lumh-os/kai9000/huggingface.doctrine.json",
       "credentials_visible_to_model": false
     },
     "cloudflare": {
