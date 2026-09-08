@@ -1,0 +1,217 @@
+name: Oni ULTIMA - S24 FE Persistent Seal v9
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - testing/luhm-os-android
+    paths:
+      - '.github/workflows/oni-ultima-s24fe-persistent-v9.yml'
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: oni-ultima-s24fe-v9-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_RUN_ID: '34202353234'
+  SOURCE_SHA: 2d4325176410ca41a16c545327a38844c62b1688
+  SOURCE_ARTIFACT: kai9000-s24fe-v8b-1
+  SOURCE_ARTIFACT_DIGEST: sha256:ab9153ccbc0fccbb2d3617bb8a9acaf520c89cc10e2369e9c1ecff81e563211e
+  DONOR_REPO: eggie-admin/vue-headless-cms
+  DONOR_REF: 0a1bba0118ad50631e6c25ead1a76af60c99c7cc
+  PACKAGE_ID: art.eggiebagelface.videoforge.dev
+  VERSION_CODE: '8'
+  VERSION_NAME: 0.6.2-dev
+
+jobs:
+  ultima-seal:
+    name: ULTIMA persistent APK seal
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout LuHm OS altar
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+
+      - name: Checkout pinned S24 FE persistence donor
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: ${{ env.DONOR_REPO }}
+          ref: ${{ env.DONOR_REF }}
+          path: _forge/vue-headless-cms
+          persist-credentials: false
+
+      - name: Set up Python 3.14
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.14'
+
+      - name: Verify latest ordinary-app portrait doctrine
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path('_forge/vue-headless-cms')
+          version = json.loads((root / 'release/version.json').read_text(encoding='utf-8'))
+          assert version['packageId'] == 'art.eggiebagelface.videoforge.dev'
+          assert version['version'] == '0.6.2-dev'
+          assert version['versionCode'] == 8
+
+          preset = (root / 'godot/export_presets.cfg').read_text(encoding='utf-8')
+          project = (root / 'godot/project.godot').read_text(encoding='utf-8')
+          for needle in (
+              'package/show_in_app_library=true',
+              'package/show_as_launcher_app=false',
+              'package/exclude_from_recents=false',
+              'screen/immersive_mode=false',
+          ):
+              assert needle in preset, needle
+          for needle in (
+              'size/viewport_width=1080',
+              'size/viewport_height=1920',
+              'handheld/orientation=1',
+              'stretch/mode="canvas_items"',
+              'stretch/aspect="expand"',
+          ):
+              assert needle in project, needle
+          print('ULTIMA_SOURCE_DOCTRINE_GREEN')
+          PY
+
+          MANIFEST='_forge/vue-headless-cms/godot/android-plugin/plugin/src/main/AndroidManifest.xml'
+          NET='_forge/vue-headless-cms/godot/android-plugin/plugin/src/main/res/xml/cathedral_network_security.xml'
+          PLUGIN='_forge/vue-headless-cms/godot/android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralAndroidPlugin.kt'
+          test -s "$MANIFEST"
+          grep -q 'android:exported="false"' "$MANIFEST"
+          grep -q 'cleartextTrafficPermitted="false"' "$NET"
+          grep -q '>127.0.0.1<' "$NET"
+          grep -q 'allowFileAccess = false' "$PLUGIN"
+          grep -q 'allowContentAccess = false' "$PLUGIN"
+          grep -q 'setAcceptThirdPartyCookies(view, false)' "$PLUGIN"
+          echo 'ULTIMA_ANDROID_BOUNDARIES_GREEN'
+
+      - name: Download exact green v8b APK artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: ${{ env.SOURCE_ARTIFACT }}
+          path: build/source
+          run-id: ${{ env.SOURCE_RUN_ID }}
+          github-token: ${{ github.token }}
+
+      - name: Hard verify persisted APK evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="$(find build/source -type f -name '*.apk' -print -quit)"
+          BADGING="$(find build/source -type f -name 'badging.txt' -print -quit)"
+          MANIFEST="$(find build/source -type f -name 'manifest.txt' -print -quit)"
+          SIGNATURE="$(find build/source -type f -name 'signature.txt' -print -quit)"
+          SHA_FILE="$(find build/source -type f -name 'sha256.txt' -print -quit)"
+          PHONE_PROBE="$(find build/source -type f -name 'kai9000-phone-verify.sh' -print -quit)"
+
+          for f in "$APK" "$BADGING" "$MANIFEST" "$SIGNATURE" "$SHA_FILE" "$PHONE_PROBE"; do
+            test -n "$f"
+            test -s "$f"
+          done
+
+          grep -q "package: name='${PACKAGE_ID}' versionCode='${VERSION_CODE}' versionName='${VERSION_NAME}'" "$BADGING"
+          grep -q 'android.intent.action.MAIN' "$MANIFEST"
+          grep -q 'android.intent.category.LAUNCHER' "$MANIFEST"
+          if grep -q 'android.intent.category.HOME' "$MANIFEST"; then
+            echo 'ERROR: sealed APK advertises itself as Android HOME launcher' >&2
+            exit 1
+          fi
+          grep -q 'android.hardware.screen.portrait' "$BADGING"
+
+          EXPECTED_SHA="$(awk 'NR==1 {print $1}' "$SHA_FILE")"
+          ACTUAL_SHA="$(sha256sum "$APK" | awk '{print $1}')"
+          test -n "$EXPECTED_SHA"
+          test "$ACTUAL_SHA" = "$EXPECTED_SHA"
+          printf '%s  %s\n' "$ACTUAL_SHA" "$APK" > build/source/ultima-apk.sha256
+          echo 'ULTIMA_APK_EVIDENCE_GREEN'
+
+      - name: Stage F-Droid input from sealed APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="$(find build/source -type f -name '*.apk' -print -quit)"
+          python _forge/vue-headless-cms/scripts/stage_fdroid_repo.py \
+            --apk "$APK" \
+            --output "$GITHUB_WORKSPACE/build/fdroid-stage" \
+            --package "$PACKAGE_ID" \
+            --version-code "$VERSION_CODE"
+
+          test -s "build/fdroid-stage/repo/${PACKAGE_ID}_${VERSION_CODE}.apk"
+          test -s "build/fdroid-stage/metadata/${PACKAGE_ID}.yml"
+          test -s build/fdroid-stage/SHA256SUMS
+          echo 'ULTIMA_FDROID_STAGE_GREEN'
+
+      - name: Write ULTIMA v9 seal
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="$(find build/source -type f -name '*.apk' -print -quit)"
+          APK_SHA="$(sha256sum "$APK" | awk '{print $1}')"
+          SOURCE_RUN_ID="$SOURCE_RUN_ID" \
+          SOURCE_SHA="$SOURCE_SHA" \
+          SOURCE_ARTIFACT="$SOURCE_ARTIFACT" \
+          SOURCE_ARTIFACT_DIGEST="$SOURCE_ARTIFACT_DIGEST" \
+          DONOR_REF="$DONOR_REF" \
+          PACKAGE_ID="$PACKAGE_ID" \
+          VERSION_CODE="$VERSION_CODE" \
+          VERSION_NAME="$VERSION_NAME" \
+          APK_SHA="$APK_SHA" \
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+
+          seal = {
+              'schema': 'kai9000.ultima.s24fe-persistent.v9',
+              'state': 'ULTIMA_PERSISTENT_GREEN',
+              'source_workflow_run': int(os.environ['SOURCE_RUN_ID']),
+              'source_commit': os.environ['SOURCE_SHA'],
+              'source_artifact': os.environ['SOURCE_ARTIFACT'],
+              'source_artifact_digest': os.environ['SOURCE_ARTIFACT_DIGEST'],
+              'persistence_donor_commit': os.environ['DONOR_REF'],
+              'package_id': os.environ['PACKAGE_ID'],
+              'version': os.environ['VERSION_NAME'],
+              'version_code': int(os.environ['VERSION_CODE']),
+              'apk_sha256': os.environ['APK_SHA'],
+              'android_contract': {
+                  'ordinary_app': True,
+                  'home_launcher': False,
+                  'portrait_first': True,
+                  'dynamic_stretch_expand': True,
+                  'secure_folder_role': 'cockpit_client',
+              },
+              'fdroid': {
+                  'staged': True,
+                  'signed_repo': False,
+                  'published': False,
+              },
+          }
+          Path('build/ULTIMA_S24FE_PERSISTENT_V9.json').write_text(
+              json.dumps(seal, indent=2) + '\n', encoding='utf-8'
+          )
+          print(json.dumps(seal, indent=2))
+          PY
+          echo 'ULTIMA_PERSISTENT_GREEN'
+
+      - name: Upload ULTIMA v9 sealed bundle
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: kai9000-s24fe-ultima-v9-${{ github.run_number }}
+          path: |
+            build/source/**
+            build/fdroid-stage/**
+            build/ULTIMA_S24FE_PERSISTENT_V9.json
+          if-no-files-found: error
+          retention-days: 14
