@@ -17,12 +17,12 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  SOURCE_RUN_ID: '34202353234'
-  SOURCE_SHA: 2d4325176410ca41a16c545327a38844c62b1688
-  SOURCE_ARTIFACT: kai9000-s24fe-v8b-1
-  SOURCE_ARTIFACT_DIGEST: sha256:ab9153ccbc0fccbb2d3617bb8a9acaf520c89cc10e2369e9c1ecff81e563211e
+  SOURCE_RUN_ID: '34205427056'
+  SOURCE_SHA: 8ae15cf5a0ceaf572e51a262758112584a3e2094
+  SOURCE_ARTIFACT: kai9000-s24fe-v8b-2
+  SOURCE_ARTIFACT_DIGEST: sha256:b3be7f20699c657572ac33896a3476623fff2e3366ff25d0115a4ebcdb3b38e2
   DONOR_REPO: eggie-admin/vue-headless-cms
-  DONOR_REF: 0a1bba0118ad50631e6c25ead1a76af60c99c7cc
+  DONOR_REF: 18f03c5cc7e818174b03ae432f6a7af419e4dd79
   PACKAGE_ID: art.eggiebagelface.videoforge.dev
   VERSION_CODE: '8'
   VERSION_NAME: 0.6.2-dev
@@ -68,6 +68,9 @@ jobs:
 
           preset = (root / 'godot/export_presets.cfg').read_text(encoding='utf-8')
           project = (root / 'godot/project.godot').read_text(encoding='utf-8')
+          manifest = (root / 'godot/android-plugin/plugin/src/main/AndroidManifest.xml').read_text(encoding='utf-8')
+          widget = (root / 'godot/android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralWidgetProvider.kt').read_text(encoding='utf-8')
+          action_receiver = (root / 'godot/android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralWidgetActionReceiver.kt').read_text(encoding='utf-8')
           for needle in (
               'package/show_in_app_library=true',
               'package/show_as_launcher_app=false',
@@ -83,6 +86,11 @@ jobs:
               'stretch/aspect="expand"',
           ):
               assert needle in project, needle
+          assert 'CathedralWidgetActionReceiver' in manifest
+          assert 'android:exported="false"' in manifest
+          assert 'Intent(context, CathedralWidgetActionReceiver::class.java)' in widget
+          assert 'this !is CathedralWidgetActionReceiver' in widget
+          assert 'class CathedralWidgetActionReceiver : CathedralWidgetProvider()' in action_receiver
           print('ULTIMA_SOURCE_DOCTRINE_GREEN')
           PY
 
@@ -130,6 +138,7 @@ jobs:
             exit 1
           fi
           grep -q 'android.hardware.screen.portrait' "$BADGING"
+          grep -q 'CathedralWidgetActionReceiver' "$MANIFEST"
 
           EXPECTED_SHA="$(awk 'NR==1 {print $1}' "$SHA_FILE")"
           ACTUAL_SHA="$(sha256sum "$APK" | awk '{print $1}')"
@@ -190,6 +199,7 @@ jobs:
                   'home_launcher': False,
                   'portrait_first': True,
                   'dynamic_stretch_expand': True,
+                  'widget_control_receiver_exported': False,
                   'secure_folder_role': 'cockpit_client',
               },
               'fdroid': {
