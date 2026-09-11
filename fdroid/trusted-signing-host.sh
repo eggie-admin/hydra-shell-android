@@ -110,6 +110,8 @@ REPO_FP="$(keytool -list -v -keystore "$FDROID_KEYSTORE" \
 rm -rf "$OUT"
 mkdir -p "$OUT"
 cp -a "$WORK/repo" "$OUT/repo"
+printf '%s\n' "$REPO_FP" > "$OUT/repo/repo-fingerprint-sha256.txt"
+printf '%s\n' "$EXPECTED_APK_FP" > "$OUT/repo/apk-signer-sha256.txt"
 
 OUT_DIR="$OUT" REPO_FP="$REPO_FP" APK_FP="$EXPECTED_APK_FP" APK_COUNT="${#APKS[@]}" python3 - <<'PY'
 import json, os
@@ -123,6 +125,7 @@ status = {
     'repo_fingerprint_sha256': os.environ['REPO_FP'],
     'apk_signer_sha256': os.environ['APK_FP'],
     'all_apks_persistent_identity_verified': True,
+    'persistent_repo_identity_verified': True,
     'signed_repo': True,
     'published': False,
     'import_verified': False,
