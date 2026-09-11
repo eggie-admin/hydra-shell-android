@@ -9,6 +9,16 @@
     "CAST ULTIMA",
     "SAVEPOINT"
   ]);
+  const SOUND_EVENTS = {
+    "PET LUM": "pet",
+    "ROLL D20": "ui",
+    "GACHA PULL": "gacha",
+    "DATE EVENT": "date",
+    "SUMMON IMAGE": "summon",
+    "CAST ULTIMA": "ultima",
+    "SAVEPOINT": "ui"
+  };
+  const VOICE_TUNE_PROMPT = "LUM VOICE MODE: Keep spoken replies natural and compact, usually 1-3 sentences. Use quick conversational cadence, warm playful sassy PG-13 goth-alt oni/JRPG quest-giver energy, and call me Professor occasionally rather than every sentence. Technical accuracy outranks roleplay. Use contractions and speech-friendly phrasing. Avoid markdown-heavy formatting unless I ask for structure. Do not imitate a specific actor or copyrighted character voice, and do not narrate SFX tags aloud; the private Firefox companion handles sound cues separately.";
 
   function findComposer() {
     const selectors = [
@@ -51,17 +61,34 @@
     return true;
   }
 
-  function insertCommand(command) {
-    if (!COMMANDS.has(command)) return {ok:false, error:"command_not_sealed"};
+  function insertText(text) {
     const composer = findComposer();
     if (!composer) return {ok:false, error:"composer_not_found"};
-    placeText(composer, command);
+    placeText(composer, text);
     return {ok:true};
+  }
+
+  function insertCommand(command) {
+    if (!COMMANDS.has(command)) return {ok:false, error:"command_not_sealed"};
+    return insertText(command);
   }
 
   async function runtime(message) {
     try { return await api.runtime.sendMessage(message); }
     catch (error) { return {ok:false, error:String(error)}; }
+  }
+
+  async function playEventAudio(eventName) {
+    const result = await runtime({type:"LUHM_AUDIO_PICK", event:eventName});
+    if (!result?.ok || !result.data_url) return result;
+    try {
+      const audio = new Audio(result.data_url);
+      audio.volume = 0.72;
+      await audio.play();
+      return {ok:true, path:result.path};
+    } catch (error) {
+      return {ok:false, error:`playback:${String(error)}`};
+    }
   }
 
   api.runtime.onMessage.addListener((msg) => {
@@ -103,7 +130,9 @@
         <button type="button" data-private-gacha="after-dark">AFTER DARK PULL</button>
       </div>
       <div class="luhm-tools">
-        <button type="button" data-tool="scan">SCAN PRIVATE CACHE</button>
+        <button type="button" data-tool="scan">CACHE</button>
+        <button type="button" data-tool="audio">AUDIO</button>
+        <button type="button" data-tool="voice">VOICE TUNE</button>
         <button type="button" data-tool="assets">ASSET VAULT</button>
         <button type="button" data-tool="terminal">TERMINAL</button>
       </div>
@@ -118,15 +147,18 @@
 
     panel.querySelectorAll("[data-luhm]").forEach(btn => {
       btn.addEventListener("click", () => {
-        const result = insertCommand(btn.dataset.luhm);
+        const command = btn.dataset.luhm;
+        void playEventAudio(SOUND_EVENTS[command] || "ui");
+        const result = insertCommand(command);
         status.textContent = result.ok
-          ? `${btn.dataset.luhm} loaded. You choose Send.`
+          ? `${command} loaded. You choose Send.`
           : "Tap the ChatGPT composer once, then retry.";
         if (result.ok) panel.hidden = true;
       });
     });
 
     panel.querySelector('[data-private-gacha="after-dark"]').addEventListener("click", async () => {
+      void playEventAudio("gacha");
       status.textContent = "Rolling private reward banner…";
       const result = await runtime({type:"LUHM_PRIVATE_GACHA_PULL"});
       if (!result?.ok) {
@@ -135,6 +167,7 @@
       }
       pity.textContent = `🎲 PITY ${result.pity}/${result.hard_pity}`;
       status.textContent = `${result.tier.toUpperCase()} · ${result.reward.label}`;
+      if (result.tier === "Legendary") void playEventAudio("legendary");
     });
 
     panel.querySelector('[data-tool="scan"]').addEventListener("click", async () => {
@@ -142,7 +175,23 @@
       const result = await runtime({type:"LUHM_PRIVATE_STATUS"});
       status.textContent = result?.ok
         ? `Private cache GREEN: ${result.files} files${result.packs?.length ? ` / ${result.packs.length} packs` : ""}.`
-        : "Private cache offline. Start the Termux bridge first.";
+        : "Private cache offline. Start the private bridge first.";
+    });
+
+    panel.querySelector('[data-tool="audio"]').addEventListener("click", async () => {
+      status.textContent = "Reading Destiny audio index…";
+      const result = await runtime({type:"LUHM_AUDIO_STATUS"});
+      status.textContent = result?.ok
+        ? `AUDIO: ${result.playable} playable / ${result.game_containers} game containers / ${result.recognized} recognized${result.vgmstream ? " · vgmstream READY" : ""}`
+        : "Audio index offline. Run private bridge reindex after syncing assets.";
+    });
+
+    panel.querySelector('[data-tool="voice"]').addEventListener("click", () => {
+      const result = insertText(VOICE_TUNE_PROMPT);
+      status.textContent = result.ok
+        ? "Lum voice profile loaded into the composer. You choose Send."
+        : "Tap the ChatGPT composer once, then retry.";
+      if (result.ok) panel.hidden = true;
     });
 
     panel.querySelector('[data-tool="assets"]').addEventListener("click", async () => {
