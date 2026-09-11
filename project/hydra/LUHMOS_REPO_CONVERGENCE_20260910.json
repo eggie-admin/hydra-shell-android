@@ -26,7 +26,7 @@
       "role": "canonical_samsung_android_ui_and_godot_donor",
       "integration": "pinned_checkout_build_time",
       "branch": "luhmos/inapp-updater-v1",
-      "ref": "78d7714f585c81b6d476bd7192b840655f9be375",
+      "ref": "dd9b3e68e14ce7a559b7b13aebfe10c630fa171b",
       "android_application_id": "art.eggiebagelface.luhmos",
       "history_merge": false
     },
