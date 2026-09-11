@@ -1,0 +1,50 @@
+#luhm-pet-launcher {
+  position: fixed;
+  right: 14px;
+  bottom: 86px;
+  z-index: 2147483646;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: 1px solid rgba(210,120,255,.8);
+  background: radial-gradient(circle at 35% 30%, #7be7ff, #7b3ba1 48%, #171020 72%);
+  box-shadow: 0 8px 28px rgba(0,0,0,.45);
+  color: white;
+  font-size: 25px;
+  display: grid;
+  place-items: center;
+  user-select: none;
+}
+#luhm-pet-launcher:active { transform: scale(.95); }
+#luhm-pet-panel {
+  position: fixed;
+  right: 12px;
+  bottom: 150px;
+  z-index: 2147483647;
+  width: min(330px, calc(100vw - 24px));
+  padding: 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(210,120,255,.55);
+  background: rgba(18,13,26,.97);
+  box-shadow: 0 20px 60px rgba(0,0,0,.5);
+  color: #fff;
+  font-family: system-ui, sans-serif;
+}
+#luhm-pet-panel[hidden] { display: none !important; }
+#luhm-pet-panel .luhm-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+#luhm-pet-panel strong { font-size:15px; }
+#luhm-pet-panel small { color:#baaac8; }
+#luhm-pet-panel .luhm-grid { display:grid; grid-template-columns:1fr 1fr; gap:7px; margin-top:10px; }
+#luhm-pet-panel button {
+  min-height:44px;
+  border:1px solid #604270;
+  border-radius:11px;
+  background:#2a1c37;
+  color:white;
+  font-weight:700;
+}
+#luhm-pet-panel button[data-luhm="CAST ULTIMA"] {
+  grid-column:1 / -1;
+  background:linear-gradient(135deg,#6b2c85,#235f84);
+}
+#luhm-pet-status { margin-top:9px; color:#7fe6ff; font-size:12px; min-height:18px; }
