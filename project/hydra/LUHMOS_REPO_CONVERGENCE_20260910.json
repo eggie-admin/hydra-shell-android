@@ -25,8 +25,8 @@
       "repository": "eggie-admin/vue-headless-cms",
       "role": "canonical_samsung_android_ui_and_godot_donor",
       "integration": "pinned_checkout_build_time",
-      "branch": "luhmos/android-samsung",
-      "ref": "0da5af914ec80266724d36c9451598a66a6ee3f7",
+      "branch": "luhmos/adaptive-display-v1",
+      "ref": "01bd5ad0c302997ed28a01a487257c2a37ab7197",
       "android_application_id": "art.eggiebagelface.luhmos",
       "history_merge": false
     },
@@ -46,7 +46,7 @@
     {
       "repository": "eggie-admin/termux-app",
       "role": "termux_upstream_reference",
-      "integration": "reference_only",
+      "integration": "reference_only_not_runtime_dependency",
       "history_merge": false
     },
     {
@@ -65,7 +65,17 @@
       "samsung-sm-s721u1-kai9000-fdroid-cathedral",
       "samsung-sm-s721u1-kai9000-ultima"
     ],
-    "convergence_rule": "selectively transplant reviewed features into luhmos/android-samsung; never blind-merge divergent histories"
+    "convergence_rule": "selectively transplant reviewed features into the pinned LuHm OS Samsung donor; never blind-merge divergent histories"
+  },
+  "display_contract": {
+    "identity": "LuHm OS",
+    "design_space_portrait": "1080x1920",
+    "orientation": "sensor",
+    "runtime_resolution_owner": "android_system_window",
+    "godot_stretch_mode": "canvas_items",
+    "godot_stretch_aspect": "expand",
+    "safe_area_source": "DisplayServer.get_display_safe_area",
+    "headless_policy": "display_bridge_noop_and_ci_smoke"
   },
   "distribution_gates": {
     "target_sdk": 36,
