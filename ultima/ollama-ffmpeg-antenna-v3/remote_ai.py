@@ -13,14 +13,15 @@ ROUTER = APIRouter(prefix="/api/remote-ai", tags=["remote-ai"])
 OPENAI_RESPONSES_URL = os.environ.get(
     "OPENAI_API_URL", "https://api.openai.com/v1/responses"
 )
-OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-6-astra")
+OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-5.6-sol")
 
 HF_RESPONSES_URL = os.environ.get(
     "HF_RESPONSES_URL", "https://router.huggingface.co/v1/responses"
 )
 HF_MODEL = os.environ.get("HF_MODEL", "openai/gpt-oss-120b:fastest")
 DEFAULT_PROVIDER = os.environ.get("KAI_REMOTE_AI_PROVIDER", "auto").strip().lower()
-MAX_OUTPUT_TOKENS = int(os.environ.get("KAI_REMOTE_AI_MAX_OUTPUT_TOKENS", "1600"))
+MAX_OUTPUT_TOKENS = max(1, min(int(os.environ.get("KAI_REMOTE_AI_MAX_OUTPUT_TOKENS", "1600")), 8192))
+REQUEST_TIMEOUT = max(5.0, min(float(os.environ.get("KAI_REMOTE_AI_TIMEOUT", "90")), 180.0))
 
 ALLOWED_PROVIDERS = {"auto", "openai", "huggingface"}
 SECRET_PATTERNS = {
@@ -36,13 +37,26 @@ SECRET_PATTERNS = {
 class RemoteAIRequest(BaseModel):
     message: str = Field(min_length=1, max_length=16000)
     provider: str | None = None
-    model: str | None = None
+    model: str | None = Field(default=None, max_length=160)
+
+
+def _secret_label(text: str) -> str | None:
+    for label, pattern in SECRET_PATTERNS.items():
+        if pattern.search(text):
+            return label
+    return None
 
 
 def _reject_secrets(text: str) -> None:
-    for label, pattern in SECRET_PATTERNS.items():
-        if pattern.search(text):
-            raise HTTPException(status_code=400, detail=f"Secret-shaped content rejected: {label}")
+    label = _secret_label(text)
+    if label:
+        raise HTTPException(status_code=400, detail=f"Secret-shaped content rejected: {label}")
+
+
+def _reject_secret_output(text: str) -> None:
+    label = _secret_label(text)
+    if label:
+        raise HTTPException(status_code=502, detail=f"Provider output rejected by egress guard: {label}")
 
 
 def _instructions() -> str:
@@ -100,11 +114,30 @@ def _select_provider(requested: str | None = None) -> str:
     return "deterministic_mock"
 
 
+def _allowed_models(provider: str) -> set[str]:
+    env_name = "KAI_OPENAI_ALLOWED_MODELS" if provider == "openai" else "KAI_HF_ALLOWED_MODELS"
+    configured = os.environ.get(env_name, "").strip()
+    defaults = {OPENAI_MODEL} if provider == "openai" else {HF_MODEL}
+    if not configured:
+        return defaults
+    return defaults | {value.strip() for value in configured.split(",") if value.strip()}
+
+
+def _resolve_model(provider: str, requested_model: str | None) -> str:
+    default = OPENAI_MODEL if provider == "openai" else HF_MODEL
+    if not requested_model:
+        return default
+    requested = requested_model.strip()
+    if requested not in _allowed_models(provider):
+        raise HTTPException(status_code=400, detail="Requested model is not allowlisted for this provider")
+    return requested
+
+
 def _provider_config(provider: str, requested_model: str | None) -> tuple[str, str, str]:
     if provider == "openai":
-        return OPENAI_RESPONSES_URL, os.environ["OPENAI_API_KEY"], requested_model or OPENAI_MODEL
+        return OPENAI_RESPONSES_URL, os.environ["OPENAI_API_KEY"], _resolve_model(provider, requested_model)
     if provider == "huggingface":
-        return HF_RESPONSES_URL, os.environ["HF_TOKEN"], requested_model or HF_MODEL
+        return HF_RESPONSES_URL, os.environ["HF_TOKEN"], _resolve_model(provider, requested_model)
     raise RuntimeError(f"No remote configuration for provider {provider}")
 
 
@@ -115,7 +148,7 @@ def _call_responses_api(provider: str, message: str, model: str | None) -> dict[
         "instructions": _instructions(),
         "input": message,
         "store": False,
-        "max_output_tokens": max(1, min(MAX_OUTPUT_TOKENS, 8192)),
+        "max_output_tokens": MAX_OUTPUT_TOKENS,
     }
     try:
         response = httpx.post(
@@ -126,7 +159,7 @@ def _call_responses_api(provider: str, message: str, model: str | None) -> dict[
                 "User-Agent": "KAI9000-LuHmOS/remote-ai",
             },
             json=payload,
-            timeout=90,
+            timeout=REQUEST_TIMEOUT,
         )
         response.raise_for_status()
         data = response.json()
@@ -136,12 +169,17 @@ def _call_responses_api(provider: str, message: str, model: str | None) -> dict[
             detail=f"{provider} Responses request failed without failover: {type(exc).__name__}",
         ) from exc
 
+    assistant = _extract_response_text(data)
+    if not assistant:
+        raise HTTPException(status_code=502, detail=f"{provider} returned no usable assistant text")
+    _reject_secret_output(assistant)
+
     return {
         "ok": True,
         "mode": "remote",
         "provider": provider,
         "model": resolved_model,
-        "assistant": _extract_response_text(data),
+        "assistant": assistant,
         "response_id": data.get("id"),
         "secret_material_present": False,
     }
@@ -157,15 +195,18 @@ def remote_ai_status() -> dict[str, Any]:
                 "configured": bool(os.environ.get("OPENAI_API_KEY")),
                 "endpoint": "responses",
                 "default_model": OPENAI_MODEL,
+                "allowed_models": sorted(_allowed_models("openai")),
             },
             "huggingface": {
                 "configured": bool(os.environ.get("HF_TOKEN")),
                 "endpoint": "responses_beta",
                 "default_model": HF_MODEL,
+                "allowed_models": sorted(_allowed_models("huggingface")),
                 "routing_policy": "model_suffix_fastest_cheapest_preferred_or_provider",
             },
         },
         "silent_cross_provider_failover": False,
+        "output_secret_guard": True,
     }
 
 
@@ -181,8 +222,8 @@ def remote_ai_chat(req: RemoteAIRequest) -> dict[str, Any]:
             "model": None,
             "assistant": (
                 "No remote AI provider is configured. KAI 9000 remains operational through "
-                "local deterministic/Ollama lanes; configure OPENAI_API_KEY or HF_TOKEN on the "
-                "server side to enable a remote provider."
+                "local deterministic/Ollama lanes; configure server-side provider credentials "
+                "to enable a remote provider."
             ),
             "secret_material_present": False,
         }
