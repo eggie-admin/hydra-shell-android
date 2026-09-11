@@ -15,10 +15,10 @@ concurrency:
 
 jobs:
   dispatch-ultima:
-    name: Dispatch ULTIMA forge
+    name: Dispatch LuHm ULTIMA forge
     runs-on: ubuntu-24.04
     steps:
-      - name: Dispatch Oni Summoning against exact testing ref
+      - name: Dispatch LuHm forge against exact testing ref
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
@@ -31,7 +31,7 @@ jobs:
           repo = os.environ['REPO']
           ref = os.environ['TARGET_REF']
           token = os.environ['GH_TOKEN']
-          url = f'https://api.github.com/repos/{repo}/actions/workflows/oni-ultima-debug-apk.yml/dispatches'
+          url = f'https://api.github.com/repos/{repo}/actions/workflows/luhmos-ultima-debug-apk.yml/dispatches'
           payload = json.dumps({'ref': ref}).encode('utf-8')
           req = urllib.request.Request(
               url,
@@ -48,5 +48,5 @@ jobs:
           with urllib.request.urlopen(req, timeout=30) as response:
               if response.status != 204:
                   raise SystemExit(f'workflow dispatch failed: HTTP {response.status}')
-          print(f'ULTIMA_DISPATCH_GREEN ref={ref}')
+          print(f'LUHMOS_ULTIMA_DISPATCH_GREEN ref={ref}')
           PY
