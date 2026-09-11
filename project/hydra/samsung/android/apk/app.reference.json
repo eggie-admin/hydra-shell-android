@@ -1,37 +1,63 @@
 {
-  "schema": "project-hydra.samsung-android-apk-reference.v2",
-  "role": "Samsung Android APK forge and cockpit surface",
-  "integration_strategy": "reference_not_copy",
-  "source": {
-    "repository": "eggie-admin/vue-headless-cms",
-    "branch": "samsung-sm-x400-build-candidate",
-    "pinned_commit": "86507ed7c72650ff508eb9a1a9e52842eb50e821",
-    "manifest": "samsung-sm-x400/samsung-dev-stack.manifest.json"
+  "schema": "project-hydra.samsung-android-apk-reference.v3",
+  "role": "Canonical standalone Samsung Android APK",
+  "canonical_repository": "eggie-admin/hydra-shell-android",
+  "canonical_branch": "luhmos-main",
+  "application": {
+    "name": "LuHm OS",
+    "package_id": "art.eggiebagelface.luhmos",
+    "release_signing_alias": "luhmos-release",
+    "version_line": "1.x",
+    "target_sdk": 36,
+    "primary_abi": "arm64-v8a"
   },
-  "integration_baseline": {
-    "repository": "eggie-admin/vue-headless-cms",
-    "branch": "main",
-    "commit": "1d51c5b90266f7beb8236cf07acfb17a085a4134",
-    "manifest": "integrations/kai9000.remote-smoke.json"
+  "target_device": {
+    "manufacturer": "Samsung",
+    "model": "SM-S721U1",
+    "family": "Galaxy S24 FE",
+    "android": 16
   },
-  "visual_reference": {
-    "savepoint": "KAI9000_LUM_MONA_OUTFIT_ANDROID_GREEN_20260906",
-    "manifest": "project/hydra/samsung/android/apk/lum-mona-outfit.reference.json",
-    "drive_file_id": "1eWOk-VvYjwbheKwKLHe6waW54RJQPMnx",
-    "seal_manifest_file_id": "1UGms41h4DwfRIzrXHj2E-_INdb6-XcR9",
-    "sha256": "420c2c749a0ab19231a5850b33c4432c7705e0b91cc0764c4ee88bb60bc849da",
-    "usage": "Lum wardrobe art direction and future Godot Puppet2D layer planning"
+  "build_architecture": {
+    "godot": "native Android shell/runtime",
+    "web_ui": "bundled Vue/WebView assets",
+    "kotlin": "bounded Android bridge only",
+    "python": "reference policy/control implementation; Android runtime must be packaged or migrated inside the APK boundary",
+    "node_npm": "build-time only"
   },
-  "local_compatibility_reference": "samsung-sm-x400/full-stack.reference.json",
-  "testing_lane": "testing/luhm-os-android",
   "requirements": {
-    "installable_apk_required_for_green": true,
+    "normal_android_package_install": true,
+    "clean_install_required_for_green": true,
+    "launcher_start_required_for_green": true,
+    "install_update_continuity_required": true,
+    "persistent_release_signer_required": true,
     "package_identity_evidence_required": true,
-    "loopback_only_local_services": true,
-    "secure_folder_is_client_not_daemon_owner": true,
+    "artifact_sha256_required": true,
+    "arm64_required": true,
+    "page_size_16k_verification_required": true,
+    "termux_required": false,
+    "termux_api_required": false,
+    "acode_required": false,
+    "acodex_required": false,
+    "axs_required": false,
+    "vnc_required": false,
+    "websocket_desktop_bridge_required": false,
+    "secure_folder_required": false,
+    "external_localhost_daemon_required_for_launch": false,
     "automatic_root": false,
+    "shizuku_required": false,
     "arbitrary_model_shell": false,
-    "secrets_in_apk_or_repo": false,
-    "proprietary_reference_assets_in_apk": false
-  }
+    "secrets_in_apk_or_repo": false
+  },
+  "optional_integrations": {
+    "remote_ai": true,
+    "local_ai_provider": true,
+    "external_media_provider": true,
+    "rule": "optional integrations must fail gracefully and may not block base application launch"
+  },
+  "historical_references": {
+    "legacy_samsung_donor": "eggie-admin/vue-headless-cms",
+    "legacy_termux_acodex_vnc_secure_folder_lane": "historical_only",
+    "testing_ingest_manifest": "project/hydra/samsung/android/apk/testing-ingest.manifest.json"
+  },
+  "next_green_gate": "LUHMOS_S24FE_STANDALONE_APK_GREEN"
 }
