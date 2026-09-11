@@ -8,6 +8,13 @@ import functools
 
 
 class Handler(SimpleHTTPRequestHandler):
+    extensions_map = SimpleHTTPRequestHandler.extensions_map.copy()
+    extensions_map.update({
+        ".xpi": "application/x-xpinstall",
+        ".json": "application/json",
+        ".wasm": "application/wasm",
+    })
+
     def end_headers(self):
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS")
