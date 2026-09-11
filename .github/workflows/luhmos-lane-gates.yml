@@ -94,8 +94,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          case "$HEAD->$BASE" in
-            luhmos/ai-logic->luhmos-main|luhmos/frontend->luhmos-main|luhmos/backend->luhmos-main|luhmos-main->luhmos/testing|luhmos/testing->luhmos/proposed|luhmos/proposed->luhmos/beta|luhmos/beta->luhmos/stable)
+          route="${HEAD}->${BASE}"
+          case "$route" in
+            'luhmos/ai-logic->luhmos-main'|'luhmos/frontend->luhmos-main'|'luhmos/backend->luhmos-main'|'luhmos-main->luhmos/testing'|'luhmos/testing->luhmos/proposed'|'luhmos/proposed->luhmos/beta'|'luhmos/beta->luhmos/stable')
               echo 'LUHMOS_PROMOTION_DIRECTION_GREEN'
               ;;
             *)
