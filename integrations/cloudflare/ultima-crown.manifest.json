@@ -1,11 +1,11 @@
 {
-  "schema": "kai9000.cloudflare-ultima-crown.v1",
+  "schema": "kai9000.cloudflare-ultima-crown.v2",
   "milestone": "KAI9000_CLOUDFLARE_ULTIMA_CROWN_20260907",
   "date": "2026-09-07",
   "crown_holder": "Professor",
   "zone": "eggiebagelface.art",
   "status": "CLOUDFLARE_ULTIMA_REPO_ARMED",
-  "active_product": "KAI_9000_APK",
+  "active_product": "LUHM_OS",
   "public_lane": {
     "source": "GitHub",
     "remote_terminal": "GitHub Codespaces/browser terminal",
@@ -17,9 +17,8 @@
       "www.eggiebagelface.art"
     ]
   },
-  "retired": {
-    "vercel": "PURGED_FORBIDDEN_NO_FALLBACK",
-    "local_termux": "RETIRED_FROM_ACTIVE_ARCHITECTURE",
+  "inactive_architecture": {
+    "historical_external_deployment_providers": "OUTSIDE_ACTIVE_ARCHITECTURE",
     "public_local_vnc_websocket_acodex": "FORBIDDEN_PUBLICATION_PATH"
   },
   "tls": {
@@ -52,8 +51,7 @@
     "no_scripts_trackers_external_assets",
     "no_embedded_secret_or_private_key",
     "apex_and_www_only_in_production_worker_config",
-    "no_active_vercel_dependency",
-    "no_active_local_termux_dependency",
+    "no_unapproved_external_deployment_dependency",
     "wrangler_preview_dry_run",
     "wrangler_production_dry_run",
     "human_gated_production_deploy"
@@ -67,7 +65,7 @@
     "https_www_200_or_expected_redirect",
     "dnssec_active",
     "registrar_ds_valid",
-    "no_stale_vercel_dns_binding",
+    "no_conflicting_stale_external_binding",
     "no_secret_leakage"
   ],
   "green_law": "Repository green and live Cloudflare green are separate. Do not claim live green without Cloudflare/public DNS evidence."
