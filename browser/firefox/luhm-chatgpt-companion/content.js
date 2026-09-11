@@ -59,6 +59,11 @@
     return {ok:true};
   }
 
+  async function runtime(message) {
+    try { return await api.runtime.sendMessage(message); }
+    catch (error) { return {ok:false, error:String(error)}; }
+  }
+
   api.runtime.onMessage.addListener((msg) => {
     if (msg?.type !== "LUHM_INSERT_COMMAND") return;
     return Promise.resolve(insertCommand(msg.command));
@@ -66,20 +71,27 @@
 
   function mountPanel() {
     if (document.getElementById("luhm-pet-launcher")) return;
+
     const launcher = document.createElement("button");
     launcher.id = "luhm-pet-launcher";
     launcher.type = "button";
     launcher.title = "LuHm Companion";
-    launcher.textContent = "👹";
+    launcher.setAttribute("aria-label", "Open LuHm Companion");
+    launcher.innerHTML = '<span class="luhm-mini-horn left"></span><span class="luhm-mini-face">L</span><span class="luhm-mini-horn right"></span>';
 
     const panel = document.createElement("section");
     panel.id = "luhm-pet-panel";
     panel.hidden = true;
     panel.innerHTML = `
       <div class="luhm-head">
-        <div><strong>LuHm Companion</strong><br><small>ChatGPT-only play controls</small></div>
+        <div class="luhm-jrpg-avatar" aria-hidden="true">
+          <i class="horn h1"></i><i class="horn h2"></i>
+          <i class="hair"></i><i class="face"></i><i class="eye e1"></i><i class="eye e2"></i>
+        </div>
+        <div class="luhm-title"><strong>LuHm Cathedral</strong><br><small>private Firefox pet console</small></div>
         <button id="luhm-close" type="button" aria-label="Close">×</button>
       </div>
+      <div class="luhm-hud"><span>♥ AFF 17</span><span>⚡ SPARKS 500</span><span>🎲 PITY 0/20</span></div>
       <div class="luhm-grid">
         <button type="button" data-luhm="PET LUM">PET LUM</button>
         <button type="button" data-luhm="ROLL D20">ROLL D20</button>
@@ -89,18 +101,45 @@
         <button type="button" data-luhm="SAVEPOINT">SAVEPOINT</button>
         <button type="button" data-luhm="CAST ULTIMA">CAST ULTIMA ⚡</button>
       </div>
-      <div id="luhm-pet-status">Lum is lurking.</div>`;
+      <div class="luhm-tools">
+        <button type="button" data-tool="scan">SCAN PRIVATE CACHE</button>
+        <button type="button" data-tool="assets">ASSET VAULT</button>
+        <button type="button" data-tool="terminal">TERMINAL</button>
+      </div>
+      <div id="luhm-pet-status">Lum is lurking. Private cache not scanned.</div>`;
 
     document.documentElement.append(launcher, panel);
+    const status = panel.querySelector("#luhm-pet-status");
+
     launcher.addEventListener("click", () => { panel.hidden = !panel.hidden; });
     panel.querySelector("#luhm-close").addEventListener("click", () => { panel.hidden = true; });
+
     panel.querySelectorAll("[data-luhm]").forEach(btn => {
       btn.addEventListener("click", () => {
         const result = insertCommand(btn.dataset.luhm);
-        const status = panel.querySelector("#luhm-pet-status");
-        status.textContent = result.ok ? `${btn.dataset.luhm} loaded. You choose Send.` : "Tap the ChatGPT composer once, then retry.";
+        status.textContent = result.ok
+          ? `${btn.dataset.luhm} loaded. You choose Send.`
+          : "Tap the ChatGPT composer once, then retry.";
         if (result.ok) panel.hidden = true;
       });
+    });
+
+    panel.querySelector('[data-tool="scan"]').addEventListener("click", async () => {
+      status.textContent = "Scanning 127.0.0.1:8799…";
+      const result = await runtime({type:"LUHM_PRIVATE_STATUS"});
+      status.textContent = result?.ok
+        ? `Private cache GREEN: ${result.files} files${result.packs?.length ? ` / ${result.packs.length} packs` : ""}.`
+        : "Private cache offline. Start the Termux bridge first.";
+    });
+
+    panel.querySelector('[data-tool="assets"]').addEventListener("click", async () => {
+      const result = await runtime({type:"LUHM_OPEN_PRIVATE_CACHE"});
+      status.textContent = result?.ok ? "Opened private asset vault." : "Private vault unavailable.";
+    });
+
+    panel.querySelector('[data-tool="terminal"]').addEventListener("click", async () => {
+      const result = await runtime({type:"LUHM_OPEN_TERMINAL"});
+      status.textContent = result?.ok ? "Opened loopback terminal." : "Terminal bridge unavailable.";
     });
   }
 
