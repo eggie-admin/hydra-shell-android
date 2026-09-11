@@ -1,0 +1,8 @@
+Initial LuHm OS 1.0.0 production release.
+
+- Canonical package: art.eggiebagelface.luhmos
+- Normal unrooted Android install
+- Bundled Godot 4 runtime and web cockpit
+- Samsung Galaxy S24 FE / Android 16 release target
+- Persistent production APK signing identity
+- Signed custom F-Droid repository support
