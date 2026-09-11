@@ -5,7 +5,6 @@ ROOT="${LUHM_PRIVATE_ASSET_ROOT:-$HOME/luhm-private/assets}"
 STATE="${XDG_STATE_HOME:-$HOME/.local/state}/luhm-private-bridge"
 HERE="$(cd "$(dirname "$0")" && pwd)"
 ASSET_PORT="${LUHM_ASSET_PORT:-8799}"
-TERM_PORT="${LUHM_TERM_PORT:-7681}"
 mkdir -p "$ROOT" "$STATE"
 
 reindex() {
@@ -26,23 +25,8 @@ start_assets() {
   echo "asset bridge: http://127.0.0.1:$ASSET_PORT/"
 }
 
-start_terminal() {
-  if ! command -v ttyd >/dev/null 2>&1; then
-    echo "ttyd not installed; terminal bridge remains optional."
-    return 0
-  fi
-  if [ -f "$STATE/terminal.pid" ] && kill -0 "$(cat "$STATE/terminal.pid")" 2>/dev/null; then
-    echo "terminal bridge already running"
-    return
-  fi
-  nohup ttyd -i 127.0.0.1 -p "$TERM_PORT" bash -l >"$STATE/terminal.log" 2>&1 &
-  echo $! > "$STATE/terminal.pid"
-  echo "terminal bridge: http://127.0.0.1:$TERM_PORT/"
-}
-
-stop_one() {
-  local name="$1"
-  local pidfile="$STATE/$name.pid"
+stop_assets() {
+  local pidfile="$STATE/assets.pid"
   if [ -f "$pidfile" ]; then
     local pid
     pid="$(cat "$pidfile")"
@@ -51,13 +35,12 @@ stop_one() {
   fi
 }
 
-status_one() {
-  local name="$1"
-  local pidfile="$STATE/$name.pid"
+status_assets() {
+  local pidfile="$STATE/assets.pid"
   if [ -f "$pidfile" ] && kill -0 "$(cat "$pidfile")" 2>/dev/null; then
-    echo "$name: GREEN pid=$(cat "$pidfile")"
+    echo "assets: GREEN pid=$(cat "$pidfile")"
   else
-    echo "$name: OFF"
+    echo "assets: OFF"
   fi
 }
 
@@ -80,13 +63,13 @@ sync_voice_cache() {
 }
 
 case "${1:-status}" in
-  start) start_assets; start_terminal ;;
-  stop) stop_one assets; stop_one terminal ;;
+  start) start_assets ;;
+  stop) stop_assets ;;
   restart) "$0" stop; "$0" start ;;
-  status) status_one assets; status_one terminal; echo "asset root: $ROOT" ;;
+  status) status_assets; echo "asset root: $ROOT" ;;
   reindex) reindex ;;
   sync-drive) sync_destiny_drive ;;
   sync-voice) sync_voice_cache "$@" ;;
-  logs) tail -n 80 "$STATE/assets.log" "$STATE/terminal.log" 2>/dev/null || true ;;
+  logs) tail -n 80 "$STATE/assets.log" 2>/dev/null || true ;;
   *) echo "usage: $0 {start|stop|restart|status|reindex|sync-drive|sync-voice [--force]|logs}"; exit 2 ;;
 esac
