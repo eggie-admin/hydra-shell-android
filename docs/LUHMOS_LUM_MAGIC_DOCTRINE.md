@@ -36,7 +36,27 @@ Full mutation. Used for coordinated architecture changes across AI logic, fronte
 Staging strike. Commit an already-reviewed change, converge through `luhmos-main`, stage it to `luhmos/testing`, and invoke staging CI. Any non-GREEN gate stops the spell. `METEO` does not mean production release.
 
 ### ULTIMA
-Finale compile command. Invoke the approved GitHub remote compile/release forge for a selected GREEN commit. ULTIMA verifies package/application identity, release signer/certificate, target API, ABI, 16 KB native/ZIP alignment, bundled assets, artifact hash, and provenance. ULTIMA never silently merges branches, promotes stable, or substitutes a debug signer for the release signer.
+Finale compile/install command. ULTIMA takes an explicit GREEN revision, invokes the approved remote compile forge, verifies the resulting install artifact, uploads that artifact into the controlled Google Drive Source of Truth, records the exact artifact hash/provenance, and exposes the resulting Google Drive install link inside the LuHm OS app/cockpit.
+
+For Android, ULTIMA verifies the canonical application ID, expected signer when production signing is required, target API, ABI, 16 KB native/ZIP compatibility, bundled assets, artifact SHA-256, and provenance before the artifact is labeled GREEN. A staging/debug build may only be labeled as such.
+
+ULTIMA success means:
+
+```text
+explicit GREEN ref
+    ↓
+remote compile forge
+    ↓
+artifact verification
+    ↓
+Google Drive Source of Truth upload
+    ↓
+record SHA-256 + provenance
+    ↓
+publish in-app Google Drive install link
+```
+
+ULTIMA does not promote `proposed`, `beta`, or `stable`; those remain separate release-channel decisions. It never silently merges branches, substitutes a debug signer for the expected production signer, or treats a queued workflow as success.
 
 ### ESUNA
 Hardening cleanup. Remove stale dependencies, dead deployment paths, leaked/embedded secret patterns, obsolete config, and policy drift without adding unrelated features.
@@ -64,7 +84,7 @@ Spell defaults:
 
 - `CURE`, `CURA`, `CURAGA`, `ESUNA`: appropriate work lane first.
 - `METEO`: `luhmos-main` to `luhmos/testing` after GREEN.
-- `ULTIMA`: remote forge against an explicit GREEN commit/ref.
+- `ULTIMA`: compile an explicit GREEN ref, verify the artifact, upload it to Source of Truth, then expose the Drive install link in-app.
 - `PHOENIX`: named sealed rollback target only.
 
 ## AI routing
@@ -82,11 +102,15 @@ Python SpellPlan
     ↓
 policy gate
     ↓
-read-only tools OR approved GitHub action
+approved GitHub compile action
     ↓
 CI / artifact verification
     ↓
-Lum reports evidence
+Google Drive Source of Truth upload
+    ↓
+install-link manifest update
+    ↓
+LuHm OS cockpit exposes install action
 ```
 
 ## Fail-closed laws
@@ -94,11 +118,13 @@ Lum reports evidence
 - Unknown spell: reject.
 - Ambiguous destructive target: reject until target is explicit.
 - Missing human approval for `CURAGA`, `ULTIMA`, or `PHOENIX`: block.
-- Missing required GREEN evidence: block release/compile action.
-- Missing persistent release signer: ULTIMA may build a clearly labeled staging artifact only if explicitly requested, never call it release GREEN.
+- Missing required GREEN evidence: block ULTIMA.
+- Missing artifact: block upload/link publication.
+- Hash/provenance mismatch: block publication.
+- Missing persistent release signer: production ULTIMA cannot be GREEN; a staging artifact must remain explicitly labeled staging.
 - Dirty or divergent release lineage: stop and report.
 - Private key or token in source: stop and invoke hardening/ESUNA workflow.
-- AI response alone is never proof of a successful mutation.
+- AI response alone is never proof of a successful mutation or build.
 
 ## Android LuHm OS invariants
 
@@ -110,9 +136,11 @@ Certificate identity contract: `CN=art.eggiebagelface.luhmos,O=Eggie Bagelface A
 
 Android release gates remain API 36, `arm64-v8a`, 16 KB compatibility, reproducible package identity, verified signing lineage, and recorded artifact SHA-256.
 
+The in-app install link points to the exact Google Drive Source-of-Truth artifact for the verified ULTIMA build. It must never be synthesized from a filename or stale artifact ID.
+
 ## Non-spell natural language
 
-Normal language remains valid. The spell vocabulary is shorthand, not a requirement. For example, "hotfix the WebView" maps to CURE semantics; "full architecture mutation" maps to CURAGA semantics; "compile the current GREEN Samsung build" maps to ULTIMA semantics.
+Normal language remains valid. The spell vocabulary is shorthand, not a requirement. For example, "hotfix the WebView" maps to CURE semantics; "full architecture mutation" maps to CURAGA semantics; "compile and publish the current GREEN Samsung build" maps to ULTIMA semantics.
 
 ## Copyright / naming boundary
 
