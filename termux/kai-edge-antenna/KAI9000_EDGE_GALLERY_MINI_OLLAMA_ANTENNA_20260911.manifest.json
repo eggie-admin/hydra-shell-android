@@ -1,0 +1,47 @@
+{
+  "seal": "KAI9000_EDGE_GALLERY_MINI_OLLAMA_ANTENNA_20260911",
+  "status": "MUTATION_READY",
+  "target": {
+    "device": "Samsung SM-S721U1",
+    "android": 16,
+    "trust_model": "no-root / Secure Folder protected client / ordinary Termux daemon owner"
+  },
+  "services": {
+    "mini_ollama_compat": "http://127.0.0.1:11434",
+    "canonical_kai_antenna": "http://127.0.0.1:8797",
+    "optional_llama_cpp_backend": "http://127.0.0.1:8080",
+    "acodex": "http://127.0.0.1:8767"
+  },
+  "edge_gallery": {
+    "runtime": "Google AI Edge Gallery",
+    "mode": "manual_sandbox_runtime",
+    "preferred_model": "Gemma-4-E2B-it",
+    "ui_ready_observed": true,
+    "try_it_visible": true,
+    "download_badge_visible": false,
+    "secure_folder_profile_confirmed": false,
+    "direct_http_api_assumed": false
+  },
+  "mini_ollama": {
+    "purpose": "loopback compatibility facade for existing KAI Ollama-aware callers",
+    "chat_backend": "optional loopback llama.cpp OpenAI-compatible server",
+    "fail_closed_without_backend": true,
+    "remote_fallback": false,
+    "edge_gallery_impersonation": false
+  },
+  "authority": {
+    "ordinary_termux_owns_daemons": true,
+    "secure_folder_is_client_only": true,
+    "root_required": false,
+    "sui_in_trusted_lane": false,
+    "human_final_authority": true
+  },
+  "future_production_path": "Integrate LiteRT-LM directly into LuHm OS Android runtime behind the typed local inference interface after device benchmark and thermal/memory gates.",
+  "green_definition": {
+    "static_ci": "required",
+    "mini_antenna_service": "must answer loopback /health",
+    "callable_model_backend": "yellow until llama.cpp or native LiteRT-LM bridge is proven",
+    "edge_gallery_ui": "green",
+    "secure_folder_profile_placement": "yellow until explicitly proven"
+  }
+}
