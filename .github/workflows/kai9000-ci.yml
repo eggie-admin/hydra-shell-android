@@ -10,7 +10,7 @@ on:
       - "tools/project_hydra_structure_guard.py"
       - ".github/workflows/kai9000-ci.yml"
   push:
-    branches: [main]
+    branches: [luhmos-main]
     paths:
       - "project/hydra/**"
       - "lumh-os/kai9000/**"
