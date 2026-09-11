@@ -23,9 +23,12 @@
   },
   "observed_2026_09_11": {
     "edge_gallery_ui_seen": true,
-    "preferred_model_download_confirmed": false,
+    "preferred_model_ready_in_ui": true,
+    "preferred_model_download_badge_visible": false,
+    "try_it_button_visible": true,
     "secure_folder_profile_confirmed": false,
-    "source": "user screenshot"
+    "source": "user screenshot",
+    "confidence": "high for UI readiness; Android profile placement still unproven"
   },
   "integration_policy": {
     "edge_gallery_http_api_assumed": false,
