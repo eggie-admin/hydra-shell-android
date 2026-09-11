@@ -1,5 +1,5 @@
 {
-  "schema": "luhm-os.project-hydra.v3",
+  "schema": "luhm-os.project-hydra.v4",
   "name": "Project Hydra",
   "canonical_root": "project/hydra",
   "parent_os": "LuHm OS",
@@ -12,11 +12,22 @@
   "forge": {
     "hugging_face": "project/hydra/forge/hugging-face/reference.json"
   },
+  "games": {
+    "godot4_jrpg_dating_donors": "project/hydra/games/GODOT4_JRPG_DATING_DONORS_20260910.json"
+  },
+  "source_of_truth": {
+    "chat_history_reconciliation": "docs/LUHMOS_CHAT_HISTORY_RECONCILIATION_20260910.md",
+    "canonical_doctrine": "docs/LUHMOS_CANONICAL_DOCTRINE.md",
+    "ai_stack": "docs/AI_STACK.md",
+    "api_doctrine": "docs/API_TRINITY_DOCTRINE.md",
+    "samsung_apk_reference": "project/hydra/samsung/android/apk/app.reference.json"
+  },
   "platforms": {
     "samsung_android_apk": "project/hydra/samsung/android/apk/app.reference.json"
   },
   "android_goal": {
     "device": "Samsung SM-S721U1",
+    "family": "Galaxy S24 FE",
     "android": 16,
     "application_id": "art.eggiebagelface.luhmos",
     "target_sdk": 36,
@@ -29,18 +40,32 @@
     "acodex_required": false,
     "vnc_required": false,
     "secure_folder_required": false,
+    "external_localhost_daemon_required": false,
     "root_required": false
+  },
+  "ai_provider_goal": {
+    "cloud_ai_required_for_base_launch": false,
+    "static_vendor_secrets_in_apk": false,
+    "openai_api_surface": "Responses API",
+    "openai_fast_reference": "gpt-5.6-luna",
+    "openai_deep_reference": "gpt-5.6-sol",
+    "huggingface_responses": "https://router.huggingface.co/v1/responses",
+    "huggingface_reference_model": "openai/gpt-oss-120b:fastest",
+    "model_ids_are_runtime_configurable": true
   },
   "migration": {
     "strategy": "reference_not_copy",
     "legacy_paths_remain_compatible": true,
     "destructive_move_allowed": false,
     "green_required_before_path_retirement": true,
-    "legacy_termux_acodex_material": "historical_only"
+    "legacy_termux_acodex_material": "historical_only",
+    "superseded_chat_decisions": "historical_only_unless_reaffirmed_in_current_doctrine"
   },
   "authority": {
     "final": "Professor",
     "runtime_mutation_requires_evidence": true,
-    "secrets_in_repo": false
+    "secrets_in_repo": false,
+    "third_party_code_requires_provenance": true,
+    "documentation_claims_do_not_equal_green": true
   }
 }
