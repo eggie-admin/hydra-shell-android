@@ -1,0 +1,8 @@
+{
+  "schema": "luhmos.meteo-ultima-ready.v1",
+  "milestone": "LUHMOS_METEO_ULTIMA_READY_20260910",
+  "status": "GREEN_READY",
+  "testing_branch": "luhmos/testing",
+  "purpose": "Promote the canonical ULTIMA trigger bridge into testing so a testing push dispatches the exact-ref remote forge.",
+  "ultima_contract": "compile -> verify APK -> upload to Google Drive Source of Truth -> record hash/provenance -> expose exact returned Drive install link in-app"
+}
