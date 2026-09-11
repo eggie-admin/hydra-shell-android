@@ -1,0 +1,34 @@
+name: LuHm Firefox Companion
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feature/lum-chatgpt-companion-extension
+    paths:
+      - 'browser/firefox/luhm-chatgpt-companion/**'
+      - '.github/workflows/luhm-firefox-companion.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate manifest
+        run: python -m json.tool browser/firefox/luhm-chatgpt-companion/manifest.json >/dev/null
+      - name: Guard against auto-send paths
+        run: |
+          ! grep -R -E 'requestSubmit\(|\.submit\(|send-button|data-testid=.send' browser/firefox/luhm-chatgpt-companion/*.js
+      - name: Package unsigned XPI
+        working-directory: browser/firefox/luhm-chatgpt-companion
+        run: zip -r "$GITHUB_WORKSPACE/luhm-chatgpt-companion-firefox-${GITHUB_SHA::7}-unsigned.xpi" .
+      - name: Hash artifact
+        run: sha256sum luhm-chatgpt-companion-firefox-*-unsigned.xpi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: luhm-firefox-companion-unsigned
+          path: luhm-chatgpt-companion-firefox-*-unsigned.xpi
+          if-no-files-found: error
