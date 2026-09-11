@@ -15,10 +15,10 @@ concurrency:
 
 jobs:
   dispatch-ultima:
-    name: Dispatch LuHm ULTIMA forge
+    name: Dispatch LuHm adaptive ULTIMA forge
     runs-on: ubuntu-24.04
     steps:
-      - name: Dispatch LuHm forge against exact testing ref
+      - name: Dispatch adaptive LuHm forge against exact testing ref
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
@@ -31,7 +31,7 @@ jobs:
           repo = os.environ['REPO']
           ref = os.environ['TARGET_REF']
           token = os.environ['GH_TOKEN']
-          url = f'https://api.github.com/repos/{repo}/actions/workflows/luhmos-ultima-debug-apk.yml/dispatches'
+          url = f'https://api.github.com/repos/{repo}/actions/workflows/luhmos-ultima-adaptive-apk.yml/dispatches'
           payload = json.dumps({'ref': ref}).encode('utf-8')
           req = urllib.request.Request(
               url,
@@ -41,12 +41,12 @@ jobs:
                   'Accept': 'application/vnd.github+json',
                   'Authorization': f'Bearer {token}',
                   'X-GitHub-Api-Version': '2022-11-28',
-                  'User-Agent': 'luhmos-ultima-dispatch',
+                  'User-Agent': 'luhmos-ultima-adaptive-dispatch',
                   'Content-Type': 'application/json',
               },
           )
           with urllib.request.urlopen(req, timeout=30) as response:
               if response.status != 204:
                   raise SystemExit(f'workflow dispatch failed: HTTP {response.status}')
-          print(f'LUHMOS_ULTIMA_DISPATCH_GREEN ref={ref}')
+          print(f'LUHMOS_ADAPTIVE_ULTIMA_DISPATCH_GREEN ref={ref}')
           PY
