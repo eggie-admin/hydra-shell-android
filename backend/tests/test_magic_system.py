@@ -28,11 +28,14 @@ def test_curaga_requires_human_approval():
     assert "human_approval_required" in blocked["blocked_by"]
 
 
-def test_ultima_is_compile_not_merge_or_promotion():
+def test_ultima_is_compile_upload_install_not_release_promotion():
     plan = compile_spell("ultima")
-    assert plan.intent == "finale-compile"
+    assert plan.intent == "compile-upload-install"
+    assert plan.lane == "remote-forge-to-source-of-truth"
     assert plan.may_write_source is False
     assert plan.may_promote_release is False
+    assert "Google Drive Source of Truth" in plan.action
+    assert "Drive install link" in plan.action
     blocked = authorize_spell("ultima", human_approved=False, ci_green=True)
     assert blocked["ok"] is False
     approved = authorize_spell("ultima", human_approved=True, ci_green=True)
