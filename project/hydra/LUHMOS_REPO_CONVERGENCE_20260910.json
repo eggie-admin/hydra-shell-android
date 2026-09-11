@@ -1,5 +1,5 @@
 {
-  "schema": "luhmos.repo-convergence.v1",
+  "schema": "luhmos.repo-convergence.v2",
   "date": "2026-09-10",
   "status": "integration_branch",
   "canonical": {
@@ -23,9 +23,11 @@
     },
     {
       "repository": "eggie-admin/vue-headless-cms",
-      "role": "ui_and_godot_android_donor",
+      "role": "canonical_samsung_android_ui_and_godot_donor",
       "integration": "pinned_checkout_build_time",
-      "ref": "7c06bb76d4890c64202b438dd7fab2122db8d4ec",
+      "branch": "luhmos/android-samsung",
+      "ref": "0da5af914ec80266724d36c9451598a66a6ee3f7",
+      "android_application_id": "art.eggiebagelface.luhmos",
       "history_merge": false
     },
     {
@@ -34,8 +36,37 @@
       "integration": "reference_only",
       "ref": "c77465fb2884cbf33061b98a9fb08f4a03cccf20",
       "history_merge": false
+    },
+    {
+      "repository": "eggie-admin/android-foss",
+      "role": "foss_android_reference",
+      "integration": "reference_only",
+      "history_merge": false
+    },
+    {
+      "repository": "eggie-admin/termux-app",
+      "role": "termux_upstream_reference",
+      "integration": "reference_only",
+      "history_merge": false
+    },
+    {
+      "repository": "eggie-admin/Shizuku",
+      "role": "optional_privilege_broker_reference",
+      "integration": "reference_only_not_runtime_dependency",
+      "history_merge": false
     }
   ],
+  "samsung_sources": {
+    "device": "SM-S721U1",
+    "android": 16,
+    "abi": "arm64-v8a",
+    "legacy_branches": [
+      "samsung-sm-s721u1-kai9000-edge",
+      "samsung-sm-s721u1-kai9000-fdroid-cathedral",
+      "samsung-sm-s721u1-kai9000-ultima"
+    ],
+    "convergence_rule": "selectively transplant reviewed features into luhmos/android-samsung; never blind-merge divergent histories"
+  },
   "distribution_gates": {
     "target_sdk": 36,
     "abi": "arm64-v8a",
@@ -43,6 +74,18 @@
     "apk": true,
     "aab": "release_lane",
     "persistent_release_signing": "required_before_production"
+  },
+  "android_signing": {
+    "application_id": "art.eggiebagelface.luhmos",
+    "keystore_alias": "luhmos-release",
+    "certificate_dn": "CN=art.eggiebagelface.luhmos,O=Eggie Bagelface Art,C=US",
+    "private_key_in_git": false,
+    "private_key_in_apk": false,
+    "ci_secret_contract": [
+      "LUHMOS_ANDROID_KEYSTORE_B64",
+      "LUHMOS_ANDROID_KEYSTORE_PASSWORD",
+      "LUHMOS_ANDROID_KEY_PASSWORD"
+    ]
   },
   "security": {
     "private_keys_in_git": false,
@@ -52,6 +95,7 @@
   },
   "migration": {
     "old_dev_application_id": "art.eggiebagelface.kai9000.dev",
+    "old_release_application_id": "art.eggiebagelface.kai9000",
     "new_application_id": "art.eggiebagelface.luhmos",
     "install_relationship": "separate_android_app_lineage"
   }
