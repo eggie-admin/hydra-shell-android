@@ -100,14 +100,19 @@ SPELLBOOK: Final[dict[str, SpellPlan]] = {
     ),
     "ultima": SpellPlan(
         spell="ULTIMA",
-        intent="finale-compile",
-        lane="remote-forge",
+        intent="compile-upload-install",
+        lane="remote-forge-to-source-of-truth",
         risk=Risk.RELEASE,
         requires_ci_green=True,
         requires_human_approval=True,
         may_write_source=False,
         may_promote_release=False,
-        action="Invoke the approved GitHub remote compile/release forge for the selected GREEN commit. Verify package identity, signing certificate, API/ABI, 16 KB alignment, artifact hash, and provenance. ULTIMA never silently merges or promotes stable.",
+        action=(
+            "Compile an explicit GREEN revision with the approved remote forge, verify the install artifact, "
+            "upload that exact artifact to Google Drive Source of Truth, record SHA-256/provenance, and publish "
+            "the exact returned Drive install link to the LuHm OS app/cockpit. Never synthesize a Drive URL, "
+            "silently promote release channels, or label a debug signer as production."
+        ),
     ),
     "esuna": SpellPlan(
         spell="ESUNA",
