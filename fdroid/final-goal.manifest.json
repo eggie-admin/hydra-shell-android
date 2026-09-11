@@ -1,7 +1,7 @@
 {
-  "schema": "luhmos.fdroid-final-form.v4",
+  "schema": "luhmos.fdroid-final-form.v5",
   "date": "2026-09-11",
-  "goal": "public_signed_importable_luhmos_repository",
+  "goal": "izzyondroid_public_install_with_custom_repo_fallback",
   "production_package": {
     "id": "art.eggiebagelface.luhmos",
     "name": "LuHm OS",
@@ -16,87 +16,87 @@
     "abi": "arm64-v8a",
     "page_size_16k_required": true
   },
+  "preferred_public_repo": {
+    "name": "IzzyOnDroid",
+    "repo_url": "https://apt.izzysoft.de/fdroid/repo",
+    "distribution_model": "official developer-signed upstream GitHub release binary",
+    "submission": "current IzzyOnDroid Maintenance Repo on Codeberg",
+    "acceptance_external": true,
+    "github_release_required": true,
+    "persistent_apk_signer_required": true
+  },
+  "fallback_public_repo": {
+    "name": "LuHm OS custom F-Droid repo",
+    "canonical_url": "https://fdroid.eggiebagelface.art/fdroid/repo/",
+    "public_bootstrap_mirror": "https://raw.githubusercontent.com/eggie-admin/hydra-shell-android/fdroid-public/fdroid/repo/",
+    "repo_keyalias": "luhmos-fdroid-repo",
+    "role": "independent fallback and trust anchor"
+  },
   "rooted_lab_package": {
     "id": "art.eggiebagelface.luhmos.rooted",
     "device_reference": "Samsung SM-X400",
     "requires_root": true,
     "production_update_lineage_shared": false,
+    "submit_as_stock_package": false,
     "manifest": "project/hydra/samsung/android/rooted/SMX400_ROOTED_DEV_GOAL_20260911.json"
-  },
-  "repository": {
-    "mode": "custom_binary_fdroid_repository",
-    "canonical_url": "https://fdroid.eggiebagelface.art/fdroid/repo/",
-    "public_bootstrap_mirror": "https://raw.githubusercontent.com/eggie-admin/hydra-shell-android/fdroid-public/fdroid/repo/",
-    "public_branch": "fdroid-public",
-    "required_indexes": [
-      "index-v2.json",
-      "index-v1.json",
-      "index-v1.jar",
-      "entry.jar"
-    ],
-    "repo_keyalias": "luhmos-fdroid-repo",
-    "private_repo_key_on_public_origin": false
   },
   "source": {
     "repository": "eggie-admin/hydra-shell-android",
     "canonical_branch": "luhmos-main",
     "work_lane": "luhmos/backend",
     "android_donor_repository": "eggie-admin/vue-headless-cms",
-    "android_donor_commit": "96c23c87713800fc17c80b6a972ee2e93f1bb4b1"
+    "android_donor_commit": "96c23c87713800fc17c80b6a972ee2e93f1bb4b1",
+    "canonical_metadata": "fdroid/metadata/art.eggiebagelface.luhmos.yml",
+    "submission_draft": "release/IZZYONDROID_SUBMISSION_DRAFT_20260911.md"
   },
-  "required_persistent_identities": {
-    "apk_signing_key": {
-      "alias": "luhmos-release",
-      "required": true,
-      "fingerprint_state": "PENDING_FIRST_PERSISTENT_RELEASE_EVIDENCE",
-      "must_not_be_committed": true
-    },
-    "fdroid_repo_signing_key": {
-      "alias": "luhmos-fdroid-repo",
-      "required": true,
-      "fingerprint_state": "PENDING_CURRENT_KEY_VERIFICATION",
-      "historical_fingerprint_may_be_reused_only_if_same_private_key_is_recovered": true,
-      "must_not_be_committed": true
-    }
+  "monetization": {
+    "manifest": "project/hydra/business/HUMAN_CODE_MONETIZATION_20260911.json",
+    "mode": "external voluntary support and paid human services",
+    "funding_endpoint": null,
+    "status": "FUNDING_ENDPOINT_PENDING",
+    "donation_metadata_allowed": true,
+    "ads_sdk": false,
+    "payment_sdk_for_donations": false,
+    "human_authorship_notice": "COPYRIGHT.md"
   },
-  "release_workflow": ".github/workflows/luhmos-fdroid-public-release.yml",
+  "workflows": {
+    "signed_apk_and_custom_repo": ".github/workflows/luhmos-fdroid-public-release.yml",
+    "immutable_github_release_for_izzy": ".github/workflows/luhmos-izzy-github-release.yml"
+  },
   "states": [
     "SOURCE_GREEN",
     "RELEASE_APK_SIGNED",
     "APK_IDENTITY_VERIFIED",
     "APK_16K_VERIFIED",
-    "FDROID_SIGNED",
-    "FDROID_PUBLIC_MIRROR_PUBLISHED",
-    "FDROID_CANONICAL_HTTPS_PUBLISHED",
-    "FDROID_IMPORT_VERIFIED",
-    "S24FE_INSTALL_VERIFIED",
-    "S24FE_LAUNCH_VERIFIED",
-    "UPGRADE_100_TO_101_VERIFIED",
-    "FINAL_FORM_GREEN"
+    "GITHUB_RELEASE_ASSET_PUBLISHED",
+    "IZZY_SUBMITTED",
+    "IZZY_ACCEPTED",
+    "IZZY_INSTALL_VERIFIED",
+    "IZZY_UPDATE_VERIFIED",
+    "LUHMOS_IZZYONDROID_PUBLIC_INSTALL_GREEN"
   ],
   "final_form_requires": [
-    "art.eggiebagelface.luhmos only for stock production",
+    "art.eggiebagelface.luhmos stock package only",
     "no Termux/AcodeX/VNC/Secure Folder/root/Shizuku production dependency",
     "hardened donor commit pinned",
     "persistent APK signing identity",
-    "release APK not debuggable",
+    "release APK not debuggable or testOnly",
     "target SDK 36",
-    "arm64-v8a only",
-    "16 KiB zip/native alignment verification",
+    "arm64-v8a",
+    "16 KiB alignment verification",
     "no com.termux permission or package query",
-    "signed F-Droid v2 and v1 indexes",
-    "repository fingerprint recorded",
-    "HTTPS public repository reachable",
-    "F-Droid client import verified",
-    "LuHm OS installed from the public repo on SM-S721U1",
+    "immutable GitHub release tag and developer-signed APK asset",
+    "IzzyOnDroid inclusion review passed",
+    "F-Droid client refresh sees LuHm OS in IzzyOnDroid",
+    "versionCode 100 installed from IzzyOnDroid on SM-S721U1",
     "launcher start verified with no external runtime",
-    "same-signer upgrade from versionCode 100 to 101 verified"
+    "same-signer versionCode 101 update delivered through IzzyOnDroid"
   ],
   "secret_policy": {
     "keys_in_git": false,
     "passwords_in_git": false,
     "keys_in_apk": false,
-    "keys_in_public_fdroid_branch": false,
+    "keys_in_public_repo": false,
     "keys_in_model_context": false,
     "base64_is_secret_storage": false
   },
@@ -105,5 +105,5 @@
     "art.eggiebagelface.kai9000.dev": "retired_not_valid_luhmos_release_evidence",
     "old_v6_v7_signed_repo": "historical_only_do_not_publish_as_luhmos"
   },
-  "status": "YELLOW_HARDENED_PIPELINE_AWAITING_PERSISTENT_SIGNING_PUBLICATION_AND_PHYSICAL_DEVICE_PROOF"
+  "status": "YELLOW_IZZY_PIPELINE_PREPARED_AWAITING_SIGNED_GITHUB_RELEASE_SUBMISSION_ACCEPTANCE_AND_DEVICE_PROOF"
 }
