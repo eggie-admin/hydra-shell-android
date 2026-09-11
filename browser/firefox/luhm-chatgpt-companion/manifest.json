@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "LuHm ChatGPT Companion",
-  "version": "0.3.3",
-  "description": "Private Firefox Android ChatGPT companion with Lum JRPG HUD, Japanese voice mode, English subtitles, private audio cues, and a localhost asset cache.",
+  "version": "0.4.0",
+  "description": "Private Firefox Android ChatGPT companion with Lum JRPG HUD, Japanese voice mode, English subtitles, private audio cues, localhost assets, and a private Live2D companion renderer.",
   "browser_specific_settings": {
     "gecko": {
       "id": "luhm-chatgpt-companion@eggiebagelface.art",
@@ -29,8 +29,17 @@
   "icons": {"48": "icons/luhm.svg", "96": "icons/luhm.svg"},
   "content_scripts": [{
     "matches": ["https://chatgpt.com/*", "https://chat.openai.com/*"],
-    "js": ["content.js"],
-    "css": ["content.css"],
+    "js": ["content.js", "live2d-host.js"],
+    "css": ["content.css", "live2d-host.css"],
     "run_at": "document_idle"
+  }],
+  "web_accessible_resources": [{
+    "resources": [
+      "live2d-frame.html",
+      "live2d-frame.js",
+      "live2d-frame.css",
+      "vendor/l2d.min.js"
+    ],
+    "matches": ["https://chatgpt.com/*", "https://chat.openai.com/*"]
   }]
 }
