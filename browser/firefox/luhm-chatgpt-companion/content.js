@@ -18,6 +18,7 @@
     "CAST ULTIMA": "ultima",
     "SAVEPOINT": "ui"
   };
+  const ALLOWED_EMOTIONS = new Set(["neutral", "happy", "teasing", "annoyed", "excited", "soft"]);
   const VOICE_MODE_PROMPT = [
     "LUM JAPANESE VOICE MODE ON.",
     "For spoken/playful replies, keep Lum original rather than imitating a specific copyrighted character or actor.",
@@ -33,6 +34,7 @@
   let voiceModeEnabled = false;
   let lastVoiceSignature = "";
   let subtitleTimer = null;
+  let inspectTimer = null;
 
   function findComposer() {
     const selectors = [
@@ -129,7 +131,7 @@
   function japaneseVoice() {
     if (!("speechSynthesis" in window)) return null;
     const voices = window.speechSynthesis.getVoices();
-    return voices.find(v => /^ja(-|$)/i.test(v.lang) && /female|woman|kyoko|haruka|sayaka|japanese/i.test(v.name))
+    return voices.find(v => /^ja(-|$)/i.test(v.lang) && v.localService)
       || voices.find(v => /^ja(-|$)/i.test(v.lang))
       || null;
   }
@@ -167,12 +169,14 @@
     if (!text) return null;
     const jp = text.match(/(?:^|\n)LUM-JP:\s*(.+?)(?=\nLUM-EN:|$)/s);
     const en = text.match(/(?:^|\n)LUM-EN:\s*(.+?)(?=\nLUM-EMOTION:|$)/s);
-    const emotion = text.match(/(?:^|\n)LUM-EMOTION:\s*([a-zA-Z_-]+)/);
+    const emotionMatch = text.match(/(?:^|\n)LUM-EMOTION:\s*([a-zA-Z_-]+)/);
     if (!jp || !en) return null;
     const ja = jp[1].trim();
     const english = en[1].trim();
+    const rawEmotion = (emotionMatch?.[1] || "neutral").toLowerCase();
+    const emotion = ALLOWED_EMOTIONS.has(rawEmotion) ? rawEmotion : "neutral";
     if (!ja || !english || ja.length > 1000 || english.length > 1200) return null;
-    return {ja, en:english, emotion:(emotion?.[1] || "neutral").toLowerCase()};
+    return {ja, en:english, emotion};
   }
 
   function newestAssistantText() {
@@ -186,34 +190,31 @@
     return "";
   }
 
+  function signatureFor(parsed) {
+    return parsed ? `${parsed.ja}\u241f${parsed.en}\u241f${parsed.emotion}` : "";
+  }
+
   async function inspectNewestVoiceReply() {
     if (!voiceModeEnabled) return;
     const parsed = parseVoiceBlock(newestAssistantText());
     if (!parsed) return;
-    const signature = `${parsed.ja}\u241f${parsed.en}\u241f${parsed.emotion}`;
+    const signature = signatureFor(parsed);
     if (signature === lastVoiceSignature) return;
     lastVoiceSignature = signature;
     showSubtitle(parsed.ja, parsed.en, parsed.emotion);
     await speakJapanese(parsed.ja, parsed.emotion);
   }
 
-  async function setVoiceMode(enabled) {
+  function setVoiceMode(enabled) {
     voiceModeEnabled = Boolean(enabled);
-    await api.storage.local.set({luhm_voice_mode_enabled: voiceModeEnabled});
-    if (!voiceModeEnabled) {
-      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
-      const overlay = document.getElementById("luhm-subtitle-overlay");
-      if (overlay) overlay.hidden = true;
+    if (voiceModeEnabled) {
+      lastVoiceSignature = signatureFor(parseVoiceBlock(newestAssistantText()));
+      return;
     }
-  }
-
-  async function restoreVoiceMode() {
-    try {
-      const stored = await api.storage.local.get("luhm_voice_mode_enabled");
-      voiceModeEnabled = Boolean(stored.luhm_voice_mode_enabled);
-    } catch (_) {
-      voiceModeEnabled = false;
-    }
+    lastVoiceSignature = "";
+    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+    const overlay = document.getElementById("luhm-subtitle-overlay");
+    if (overlay) overlay.hidden = true;
   }
 
   api.runtime.onMessage.addListener((msg) => {
@@ -259,7 +260,6 @@
         <button type="button" data-tool="audio">AUDIO</button>
         <button type="button" data-tool="voice">VOICE MODE</button>
         <button type="button" data-tool="assets">ASSET VAULT</button>
-        <button type="button" data-tool="terminal">TERMINAL</button>
       </div>
       <div id="luhm-pet-status">Lum is lurking. Private cache not scanned.</div>`;
 
@@ -289,7 +289,7 @@
         return;
       }
       pity.textContent = `🎲 PITY ${result.pity}/${result.hard_pity}`;
-      status.textContent = `${result.tier.toUpperCase()} · ${result.reward.label}`;
+      status.textContent = `${result.tier.toUpperCase()} · ${result.reward.label}${result.duplicate ? ` · copy #${result.copies}` : " · NEW"}`;
       if (result.tier === "Legendary") void playEventAudio("legendary");
     });
 
@@ -298,7 +298,7 @@
       const result = await runtime({type:"LUHM_PRIVATE_STATUS"});
       status.textContent = result?.ok
         ? `Private cache GREEN: ${result.files} files${result.packs?.length ? ` / ${result.packs.length} packs` : ""}.`
-        : "Private cache offline. Start the private bridge first.";
+        : "Private cache offline. Start the private asset bridge first.";
     });
 
     panel.querySelector('[data-tool="audio"]').addEventListener("click", async () => {
@@ -309,9 +309,9 @@
         : "Audio index offline. Run the private voice-cache sync first.";
     });
 
-    panel.querySelector('[data-tool="voice"]').addEventListener("click", async () => {
+    panel.querySelector('[data-tool="voice"]').addEventListener("click", () => {
       if (voiceModeEnabled) {
-        await setVoiceMode(false);
+        setVoiceMode(false);
         status.textContent = "Japanese voice mode OFF.";
         return;
       }
@@ -320,8 +320,8 @@
         status.textContent = "Tap the ChatGPT composer once, then retry.";
         return;
       }
-      await setVoiceMode(true);
-      status.textContent = "Japanese voice mode armed. Prompt loaded; you choose Send.";
+      setVoiceMode(true);
+      status.textContent = "Japanese voice mode armed for this page session. Prompt loaded; you choose Send.";
       panel.hidden = true;
     });
 
@@ -329,18 +329,11 @@
       const result = await runtime({type:"LUHM_OPEN_PRIVATE_CACHE"});
       status.textContent = result?.ok ? "Opened private asset vault." : "Private vault unavailable.";
     });
-
-    panel.querySelector('[data-tool="terminal"]').addEventListener("click", async () => {
-      const result = await runtime({type:"LUHM_OPEN_TERMINAL"});
-      status.textContent = result?.ok ? "Opened loopback terminal." : "Terminal bridge unavailable.";
-    });
   }
 
-  void restoreVoiceMode();
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mountPanel, {once:true});
   else mountPanel();
 
-  let inspectTimer = null;
   new MutationObserver(() => {
     if (!document.getElementById("luhm-pet-launcher")) mountPanel();
     if (!voiceModeEnabled) return;
