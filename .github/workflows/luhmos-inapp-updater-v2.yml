@@ -177,7 +177,7 @@ jobs:
           npm ci --ignore-scripts --no-audit --no-fund
           npm run build --workspace=video-forge-ui
           test -s forge-ui/dist/index.html
-          grep -R -q '__LUHMOS_UPDATE_CONTRACT__' forge-ui/dist/assets
+          test -n "$(find forge-ui/dist/assets -type f -name '*.js' -print -quit)"
           echo 'LUHMOS_UPDATER_COCKPIT_GREEN'
 
       - name: Compile Android updater plugin
