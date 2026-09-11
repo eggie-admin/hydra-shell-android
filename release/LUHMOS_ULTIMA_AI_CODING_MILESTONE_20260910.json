@@ -1,26 +1,35 @@
 {
-  "schema": "luhmos.ultima-ai-coding-milestone.v1",
-  "milestone": "LUHMOS_ULTIMA_AI_CODING_MILESTONE_20260910",
+  "schema": "luhmos.ultima-install-milestone.v2",
+  "milestone": "LUHMOS_ULTIMA_INSTALL_MILESTONE_20260910",
   "status": "GREEN_DOCTRINE",
   "spell": "ULTIMA",
-  "meaning": "Hard-GREEN finale for an AI coding cycle: validated mutation, CI proof, optional artifact forge, milestone update, and Source-of-Truth seal.",
-  "authority_law": "AI proposes. Python authorizes. CI proves. The human promotes.",
-  "success_requires": [
-    "explicit target revision",
-    "all required CI gates GREEN",
-    "no unresolved RED gates",
-    "milestone record updated with exact evidence",
-    "Source-of-Truth seal written",
-    "artifact identity/signing/hash evidence when an artifact is part of the cycle"
+  "meaning": "Compile an explicit GREEN revision, verify the install artifact, upload it to Google Drive Source of Truth, record hash/provenance, and expose the exact Drive install link inside LuHm OS.",
+  "pipeline": [
+    "explicit GREEN revision",
+    "approved remote compile forge",
+    "artifact verification",
+    "Google Drive Source-of-Truth upload",
+    "SHA-256 and provenance record",
+    "in-app Google Drive install-link publication"
+  ],
+  "android_verification": [
+    "application_id=art.eggiebagelface.luhmos",
+    "target_api=36",
+    "abi=arm64-v8a",
+    "16kb_compatibility",
+    "bundled_assets",
+    "artifact_sha256",
+    "signer_identity_when_release_signing_is_required"
   ],
   "never_means": [
     "blind merge",
-    "silent stable promotion",
-    "debug signer substituted for production signer",
-    "queued workflow counted as success",
-    "model confidence counted as evidence"
+    "release-channel promotion",
+    "stale Drive link reuse",
+    "debug signer labeled as production signer",
+    "queued workflow counted as success"
   ],
-  "android_release_gate": "Persistent luhmos-release signer remains required before production Android release GREEN.",
+  "install_link_rule": "The app must consume the exact Source-of-Truth file URL/ID returned after upload; never synthesize a Drive URL from a filename.",
+  "production_gate": "Persistent luhmos-release signer remains required before a production Android artifact can be labeled GREEN.",
   "current_sealed_main": "f430928bc3b73a0b85651f4fc84b218e89229e00",
   "current_testing_meteo": "a45e4f4e74fd5525338f0a7d8dc3b1c2138a07a8"
 }
