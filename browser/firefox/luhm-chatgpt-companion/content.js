@@ -18,7 +18,21 @@
     "CAST ULTIMA": "ultima",
     "SAVEPOINT": "ui"
   };
-  const VOICE_TUNE_PROMPT = "LUM VOICE MODE: Keep spoken replies natural and compact, usually 1-3 sentences. Use quick conversational cadence, warm playful sassy PG-13 goth-alt oni/JRPG quest-giver energy, and call me Professor occasionally rather than every sentence. Technical accuracy outranks roleplay. Use contractions and speech-friendly phrasing. Avoid markdown-heavy formatting unless I ask for structure. Do not imitate a specific actor or copyrighted character voice, and do not narrate SFX tags aloud; the private Firefox companion handles sound cues separately.";
+  const VOICE_MODE_PROMPT = [
+    "LUM JAPANESE VOICE MODE ON.",
+    "For spoken/playful replies, keep Lum original rather than imitating a specific copyrighted character or actor.",
+    "Use short natural Japanese, usually 1-3 sentences, with warm playful sassy PG-13 goth-alt oni/JRPG energy.",
+    "Technical accuracy outranks roleplay. Address me as Professor occasionally, not every sentence.",
+    "End each voice-mode reply with exactly these three plain-text lines, with no markdown fences:",
+    "LUM-JP: <natural Japanese line to speak>",
+    "LUM-EN: <faithful concise English subtitle>",
+    "LUM-EMOTION: <neutral|happy|teasing|annoyed|excited|soft>",
+    "Do not put sound-effect instructions in those lines. The private Firefox companion handles audio cues separately."
+  ].join("\n");
+
+  let voiceModeEnabled = false;
+  let lastVoiceSignature = "";
+  let subtitleTimer = null;
 
   function findComposer() {
     const selectors = [
@@ -91,6 +105,117 @@
     }
   }
 
+  function subtitleNode() {
+    let overlay = document.getElementById("luhm-subtitle-overlay");
+    if (overlay) return overlay;
+    overlay = document.createElement("aside");
+    overlay.id = "luhm-subtitle-overlay";
+    overlay.hidden = true;
+    overlay.innerHTML = '<div class="luhm-subtitle-jp"></div><div class="luhm-subtitle-en"></div><div class="luhm-subtitle-emotion"></div>';
+    document.documentElement.appendChild(overlay);
+    return overlay;
+  }
+
+  function showSubtitle(ja, en, emotion) {
+    const overlay = subtitleNode();
+    overlay.querySelector(".luhm-subtitle-jp").textContent = ja;
+    overlay.querySelector(".luhm-subtitle-en").textContent = en;
+    overlay.querySelector(".luhm-subtitle-emotion").textContent = emotion || "neutral";
+    overlay.hidden = false;
+    if (subtitleTimer) clearTimeout(subtitleTimer);
+    subtitleTimer = setTimeout(() => { overlay.hidden = true; }, Math.min(14000, Math.max(5000, en.length * 85)));
+  }
+
+  function japaneseVoice() {
+    if (!("speechSynthesis" in window)) return null;
+    const voices = window.speechSynthesis.getVoices();
+    return voices.find(v => /^ja(-|$)/i.test(v.lang) && /female|woman|kyoko|haruka|sayaka|japanese/i.test(v.name))
+      || voices.find(v => /^ja(-|$)/i.test(v.lang))
+      || null;
+  }
+
+  function browserSpeakJapanese(ja, emotion) {
+    if (!("speechSynthesis" in window) || !window.SpeechSynthesisUtterance) return false;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(ja);
+    utterance.lang = "ja-JP";
+    const voice = japaneseVoice();
+    if (voice) utterance.voice = voice;
+    utterance.rate = emotion === "excited" ? 1.08 : emotion === "soft" ? 0.92 : 1.0;
+    utterance.pitch = emotion === "teasing" ? 1.08 : emotion === "annoyed" ? 0.96 : 1.03;
+    utterance.volume = 0.92;
+    window.speechSynthesis.speak(utterance);
+    return true;
+  }
+
+  async function speakJapanese(ja, emotion) {
+    const cached = await runtime({type:"LUHM_VOICE_CACHE_GET", ja});
+    if (cached?.ok && cached.data_url) {
+      try {
+        const audio = new Audio(cached.data_url);
+        audio.volume = 0.92;
+        await audio.play();
+        return {ok:true, source:"local-ttl-cache", provider:cached.provider || "cache"};
+      } catch (_) {}
+    }
+    return browserSpeakJapanese(ja, emotion)
+      ? {ok:true, source:"web-speech"}
+      : {ok:false, source:"subtitle-only"};
+  }
+
+  function parseVoiceBlock(text) {
+    if (!text) return null;
+    const jp = text.match(/(?:^|\n)LUM-JP:\s*(.+?)(?=\nLUM-EN:|$)/s);
+    const en = text.match(/(?:^|\n)LUM-EN:\s*(.+?)(?=\nLUM-EMOTION:|$)/s);
+    const emotion = text.match(/(?:^|\n)LUM-EMOTION:\s*([a-zA-Z_-]+)/);
+    if (!jp || !en) return null;
+    const ja = jp[1].trim();
+    const english = en[1].trim();
+    if (!ja || !english || ja.length > 1000 || english.length > 1200) return null;
+    return {ja, en:english, emotion:(emotion?.[1] || "neutral").toLowerCase()};
+  }
+
+  function newestAssistantText() {
+    const exact = [...document.querySelectorAll('[data-message-author-role="assistant"]')];
+    if (exact.length) return exact[exact.length - 1].textContent || "";
+    const articles = [...document.querySelectorAll("article")];
+    for (let i = articles.length - 1; i >= 0; i--) {
+      const text = articles[i].textContent || "";
+      if (text.includes("LUM-JP:") && text.includes("LUM-EN:")) return text;
+    }
+    return "";
+  }
+
+  async function inspectNewestVoiceReply() {
+    if (!voiceModeEnabled) return;
+    const parsed = parseVoiceBlock(newestAssistantText());
+    if (!parsed) return;
+    const signature = `${parsed.ja}\u241f${parsed.en}\u241f${parsed.emotion}`;
+    if (signature === lastVoiceSignature) return;
+    lastVoiceSignature = signature;
+    showSubtitle(parsed.ja, parsed.en, parsed.emotion);
+    await speakJapanese(parsed.ja, parsed.emotion);
+  }
+
+  async function setVoiceMode(enabled) {
+    voiceModeEnabled = Boolean(enabled);
+    await api.storage.local.set({luhm_voice_mode_enabled: voiceModeEnabled});
+    if (!voiceModeEnabled) {
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+      const overlay = document.getElementById("luhm-subtitle-overlay");
+      if (overlay) overlay.hidden = true;
+    }
+  }
+
+  async function restoreVoiceMode() {
+    try {
+      const stored = await api.storage.local.get("luhm_voice_mode_enabled");
+      voiceModeEnabled = Boolean(stored.luhm_voice_mode_enabled);
+    } catch (_) {
+      voiceModeEnabled = false;
+    }
+  }
+
   api.runtime.onMessage.addListener((msg) => {
     if (msg?.type !== "LUHM_INSERT_COMMAND") return;
     return Promise.resolve(insertCommand(msg.command));
@@ -132,7 +257,7 @@
       <div class="luhm-tools">
         <button type="button" data-tool="scan">CACHE</button>
         <button type="button" data-tool="audio">AUDIO</button>
-        <button type="button" data-tool="voice">VOICE TUNE</button>
+        <button type="button" data-tool="voice">VOICE MODE</button>
         <button type="button" data-tool="assets">ASSET VAULT</button>
         <button type="button" data-tool="terminal">TERMINAL</button>
       </div>
@@ -150,9 +275,7 @@
         const command = btn.dataset.luhm;
         void playEventAudio(SOUND_EVENTS[command] || "ui");
         const result = insertCommand(command);
-        status.textContent = result.ok
-          ? `${command} loaded. You choose Send.`
-          : "Tap the ChatGPT composer once, then retry.";
+        status.textContent = result.ok ? `${command} loaded. You choose Send.` : "Tap the ChatGPT composer once, then retry.";
         if (result.ok) panel.hidden = true;
       });
     });
@@ -183,15 +306,23 @@
       const result = await runtime({type:"LUHM_AUDIO_STATUS"});
       status.textContent = result?.ok
         ? `AUDIO: ${result.playable} playable / ${result.game_containers} game containers / ${result.recognized} recognized${result.vgmstream ? " · vgmstream READY" : ""}`
-        : "Audio index offline. Run private bridge reindex after syncing assets.";
+        : "Audio index offline. Run the private voice-cache sync first.";
     });
 
-    panel.querySelector('[data-tool="voice"]').addEventListener("click", () => {
-      const result = insertText(VOICE_TUNE_PROMPT);
-      status.textContent = result.ok
-        ? "Lum voice profile loaded into the composer. You choose Send."
-        : "Tap the ChatGPT composer once, then retry.";
-      if (result.ok) panel.hidden = true;
+    panel.querySelector('[data-tool="voice"]').addEventListener("click", async () => {
+      if (voiceModeEnabled) {
+        await setVoiceMode(false);
+        status.textContent = "Japanese voice mode OFF.";
+        return;
+      }
+      const result = insertText(VOICE_MODE_PROMPT);
+      if (!result.ok) {
+        status.textContent = "Tap the ChatGPT composer once, then retry.";
+        return;
+      }
+      await setVoiceMode(true);
+      status.textContent = "Japanese voice mode armed. Prompt loaded; you choose Send.";
+      panel.hidden = true;
     });
 
     panel.querySelector('[data-tool="assets"]').addEventListener("click", async () => {
@@ -205,10 +336,15 @@
     });
   }
 
+  void restoreVoiceMode();
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mountPanel, {once:true});
   else mountPanel();
 
+  let inspectTimer = null;
   new MutationObserver(() => {
     if (!document.getElementById("luhm-pet-launcher")) mountPanel();
-  }).observe(document.documentElement, {childList:true, subtree:true});
+    if (!voiceModeEnabled) return;
+    if (inspectTimer) clearTimeout(inspectTimer);
+    inspectTimer = setTimeout(() => { void inspectNewestVoiceReply(); }, 350);
+  }).observe(document.documentElement, {childList:true, subtree:true, characterData:true});
 })();
