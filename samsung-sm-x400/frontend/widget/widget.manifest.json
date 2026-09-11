@@ -51,5 +51,6 @@
     "cockpit": 8787,
     "ollama": 11434
   },
-  "privilegeBroker": "samsung-sm-x400/frontend/widget/shizuku/shizuku.manifest.json"
+  "privilegeBroker": "samsung-sm-x400/frontend/widget/shizuku/shizuku.manifest.json",
+  "firefoxAndroidCompanion": "samsung-sm-x400/frontend/widget/firefox-android-companion/companion-shell.manifest.json"
 }

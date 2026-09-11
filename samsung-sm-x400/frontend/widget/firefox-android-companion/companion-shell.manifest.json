@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "samsung-sm-x400.frontend.widget.firefox-android-companion",
+  "optional": true,
+  "runtimeBoundary": {
+    "localhostOnly": true,
+    "allowedHost": "127.0.0.1",
+    "assetPathPrefixes": [
+      "/data/",
+      "/images/"
+    ],
+    "forbiddenCapabilities": [
+      "remoteExecutableCode",
+      "credentialScraping",
+      "cookieScraping",
+      "chatTranscriptScraping",
+      "autoPromptSend"
+    ]
+  },
+  "terminalLauncher": {
+    "mode": "open-tab-only",
+    "defaultUrl": "http://127.0.0.1:8767/",
+    "allowShellExecution": false,
+    "userControlledSession": true
+  },
+  "ux": {
+    "touchFriendlyControls": true,
+    "failClosedDomHandling": true,
+    "manualSendOnly": true
+  },
+  "provenance": {
+    "cathedralRepository": "eggie-admin/vue-headless-cms",
+    "cathedralBranch": "samsung-sm-x400-build-candidate",
+    "cathedralHead": "215310cff47d65311d6e7ff60eb63d6f176a444b"
+  }
+}
