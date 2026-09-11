@@ -1,5 +1,5 @@
 {
-  "schema": "project-hydra.samsung-android-apk-reference.v3",
+  "schema": "project-hydra.samsung-android-apk-reference.v4",
   "role": "Canonical standalone Samsung Android APK",
   "canonical_repository": "eggie-admin/hydra-shell-android",
   "canonical_branch": "luhmos-main",
@@ -8,6 +8,10 @@
     "package_id": "art.eggiebagelface.luhmos",
     "release_signing_alias": "luhmos-release",
     "version_line": "1.x",
+    "baseline_version": "1.0.0",
+    "baseline_version_code": 100,
+    "next_update_test_version": "1.0.1",
+    "next_update_test_version_code": 101,
     "target_sdk": 36,
     "primary_abi": "arm64-v8a"
   },
@@ -15,13 +19,26 @@
     "manufacturer": "Samsung",
     "model": "SM-S721U1",
     "family": "Galaxy S24 FE",
-    "android": 16
+    "android": 16,
+    "rooted": false
+  },
+  "pinned_android_donor": {
+    "repository": "eggie-admin/vue-headless-cms",
+    "branch": "luhmos/s24fe-standalone-hardening-20260911",
+    "commit": "96c23c87713800fc17c80b6a972ee2e93f1bb4b1",
+    "review_pr": 20,
+    "production_termux_permission": false,
+    "production_termux_package_query": false,
+    "widget_external_daemon_control": false,
+    "webview_mixed_content": "never_allow",
+    "webview_external_schemes": ["https", "mailto"],
+    "webview_cookies": false
   },
   "build_architecture": {
     "godot": "native Android shell/runtime",
     "web_ui": "bundled Vue/WebView assets",
     "kotlin": "bounded Android bridge only",
-    "python": "reference policy/control implementation; Android runtime must be packaged or migrated inside the APK boundary",
+    "python": "reference policy/control implementation; production Android may not require an external Python interpreter",
     "node_npm": "build-time only"
   },
   "requirements": {
@@ -35,18 +52,30 @@
     "arm64_required": true,
     "page_size_16k_verification_required": true,
     "termux_required": false,
-    "termux_api_required": false,
+    "termux_permission_allowed": false,
     "acode_required": false,
     "acodex_required": false,
-    "axs_required": false,
     "vnc_required": false,
-    "websocket_desktop_bridge_required": false,
     "secure_folder_required": false,
     "external_localhost_daemon_required_for_launch": false,
     "automatic_root": false,
     "shizuku_required": false,
     "arbitrary_model_shell": false,
     "secrets_in_apk_or_repo": false
+  },
+  "distribution": {
+    "primary": "custom public F-Droid repository",
+    "canonical_repo_url": "https://fdroid.eggiebagelface.art/fdroid/repo/",
+    "public_bootstrap_mirror": "https://raw.githubusercontent.com/eggie-admin/hydra-shell-android/fdroid-public/fdroid/repo/",
+    "fdroid_index_v2_required": true,
+    "fdroid_index_v1_compatibility_required": true,
+    "repo_fingerprint_must_be_pinned": true,
+    "s24fe_import_install_and_upgrade_test_required": true
+  },
+  "separate_rooted_lab": {
+    "manifest": "project/hydra/samsung/android/rooted/SMX400_ROOTED_DEV_GOAL_20260911.json",
+    "application_id": "art.eggiebagelface.luhmos.rooted",
+    "may_replace_production_package": false
   },
   "optional_integrations": {
     "remote_ai": true,
@@ -55,9 +84,9 @@
     "rule": "optional integrations must fail gracefully and may not block base application launch"
   },
   "historical_references": {
-    "legacy_samsung_donor": "eggie-admin/vue-headless-cms",
     "legacy_termux_acodex_vnc_secure_folder_lane": "historical_only",
+    "legacy_videoforge_package": "historical_only",
     "testing_ingest_manifest": "project/hydra/samsung/android/apk/testing-ingest.manifest.json"
   },
-  "next_green_gate": "LUHMOS_S24FE_STANDALONE_APK_GREEN"
+  "next_green_gate": "LUHMOS_S24FE_FDROID_PUBLIC_INSTALL_GREEN"
 }
