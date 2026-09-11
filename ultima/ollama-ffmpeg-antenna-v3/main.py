@@ -131,7 +131,7 @@ def health():
         comfy_ok = True
     except Exception as exc:
         comfy_ok = False
-        comfy = str(exc)
+        comfy = {"error": "comfyui_unavailable", "error_type": type(exc).__name__}
     return {
         "ok": True,
         "service": "kai9000-ultima-ollama-ffmpeg-antenna-v3",

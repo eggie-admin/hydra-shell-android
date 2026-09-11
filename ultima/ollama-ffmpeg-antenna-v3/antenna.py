@@ -4,6 +4,7 @@ import json
 import os
 import shutil
 import subprocess
+import urllib.parse
 from typing import Any
 
 import httpx
@@ -14,6 +15,21 @@ OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "qwen2.5:3b")
 
 class AntennaError(RuntimeError):
     pass
+
+
+def _loopback_ollama_url() -> str:
+    parsed = urllib.parse.urlsplit(OLLAMA_URL)
+    if (
+        parsed.scheme != "http"
+        or parsed.hostname not in {"127.0.0.1", "::1"}
+        or parsed.path not in {"", "/"}
+        or parsed.query
+        or parsed.fragment
+        or parsed.username is not None
+        or parsed.password is not None
+    ):
+        raise AntennaError("Ollama endpoint must remain a bare loopback HTTP origin")
+    return OLLAMA_URL
 
 
 def _binary_version(name: str) -> dict[str, Any]:
@@ -36,23 +52,36 @@ def _binary_version(name: str) -> dict[str, Any]:
 
 def ollama_status(timeout: float = 4.0) -> dict[str, Any]:
     try:
+        ollama_url = _loopback_ollama_url()
         with httpx.Client(timeout=timeout) as client:
-            r = client.get(f"{OLLAMA_URL}/api/tags")
+            r = client.get(f"{ollama_url}/api/tags")
             r.raise_for_status()
             data = r.json()
         models = [item.get("name") for item in data.get("models", []) if item.get("name")]
         return {
             "ok": True,
-            "url": OLLAMA_URL,
+            "url": ollama_url,
             "default_model": OLLAMA_MODEL,
             "models": models,
+            "fail_closed": True,
+        }
+    except AntennaError as exc:
+        return {
+            "ok": False,
+            "url": OLLAMA_URL,
+            "default_model": OLLAMA_MODEL,
+            "error": "ollama_endpoint_policy_violation",
+            "error_type": type(exc).__name__,
+            "fail_closed": True,
         }
     except Exception as exc:
         return {
             "ok": False,
             "url": OLLAMA_URL,
             "default_model": OLLAMA_MODEL,
-            "error": str(exc),
+            "error": "ollama_unavailable",
+            "error_type": type(exc).__name__,
+            "fail_closed": True,
         }
 
 
@@ -65,6 +94,8 @@ def antenna_status() -> dict[str, Any]:
         "policy": {
             "local_first": True,
             "ollama_loopback_default": True,
+            "ollama_loopback_enforced": True,
+            "non_loopback_model_fallback": False,
             "ffmpeg_local_binary": True,
             "github_is_source_remote_not_runtime_ai": True,
             "google_drive_is_backup_not_execution_plane": True,
@@ -73,6 +104,7 @@ def antenna_status() -> dict[str, Any]:
 
 
 def ollama_chat(message: str, model: str | None = None, timeout: float = 120.0) -> dict[str, Any]:
+    ollama_url = _loopback_ollama_url()
     chosen = model or OLLAMA_MODEL
     payload = {
         "model": chosen,
@@ -90,7 +122,7 @@ def ollama_chat(message: str, model: str | None = None, timeout: float = 120.0) 
     }
     try:
         with httpx.Client(timeout=timeout) as client:
-            r = client.post(f"{OLLAMA_URL}/api/chat", json=payload)
+            r = client.post(f"{ollama_url}/api/chat", json=payload)
             r.raise_for_status()
             data = r.json()
         return {
