@@ -1,0 +1,26 @@
+{
+  "schema": "luhmos.ultima-ai-coding-milestone.v1",
+  "milestone": "LUHMOS_ULTIMA_AI_CODING_MILESTONE_20260910",
+  "status": "GREEN_DOCTRINE",
+  "spell": "ULTIMA",
+  "meaning": "Hard-GREEN finale for an AI coding cycle: validated mutation, CI proof, optional artifact forge, milestone update, and Source-of-Truth seal.",
+  "authority_law": "AI proposes. Python authorizes. CI proves. The human promotes.",
+  "success_requires": [
+    "explicit target revision",
+    "all required CI gates GREEN",
+    "no unresolved RED gates",
+    "milestone record updated with exact evidence",
+    "Source-of-Truth seal written",
+    "artifact identity/signing/hash evidence when an artifact is part of the cycle"
+  ],
+  "never_means": [
+    "blind merge",
+    "silent stable promotion",
+    "debug signer substituted for production signer",
+    "queued workflow counted as success",
+    "model confidence counted as evidence"
+  ],
+  "android_release_gate": "Persistent luhmos-release signer remains required before production Android release GREEN.",
+  "current_sealed_main": "f430928bc3b73a0b85651f4fc84b218e89229e00",
+  "current_testing_meteo": "a45e4f4e74fd5525338f0a7d8dc3b1c2138a07a8"
+}
