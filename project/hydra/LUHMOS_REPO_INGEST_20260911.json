@@ -1,0 +1,102 @@
+{
+  "schema": "luhmos.repo-ingest.v1",
+  "date": "2026-09-11",
+  "canonical_target": "eggie-admin/hydra-shell-android:luhmos-main",
+  "mutation_branch": "luhmos/convergence-all-repos-20260911",
+  "source_testing_head": "104590d087a839ff7e3d2749cad9b6336fc32681",
+  "rules": {
+    "blind_history_merge": false,
+    "pin_external_sources_by_sha": true,
+    "copy_only_reviewed_features": true,
+    "reference_repos_become_runtime_dependencies": false,
+    "preserve_license_boundaries": true
+  },
+  "ingested_sources": [
+    {
+      "repository": "eggie-admin/vue-headless-cms",
+      "branch": "luhmos/inapp-updater-v1",
+      "ref": "dd9b3e68e14ce7a559b7b13aebfe10c630fa171b",
+      "decision": "selected_build_time_donor",
+      "features": [
+        "LuHm OS native Android identity",
+        "Godot adaptive system resolution and sensor orientation",
+        "headless Godot CI smoke",
+        "bundled Vue cockpit",
+        "click-to-install/update APK UI",
+        "HTTPS-only updater transport",
+        "PackageInstaller session handoff",
+        "package-name lock",
+        "installed-signer lock",
+        "downgrade rejection",
+        "Android user confirmation boundary"
+      ]
+    },
+    {
+      "repository": "eggie-admin/amplify-godot-engine-template",
+      "branch": "main",
+      "ref": "abcc991107ad9d6b3ef413083e6906029337c94c",
+      "decision": "reference_only",
+      "notes": "Lum tablet APK/Godot build reference; current main already contains its lum-tablet-apk-build branch."
+    },
+    {
+      "repository": "eggie-admin/android-foss",
+      "branch": "master",
+      "ref": "22226aa58659036cc8e88b632a41b4a21b3e78c9",
+      "decision": "reference_only",
+      "notes": "Android FOSS and Samsung catalog reference; no upstream implementation history imported."
+    },
+    {
+      "repository": "eggie-admin/termux-app",
+      "branch": "master",
+      "ref": "121613ef1fba4002f3c6b63a254d31c6916ee1d5",
+      "decision": "reference_only_not_runtime_dependency",
+      "notes": "Ordinary Termux remains the external daemon/control-plane owner. LuHm APK does not embed or fork Termux runtime code."
+    },
+    {
+      "repository": "eggie-admin/Shizuku",
+      "branch": "master",
+      "ref": "9a0b7df5fa757f295b07ba6e3c7a3dc3182a20a0",
+      "decision": "optional_reference_only",
+      "notes": "No Shizuku runtime dependency. Keep Android PackageInstaller + user confirmation as default updater boundary."
+    }
+  ],
+  "reviewed_but_rejected_or_superseded": [
+    {
+      "source": "eggie-admin/vue-headless-cms:luhmos/android-samsung",
+      "feature": "legacy Google Drive install card",
+      "decision": "reject",
+      "reason": "hardcoded artifact URL and ephemeral signer do not satisfy real self-update lineage"
+    },
+    {
+      "source": "eggie-admin/vue-headless-cms:luhmos/android-samsung",
+      "feature": "LuHm private F-Droid metadata 1.0.0",
+      "decision": "regenerate",
+      "reason": "metadata concept retained, coordinates must track current 1.0.1/versionCode 101 lane"
+    },
+    {
+      "source": "eggie-admin/vue-headless-cms:luhmos/adaptive-display-v1",
+      "decision": "superseded",
+      "reason": "fully contained by selected in-app updater donor"
+    },
+    {
+      "source": "eggie-admin/hydra-shell-android:testing/luhm-os-android",
+      "decision": "legacy_evidence_only",
+      "reason": "divergent pre-LuHm forge history"
+    },
+    {
+      "source": "eggie-admin/hydra-shell-android:luhmos/ultima-identity-hotfix-20260910",
+      "decision": "superseded",
+      "reason": "identity contract is present in current testing forge"
+    }
+  ],
+  "active_build_lane": {
+    "workflow": ".github/workflows/luhmos-inapp-updater-v2.yml",
+    "version": "1.0.1",
+    "version_code": 101,
+    "package_id": "art.eggiebagelface.luhmos",
+    "target_sdk": 36,
+    "abi": "arm64-v8a",
+    "page_size_alignment": "16KiB",
+    "signing": "ephemeral_testing_only_until_persistent_release_identity_is_available"
+  }
+}
