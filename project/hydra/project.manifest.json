@@ -1,12 +1,13 @@
 {
-  "schema": "lumh-os.project-hydra.v2",
+  "schema": "luhm-os.project-hydra.v3",
   "name": "Project Hydra",
   "canonical_root": "project/hydra",
-  "parent_os": "LumH OS",
-  "branch_authority": "main",
+  "parent_os": "LuHm OS",
+  "branch_authority": "luhmos-main",
   "directory_doctrine": "project/hydra/doctrine/directory-structure.json",
   "runtime": {
-    "kai9000": "project/hydra/runtime/kai9000.reference.json"
+    "kai9000_reference": "project/hydra/runtime/kai9000.reference.json",
+    "android_external_runtime_required": false
   },
   "forge": {
     "hugging_face": "project/hydra/forge/hugging-face/reference.json"
@@ -14,11 +15,28 @@
   "platforms": {
     "samsung_android_apk": "project/hydra/samsung/android/apk/app.reference.json"
   },
+  "android_goal": {
+    "device": "Samsung SM-S721U1",
+    "android": 16,
+    "application_id": "art.eggiebagelface.luhmos",
+    "target_sdk": 36,
+    "primary_abi": "arm64-v8a",
+    "release_signing_alias": "luhmos-release",
+    "normal_package_install": true,
+    "standalone_launch_required": true,
+    "termux_required": false,
+    "acode_required": false,
+    "acodex_required": false,
+    "vnc_required": false,
+    "secure_folder_required": false,
+    "root_required": false
+  },
   "migration": {
     "strategy": "reference_not_copy",
     "legacy_paths_remain_compatible": true,
     "destructive_move_allowed": false,
-    "green_required_before_path_retirement": true
+    "green_required_before_path_retirement": true,
+    "legacy_termux_acodex_material": "historical_only"
   },
   "authority": {
     "final": "Professor",
