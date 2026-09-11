@@ -1,0 +1,26 @@
+{
+  "schema": "luhmos.save-seal.v1",
+  "seal": "LUHMOS_SAVE_SEAL_20260910",
+  "local_date": "2026-09-10",
+  "canonical_repository": "eggie-admin/hydra-shell-android",
+  "integration_branch": "luhmos-main",
+  "integration_commit_before_seal": "1c5c3ddca3af9744ba7d6f3181e917d0c7924ba7",
+  "testing_commit": "4952ce7f2ea93513c17a7db269d0f6108db0cbc6",
+  "milestone": "LUHMOS_REMOTE_AI_10PASS_MILESTONE_20260910",
+  "package_id": "art.eggiebagelface.luhmos",
+  "status": {
+    "architecture": "GREEN",
+    "ai_policy": "GREEN",
+    "ci_regression": "GREEN",
+    "remote_ai_smoke_harness": "GREEN",
+    "testing_channel": "GREEN",
+    "live_openai_ci_inference": "YELLOW_SKIPPED_NO_SECRET",
+    "live_huggingface_ci_inference": "YELLOW_SKIPPED_NO_SECRET",
+    "production_android_signing": "YELLOW_PENDING_PERSISTENT_LUHMOS_RELEASE_SIGNER",
+    "proposed_beta_stable": "HOLD"
+  },
+  "rollback_anchor": "edb0431ab532ddc79c1667e10c9d97bafd532a5e",
+  "authority_law": "AI proposes. Python authorizes. CI proves. The human promotes.",
+  "promotion_policy": "Do not advance beyond luhmos/testing until persistent Android release signing is proven and required release evidence is GREEN.",
+  "secrets_policy": "No private signing keys, API credentials, recovery secrets, or plaintext private material are stored in this seal."
+}
