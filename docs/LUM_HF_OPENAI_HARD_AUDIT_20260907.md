@@ -12,19 +12,18 @@ This document is intentionally created on the testing lineage before any promoti
 4. Google Drive is the recovery mirror and artifact source of truth.
 5. Cloudflare is the public edge.
 6. Remote GitHub terminal / Codespaces is the development terminal.
-7. Vercel is retired and forbidden.
-8. Local Termux is retired from the active architecture.
-9. `KAI9000_LUM_MAGIC_GRIMOIRE_HTMX_NPM_SOT_20260907` remains the deterministic Grimoire reference, but historical Termux/local-server notes inside it are not active deployment doctrine.
+7. Historical deployment providers are outside the active architecture and are not status authorities.
+8. `KAI9000_LUM_MAGIC_GRIMOIRE_HTMX_NPM_SOT_20260907` remains the deterministic Grimoire reference; stale deployment notes inside it are historical only.
 
 ## Hard-audit findings
 
 ### PASS: Grimoire integrity
 
-The Drive Grimoire SOT is sealed GREEN 10/10 for deterministic generation, syntax, regression tests, dynamic-code safety, and companion consistency. Its local HTMX/Termux notes are historical implementation boundaries rather than current deployment authority.
+The Drive Grimoire SOT is sealed GREEN 10/10 for deterministic generation, syntax, regression tests, dynamic-code safety, and companion consistency. Historical implementation notes are not active deployment authority.
 
 ### PASS: OpenAI Agents SDK version
 
-`openai-agents==0.22.0` remains the current released SDK baseline inspected for this audit.
+`openai-agents==0.22.0` remains the released SDK baseline inspected for this audit.
 
 ### PASS: Lum secret boundary
 
@@ -48,18 +47,18 @@ Hugging Face is connected and authenticated, but Lum had no dedicated skill desc
 
 ### FINDING 05: current deployment doctrine missing from Lum skills
 
-The Android backend skill did not explicitly encode the Crown Lock, remote GitHub terminal, Cloudflare public edge, Vercel purge, and local-Termux retirement.
+The Android backend skill did not explicitly encode the Crown Lock, remote GitHub terminal, and Cloudflare public edge.
 
-### FINDING 06: deterministic no-key message referenced retired local/Ollama doctrine
+### FINDING 06: deterministic no-key message referenced retired runtime wording
 
-The remote provider mock message still described `local deterministic/Ollama lanes`. The active doctrine is the deterministic application lane plus remote provider lanes; local Termux is not part of the active runtime.
+The remote provider mock message still described stale local runtime language. The active doctrine is the deterministic application lane plus explicitly configured provider lanes.
 
 ## Hugging Face evidence used for reroll
 
 - `openai/gpt-oss-120b`: Apache-2.0, endpoints compatible, multiple live Inference Providers.
 - `openai/gpt-oss-20b`: Apache-2.0, endpoints compatible, multiple live Inference Providers.
 - `Qwen/Qwen2.5-3B-Instruct`: Transformers/Safetensors text-generation model; its Hub metadata reports `license: other`, so it must not be treated as a permissively licensed default without license review.
-- Hugging Face Responses API is beta and uses `https://router.huggingface.co/v1/responses` / OpenAI-compatible clients. Provider suffix policies include `:fastest`, `:cheapest`, `:preferred`, or an explicit provider.
+- Hugging Face Responses API is beta and uses OpenAI-compatible clients. Provider suffix policies include `:fastest`, `:cheapest`, `:preferred`, or an explicit provider.
 
 ## Mutation decision
 
@@ -72,6 +71,6 @@ Sanity check is **NON-NULL**, therefore this audit authorizes the testing-branch
 - implement Luna/Sol routing in Lum;
 - enable configurable OpenAI Responses websocket transport;
 - correct the stale remote OpenAI model default;
-- remove retired local/Ollama wording from the remote provider fallback.
+- remove stale runtime wording from the remote provider fallback.
 
 No merge to `main`, publication, paid provider call, Hugging Face model download, or ULTIMA self-approval is authorized by this audit alone.
