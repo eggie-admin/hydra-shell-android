@@ -1,6 +1,6 @@
 {
   "schema": "kai9000.witching-hour.audit.v1",
-  "milestone": "KAI9000_WITCHING_HOUR_ULTIMA_WEBVIEW_HOTFIX_20260908",
+  "milestone": "KAI9000_SAMSUNG_NO_ROOT_WIDGET_FACTORY_HOTFIX_20260911",
   "definition": {
     "witching_hour": "sanity check plus hard 10-pass system-wide architecture audit with AI review chain sign-off",
     "cast_ultima": "compile and push according to the current canonical milestones, then seal exact source and artifact evidence",
@@ -20,13 +20,13 @@
     "first_ultima_source_sha": "1f180c04d312045dcacc75db2bddedc27f61e9c0",
     "first_ultima_run": 34177515509,
     "donor_repository": "eggie-admin/vue-headless-cms",
-    "previous_donor_ref": "903de4857f7554067a9cbfd2912202632f62c459",
-    "donor_ref": "574f4f5ae70ce56eca986cd5fb3452aa434ab955",
+    "previous_donor_ref": "574f4f5ae70ce56eca986cd5fb3452aa434ab955",
+    "donor_ref": "ff50009c46bc3e3896833ed346eecc8166a1a346",
     "donor_savepoint": "release/kai9000-1.0.0",
-    "donor_validation_pr": 16,
-    "donor_hotfix_head": "c9ce638454fbd62b1793a84a4039a933e0f10975",
-    "donor_hotfix_forge_run": 34182583449,
-    "donor_hotfix_android_run": 34182583489
+    "donor_validation_pr": 18,
+    "donor_hotfix_head": "4462f28b78ac6a308386970f14c0912466a33ba9",
+    "donor_hotfix_forge_run": 34557117208,
+    "donor_hotfix_android_run": 34557117261
   },
   "passes": [
     {"pass": 1, "name": "canonical_release_truth", "status": "GREEN"},
@@ -46,23 +46,32 @@
         "hydra-shell-android repository currently public",
         "main currently unprotected",
         "legacy Vercel status remains non-authoritative",
-        "post-hotfix physical device UI retest pending"
+        "post-widget-factory physical device UI retest pending"
       ]
     }
   ],
   "runtime_hotfix": {
-    "device_observation": "KAI launched but the packaged cockpit remained blank and occupied only the right side of the display",
+    "device_observation": "KAI 9000 reached its packaged boot fallback and reported TypeError: e.widget is not a function before cockpit initialization",
     "root_cause": [
-      "the UI bootstrap did not expose the jQuery global before jQuery UI initialization",
-      "the native CMS surface was intentionally constrained rather than full-screen"
+      "the bundled jQuery UI widget modules could run before the widget factory was initialized",
+      "the runtime dependency graph was not explicitly preloaded before cockpit registration"
     ],
     "corrections": [
-      "publish the jQuery globals before dynamically loading the cockpit",
-      "show a visible KAI 9000 BOOT ERROR when bootstrap fails",
-      "use full-screen native WebView layout",
-      "emit a page-finished diagnostic signal"
+      "publish one global jQuery instance before jQuery UI startup",
+      "preload the jQuery UI widget factory and required utilities in deterministic order",
+      "preload mouse, button, draggable and resizable before the cockpit modules",
+      "assert $.widget and required $.fn plugins before importing the cockpit",
+      "preserve full-screen WebView layout and visible boot diagnostics"
     ],
+    "no_root_boundary": {
+      "root_required": false,
+      "automatic_root": false,
+      "secure_folder_role": "cockpit_client_not_daemon_owner",
+      "privilege_broker": "optional_scoped_stock_shizuku"
+    },
     "donor_machine_validation": "GREEN",
+    "donor_forge_run": 34557117208,
+    "donor_android_run": 34557117261,
     "physical_device_retest": "PENDING_USER_DEVICE_RETEST"
   },
   "ai_chain": {
@@ -80,11 +89,11 @@
   "machine_evidence": {
     "first_ultima": "GREEN",
     "first_ultima_run": 34177515509,
-    "hotfix_donor_forge": "GREEN",
-    "hotfix_donor_forge_run": 34182583449,
-    "hotfix_donor_android": "GREEN",
-    "hotfix_donor_android_run": 34182583489,
-    "canonical_hotfix_ultima": "PENDING"
+    "widget_factory_donor_forge": "GREEN",
+    "widget_factory_donor_forge_run": 34557117208,
+    "widget_factory_donor_android": "GREEN",
+    "widget_factory_donor_android_run": 34557117261,
+    "canonical_widget_factory_ultima": "PENDING"
   },
   "overall": {
     "technical_release": "GREEN",
