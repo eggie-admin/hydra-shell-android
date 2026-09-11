@@ -1,0 +1,10 @@
+{
+  "schema": "luhmos.ultima-trigger-bridge.v1",
+  "milestone": "LUHMOS_ULTIMA_TRIGGER_BRIDGE_20260910",
+  "status": "GREEN_DOCTRINE",
+  "canonical_testing_branch": "luhmos/testing",
+  "bridge_workflow": ".github/workflows/ultima-testing-dispatch.yml",
+  "forge_workflow": ".github/workflows/oni-ultima-debug-apk.yml",
+  "behavior": "A push to luhmos/testing dispatches Oni Summoning against the exact luhmos/testing ref using the repository GITHUB_TOKEN with actions:write. This avoids dummy source commits and preserves the explicit ULTIMA target.",
+  "ultima_contract": "compile -> verify APK -> upload artifact to Google Drive Source of Truth -> record hash/provenance -> expose exact returned Drive link in-app"
+}
