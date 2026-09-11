@@ -51,14 +51,16 @@ def test_unknown_provider_is_rejected() -> None:
 
 
 def test_huggingface_token_shape_is_rejected_from_prompt() -> None:
+    fake_hf_token = "hf_" + ("a" * 32)
     with pytest.raises(HTTPException) as exc:
-        remote_ai._reject_secrets("use hf_abcdefghijklmnopqrstuvwxyz1234567890")
+        remote_ai._reject_secrets("use " + fake_hf_token)
     assert exc.value.status_code == 400
 
 
 def test_secret_shaped_provider_output_is_rejected() -> None:
+    fake_openai_key = "sk-" + ("a" * 32)
     with pytest.raises(HTTPException) as exc:
-        remote_ai._reject_secret_output("sk-abcdefghijklmnopqrstuvwxyz1234567890")
+        remote_ai._reject_secret_output(fake_openai_key)
     assert exc.value.status_code == 502
 
 
