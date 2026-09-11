@@ -1,0 +1,97 @@
+#!/data/data/com.termux/files/usr/bin/bash
+set -euo pipefail
+
+HERE="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "$HERE/.." && pwd)"
+VERSION="0.4.0"
+UNSIGNED="$ROOT/dist/luhm-chatgpt-companion-firefox-$VERSION-unsigned.xpi"
+DOWNLOADS="${LUHM_FIREFOX_INSTALL_DIR:-$HOME/storage/downloads}"
+OUT="$HOME/luhm-private/firefox-signed"
+
+cd "$ROOT"
+
+need_pkg() {
+  local cmd="$1" pkg="$2"
+  if ! command -v "$cmd" >/dev/null 2>&1; then
+    pkg install -y "$pkg"
+  fi
+}
+
+need_pkg node nodejs
+need_pkg npm nodejs
+need_pkg unzip unzip
+need_pkg sha256sum coreutils
+
+if [ ! -d "$HOME/storage" ]; then
+  echo "Shared storage is not enabled for this Termux profile."
+  echo "Run: termux-setup-storage"
+  echo "Approve the Android storage prompt, then rerun this installer."
+  exit 20
+fi
+
+mkdir -p "$DOWNLOADS" "$OUT"
+
+printf '\n=== LUHM FIREFOX FULL PRIVATE BUILD ===\n'
+chmod +x "$HERE/full-live2d-mutation" "$HERE/install-live2d-runtime" "$HERE/luhm-private-bridge" 2>/dev/null || true
+"$HERE/full-live2d-mutation"
+
+[ -f "$UNSIGNED" ] || {
+  echo "Expected XPI missing: $UNSIGNED" >&2
+  exit 21
+}
+
+if [ -z "${WEB_EXT_API_KEY:-}" ] || [ -z "${WEB_EXT_API_SECRET:-}" ]; then
+  FALLBACK="$DOWNLOADS/LuHm-ChatGPT-Companion-$VERSION-UNSIGNED.xpi"
+  cp -f "$UNSIGNED" "$FALLBACK"
+  echo
+  echo "BUILD GREEN, SIGNING NOT RUN"
+  echo "Unsigned copy: $FALLBACK"
+  echo
+  echo "Mozilla signing credentials are not present in this Termux environment."
+  echo "Set WEB_EXT_API_KEY and WEB_EXT_API_SECRET privately, then rerun this command."
+  echo "Do not paste those credentials into chat."
+  exit 22
+fi
+
+printf '\n=== MOZILLA UNLISTED SIGNING ===\n'
+rm -rf "$OUT/stage" "$OUT/artifacts"
+mkdir -p "$OUT/stage" "$OUT/artifacts"
+unzip -q "$UNSIGNED" -d "$OUT/stage"
+
+npx --yes web-ext@latest sign \
+  --source-dir "$OUT/stage" \
+  --artifacts-dir "$OUT/artifacts" \
+  --channel unlisted \
+  --api-key "$WEB_EXT_API_KEY" \
+  --api-secret "$WEB_EXT_API_SECRET" \
+  --approval-timeout 900000 \
+  --timeout 300000 \
+  --no-config-discovery
+
+SIGNED="$(find "$OUT/artifacts" -maxdepth 1 -type f -name '*.xpi' -print | sort | tail -n 1)"
+[ -n "$SIGNED" ] && [ -f "$SIGNED" ] || {
+  echo "Mozilla signing finished without a signed XPI in $OUT/artifacts" >&2
+  exit 23
+}
+
+DEST="$DOWNLOADS/LuHm-ChatGPT-Companion-$VERSION-SIGNED.xpi"
+cp -f "$SIGNED" "$DEST"
+chmod 644 "$DEST" 2>/dev/null || true
+
+printf '\n=== FINAL VERIFIED ARTIFACT ===\n'
+sha256sum "$DEST"
+echo "SIGNED_XPI=$DEST"
+echo "TERMUX_SIDE_INSTALL_GREEN"
+
+# Best-effort handoff to Android's file/app chooser. Firefox still requires the
+# user to approve the extension install prompt; Android does not permit Termux
+# to silently grant that permission on behalf of the user.
+if command -v termux-open >/dev/null 2>&1; then
+  termux-open --chooser "$DEST" >/dev/null 2>&1 || true
+fi
+
+echo
+echo "In Firefox Android: Settings > About Firefox > tap the Firefox logo 5x if needed,"
+echo "then Settings > Install Extension from File > select:"
+echo "$DEST"
+echo "Tap Add when Firefox asks for approval."
