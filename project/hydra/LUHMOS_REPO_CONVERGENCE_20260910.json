@@ -1,0 +1,58 @@
+{
+  "schema": "luhmos.repo-convergence.v1",
+  "date": "2026-09-10",
+  "status": "integration_branch",
+  "canonical": {
+    "repository": "eggie-admin/hydra-shell-android",
+    "branch": "luhmos-main",
+    "android_application_id": "art.eggiebagelface.luhmos"
+  },
+  "architecture": {
+    "python3": "control_plane_and_orchestration",
+    "npm": "build_time_only",
+    "godot": "android_shell_and_packager",
+    "gradle": "android_build_layer",
+    "secure_folder": "protected_cockpit_client",
+    "ordinary_termux": "daemon_owner"
+  },
+  "repositories": [
+    {
+      "repository": "eggie-admin/hydra-shell-android",
+      "role": "canonical_product_root",
+      "integration": "native"
+    },
+    {
+      "repository": "eggie-admin/vue-headless-cms",
+      "role": "ui_and_godot_android_donor",
+      "integration": "pinned_checkout_build_time",
+      "ref": "7c06bb76d4890c64202b438dd7fab2122db8d4ec",
+      "history_merge": false
+    },
+    {
+      "repository": "eggie-admin/amplify-godot-engine-template",
+      "role": "reference_and_testing_template",
+      "integration": "reference_only",
+      "ref": "c77465fb2884cbf33061b98a9fb08f4a03cccf20",
+      "history_merge": false
+    }
+  ],
+  "distribution_gates": {
+    "target_sdk": 36,
+    "abi": "arm64-v8a",
+    "page_size_16k": "required",
+    "apk": true,
+    "aab": "release_lane",
+    "persistent_release_signing": "required_before_production"
+  },
+  "security": {
+    "private_keys_in_git": false,
+    "private_keys_in_apk": false,
+    "public_certificates_may_be_tracked": true,
+    "tls_and_android_signing_keys_separate": true
+  },
+  "migration": {
+    "old_dev_application_id": "art.eggiebagelface.kai9000.dev",
+    "new_application_id": "art.eggiebagelface.luhmos",
+    "install_relationship": "separate_android_app_lineage"
+  }
+}
