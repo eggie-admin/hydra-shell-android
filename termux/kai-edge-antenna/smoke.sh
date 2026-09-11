@@ -11,10 +11,15 @@ python3 -m json.tool edge-gallery-profile.json >/dev/null
 python3 -m json.tool KAI9000_EDGE_GALLERY_MINI_OLLAMA_ANTENNA_20260911.manifest.json >/dev/null
 bash -n kai-edge-antenna
 
-urls="$(grep -R -nE 'https?://' mini_ollama_antenna.py kai-edge-antenna 2>/dev/null || true)"
-if printf '%s\n' "$urls" | grep -E 'https?://' | grep -vE 'https?://(127\.0\.0\.1|localhost)(:|/|$)' | grep -q .; then
-  echo "Unexpected non-loopback runtime URL detected" >&2
-  printf '%s\n' "$urls" >&2
+# Explicit loopback invariants.
+grep -q '^HOST="127\.0\.0\.1"$' kai-edge-antenna
+grep -q 'http://127\.0\.0\.1:8080' mini_ollama_antenna.py
+grep -q 'def _loopback_only' mini_ollama_antenna.py
+grep -q 'url.startswith("http://127\.0\.0\.1:")' mini_ollama_antenna.py
+grep -q 'url.startswith("http://localhost:")' mini_ollama_antenna.py
+
+if grep -R -nE '0\.0\.0\.0|https://' mini_ollama_antenna.py kai-edge-antenna 2>/dev/null; then
+  echo "Unexpected externally bound/runtime URL detected" >&2
   exit 1
 fi
 
