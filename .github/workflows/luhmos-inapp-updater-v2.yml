@@ -1,0 +1,295 @@
+name: LuHm OS In-App Updater v2
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - luhmos/testing
+    paths:
+      - '.github/workflows/luhmos-inapp-updater-v2.yml'
+      - 'project/hydra/LUHMOS_REPO_CONVERGENCE_20260910.json'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: luhmos-inapp-updater-v2-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DONOR_REPO: eggie-admin/vue-headless-cms
+  DONOR_REF: dd9b3e68e14ce7a559b7b13aebfe10c630fa171b
+  PACKAGE_ID: art.eggiebagelface.luhmos
+  VERSION_NAME: '1.0.1'
+  VERSION_CODE: '101'
+  GODOT_RELEASE: 4.7.2-stable
+  GODOT_TEMPLATE_VERSION: 4.7.2.stable
+  GODOT_EDITOR_SHA256: cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4
+  GODOT_TEMPLATES_SHA256: f298490b8d44d934be425a5a65a51bf15f422428b229a06a6e11d9ffea248011
+  ANDROID_GRADLE_VERSION: 8.11.1
+  ANDROID_GRADLE_SHA256: f397b287023acdba1e9f6fc5ea72d22dd63669d59ed4a289a29b1a76eee151c6
+  APK_NAME: luhmos-1.0.1-inapp-updater-debug.apk
+
+jobs:
+  forge:
+    name: Compile guarded LuHm updater APK
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - name: Checkout canonical LuHm OS
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Checkout exact updater donor
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: ${{ env.DONOR_REPO }}
+          ref: ${{ env.DONOR_REF }}
+          path: _forge/luhmos-android
+          persist-credentials: false
+
+      - name: Verify updater source contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          convergence = json.loads(Path('project/hydra/LUHMOS_REPO_CONVERGENCE_20260910.json').read_text())
+          donor = next(x for x in convergence['repositories'] if x['repository'] == 'eggie-admin/vue-headless-cms')
+          assert donor['ref'] == 'dd9b3e68e14ce7a559b7b13aebfe10c630fa171b'
+          assert donor['branch'] == 'luhmos/inapp-updater-v1'
+          update = convergence['update_contract']
+          assert update['package_lock'] == 'art.eggiebagelface.luhmos'
+          assert update['signer_lock'] == 'must_match_installed_app'
+          assert update['downgrade_policy'] == 'reject'
+          assert update['silent_install'] is False
+          root = Path('_forge/luhmos-android')
+          version = json.loads((root / 'release/version.json').read_text())
+          assert version == {
+              'packageId': 'art.eggiebagelface.luhmos',
+              'version': '1.0.1',
+              'pythonVersion': '1.0.0',
+              'versionCode': 101,
+          }
+          PY
+
+          PROJECT='_forge/luhmos-android/godot/project.godot'
+          PRESET='_forge/luhmos-android/godot/export_presets.cfg'
+          MANIFEST='_forge/luhmos-android/godot/android-plugin/plugin/src/main/AndroidManifest.xml'
+          PLUGIN='_forge/luhmos-android/godot/android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralAndroidPlugin.kt'
+          UI='_forge/luhmos-android/apps/forge-ui/src/App.vue'
+          SMOKE='_forge/luhmos-android/godot/scripts/headless_smoke.gd'
+          grep -q 'config/name="LuHm OS"' "$PROJECT"
+          grep -q 'handheld/orientation=6' "$PROJECT"
+          grep -q 'version/code=101' "$PRESET"
+          grep -q 'version/name="1.0.1"' "$PRESET"
+          grep -q 'package/unique_name="art.eggiebagelface.luhmos"' "$PRESET"
+          grep -q 'gradle_build/target_sdk="36"' "$PRESET"
+          grep -q 'architectures/arm64-v8a=true' "$PRESET"
+          grep -q 'android.permission.REQUEST_INSTALL_PACKAGES' "$MANIFEST"
+          grep -q 'CathedralUpdateReceiver' "$MANIFEST"
+          grep -q 'PackageInstaller.SessionParams' "$PLUGIN"
+          grep -q 'ACTION_MANAGE_UNKNOWN_APP_SOURCES' "$PLUGIN"
+          grep -q 'archive.packageName != context.packageName' "$PLUGIN"
+          grep -q 'signing certificate does not match installed LuHm OS' "$PLUGIN"
+          grep -q 'Rejected downgrade' "$PLUGIN"
+          grep -q '__LUHMOS_UPDATE_CONTRACT__' "$UI"
+          grep -q 'Install / Update APK' "$UI"
+          grep -q 'LUHMOS_HEADLESS_GODOT_GREEN' "$SMOKE"
+          echo 'LUHMOS_UPDATER_SOURCE_GREEN'
+
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.18.0'
+
+      - uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a
+        with:
+          gradle-version: '8.13'
+          cache-cleanup: on-success
+
+      - name: Install Android SDK 36
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" 'platform-tools' 'build-tools;36.1.0' 'platforms;android-36'
+
+      - name: Install verified Godot and export templates
+        shell: bash
+        run: |
+          set -euo pipefail
+          CACHE="$HOME/.cache/luhmos/godot-4.7.2"
+          WORK="$RUNNER_TEMP/luhmos-godot"
+          mkdir -p "$CACHE" "$WORK"
+          curl --fail --location --retry 5 --retry-all-errors -o "$CACHE/godot.zip" \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v4.7.2-stable_linux.x86_64.zip"
+          echo "${GODOT_EDITOR_SHA256}  $CACHE/godot.zip" | sha256sum --check --strict
+          curl --fail --location --retry 5 --retry-all-errors -o "$CACHE/export_templates.tpz" \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v4.7.2-stable_export_templates.tpz"
+          echo "${GODOT_TEMPLATES_SHA256}  $CACHE/export_templates.tpz" | sha256sum --check --strict
+          GRADLE_ZIP="$CACHE/gradle-${ANDROID_GRADLE_VERSION}-bin.zip"
+          curl --fail --location --retry 5 --retry-all-errors -o "$GRADLE_ZIP" \
+            "https://services.gradle.org/distributions/gradle-${ANDROID_GRADLE_VERSION}-bin.zip"
+          echo "${ANDROID_GRADLE_SHA256}  $GRADLE_ZIP" | sha256sum --check --strict
+          unzip -q -o "$CACHE/godot.zip" -d "$WORK"
+          chmod +x "$WORK/Godot_v4.7.2-stable_linux.x86_64"
+          echo "GODOT_BIN=$WORK/Godot_v4.7.2-stable_linux.x86_64" >> "$GITHUB_ENV"
+          rm -rf "$WORK/templates"
+          mkdir -p "$WORK/templates"
+          unzip -q -o "$CACHE/export_templates.tpz" -d "$WORK/templates"
+          TEMPLATE_DIR="$HOME/.local/share/godot/export_templates/${GODOT_TEMPLATE_VERSION}"
+          mkdir -p "$TEMPLATE_DIR"
+          cp -a "$WORK/templates/templates/." "$TEMPLATE_DIR/"
+          PATCH_DIR="$WORK/android-source-patched"
+          rm -rf "$PATCH_DIR"
+          mkdir -p "$PATCH_DIR"
+          unzip -q "$TEMPLATE_DIR/android_source.zip" -d "$PATCH_DIR"
+          WRAPPER_PROPS="$(find "$PATCH_DIR" -type f -path '*/gradle/wrapper/gradle-wrapper.properties' -print -quit)"
+          python - "$WRAPPER_PROPS" "$GRADLE_ZIP" "$ANDROID_GRADLE_SHA256" <<'PY'
+          from pathlib import Path
+          import sys
+          p = Path(sys.argv[1]); uri = Path(sys.argv[2]).resolve().as_uri(); digest = sys.argv[3]
+          lines = p.read_text().splitlines(); out=[]; saw=False
+          for line in lines:
+              if line.startswith('distributionUrl='): out.append(f'distributionUrl={uri}')
+              elif line.startswith('distributionSha256Sum='): out.append(f'distributionSha256Sum={digest}'); saw=True
+              else: out.append(line)
+          if not saw: out.append(f'distributionSha256Sum={digest}')
+          p.write_text('\n'.join(out)+'\n')
+          PY
+          (cd "$PATCH_DIR" && zip -q -r "$TEMPLATE_DIR/android_source.zip.new" .)
+          mv "$TEMPLATE_DIR/android_source.zip.new" "$TEMPLATE_DIR/android_source.zip"
+
+      - name: Compile bundled Vue cockpit
+        working-directory: _forge/luhmos-android/apps
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --global npm@12.0.2 --no-audit --no-fund
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run build --workspace=video-forge-ui
+          test -s forge-ui/dist/index.html
+          grep -R -q '__LUHMOS_UPDATE_CONTRACT__' forge-ui/dist/assets
+          echo 'LUHMOS_UPDATER_COCKPIT_GREEN'
+
+      - name: Compile Android updater plugin
+        working-directory: _forge/luhmos-android
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf godot/android-plugin/plugin/src/main/assets/cms
+          mkdir -p godot/android-plugin/plugin/src/main/assets/cms
+          cp -a apps/forge-ui/dist/. godot/android-plugin/plugin/src/main/assets/cms/
+          gradle -p godot/android-plugin :plugin:assemble
+          test -s godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-debug.aar
+          test -s godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-release.aar
+          rm -rf godot/addons/CathedralAndroid
+          mkdir -p godot/addons/CathedralAndroid/bin/debug godot/addons/CathedralAndroid/bin/release
+          cp -a godot/android-plugin/plugin/export_scripts_template/. godot/addons/CathedralAndroid/
+          cp godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-debug.aar godot/addons/CathedralAndroid/bin/debug/
+          cp godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-release.aar godot/addons/CathedralAndroid/bin/release/
+          echo 'LUHMOS_UPDATER_KOTLIN_GREEN'
+
+      - name: Configure ephemeral testing signer
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.config/godot" build/android
+          cat > "$HOME/.config/godot/editor_settings-4.tres" <<EOF
+          [gd_resource type="EditorSettings" format=3]
+
+          [resource]
+          export/android/android_sdk_path = "$ANDROID_HOME"
+          export/android/java_sdk_path = "$JAVA_HOME"
+          EOF
+          KEYSTORE="$RUNNER_TEMP/luhmos-debug.keystore"
+          keytool -genkeypair -keystore "$KEYSTORE" -storepass android \
+            -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 \
+            -validity 10000 -dname 'CN=LuHm OS Updater Testing,O=Eggie Bagelface Art,C=US'
+          echo "GODOT_ANDROID_KEYSTORE_DEBUG_PATH=$KEYSTORE" >> "$GITHUB_ENV"
+          echo 'GODOT_ANDROID_KEYSTORE_DEBUG_USER=androiddebugkey' >> "$GITHUB_ENV"
+          echo 'GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD=android' >> "$GITHUB_ENV"
+
+      - name: Headless Godot smoke
+        working-directory: _forge/luhmos-android
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$GODOT_BIN" --headless --editor --path godot --quit
+          "$GODOT_BIN" --headless --path godot --script res://scripts/headless_smoke.gd | tee "$GITHUB_WORKSPACE/build/android/headless-smoke.txt"
+          grep -q 'LUHMOS_HEADLESS_GODOT_GREEN' "$GITHUB_WORKSPACE/build/android/headless-smoke.txt"
+
+      - name: Export updater APK
+        working-directory: _forge/luhmos-android
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$GODOT_BIN" --headless --path godot \
+            --install-android-build-template \
+            --export-debug 'Android Release' \
+            "$GITHUB_WORKSPACE/build/android/$APK_NAME"
+          test -s "$GITHUB_WORKSPACE/build/android/$APK_NAME"
+
+      - name: Verify updater APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="build/android/$APK_NAME"
+          BT="$ANDROID_HOME/build-tools/36.1.0"
+          "$BT/apksigner" verify --verbose --print-certs "$APK" | tee build/android/signature.txt
+          "$BT/zipalign" -c -P 16 -v 4 "$APK" | tee build/android/zipalign.txt
+          "$BT/aapt" dump badging "$APK" | tee build/android/badging.txt
+          "$BT/aapt" dump xmltree "$APK" AndroidManifest.xml | tee build/android/manifest.txt
+          unzip -l "$APK" | tee build/android/contents.txt
+          sha256sum "$APK" | tee build/android/sha256.txt
+          grep -q "package: name='${PACKAGE_ID}'" build/android/badging.txt
+          grep -q "versionCode='${VERSION_CODE}'" build/android/badging.txt
+          grep -q "versionName='${VERSION_NAME}'" build/android/badging.txt
+          grep -q "application-label:'LuHm OS'" build/android/badging.txt
+          grep -q "targetSdkVersion:'36'" build/android/badging.txt
+          grep -q "native-code: 'arm64-v8a'" build/android/badging.txt
+          grep -q 'android.permission.REQUEST_INSTALL_PACKAGES' build/android/manifest.txt
+          grep -q 'CathedralUpdateReceiver' build/android/manifest.txt
+          grep -q 'assets/cms/index.html' build/android/contents.txt
+          grep -Eq 'Verified using v(2|3|4) scheme .*: true' build/android/signature.txt
+          cat > build/android/UPDATE_SIGNING_GATE.txt <<'EOF'
+          TESTING BUILD ONLY: this CI lane uses a fresh ephemeral debug signer.
+          Android package replacement requires the replacement APK to be signed by the same signing identity as the installed APK.
+          The updater therefore compiles and can validate/install same-signer APKs, but real cross-build updates require the persistent LuHm OS release signing identity.
+          EOF
+          echo 'LUHMOS_INAPP_UPDATER_APK_GREEN'
+
+      - name: Upload updater evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: luhmos-inapp-updater-v2-${{ github.run_number }}
+          path: |
+            build/android/${{ env.APK_NAME }}
+            build/android/sha256.txt
+            build/android/signature.txt
+            build/android/zipalign.txt
+            build/android/badging.txt
+            build/android/manifest.txt
+            build/android/contents.txt
+            build/android/headless-smoke.txt
+            build/android/UPDATE_SIGNING_GATE.txt
+          if-no-files-found: error
+          retention-days: 14
+
+  ultima:
+    name: LuHm updater v2 ULTIMA gate
+    needs: [forge]
+    runs-on: ubuntu-24.04
+    steps:
+      - run: |
+          set -euo pipefail
+          test '${{ needs.forge.result }}' = success
+          echo 'LUHMOS_INAPP_UPDATER_V2_ULTIMA_GREEN'
