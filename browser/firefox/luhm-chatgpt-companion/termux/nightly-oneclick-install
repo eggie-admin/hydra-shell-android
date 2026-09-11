@@ -1,0 +1,102 @@
+#!/data/data/com.termux/files/usr/bin/bash
+set -u
+
+BRANCH="feature/lum-chatgpt-companion-extension"
+REPO="$HOME/luhm-firefox"
+ROOT="$REPO/browser/firefox/luhm-chatgpt-companion"
+VERSION="0.4.0"
+NIGHTLY_PKG="org.mozilla.fenix"
+ASSETS="${LUHM_PRIVATE_ASSET_ROOT:-$HOME/luhm-private/assets}"
+INSTALL_DIR="$ASSETS/install"
+UNSIGNED="$ROOT/dist/luhm-chatgpt-companion-firefox-$VERSION-unsigned.xpi"
+XPI_NAME="LuHm-ChatGPT-Companion-$VERSION-NIGHTLY-UNSIGNED.xpi"
+XPI_LOCAL="$INSTALL_DIR/$XPI_NAME"
+PORT="${LUHM_ASSET_PORT:-8799}"
+BASE_URL="http://127.0.0.1:$PORT/install"
+
+banner() { printf '\n=== %s ===\n' "$1"; }
+
+termux-wake-lock 2>/dev/null || true
+export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=384}"
+export npm_config_jobs="${npm_config_jobs:-1}"
+export npm_config_audit=false
+export npm_config_fund=false
+
+banner "LUHM NIGHTLY ONE-CLICK / SOURCE"
+command -v git >/dev/null 2>&1 || pkg install -y git || exit 40
+if [ ! -d "$REPO/.git" ]; then
+  git clone --depth=1 --branch "$BRANCH" https://github.com/eggie-admin/hydra-shell-android.git "$REPO" || exit 41
+else
+  cd "$REPO" || exit 42
+  git fetch --depth=1 origin "$BRANCH" || exit 43
+  git reset --hard "origin/$BRANCH" || exit 44
+fi
+cd "$ROOT" || exit 45
+
+banner "TERMUX DEPENDENCIES"
+command -v python >/dev/null 2>&1 || pkg install -y python || exit 46
+command -v node >/dev/null 2>&1 || pkg install -y nodejs || exit 47
+command -v npm >/dev/null 2>&1 || pkg install -y nodejs || exit 48
+command -v sha256sum >/dev/null 2>&1 || pkg install -y coreutils || exit 49
+
+chmod +x \
+  termux/full-live2d-mutation \
+  termux/install-live2d-runtime \
+  termux/luhm-private-bridge 2>/dev/null || true
+
+banner "FULL PRIVATE LIVE2D FORGE"
+termux/full-live2d-mutation || {
+  code=$?
+  echo "Forge stopped with code $code" >&2
+  return "$code" 2>/dev/null || exit "$code"
+}
+
+[ -f "$UNSIGNED" ] || {
+  echo "Expected Nightly XPI missing: $UNSIGNED" >&2
+  exit 50
+}
+
+banner "LOCAL INSTALL PORTAL"
+mkdir -p "$INSTALL_DIR"
+cp -f "$UNSIGNED" "$XPI_LOCAL"
+chmod 600 "$XPI_LOCAL" 2>/dev/null || true
+sha256sum "$XPI_LOCAL"
+
+cat > "$INSTALL_DIR/index.html" <<EOF
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LuHm Nightly Install</title>
+<style>
+:root{color-scheme:dark}body{margin:0;background:#090b12;color:#f6f2ff;font:16px system-ui,sans-serif;display:grid;min-height:100vh;place-items:center}.card{max-width:560px;margin:20px;padding:24px;border:1px solid #54456f;border-radius:22px;background:linear-gradient(145deg,#151221,#0b1420);box-shadow:0 20px 80px #0008}h1{margin-top:0;color:#d7b8ff}.ok{color:#8fffd2}.warn{color:#ffd28f}a.install{display:block;margin:26px 0;padding:20px;border-radius:16px;text-align:center;text-decoration:none;font-weight:900;font-size:22px;background:#8e54ff;color:white}code{word-break:break-word;color:#8fe7ff}.small{opacity:.8;font-size:13px;line-height:1.45}
+</style>
+<div class="card">
+<h1>👹 LuHm Firefox Nightly</h1>
+<p class="ok">Private v$VERSION forge is ready.</p>
+<p><strong>One-time Nightly setup:</strong> open <code>about:config</code>, set <code>xpinstall.signatures.required</code> to <strong>false</strong>, then return here.</p>
+<a class="install" href="./$XPI_NAME">INSTALL LUHM</a>
+<p class="warn">Firefox will still show its Add confirmation. Tap <strong>Add</strong>. Android/Firefox does not permit this page to approve that security prompt for you.</p>
+<p class="small">Served only from 127.0.0.1 by ordinary Termux. No AMO signing secret is required for this Nightly developer lane.</p>
+</div>
+EOF
+
+termux/luhm-private-bridge restart || exit 51
+termux/luhm-private-bridge status || true
+
+banner "OPEN FIREFOX NIGHTLY INSTALL PORTAL"
+PORTAL="$BASE_URL/index.html"
+XPI_URL="$BASE_URL/$XPI_NAME"
+echo "Portal: $PORTAL"
+echo "XPI:    $XPI_URL"
+
+# Open the local install portal in Nightly. `pm` may be blocked on Android 16,
+# so Activity Manager is used without package enumeration.
+am start -a android.intent.action.VIEW -d "$PORTAL" -p "$NIGHTLY_PKG" >/dev/null 2>&1 || \
+  am start -a android.intent.action.VIEW -d "$PORTAL" >/dev/null 2>&1 || true
+
+banner "ONE-CLICK READY"
+echo "LIVE2D_FULL_MUTATION_GREEN"
+echo "NIGHTLY_INSTALL_PORTAL=$PORTAL"
+echo "NIGHTLY_XPI_URL=$XPI_URL"
+echo "SEAL=LUM_FIREFOX_LIVE2D_FULL_MUTATION_20260911"
+echo "LUHM_NIGHTLY_ONECLICK_READY"
