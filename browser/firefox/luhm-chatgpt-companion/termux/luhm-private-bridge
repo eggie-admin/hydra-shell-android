@@ -1,0 +1,81 @@
+#!/data/data/com.termux/files/usr/bin/bash
+set -euo pipefail
+
+ROOT="${LUHM_PRIVATE_ASSET_ROOT:-$HOME/luhm-private/assets}"
+STATE="${XDG_STATE_HOME:-$HOME/.local/state}/luhm-private-bridge"
+HERE="$(cd "$(dirname "$0")" && pwd)"
+ASSET_PORT="${LUHM_ASSET_PORT:-8799}"
+TERM_PORT="${LUHM_TERM_PORT:-7681}"
+mkdir -p "$ROOT" "$STATE"
+
+reindex() {
+  LUHM_PRIVATE_ASSET_ROOT="$ROOT" python "$HERE/build-private-manifest.py"
+}
+
+start_assets() {
+  reindex
+  if [ -f "$STATE/assets.pid" ] && kill -0 "$(cat "$STATE/assets.pid")" 2>/dev/null; then
+    echo "asset bridge already running"
+    return
+  fi
+  nohup python -m http.server "$ASSET_PORT" --bind 127.0.0.1 --directory "$ROOT" >"$STATE/assets.log" 2>&1 &
+  echo $! > "$STATE/assets.pid"
+  echo "asset bridge: http://127.0.0.1:$ASSET_PORT/"
+}
+
+start_terminal() {
+  if ! command -v ttyd >/dev/null 2>&1; then
+    echo "ttyd not installed; install it from your Termux repo if available, or leave terminal bridge disabled."
+    return 0
+  fi
+  if [ -f "$STATE/terminal.pid" ] && kill -0 "$(cat "$STATE/terminal.pid")" 2>/dev/null; then
+    echo "terminal bridge already running"
+    return
+  fi
+  nohup ttyd -i 127.0.0.1 -p "$TERM_PORT" bash -l >"$STATE/terminal.log" 2>&1 &
+  echo $! > "$STATE/terminal.pid"
+  echo "terminal bridge: http://127.0.0.1:$TERM_PORT/"
+}
+
+stop_one() {
+  local name="$1"
+  local pidfile="$STATE/$name.pid"
+  if [ -f "$pidfile" ]; then
+    local pid
+    pid="$(cat "$pidfile")"
+    kill "$pid" 2>/dev/null || true
+    rm -f "$pidfile"
+  fi
+}
+
+status_one() {
+  local name="$1"
+  local pidfile="$STATE/$name.pid"
+  if [ -f "$pidfile" ] && kill -0 "$(cat "$pidfile")" 2>/dev/null; then
+    echo "$name: GREEN pid=$(cat "$pidfile")"
+  else
+    echo "$name: OFF"
+  fi
+}
+
+sync_destiny_drive() {
+  if ! command -v rclone >/dev/null 2>&1; then
+    echo "rclone is required for Drive sync. Configure a private Google Drive remote named gdrive first."
+    return 2
+  fi
+  mkdir -p "$ROOT/DestinyChildMods"
+  rclone copy "gdrive:DestinyChildMods" "$ROOT/DestinyChildMods" \
+    --drive-shared-with-me --create-empty-src-dirs --checkers 8 --transfers 4 --progress
+  reindex
+}
+
+case "${1:-status}" in
+  start) start_assets; start_terminal ;;
+  stop) stop_one assets; stop_one terminal ;;
+  restart) "$0" stop; "$0" start ;;
+  status) status_one assets; status_one terminal; echo "asset root: $ROOT" ;;
+  reindex) reindex ;;
+  sync-drive) sync_destiny_drive ;;
+  logs) tail -n 80 "$STATE/assets.log" "$STATE/terminal.log" 2>/dev/null || true ;;
+  *) echo "usage: $0 {start|stop|restart|status|reindex|sync-drive|logs}"; exit 2 ;;
+esac
