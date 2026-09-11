@@ -14,7 +14,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 DIST = ROOT / "dist"
-VERSION = "0.3.3"
+VERSION = "0.4.0"
 SEALED_COMMANDS = [
     "PET LUM",
     "ROLL D20",
@@ -41,6 +41,11 @@ PACKAGE_FILES = [
     "background.js",
     "content.js",
     "content.css",
+    "live2d-host.js",
+    "live2d-host.css",
+    "live2d-frame.html",
+    "live2d-frame.js",
+    "live2d-frame.css",
     "popup.html",
     "popup.js",
     "popup.css",
@@ -48,7 +53,9 @@ PACKAGE_FILES = [
     "voice/lum-voice-profile.json",
     "AI_MANIFEST.json",
     "LUM_FIREFOX_JP_VOICE_TTL_20260911.json",
+    "LUM_FIREFOX_LIVE2D_FULL_MUTATION_20260911.json",
 ]
+JS_FILES = ["background.js", "content.js", "live2d-host.js", "live2d-frame.js", "popup.js"]
 
 
 def load_text(rel: str) -> str:
@@ -64,8 +71,15 @@ def check(condition: bool, message: str) -> None:
         raise AssertionError(message)
 
 
+def private_live2d_runtime() -> Path:
+    configured = os.environ.get("LUHM_LIVE2D_RUNTIME")
+    if configured:
+        return Path(configured).expanduser().resolve()
+    return (Path.home() / "luhm-private/runtime/l2d-2.1.1/index.min.js").resolve()
+
+
 def runtime_text() -> str:
-    return "\n".join(load_text(name) for name in ("background.js", "content.js", "popup.js"))
+    return "\n".join(load_text(name) for name in JS_FILES)
 
 
 def pass_1_manifest_scope() -> str:
@@ -74,7 +88,12 @@ def pass_1_manifest_scope() -> str:
     check(manifest.get("version") == VERSION, f"manifest version must be {VERSION}")
     check("gecko_android" in manifest.get("browser_specific_settings", {}), "Firefox Android target missing")
     check(manifest.get("browser_specific_settings", {}).get("gecko", {}).get("data_collection_permissions", {}).get("required") == ["none"], "data collection declaration must be none")
-    return "Firefox Android MV3 scope/version sealed"
+    scripts = manifest.get("content_scripts", [{}])[0].get("js", [])
+    check("live2d-host.js" in scripts, "Live2D host content script missing")
+    resources = [r for group in manifest.get("web_accessible_resources", []) for r in group.get("resources", [])]
+    for required in ("live2d-frame.html", "live2d-frame.js", "live2d-frame.css", "vendor/l2d.min.js"):
+        check(required in resources, f"Live2D web resource missing: {required}")
+    return "Firefox Android MV3 v0.4.0 + isolated Live2D frame sealed"
 
 
 def pass_2_permissions_hosts() -> str:
@@ -92,7 +111,10 @@ def pass_3_command_seal() -> str:
     for command in SEALED_COMMANDS:
         check(command in content, f"sealed command missing from content: {command}")
         check(command in popup, f"sealed command missing from popup: {command}")
-    return "sealed command whitelist intact"
+    host = load_text("live2d-host.js")
+    for command in SEALED_COMMANDS:
+        check(command in host, f"Live2D reaction mapping missing: {command}")
+    return "sealed command whitelist + Live2D reaction bridge intact"
 
 
 def pass_4_no_auto_send() -> str:
@@ -134,7 +156,8 @@ def pass_6_voice_privacy_contract() -> str:
         check(marker in content, f"voice marker missing: {marker}")
     check("if (!voiceModeEnabled) return;" in content, "newest assistant reader lacks explicit voice-mode gate")
     check("luhm_voice_mode_enabled" not in content, "voice mode must be session-only, not persisted")
-    return "voice mode is explicit/session-only with JP+EN contract"
+    check("LUHM_LIVE2D_VOICE" in load_text("live2d-host.js"), "Live2D lip sync bridge missing")
+    return "voice mode session-only; JP+EN contract + local Live2D mouth bridge"
 
 
 def pass_7_ttl_cache_logic() -> str:
@@ -160,7 +183,10 @@ def pass_8_copyright_isolation() -> str:
         if path.suffix.lower() in FORBIDDEN_ASSET_EXTS:
             offenders.append(path.relative_to(ROOT).as_posix())
     check(not offenders, f"private/game asset bytes found in public shell tree: {offenders}")
-    return "no third-party raster/audio/game binary assets in shell tree"
+    check(not (ROOT / "vendor/l2d.min.js").exists(), "private Live2D vendor runtime must not be committed to public source")
+    seal = load_json("LUM_FIREFOX_LIVE2D_FULL_MUTATION_20260911.json")
+    check(seal.get("live2d_mutation", {}).get("model_assets_in_public_git") is False, "Live2D model isolation seal drift")
+    return "private models/runtime excluded from public Git; only runtime stub committed"
 
 
 def pass_9_scope_prune() -> str:
@@ -173,7 +199,13 @@ def pass_9_scope_prune() -> str:
 
 
 def syntax_check() -> None:
-    for rel in ("manifest.json", "voice/lum-voice-profile.json", "AI_MANIFEST.json", "LUM_FIREFOX_JP_VOICE_TTL_20260911.json"):
+    for rel in (
+        "manifest.json",
+        "voice/lum-voice-profile.json",
+        "AI_MANIFEST.json",
+        "LUM_FIREFOX_JP_VOICE_TTL_20260911.json",
+        "LUM_FIREFOX_LIVE2D_FULL_MUTATION_20260911.json",
+    ):
         load_json(rel)
     for path in (ROOT / "termux").glob("*.py"):
         subprocess.run([sys.executable, "-m", "py_compile", str(path)], check=True, stdout=subprocess.DEVNULL)
@@ -184,38 +216,53 @@ def syntax_check() -> None:
                 subprocess.run([bash, "-n", str(path)], check=True, stdout=subprocess.DEVNULL)
     node = shutil.which("node")
     if node:
-        for rel in ("background.js", "content.js", "popup.js"):
+        for rel in JS_FILES + ["vendor/l2d.stub.js"]:
             subprocess.run([node, "--check", str(ROOT / rel)], check=True, stdout=subprocess.DEVNULL)
 
 
-def package_xpi() -> tuple[Path, str]:
+def write_entry(archive: zipfile.ZipFile, name: str, data: bytes, timestamp: tuple[int, int, int, int, int, int]) -> None:
+    info = zipfile.ZipInfo(name, date_time=timestamp)
+    info.compress_type = zipfile.ZIP_DEFLATED
+    info.external_attr = 0o644 << 16
+    archive.writestr(info, data)
+
+
+def package_xpi() -> tuple[Path, str, str, str]:
     DIST.mkdir(exist_ok=True)
     xpi = DIST / f"luhm-chatgpt-companion-firefox-{VERSION}-unsigned.xpi"
     if xpi.exists():
         xpi.unlink()
     timestamp = (2026, 9, 11, 0, 0, 0)
+    private_runtime = private_live2d_runtime()
+    if private_runtime.is_file():
+        vendor_bytes = private_runtime.read_bytes()
+        vendor_mode = "FULL_PRIVATE"
+    else:
+        vendor_bytes = (ROOT / "vendor/l2d.stub.js").read_bytes()
+        vendor_mode = "STUB"
+    vendor_sha = hashlib.sha256(vendor_bytes).hexdigest()
     with zipfile.ZipFile(xpi, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
         for rel in sorted(PACKAGE_FILES):
             path = ROOT / rel
             check(path.is_file(), f"package input missing: {rel}")
-            info = zipfile.ZipInfo(rel, date_time=timestamp)
-            info.compress_type = zipfile.ZIP_DEFLATED
-            info.external_attr = 0o644 << 16
-            archive.writestr(info, path.read_bytes())
+            write_entry(archive, rel, path.read_bytes(), timestamp)
+        write_entry(archive, "vendor/l2d.min.js", vendor_bytes, timestamp)
     digest = hashlib.sha256(xpi.read_bytes()).hexdigest()
-    return xpi, digest
+    return xpi, digest, vendor_mode, vendor_sha
 
 
 def pass_10_syntax_and_package() -> str:
     syntax_check()
-    xpi, digest = package_xpi()
+    xpi, digest, vendor_mode, vendor_sha = package_xpi()
     with zipfile.ZipFile(xpi) as archive:
         names = set(archive.namelist())
     check("manifest.json" in names, "XPI missing manifest")
+    check("vendor/l2d.min.js" in names, "XPI missing Live2D vendor slot")
+    check("live2d-frame.html" in names and "live2d-host.js" in names, "XPI missing Live2D integration files")
     check(not any(name.startswith("termux/") for name in names), "Termux helpers leaked into XPI")
     check(not any(Path(name).suffix.lower() in FORBIDDEN_ASSET_EXTS for name in names), "forbidden private asset leaked into XPI")
     (DIST / "SHA256SUMS.txt").write_text(f"{digest}  {xpi.name}\n", encoding="utf-8")
-    return f"syntax green; deterministic XPI built sha256={digest}"
+    return f"syntax green; deterministic XPI sha256={digest}; live2d={vendor_mode}; vendor_sha256={vendor_sha}"
 
 
 PASSES = [
@@ -233,9 +280,9 @@ PASSES = [
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="LuHm Firefox Witching Hour forge")
+    parser = argparse.ArgumentParser(description="LuHm Firefox Witching Hour + Live2D forge")
     parser.add_argument("--audit-only", action="store_true", help="run ten passes but still validates package inputs")
-    args = parser.parse_args()
+    parser.parse_args()
     DIST.mkdir(exist_ok=True)
     results = []
     green = True
@@ -248,12 +295,15 @@ def main() -> int:
             green = False
             results.append({"pass": number, "name": name, "status": "FAIL", "detail": str(exc)})
             print(f"FAIL {number:02d} {name}: {exc}", file=sys.stderr)
+    runtime = private_live2d_runtime()
     report = {
-        "seal": "LUM_FIREFOX_WITCHING_HOUR_10PASS_20260911",
+        "seal": "LUM_FIREFOX_LIVE2D_FULL_MUTATION_10PASS_20260911",
         "version": VERSION,
         "status": "GREEN" if green else "FAIL",
         "passes": results,
-        "forge": "stdlib-only; same entry point for local Samsung/Termux and GitHub Actions",
+        "forge": "stdlib-only package forge; optional private Live2D vendor is injected from local Termux cache",
+        "live2d_private_runtime_present": runtime.is_file(),
+        "live2d_private_runtime_path": str(runtime) if runtime.is_file() else None,
     }
     (DIST / "witching-hour-audit.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
     print(f"WITCHING_HOUR_{report['status']}")
