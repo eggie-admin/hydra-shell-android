@@ -1,5 +1,5 @@
 {
-  "schema": "luhm-os.project-hydra.v5",
+  "schema": "luhm-os.project-hydra.v6",
   "name": "Project Hydra",
   "canonical_root": "project/hydra",
   "parent_os": "LuHm OS",
@@ -15,6 +15,9 @@
   "games": {
     "godot4_jrpg_dating_donors": "project/hydra/games/GODOT4_JRPG_DATING_DONORS_20260910.json"
   },
+  "business": {
+    "human_code_monetization": "project/hydra/business/HUMAN_CODE_MONETIZATION_20260911.json"
+  },
   "source_of_truth": {
     "chat_history_reconciliation": "docs/LUHMOS_CHAT_HISTORY_RECONCILIATION_20260910.md",
     "ten_pass_hard_audit": "project/hydra/LUHMOS_10X_HARD_AUDIT_20260911.json",
@@ -24,7 +27,9 @@
     "api_doctrine": "docs/API_TRINITY_DOCTRINE.md",
     "samsung_apk_reference": "project/hydra/samsung/android/apk/app.reference.json",
     "fdroid_goal": "fdroid/final-goal.manifest.json",
-    "fdroid_publication": "fdroid/publication.manifest.json"
+    "fdroid_publication": "fdroid/publication.manifest.json",
+    "izzy_publication": "docs/IZZYONDROID_PUBLICATION_AND_HUMAN_CODE_MONETIZATION_20260911.md",
+    "izzy_metadata": "fdroid/metadata/art.eggiebagelface.luhmos.yml"
   },
   "platforms": {
     "samsung_s24fe_stock": "project/hydra/samsung/android/apk/app.reference.json",
@@ -47,19 +52,34 @@
     "secure_folder_required": false,
     "external_localhost_daemon_required": false,
     "root_required": false,
-    "final_distribution_gate": "LUHMOS_S24FE_FDROID_PUBLIC_INSTALL_GREEN"
+    "final_distribution_gate": "LUHMOS_IZZYONDROID_PUBLIC_INSTALL_GREEN"
   },
-  "fdroid_goal": {
-    "public_install_proof_url": "https://raw.githubusercontent.com/eggie-admin/hydra-shell-android/fdroid-public/fdroid/repo/",
-    "branded_mirror_target": "https://fdroid.eggiebagelface.art/fdroid/repo/",
+  "distribution_goal": {
+    "preferred_public_repo": "IzzyOnDroid",
+    "izzy_repo_url": "https://apt.izzysoft.de/fdroid/repo",
+    "upstream_binary_source": "GitHub Releases",
+    "izzy_submission_process": "Maintenance Repo on Codeberg",
+    "custom_fdroid_fallback": "https://raw.githubusercontent.com/eggie-admin/hydra-shell-android/fdroid-public/fdroid/repo/",
+    "branded_custom_repo_target": "https://fdroid.eggiebagelface.art/fdroid/repo/",
     "package": "art.eggiebagelface.luhmos",
     "baseline_version_code": 100,
     "upgrade_version_code": 101,
     "persistent_apk_signer_required": true,
-    "persistent_repo_signer_required": true,
-    "s24fe_fdroid_installer_proof_required": true,
+    "izzy_acceptance_external": true,
+    "s24fe_install_from_izzy_required": true,
     "launcher_proof_required": true,
     "same_signer_upgrade_proof_required": true
+  },
+  "monetization_goal": {
+    "mode": "external_support_for_human_authored_work",
+    "funding_endpoint": null,
+    "status": "FUNDING_ENDPOINT_PENDING",
+    "donation_metadata_allowed": true,
+    "ads_sdk_in_production_apk": false,
+    "payment_sdk_for_donations_in_production_apk": false,
+    "human_services_allowed": true,
+    "copyright_notice": "COPYRIGHT.md",
+    "root_license": "GPL-3.0"
   },
   "rooted_lab_goal": {
     "device": "Samsung SM-X400",
