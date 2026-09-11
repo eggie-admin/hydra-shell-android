@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LuHm Companion</title>
+  <style>
+    body{font-family:system-ui,sans-serif;margin:0;padding:14px;width:280px;background:#120f18;color:#f7efff}
+    h1{font-size:16px;margin:0 0 6px}.sub{font-size:11px;color:#b7a9c6;margin-bottom:10px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    button{border:1px solid #604570;background:#2a1d36;color:#fff;border-radius:10px;padding:9px;font-weight:700;cursor:pointer}
+    button:hover{border-color:#d44cff}.wide{grid-column:1/-1;background:#54306b}
+    #status{margin-top:10px;font-size:11px;color:#79e7ff;min-height:16px}
+  </style>
+</head>
+<body>
+  <h1>LuHm Companion 👹</h1>
+  <div class="sub">One-click command prep for the sealed ChatGPT roleplay lane.</div>
+  <div class="grid">
+    <button data-command="PET LUM">PET LUM</button>
+    <button data-command="ROLL D20">ROLL D20</button>
+    <button data-command="GACHA PULL">GACHA PULL</button>
+    <button data-command="DATE EVENT">DATE EVENT</button>
+    <button data-command="SUMMON IMAGE">SUMMON IMAGE</button>
+    <button data-command="SAVEPOINT">SAVEPOINT</button>
+    <button class="wide" data-command="CAST ULTIMA">CAST ULTIMA ⚡</button>
+    <button class="wide" id="openChatGPT">OPEN CHATGPT</button>
+  </div>
+  <div id="status"></div>
+  <script src="popup.js"></script>
+</body>
+</html>

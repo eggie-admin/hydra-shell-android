@@ -1,0 +1,30 @@
+#!/data/data/com.termux/files/usr/bin/bash
+set -euo pipefail
+
+HERE="$(cd "$(dirname "$0")/.." && pwd)"
+OUT="${LUHM_SIGNED_XPI_DIR:-$HOME/luhm-private/assets/install}"
+mkdir -p "$OUT"
+
+: "${AMO_JWT_ISSUER:?Set AMO_JWT_ISSUER privately in your Termux environment}"
+: "${AMO_JWT_SECRET:?Set AMO_JWT_SECRET privately in your Termux environment}"
+
+if ! command -v npx >/dev/null 2>&1; then
+  echo "Node/npm is required. Install Node in Termux first." >&2
+  exit 2
+fi
+
+TMP="$(mktemp -d)"
+trap 'rm -rf "$TMP"' EXIT
+cp -R "$HERE" "$TMP/extension"
+rm -rf "$TMP/extension/termux"
+
+cd "$TMP/extension"
+npx --yes web-ext lint
+npx --yes web-ext sign \
+  --channel=unlisted \
+  --api-key="$AMO_JWT_ISSUER" \
+  --api-secret="$AMO_JWT_SECRET" \
+  --artifacts-dir="$OUT"
+
+echo "Signed private XPI written to: $OUT"
+echo "On Firefox Android: Settings -> About Firefox -> tap logo 5x -> Settings -> Install Extension from File."

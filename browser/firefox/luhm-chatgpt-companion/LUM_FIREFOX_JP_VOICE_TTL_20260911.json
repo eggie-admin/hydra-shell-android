@@ -1,0 +1,59 @@
+{
+  "seal": "LUM_FIREFOX_WITCHING_HOUR_10PASS_20260911",
+  "version": "0.3.3",
+  "status": "STAGED_FOR_CI_GREEN",
+  "scope": "private Firefox Android ChatGPT companion only",
+  "chat_ai": "ChatGPT",
+  "voice": {
+    "language": "ja-JP",
+    "subtitle_language": "en-US",
+    "direction": "original playful goth-alt oni/JRPG heroine voice",
+    "specific_character_or_actor_imitation": false,
+    "voice_mode_default": "off_per_page_session",
+    "response_contract": ["LUM-JP", "LUM-EN", "LUM-EMOTION"],
+    "playback_order": ["local_ttl_cache", "firefox_web_speech_ja_JP", "subtitle_only"]
+  },
+  "assets": {
+    "canonical_source": "Google Drive private vault via rclone",
+    "source_of_truth_folder": "KAI9000_SOURCE_OF_TRUTH",
+    "drive_folder": "DestinyChildMods",
+    "local_root": "~/luhm-private/assets",
+    "loopback_asset_bridge": "http://127.0.0.1:8799",
+    "drive_sync_ttl_seconds": 21600,
+    "generated_tts_ttl_seconds": 604800,
+    "destiny_audio_private_only": true,
+    "redistribution": false
+  },
+  "optional_hugging_face": {
+    "enabled_by_default": false,
+    "producer": "termux/hf-tts-cache.py",
+    "token": "HF_TOKEN in private Termux environment only",
+    "model": "LUHM_HF_TTS_MODEL",
+    "purpose": "pre-generate original Japanese TTS into the local TTL cache"
+  },
+  "privacy": {
+    "auto_send": false,
+    "chat_history_scrape": false,
+    "newest_assistant_turn_read_only_when_voice_mode_enabled": true,
+    "voice_mode_persists_across_reload": false,
+    "credential_storage_in_extension": false,
+    "remote_executable_code": false
+  },
+  "forge": {
+    "entrypoint": "forge.py",
+    "hard_audit_passes": 10,
+    "same_local_and_github_logic": true,
+    "dependency_strategy": "Python stdlib only for package build; node/bash syntax checks opportunistically use installed local tools",
+    "unsigned_xpi": "dist/luhm-chatgpt-companion-firefox-0.3.3-unsigned.xpi",
+    "audit_report": "dist/witching-hour-audit.json"
+  },
+  "out_of_scope": [
+    "Edge Gallery",
+    "Ollama",
+    "APK mutation",
+    "LuHm OS daemon mutation",
+    "terminal launcher",
+    "Secure Folder process ownership changes"
+  ],
+  "human_final_authority": true
+}

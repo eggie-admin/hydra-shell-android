@@ -1,0 +1,48 @@
+name: LuHm Firefox Companion
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feature/lum-chatgpt-companion-extension
+    paths:
+      - 'browser/firefox/luhm-chatgpt-companion/**'
+      - '.github/instructions/lum-chatgpt-companion.instructions.md'
+      - '.github/workflows/luhm-firefox-companion.yml'
+  pull_request:
+    paths:
+      - 'browser/firefox/luhm-chatgpt-companion/**'
+      - '.github/instructions/lum-chatgpt-companion.instructions.md'
+      - '.github/workflows/luhm-firefox-companion.yml'
+
+concurrency:
+  group: luhm-firefox-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  witching-hour-forge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ten-pass hard audit + deterministic compile forge
+        working-directory: browser/firefox/luhm-chatgpt-companion
+        run: python3 forge.py
+
+      - name: Show audit
+        if: always()
+        run: cat browser/firefox/luhm-chatgpt-companion/dist/witching-hour-audit.json || true
+
+      - name: Upload unsigned XPI + audit seal
+        uses: actions/upload-artifact@v4
+        with:
+          name: luhm-firefox-live2d-v0.4.0
+          path: |
+            browser/firefox/luhm-chatgpt-companion/dist/luhm-chatgpt-companion-firefox-0.4.0-unsigned.xpi
+            browser/firefox/luhm-chatgpt-companion/dist/witching-hour-audit.json
+            browser/firefox/luhm-chatgpt-companion/dist/SHA256SUMS.txt
+          if-no-files-found: error
