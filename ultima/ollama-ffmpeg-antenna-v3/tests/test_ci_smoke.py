@@ -19,7 +19,16 @@ class Kai9000SmokeTests(unittest.TestCase):
             status = antenna.antenna_status()
         self.assertTrue(status["policy"]["local_first"])
         self.assertTrue(status["policy"]["ollama_loopback_default"])
+        self.assertTrue(status["policy"]["ollama_loopback_enforced"])
+        self.assertFalse(status["policy"]["non_loopback_model_fallback"])
         self.assertFalse(status["policy"]["github_is_source_remote_not_runtime_ai"] is False)
+
+    def test_non_loopback_ollama_configuration_fails_closed(self):
+        with mock.patch.object(antenna, "OLLAMA_URL", "http://192.168.1.20:11434"):
+            status = antenna.ollama_status()
+        self.assertFalse(status["ok"])
+        self.assertTrue(status["fail_closed"])
+        self.assertIn("loopback", status["error"].lower())
 
     def test_health_boots_without_remote_services(self):
         with mock.patch.object(main, "antenna_status", return_value={"ok": True}), mock.patch.object(
@@ -38,6 +47,18 @@ class Kai9000SmokeTests(unittest.TestCase):
         self.assertEqual(manifest["source_path"], "ultima/ollama-ffmpeg-antenna-v3")
         self.assertEqual(manifest["ingestion"]["strategy"], "reference_not_copy")
         self.assertFalse(manifest["ingestion"]["remote_shell"])
+
+    def test_runtime_manifest_matches_local_bridge_hardening(self):
+        root = Path(__file__).resolve().parents[1]
+        manifest = json.loads((root / "KAI9000_ULTIMA_OLLAMA_FFMPEG_ANTENNA_V3.manifest.json").read_text())
+        local = manifest["planes"]["local_live"]
+        self.assertTrue(local["ollama_facade"]["loopback_only"])
+        self.assertTrue(local["ollama_facade"]["fail_closed"])
+        self.assertFalse(local["ollama_facade"]["non_loopback_fallback"])
+        self.assertFalse(local["edge_gallery"]["assumed_http_api"])
+        self.assertFalse(local["edge_gallery"]["scrape_private_app_storage"])
+        self.assertTrue(local["future_native_backends"]["litert_lm_native_path_preserved"])
+        self.assertFalse(local["future_native_backends"]["enabled_by_default"])
 
 
 if __name__ == "__main__":
