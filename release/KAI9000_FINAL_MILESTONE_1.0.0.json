@@ -1,5 +1,5 @@
 {
-  "schema": "kai9000.final-release.v2",
+  "schema": "kai9000.final-release.v3",
   "milestone": "KAI9000_WITCHING_HOUR_ULTIMA_WEBVIEW_HOTFIX_20260908",
   "release": {
     "name": "KAI 9000",
@@ -84,7 +84,6 @@
     "governance_exceptions": [
       "repository visibility observed public",
       "main branch observed unprotected",
-      "legacy Vercel status remains non-authoritative",
       "post-hotfix physical device UI retest remains pending"
     ],
     "ai_chain": {
