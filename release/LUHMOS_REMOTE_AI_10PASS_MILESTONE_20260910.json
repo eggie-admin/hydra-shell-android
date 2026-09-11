@@ -1,0 +1,88 @@
+{
+  "schema": "luhmos.remote-ai-milestone.v1",
+  "milestone": "LUHMOS_REMOTE_AI_10PASS_MILESTONE_20260910",
+  "sealed_date": "2026-09-10",
+  "status": {
+    "architecture_and_policy": "GREEN",
+    "regression_and_ci": "GREEN",
+    "credential_safe_smoke_harness": "GREEN",
+    "live_openai_inference_in_github_actions": "YELLOW_SKIPPED_NO_SECRET",
+    "live_huggingface_inference_in_github_actions": "YELLOW_SKIPPED_NO_SECRET",
+    "production_android_signing": "YELLOW_EXISTING_GATE"
+  },
+  "canonical": {
+    "repository": "eggie-admin/hydra-shell-android",
+    "integration_branch": "luhmos-main",
+    "package_id": "art.eggiebagelface.luhmos",
+    "openai_api": "responses",
+    "openai_default_model": "gpt-5.6-sol",
+    "huggingface_endpoint": "https://router.huggingface.co/v1/responses",
+    "authority_law": "AI proposes. Python authorizes. CI proves. The human promotes."
+  },
+  "revisions": {
+    "pre_hardening_anchor": "edb0431ab532ddc79c1667e10c9d97bafd532a5e",
+    "ten_pass_tested_head": "389056c0cb6e867b8a009ab84eb387f67247f457",
+    "ten_pass_merge": "e395b08f85174dfd0ba6fc7ea1b629ec1293a14d",
+    "smoke_alignment_tested_head": "491c4a7039c4012f8d22386188e620cb2819e8c5",
+    "smoke_alignment_merge": "656fc76297ebbea40e7f568edaaaa7e1986ef86f"
+  },
+  "passes": {
+    "1_canonical_endpoint_model": "GREEN",
+    "2_credential_isolation": "GREEN",
+    "3_prompt_ingress_secret_guard": "GREEN",
+    "4_provider_egress_secret_guard": "GREEN",
+    "5_provider_allowlist": "GREEN",
+    "6_model_allowlist": "GREEN",
+    "7_failure_isolation_no_silent_failover": "GREEN",
+    "8_credential_safe_live_smoke": "GREEN_HARNESS_PROVIDER_CALLS_SKIPPED_WITHOUT_SECRETS",
+    "9_ci_regression_proof": "GREEN",
+    "10_promotion_and_source_of_truth_seal": "GREEN_AFTER_THIS_SEAL"
+  },
+  "ci_evidence": {
+    "ten_pass_lane_gates": 34548314188,
+    "ten_pass_pr_guardrails": 34548314263,
+    "ten_pass_android_gate": 34548314187,
+    "ten_pass_local_ci": 34548314200,
+    "ten_pass_cathedral_ci": 34548314178,
+    "ten_pass_remote_media_smoke": 34548314218,
+    "smoke_alignment_lane_gates": 34548460883,
+    "smoke_alignment_pr_guardrails": 34548460895,
+    "smoke_alignment_android_gate": 34548460898,
+    "smoke_alignment_remote_media_smoke": 34548460907,
+    "smoke_artifact_id": 10179910089,
+    "smoke_artifact_sha256": "127919cec06dd5cde8cb77398c86e9fa2c95863c9745debd504d1c4c87054caf"
+  },
+  "smoke_observation": {
+    "openai_gateway_auth_boundary": "GREEN_HTTP_401_WITHOUT_CREDENTIAL",
+    "openai_provider_call": "SKIPPED_OPENAI_API_KEY_NOT_CONFIGURED",
+    "huggingface_provider_call": "SKIPPED_HF_TOKEN_NOT_CONFIGURED",
+    "media_pipeline": "GREEN",
+    "ffmpeg": true,
+    "ffprobe": true,
+    "comfy_contract": true,
+    "frames_extracted": 48,
+    "target_fps": 24,
+    "video_codec": "h264",
+    "audio_codec": "aac",
+    "sealed_artifact_count": 7
+  },
+  "security": {
+    "provider_output_untrusted": true,
+    "requested_model_allowlist": true,
+    "secret_ingress_guard": true,
+    "secret_egress_guard": true,
+    "empty_output_fails_closed": true,
+    "silent_cross_provider_failover": false,
+    "credentials_visible_to_model": false,
+    "arbitrary_model_shell": false
+  },
+  "yellow_gates": [
+    "Provision OPENAI_API_KEY in protected runtime/CI only if live OpenAI CI smoke is desired.",
+    "Provision HF_TOKEN with minimum inference scope in protected runtime/CI only if live Hugging Face CI smoke is desired.",
+    "Persistent Android luhmos-release signing remains required before promotion beyond testing."
+  ],
+  "promotion": {
+    "allowed_now": ["luhmos-main", "luhmos/testing"],
+    "blocked_until_release_gates_green": ["luhmos/proposed", "luhmos/beta", "luhmos/stable"]
+  }
+}
