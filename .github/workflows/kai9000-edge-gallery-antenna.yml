@@ -1,0 +1,30 @@
+name: KAI 9000 Edge Gallery Antenna
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feature/kai9000-edge-gallery-antenna-20260911
+    paths:
+      - 'termux/kai-edge-antenna/**'
+      - '.github/workflows/kai9000-edge-gallery-antenna.yml'
+  pull_request:
+    paths:
+      - 'termux/kai-edge-antenna/**'
+      - '.github/workflows/kai9000-edge-gallery-antenna.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  static-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Static smoke
+        run: bash termux/kai-edge-antenna/smoke.sh
+      - name: Verify trust doctrine
+        run: |
+          grep -q 'ordinary_termux_owns_daemons' termux/kai-edge-antenna/KAI9000_EDGE_GALLERY_MINI_OLLAMA_ANTENNA_20260911.manifest.json
+          grep -q 'secure_folder_is_client_only' termux/kai-edge-antenna/KAI9000_EDGE_GALLERY_MINI_OLLAMA_ANTENNA_20260911.manifest.json
+          grep -q 'edge_gallery_impersonation' termux/kai-edge-antenna/KAI9000_EDGE_GALLERY_MINI_OLLAMA_ANTENNA_20260911.manifest.json
