@@ -3,48 +3,71 @@
   right: 14px;
   bottom: 86px;
   z-index: 2147483646;
-  width: 54px;
-  height: 54px;
-  border-radius: 50%;
-  border: 1px solid rgba(210,120,255,.8);
-  background: radial-gradient(circle at 35% 30%, #7be7ff, #7b3ba1 48%, #171020 72%);
-  box-shadow: 0 8px 28px rgba(0,0,0,.45);
+  width: 58px;
+  height: 58px;
+  border-radius: 14px;
+  border: 2px solid #8fe7ff;
+  background: linear-gradient(135deg,#241331,#0d2130);
+  box-shadow: 0 8px 28px rgba(0,0,0,.5), inset 0 0 0 2px #7a3a91;
   color: white;
-  font-size: 25px;
   display: grid;
   place-items: center;
   user-select: none;
+  overflow: visible;
 }
 #luhm-pet-launcher:active { transform: scale(.95); }
+#luhm-pet-launcher .luhm-mini-face {
+  width: 30px;height:30px;display:grid;place-items:center;background:#75408a;border:2px solid #f0d17a;
+  font:900 15px/1 ui-monospace,monospace;image-rendering:pixelated;
+}
+#luhm-pet-launcher .luhm-mini-horn {position:absolute;top:3px;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:17px solid #f0d17a;}
+#luhm-pet-launcher .luhm-mini-horn.left{left:8px;transform:rotate(-24deg)}
+#luhm-pet-launcher .luhm-mini-horn.right{right:8px;transform:rotate(24deg)}
+
 #luhm-pet-panel {
   position: fixed;
   right: 12px;
-  bottom: 150px;
+  bottom: 154px;
   z-index: 2147483647;
-  width: min(330px, calc(100vw - 24px));
+  width: min(360px, calc(100vw - 24px));
   padding: 12px;
-  border-radius: 18px;
-  border: 1px solid rgba(210,120,255,.55);
-  background: rgba(18,13,26,.97);
-  box-shadow: 0 20px 60px rgba(0,0,0,.5);
+  border-radius: 10px;
+  border: 2px solid #8fe7ff;
+  background: linear-gradient(180deg,rgba(17,12,28,.985),rgba(8,14,24,.985));
+  box-shadow: 0 20px 60px rgba(0,0,0,.58), inset 0 0 0 2px #4e2d61;
   color: #fff;
-  font-family: system-ui, sans-serif;
+  font-family: ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
 }
 #luhm-pet-panel[hidden] { display: none !important; }
-#luhm-pet-panel .luhm-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
-#luhm-pet-panel strong { font-size:15px; }
-#luhm-pet-panel small { color:#baaac8; }
-#luhm-pet-panel .luhm-grid { display:grid; grid-template-columns:1fr 1fr; gap:7px; margin-top:10px; }
+#luhm-pet-panel .luhm-head { display:grid; grid-template-columns:58px 1fr 34px; gap:9px; align-items:center; margin-bottom:9px; }
+#luhm-pet-panel .luhm-title strong { font-size:15px; letter-spacing:.04em; }
+#luhm-pet-panel .luhm-title small { color:#baaac8; font-size:10px; }
+#luhm-close{min-height:34px!important;padding:0!important;font-size:20px!important}
+
+.luhm-jrpg-avatar{position:relative;width:58px;height:58px;background:#161022;border:2px solid #f0d17a;overflow:hidden;image-rendering:pixelated}
+.luhm-jrpg-avatar .face{position:absolute;left:17px;top:19px;width:25px;height:28px;background:#e5a190;clip-path:polygon(10% 0,90% 0,100% 72%,75% 100%,25% 100%,0 72%)}
+.luhm-jrpg-avatar .hair{position:absolute;left:9px;top:10px;width:40px;height:40px;background:linear-gradient(90deg,#53d9ed,#ab55ca);clip-path:polygon(10% 5%,90% 0,100% 55%,78% 100%,66% 52%,50% 93%,39% 52%,22% 100%,0 55%)}
+.luhm-jrpg-avatar .horn{position:absolute;z-index:3;top:3px;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:18px solid #f0d17a}
+.luhm-jrpg-avatar .h1{left:8px;transform:rotate(-18deg)}.luhm-jrpg-avatar .h2{right:8px;transform:rotate(18deg)}
+.luhm-jrpg-avatar .eye{position:absolute;z-index:4;top:29px;width:4px;height:4px;background:white;box-shadow:1px 1px #6a275e}.luhm-jrpg-avatar .e1{left:23px}.luhm-jrpg-avatar .e2{left:35px}
+
+#luhm-pet-panel .luhm-hud{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:7px 0 10px}
+#luhm-pet-panel .luhm-hud span{padding:5px 4px;border:1px solid #503961;background:#0e0b15;text-align:center;font-size:9px;color:#bff5ff}
+#luhm-pet-panel .luhm-grid { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
 #luhm-pet-panel button {
   min-height:44px;
   border:1px solid #604270;
-  border-radius:11px;
-  background:#2a1c37;
+  border-radius:5px;
+  background:#24182f;
   color:white;
-  font-weight:700;
+  font:700 11px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;
 }
+#luhm-pet-panel button:active{transform:translateY(1px);background:#392247}
 #luhm-pet-panel button[data-luhm="CAST ULTIMA"] {
   grid-column:1 / -1;
-  background:linear-gradient(135deg,#6b2c85,#235f84);
+  border-color:#f0d17a;
+  background:linear-gradient(135deg,#64247d,#184f70);
 }
-#luhm-pet-status { margin-top:9px; color:#7fe6ff; font-size:12px; min-height:18px; }
+#luhm-pet-panel .luhm-tools{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-top:8px}
+#luhm-pet-panel .luhm-tools button{min-height:38px;font-size:9px;border-color:#2d6f7a;background:#10242b}
+#luhm-pet-status { margin-top:9px; padding:7px; border-left:3px solid #7fe6ff; background:#0a1018; color:#7fe6ff; font-size:10px; min-height:28px; }
