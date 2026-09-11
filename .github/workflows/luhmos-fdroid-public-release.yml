@@ -1,0 +1,24 @@
+name: LuHm OS Public F-Droid Release
+
+# Default-branch registry stub only.
+# Canonical executable workflow lives on luhmos-main and is selected via --ref luhmos-main.
+on:
+  workflow_dispatch:
+    inputs:
+      publish_public_mirror:
+        description: Publish the verified signed repo to the fdroid-public branch
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  registry-only:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Registry stub guard
+        run: |
+          echo 'This default-branch file exists only so GitHub can resolve workflow_dispatch by filename.'
+          echo 'Run this workflow with ref=luhmos-main to execute the canonical release workflow.'
