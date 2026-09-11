@@ -1,0 +1,15 @@
+{
+  "schema": "luhmos.signing-identities.v1",
+  "package_id": "art.eggiebagelface.luhmos",
+  "version_name": "1.0.0",
+  "android": {
+    "alias": "luhmos-release",
+    "certificate_sha256": "0108A9FBF1EF63183CC749B102F5FAEFEFA5AD6F1F668A2686199EC0D5671DD5"
+  },
+  "fdroid_repository": {
+    "alias": "luhmos-fdroid-repo",
+    "fingerprint_sha256": "8235EC85F755C8851009D55DC2E8CB90D09CB5DFEBE3DB4AB34802BFE393E200"
+  },
+  "private_key_material": "NEVER_COMMIT",
+  "doctrine": "These public fingerprints pin the persistent LuHm OS 1.0.0 Android and F-Droid signing identities. Private keys and passwords remain outside source control."
+}
