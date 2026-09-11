@@ -1,0 +1,436 @@
+name: LuHm OS Public F-Droid Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish_public_mirror:
+        description: Publish the verified signed repo to the fdroid-public branch
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: luhmos-fdroid-public-release
+  cancel-in-progress: false
+
+env:
+  DONOR_REPO: eggie-admin/vue-headless-cms
+  DONOR_REF: 96c23c87713800fc17c80b6a972ee2e93f1bb4b1
+  PACKAGE_ID: art.eggiebagelface.luhmos
+  VERSION_NAME: '1.0.0'
+  VERSION_CODE: '100'
+  APK_NAME: luhmos-1.0.0.apk
+  KEY_ALIAS: luhmos-release
+  FDROID_KEY_ALIAS: luhmos-fdroid-repo
+  GODOT_RELEASE: 4.7.2-stable
+  GODOT_TEMPLATE_VERSION: 4.7.2.stable
+  GODOT_EDITOR_SHA256: cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4
+  GODOT_TEMPLATES_SHA256: f298490b8d44d934be425a5a65a51bf15f422428b229a06a6e11d9ffea248011
+  ANDROID_GRADLE_VERSION: 8.11.1
+  ANDROID_GRADLE_SHA256: f397b287023acdba1e9f6fc5ea72d22dd63669d59ed4a289a29b1a76eee151c6
+  FDROIDSERVER_VERSION: '2.4.5'
+  PUBLIC_REPO_URL: https://raw.githubusercontent.com/eggie-admin/hydra-shell-android/fdroid-public/fdroid/repo/
+
+jobs:
+  release-and-repo:
+    name: Persistently signed APK + signed F-Droid repo
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout LuHm OS
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+
+      - name: Checkout hardened Samsung donor
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: ${{ env.DONOR_REPO }}
+          ref: ${{ env.DONOR_REF }}
+          path: _forge/luhmos-android
+          persist-credentials: false
+
+      - name: Validate canonical contracts and retired identities
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m json.tool project/hydra/LUHMOS_REPO_CONVERGENCE_20260910.json >/dev/null
+          python -m json.tool project/hydra/samsung/android/apk/app.reference.json >/dev/null
+          python -m json.tool fdroid/final-goal.manifest.json >/dev/null
+          grep -q '"android_application_id": "art.eggiebagelface.luhmos"' project/hydra/LUHMOS_REPO_CONVERGENCE_20260910.json
+          grep -q '"commit": "96c23c87713800fc17c80b6a972ee2e93f1bb4b1"' project/hydra/samsung/android/apk/app.reference.json
+          ! grep -R -nE 'com\.termux\.permission\.RUN_COMMAND|com\.termux\.RUN_COMMAND|RunCommandService' _forge/luhmos-android/godot/android-plugin
+          ! grep -R -n 'http://127.0.0.1' _forge/luhmos-android/godot/android-plugin/plugin/src/main/java
+          grep -q 'MIXED_CONTENT_NEVER_ALLOW' _forge/luhmos-android/godot/android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralAndroidPlugin.kt
+          grep -q 'setAcceptCookie(false)' _forge/luhmos-android/godot/android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralAndroidPlugin.kt
+          if git ls-files | grep -E '\.(jks|keystore|p12|pfx|pkcs12|key|pem)$'; then
+            echo 'Private signing material must not be tracked' >&2
+            exit 1
+          fi
+          echo 'LUHMOS_RELEASE_SOURCE_CONTRACT_GREEN'
+
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.18.0'
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+
+      - uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a
+        with:
+          gradle-version: '8.13'
+          cache-cleanup: on-success
+
+      - name: Install Android SDK 36
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" 'platform-tools' 'build-tools;36.1.0' 'platforms;android-36'
+
+      - name: Install verified Godot and pinned Android Gradle template
+        shell: bash
+        run: |
+          set -euo pipefail
+          CACHE="$HOME/.cache/luhmos/godot-4.7.2"
+          WORK="$RUNNER_TEMP/luhmos-godot"
+          mkdir -p "$CACHE" "$WORK"
+
+          curl --fail --location --retry 5 --retry-all-errors -o "$CACHE/godot.zip" \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v4.7.2-stable_linux.x86_64.zip"
+          echo "${GODOT_EDITOR_SHA256}  $CACHE/godot.zip" | sha256sum --check --strict
+
+          curl --fail --location --retry 5 --retry-all-errors -o "$CACHE/export_templates.tpz" \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v4.7.2-stable_export_templates.tpz"
+          echo "${GODOT_TEMPLATES_SHA256}  $CACHE/export_templates.tpz" | sha256sum --check --strict
+
+          GRADLE_ZIP="$CACHE/gradle-${ANDROID_GRADLE_VERSION}-bin.zip"
+          curl --fail --location --retry 5 --retry-all-errors -o "$GRADLE_ZIP" \
+            "https://services.gradle.org/distributions/gradle-${ANDROID_GRADLE_VERSION}-bin.zip"
+          echo "${ANDROID_GRADLE_SHA256}  $GRADLE_ZIP" | sha256sum --check --strict
+
+          unzip -q -o "$CACHE/godot.zip" -d "$WORK"
+          chmod +x "$WORK/Godot_v4.7.2-stable_linux.x86_64"
+          echo "GODOT_BIN=$WORK/Godot_v4.7.2-stable_linux.x86_64" >> "$GITHUB_ENV"
+
+          rm -rf "$WORK/templates"
+          mkdir -p "$WORK/templates"
+          unzip -q "$CACHE/export_templates.tpz" -d "$WORK/templates"
+          TEMPLATE_DIR="$HOME/.local/share/godot/export_templates/${GODOT_TEMPLATE_VERSION}"
+          mkdir -p "$TEMPLATE_DIR"
+          cp -a "$WORK/templates/templates/." "$TEMPLATE_DIR/"
+
+          PATCH_DIR="$WORK/android-source-patched"
+          mkdir -p "$PATCH_DIR"
+          unzip -q "$TEMPLATE_DIR/android_source.zip" -d "$PATCH_DIR"
+          WRAPPER_PROPS="$(find "$PATCH_DIR" -type f -path '*/gradle/wrapper/gradle-wrapper.properties' -print -quit)"
+          test -n "$WRAPPER_PROPS"
+          python - "$WRAPPER_PROPS" "$GRADLE_ZIP" "$ANDROID_GRADLE_SHA256" <<'PY'
+          from pathlib import Path
+          import sys
+          path = Path(sys.argv[1])
+          uri = Path(sys.argv[2]).resolve().as_uri()
+          digest = sys.argv[3]
+          lines = path.read_text(encoding='utf-8').splitlines()
+          out=[]; saw_url=False; saw_sha=False
+          for line in lines:
+              if line.startswith('distributionUrl='):
+                  out.append('distributionUrl=' + uri); saw_url=True
+              elif line.startswith('distributionSha256Sum='):
+                  out.append('distributionSha256Sum=' + digest); saw_sha=True
+              else:
+                  out.append(line)
+          if not saw_url:
+              raise SystemExit('missing Gradle distributionUrl')
+          if not saw_sha:
+              out.append('distributionSha256Sum=' + digest)
+          path.write_text('\n'.join(out) + '\n', encoding='utf-8')
+          PY
+          (cd "$PATCH_DIR" && zip -q -r "$TEMPLATE_DIR/android_source.zip.new" .)
+          mv "$TEMPLATE_DIR/android_source.zip.new" "$TEMPLATE_DIR/android_source.zip"
+
+      - name: Build bundled cockpit and Android plugin
+        shell: bash
+        run: |
+          set -euo pipefail
+          pushd _forge/luhmos-android/apps
+          npm install --global npm@12.0.2 --no-audit --no-fund
+          LOCK_BEFORE="$(sha256sum package-lock.json | awk '{print $1}')"
+          npm ci --ignore-scripts --no-audit --no-fund
+          test "$LOCK_BEFORE" = "$(sha256sum package-lock.json | awk '{print $1}')"
+          npm run build --workspace=video-forge-ui
+          test -f forge-ui/dist/index.html
+          popd
+
+          rm -rf _forge/luhmos-android/godot/android-plugin/plugin/src/main/assets/cms
+          mkdir -p _forge/luhmos-android/godot/android-plugin/plugin/src/main/assets/cms
+          cp -a _forge/luhmos-android/apps/forge-ui/dist/. _forge/luhmos-android/godot/android-plugin/plugin/src/main/assets/cms/
+          gradle -p _forge/luhmos-android/godot/android-plugin :plugin:assemble
+          test -f _forge/luhmos-android/godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-release.aar
+          rm -rf _forge/luhmos-android/godot/addons/CathedralAndroid
+          mkdir -p _forge/luhmos-android/godot/addons/CathedralAndroid/bin/debug _forge/luhmos-android/godot/addons/CathedralAndroid/bin/release
+          cp -a _forge/luhmos-android/godot/android-plugin/plugin/export_scripts_template/. _forge/luhmos-android/godot/addons/CathedralAndroid/
+          cp _forge/luhmos-android/godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-debug.aar _forge/luhmos-android/godot/addons/CathedralAndroid/bin/debug/
+          cp _forge/luhmos-android/godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-release.aar _forge/luhmos-android/godot/addons/CathedralAndroid/bin/release/
+
+      - name: Materialize persistent signing identities
+        shell: bash
+        env:
+          ANDROID_KS_B64: ${{ secrets.LUHMOS_ANDROID_KEYSTORE_B64 }}
+          ANDROID_KS_PASS: ${{ secrets.LUHMOS_ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_PASS: ${{ secrets.LUHMOS_ANDROID_KEY_PASSWORD }}
+          FDROID_KS_B64: ${{ secrets.LUHMOS_FDROID_KEYSTORE_B64 }}
+          FDROID_KS_PASS: ${{ secrets.LUHMOS_FDROID_KEYSTORE_PASSWORD }}
+          FDROID_KEY_PASS: ${{ secrets.LUHMOS_FDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          test -n "$ANDROID_KS_B64" && test -n "$ANDROID_KS_PASS" && test -n "$ANDROID_KEY_PASS"
+          test -n "$FDROID_KS_B64" && test -n "$FDROID_KS_PASS" && test -n "$FDROID_KEY_PASS"
+          test "$ANDROID_KS_PASS" = "$ANDROID_KEY_PASS" || {
+            echo 'Godot Android release export currently requires keystore and key passwords to match.' >&2
+            exit 1
+          }
+          ANDROID_KS="$RUNNER_TEMP/luhmos-release.keystore"
+          FDROID_KS="$RUNNER_TEMP/luhmos-fdroid.keystore"
+          printf '%s' "$ANDROID_KS_B64" | base64 --decode > "$ANDROID_KS"
+          printf '%s' "$FDROID_KS_B64" | base64 --decode > "$FDROID_KS"
+          chmod 600 "$ANDROID_KS" "$FDROID_KS"
+          keytool -list -keystore "$ANDROID_KS" -storepass "$ANDROID_KS_PASS" -alias "$KEY_ALIAS" >/dev/null
+          keytool -list -keystore "$FDROID_KS" -storepass "$FDROID_KS_PASS" -alias "$FDROID_KEY_ALIAS" >/dev/null
+          echo "GODOT_ANDROID_KEYSTORE_RELEASE_PATH=$ANDROID_KS" >> "$GITHUB_ENV"
+          echo "GODOT_ANDROID_KEYSTORE_RELEASE_USER=$KEY_ALIAS" >> "$GITHUB_ENV"
+          echo "GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD=$ANDROID_KS_PASS" >> "$GITHUB_ENV"
+          echo "FDROID_KEYSTORE=$FDROID_KS" >> "$GITHUB_ENV"
+          echo "FDROID_KEYSTORE_PASS=$FDROID_KS_PASS" >> "$GITHUB_ENV"
+          echo "FDROID_KEY_PASS=$FDROID_KEY_PASS" >> "$GITHUB_ENV"
+
+      - name: Export non-debug production APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.config/godot" build/release
+          cat > "$HOME/.config/godot/editor_settings-4.tres" <<EOF
+          [gd_resource type="EditorSettings" format=3]
+
+          [resource]
+          export/android/android_sdk_path = "$ANDROID_HOME"
+          export/android/java_sdk_path = "$JAVA_HOME"
+          EOF
+          "$GODOT_BIN" --headless --editor --path _forge/luhmos-android/godot --quit
+          "$GODOT_BIN" --headless --path _forge/luhmos-android/godot \
+            --install-android-build-template \
+            --export-release 'Android Release' \
+            "$GITHUB_WORKSPACE/build/release/$APK_NAME"
+          test -s "build/release/$APK_NAME"
+
+      - name: Verify production APK identity, signer, hardening and 16 KiB alignment
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="build/release/$APK_NAME"
+          BT="$ANDROID_HOME/build-tools/36.1.0"
+          "$BT/apksigner" verify --verbose --print-certs "$APK" | tee build/release/signature.txt
+          "$BT/zipalign" -c -P 16 -v 4 "$APK" | tee build/release/zipalign.txt
+          "$BT/aapt" dump badging "$APK" | tee build/release/badging.txt
+          "$BT/aapt" dump permissions "$APK" | tee build/release/permissions.txt
+          unzip -l "$APK" | tee build/release/contents.txt
+          sha256sum "$APK" | tee build/release/sha256.txt
+          grep -q "package: name='art.eggiebagelface.luhmos'" build/release/badging.txt
+          grep -q "versionCode='100'" build/release/badging.txt
+          grep -q "versionName='1.0.0'" build/release/badging.txt
+          grep -q "application-label:'LuHm OS'" build/release/badging.txt
+          grep -q "targetSdkVersion:'36'" build/release/badging.txt
+          grep -q "native-code: 'arm64-v8a'" build/release/badging.txt
+          ! grep -q 'application-debuggable' build/release/badging.txt
+          ! grep -q 'com.termux' build/release/permissions.txt
+          ! grep -q 'com.termux' build/release/contents.txt
+          grep -q 'assets/cms/index.html' build/release/contents.txt
+          grep -Eq 'Verified using v(2|3|4) scheme .*: true' build/release/signature.txt
+          APK_FP="$(sed -n 's/^Signer #1 certificate SHA-256 digest: //p' build/release/signature.txt | head -n1 | tr -d ':[:space:]' | tr '[:lower:]' '[:upper:]')"
+          test -n "$APK_FP"
+          echo "APK_SIGNER_SHA256=$APK_FP" >> "$GITHUB_ENV"
+          printf '%s\n' "$APK_FP" > build/release/apk-signer-sha256.txt
+          echo 'LUHMOS_RELEASE_APK_GREEN'
+
+      - name: Require pinned signer identities before public publication
+        if: ${{ inputs.publish_public_mirror }}
+        shell: bash
+        env:
+          EXPECTED_APK_FP: ${{ vars.LUHMOS_ANDROID_CERT_SHA256 }}
+          EXPECTED_REPO_FP: ${{ vars.LUHMOS_FDROID_REPO_FINGERPRINT_SHA256 }}
+        run: |
+          set -euo pipefail
+          test -n "$EXPECTED_APK_FP" || { echo 'Set repository variable LUHMOS_ANDROID_CERT_SHA256 after identity-proof run.' >&2; exit 1; }
+          test -n "$EXPECTED_REPO_FP" || { echo 'Set repository variable LUHMOS_FDROID_REPO_FINGERPRINT_SHA256 after identity-proof run.' >&2; exit 1; }
+          norm() { tr -d ':[:space:]' | tr '[:lower:]' '[:upper:]'; }
+          test "$(printf '%s' "$APK_SIGNER_SHA256" | norm)" = "$(printf '%s' "$EXPECTED_APK_FP" | norm)"
+
+      - name: Install pinned fdroidserver
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install "fdroidserver==${FDROIDSERVER_VERSION}"
+          fdroid --version
+
+      - name: Stage canonical F-Droid package metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf build/fdroid-stage
+          mkdir -p build/fdroid-stage/repo build/fdroid-stage/metadata
+          cp "build/release/$APK_NAME" "build/fdroid-stage/repo/${PACKAGE_ID}_${VERSION_CODE}.apk"
+          cat > "build/fdroid-stage/metadata/${PACKAGE_ID}.yml" <<EOF
+          Categories:
+            - Development
+            - Multimedia
+          License: GPL-3.0-only
+          Name: LuHm OS
+          Summary: Standalone Godot creative AI and game cockpit for Samsung Android
+          Description: |-
+            LuHm OS is a standalone Android application built around Godot 4 with a
+            bundled web cockpit and bounded Android-native bridges. The stock package
+            does not require root, Termux, AcodeX, VNC, Secure Folder, Shizuku, or a
+            separately launched localhost daemon.
+
+            Optional remote AI integrations may connect to external network services
+            only when explicitly configured by the user or deployment environment.
+          SourceCode: https://github.com/eggie-admin/hydra-shell-android
+          IssueTracker: https://github.com/eggie-admin/hydra-shell-android/issues
+          RequiresRoot: false
+          AntiFeatures:
+            - NonFreeNet
+          CurrentVersion: ${VERSION_NAME}
+          CurrentVersionCode: ${VERSION_CODE}
+          UpdateCheckMode: Static
+          MaintainerNotes: |-
+            Custom LuHm OS binary repository metadata. Android release signing and
+            F-Droid repository signing use separate persistent identities. The rooted
+            SM-X400 laboratory package uses a different application ID and is not an
+            update of this stock package.
+          EOF
+          cp fdroid/config.template.yml build/fdroid-stage/config.template.yml
+
+      - name: Sign F-Droid indexes without re-signing APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          export FDROID_CONFIG_TEMPLATE="$GITHUB_WORKSPACE/fdroid/config.template.yml"
+          export FDROID_REPO_KEYALIAS="$FDROID_KEY_ALIAS"
+          export APKSIGNER="$ANDROID_HOME/build-tools/36.1.0/apksigner"
+          bash fdroid/trusted-signing-host.sh \
+            --stage build/fdroid-stage \
+            --out build/fdroid-signed
+          test -s build/fdroid-signed/repo/index-v2.json
+          test -s build/fdroid-signed/repo/index-v1.json
+          test -s build/fdroid-signed/repo/index-v1.jar
+          test -s build/fdroid-signed/repo/entry.jar
+          REPO_FP="$(python -c 'import json; print(json.load(open("build/fdroid-signed/FINAL_FORM_SIGNED_STATUS.json"))["repo_fingerprint_sha256"])')"
+          echo "FDROID_REPO_FINGERPRINT_SHA256=$REPO_FP" >> "$GITHUB_ENV"
+          printf '%s\n' "$REPO_FP" > build/release/fdroid-repo-fingerprint-sha256.txt
+
+      - name: Require pinned F-Droid repository identity before publication
+        if: ${{ inputs.publish_public_mirror }}
+        shell: bash
+        env:
+          EXPECTED_REPO_FP: ${{ vars.LUHMOS_FDROID_REPO_FINGERPRINT_SHA256 }}
+        run: |
+          set -euo pipefail
+          norm() { tr -d ':[:space:]' | tr '[:lower:]' '[:upper:]'; }
+          test "$(printf '%s' "$FDROID_REPO_FINGERPRINT_SHA256" | norm)" = "$(printf '%s' "$EXPECTED_REPO_FP" | norm)"
+
+      - name: Upload signed release evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: luhmos-fdroid-signed-${{ github.run_number }}
+          path: |
+            build/release/${{ env.APK_NAME }}
+            build/release/sha256.txt
+            build/release/signature.txt
+            build/release/zipalign.txt
+            build/release/badging.txt
+            build/release/permissions.txt
+            build/release/apk-signer-sha256.txt
+            build/release/fdroid-repo-fingerprint-sha256.txt
+            build/fdroid-signed/repo/**
+            build/fdroid-signed/SHA256SUMS
+            build/fdroid-signed/FINAL_FORM_SIGNED_STATUS.json
+            build/fdroid-stage/metadata/${{ env.PACKAGE_ID }}.yml
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Publish signed public bootstrap repository branch
+        if: ${{ inputs.publish_public_mirror }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          PUB="$RUNNER_TEMP/fdroid-public-worktree"
+          rm -rf "$PUB"
+          if git ls-remote --exit-code --heads origin fdroid-public >/dev/null 2>&1; then
+            git fetch origin fdroid-public:refs/remotes/origin/fdroid-public
+            git worktree add -B fdroid-public "$PUB" refs/remotes/origin/fdroid-public
+          else
+            git worktree add --detach "$PUB"
+            pushd "$PUB"
+            git checkout --orphan fdroid-public
+            git rm -rf . || true
+            popd
+          fi
+          rm -rf "$PUB/fdroid" "$PUB/README.md"
+          mkdir -p "$PUB/fdroid/repo"
+          cp -a build/fdroid-signed/repo/. "$PUB/fdroid/repo/"
+          cat > "$PUB/README.md" <<EOF
+          # LuHm OS Public F-Droid Repository
+
+          Repository URL:
+
+          ${PUBLIC_REPO_URL}
+
+          Package: ${PACKAGE_ID}
+
+          APK signer SHA-256: ${APK_SIGNER_SHA256}
+
+          Repository fingerprint SHA-256: ${FDROID_REPO_FINGERPRINT_SHA256}
+
+          This branch contains only public signed F-Droid repository output. No private
+          signing material is stored here.
+          EOF
+          pushd "$PUB"
+          git config user.name 'LuHm OS Release Forge'
+          git config user.email 'actions@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'Public F-Droid branch already matches signed output.'
+          else
+            git commit -m "Publish LuHm OS ${VERSION_NAME} (${VERSION_CODE}) F-Droid repo"
+            git push origin HEAD:fdroid-public
+          fi
+          popd
+          echo 'FDROID_PUBLIC_MIRROR_PUBLISHED'
+
+      - name: Final release-state summary
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Package: $PACKAGE_ID"
+          echo "APK signer: $APK_SIGNER_SHA256"
+          echo "F-Droid repo fingerprint: $FDROID_REPO_FINGERPRINT_SHA256"
+          echo "Public repo: $PUBLIC_REPO_URL"
+          if [[ '${{ inputs.publish_public_mirror }}' == 'true' ]]; then
+            echo 'STATE=FDROID_PUBLIC_MIRROR_PUBLISHED'
+            echo 'NEXT=S24 FE F-Droid import/install/launcher proof, then versionCode 101 same-signer upgrade proof'
+          else
+            echo 'STATE=IDENTITY_PROOF_READY_NOT_PUBLISHED'
+            echo 'NEXT=record the two public fingerprints as repository variables, then rerun with publish_public_mirror=true'
+          fi
