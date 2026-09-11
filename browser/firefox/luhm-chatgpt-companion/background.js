@@ -46,6 +46,7 @@ async function readAdultCatalog() {
 }
 
 function secureRoll(max) {
+  if (!Number.isInteger(max) || max <= 0) throw new Error("invalid_roll_range");
   const values = new Uint32Array(1);
   crypto.getRandomValues(values);
   return values[0] % max;
@@ -61,7 +62,9 @@ async function pullAdultReward() {
   const catalog = await readAdultCatalog();
   const key = "luhm_after_dark_state";
   const stored = await browser.storage.local.get(key);
-  const state = stored[key] || {pity:0, pulls:0, unlocked:[]};
+  const state = stored[key] || {pity:0, pulls:0, unlock_counts:{}};
+  if (!state.unlock_counts || typeof state.unlock_counts !== "object") state.unlock_counts = {};
+
   state.pity += 1;
   state.pulls += 1;
 
@@ -75,7 +78,9 @@ async function pullAdultReward() {
   let reward = chooseByTier(catalog.rewards, tier);
   if (!reward) reward = catalog.rewards[secureRoll(catalog.rewards.length)];
   if (tier === "Legendary") state.pity = 0;
-  if (!state.unlocked.includes(reward.id)) state.unlocked.push(reward.id);
+
+  const previousCount = Number(state.unlock_counts[reward.id] || 0);
+  state.unlock_counts[reward.id] = previousCount + 1;
   await browser.storage.local.set({[key]: state});
 
   return {
@@ -85,7 +90,9 @@ async function pullAdultReward() {
     reward:{id:reward.id,label:reward.label,local_pack:reward.local_pack || null},
     pity:state.pity,
     hard_pity:catalog.hard_pity || 20,
-    duplicate:state.unlocked.filter((id) => id === reward.id).length > 1
+    duplicate:previousCount > 0,
+    copies:state.unlock_counts[reward.id],
+    pulls:state.pulls
   };
 }
 
