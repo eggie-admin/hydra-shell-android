@@ -1,5 +1,5 @@
 {
-  "schema": "project-hydra.samsung-android-apk-reference.v4",
+  "schema": "project-hydra.samsung-android-apk-reference.v5",
   "role": "Canonical standalone Samsung Android APK",
   "canonical_repository": "eggie-admin/hydra-shell-android",
   "canonical_branch": "luhmos-main",
@@ -64,13 +64,22 @@
     "secrets_in_apk_or_repo": false
   },
   "distribution": {
-    "primary": "custom public F-Droid repository",
-    "canonical_repo_url": "https://fdroid.eggiebagelface.art/fdroid/repo/",
-    "public_bootstrap_mirror": "https://raw.githubusercontent.com/eggie-admin/hydra-shell-android/fdroid-public/fdroid/repo/",
-    "fdroid_index_v2_required": true,
-    "fdroid_index_v1_compatibility_required": true,
-    "repo_fingerprint_must_be_pinned": true,
+    "preferred_public_repo": "IzzyOnDroid",
+    "izzy_repo_url": "https://apt.izzysoft.de/fdroid/repo",
+    "upstream_binary_source": "immutable GitHub Release asset",
+    "izzy_submission_doctrine": "docs/IZZYONDROID_PUBLICATION_AND_HUMAN_CODE_MONETIZATION_20260911.md",
+    "izzy_metadata": "fdroid/metadata/art.eggiebagelface.luhmos.yml",
+    "izzy_acceptance_external": true,
+    "fallback_custom_repo": "https://raw.githubusercontent.com/eggie-admin/hydra-shell-android/fdroid-public/fdroid/repo/",
+    "branded_custom_repo": "https://fdroid.eggiebagelface.art/fdroid/repo/",
     "s24fe_import_install_and_upgrade_test_required": true
+  },
+  "monetization": {
+    "manifest": "project/hydra/business/HUMAN_CODE_MONETIZATION_20260911.json",
+    "mode": "external support for human-authored work",
+    "funding_endpoint": null,
+    "ads_sdk": false,
+    "payment_sdk_for_donations": false
   },
   "separate_rooted_lab": {
     "manifest": "project/hydra/samsung/android/rooted/SMX400_ROOTED_DEV_GOAL_20260911.json",
@@ -88,5 +97,5 @@
     "legacy_videoforge_package": "historical_only",
     "testing_ingest_manifest": "project/hydra/samsung/android/apk/testing-ingest.manifest.json"
   },
-  "next_green_gate": "LUHMOS_S24FE_FDROID_PUBLIC_INSTALL_GREEN"
+  "next_green_gate": "LUHMOS_IZZYONDROID_PUBLIC_INSTALL_GREEN"
 }
