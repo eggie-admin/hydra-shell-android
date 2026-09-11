@@ -315,6 +315,40 @@ jobs:
           cp godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-debug.aar godot/addons/CathedralAndroid/bin/debug/
           cp godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-release.aar godot/addons/CathedralAndroid/bin/release/
 
+      - name: Materialize canonical LuHm F-Droid metadata
+        working-directory: _forge/luhmos-android
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "fdroid/metadata"
+          cat > "fdroid/metadata/${PACKAGE_ID}.yml" <<EOF
+          Categories:
+            - Multimedia
+          Name: LuHm OS
+          Summary: Local-first Godot and Python AI cockpit for Samsung Android
+          Description: |-
+            LuHm OS is the canonical local-first Android cockpit release.
+
+            Godot provides the fullscreen shell, the bundled web cockpit provides the
+            offline WebView interface, and the Python FastAPI control plane remains
+            outside the APK in ordinary Termux. The native bridge stays origin-locked
+            and loopback-first.
+
+            This metadata is for the private LuHm OS binary repository lane. It is not
+            a claim of acceptance into the official F-Droid repository.
+          SourceCode: https://github.com/eggie-admin/vue-headless-cms
+          CurrentVersion: ${VERSION_NAME}
+          CurrentVersionCode: ${VERSION_CODE}
+          UpdateCheckMode: Static
+          MaintainerNotes: |-
+            Private-repository metadata only.
+            Production APK signing uses the persistent LuHm OS signing identity held
+            outside Git. Official F-Droid submission remains a separate policy gate.
+          EOF
+          grep -q "CurrentVersion: ${VERSION_NAME}" "fdroid/metadata/${PACKAGE_ID}.yml"
+          grep -q "CurrentVersionCode: ${VERSION_CODE}" "fdroid/metadata/${PACKAGE_ID}.yml"
+          echo 'LUHMOS_FDROID_METADATA_GREEN'
+
       - name: Run Samsung architecture gates
         working-directory: _forge/luhmos-android
         run: |
@@ -390,6 +424,7 @@ jobs:
             build/android/contents.txt
             build/provenance/npm-package-lock.sha256
             _forge/luhmos-android/apps/package-lock.json
+            _forge/luhmos-android/fdroid/metadata/${{ env.PACKAGE_ID }}.yml
           if-no-files-found: error
           retention-days: 7
 
@@ -422,6 +457,39 @@ jobs:
         with:
           name: luhmos-testing-debug-${{ github.run_number }}
           path: build/apk-evidence
+
+      - name: Materialize canonical LuHm F-Droid metadata
+        working-directory: _forge/luhmos-android
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "fdroid/metadata"
+          cat > "fdroid/metadata/${PACKAGE_ID}.yml" <<EOF
+          Categories:
+            - Multimedia
+          Name: LuHm OS
+          Summary: Local-first Godot and Python AI cockpit for Samsung Android
+          Description: |-
+            LuHm OS is the canonical local-first Android cockpit release.
+
+            Godot provides the fullscreen shell, the bundled web cockpit provides the
+            offline WebView interface, and the Python FastAPI control plane remains
+            outside the APK in ordinary Termux. The native bridge stays origin-locked
+            and loopback-first.
+
+            This metadata is for the private LuHm OS binary repository lane. It is not
+            a claim of acceptance into the official F-Droid repository.
+          SourceCode: https://github.com/eggie-admin/vue-headless-cms
+          CurrentVersion: ${VERSION_NAME}
+          CurrentVersionCode: ${VERSION_CODE}
+          UpdateCheckMode: Static
+          MaintainerNotes: |-
+            Private-repository metadata only.
+            Production APK signing uses the persistent LuHm OS signing identity held
+            outside Git. Official F-Droid submission remains a separate policy gate.
+          EOF
+          grep -q "CurrentVersion: ${VERSION_NAME}" "fdroid/metadata/${PACKAGE_ID}.yml"
+          grep -q "CurrentVersionCode: ${VERSION_CODE}" "fdroid/metadata/${PACKAGE_ID}.yml"
 
       - name: Stage F-Droid binary repository input
         shell: bash
