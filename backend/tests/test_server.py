@@ -1,6 +1,7 @@
 import importlib
 import os
 import sys
+import urllib.error
 from pathlib import Path
 
 BACKEND = Path(__file__).resolve().parents[1]
@@ -71,6 +72,21 @@ def test_system_status(monkeypatch):
     body = response.get_json()
     assert body["services"]["axs"]["online"] is True
     assert body["services"]["vnc"]["display"] == ":1"
+
+
+def test_axs_probe_redacts_exception_details(monkeypatch):
+    monkeypatch.setattr(server, "AXS_HOST", "127.0.0.1")
+    monkeypatch.setattr(server, "tcp_probe", lambda host, port, timeout=0.5: True)
+
+    def boom(*args, **kwargs):
+        raise urllib.error.URLError("sensitive local path")
+
+    monkeypatch.setattr(server.urllib.request, "urlopen", boom)
+    result = server.axs_probe()
+    assert result["http_ok"] is False
+    assert result["http_error"] == "probe_failed"
+    assert result["http_error_type"] == "URLError"
+    assert "detail" not in result
 
 
 def test_service_tool(monkeypatch):

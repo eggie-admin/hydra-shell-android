@@ -109,7 +109,8 @@ def axs_probe() -> dict[str, Any]:
             result["http_ok"] = 200 <= response.status < 400
     except Exception as exc:
         result["http_ok"] = False
-        result["detail"] = str(exc)
+        result["http_error"] = "probe_failed"
+        result["http_error_type"] = type(exc).__name__
     return result
 
 
