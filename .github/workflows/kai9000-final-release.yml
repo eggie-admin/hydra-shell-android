@@ -18,7 +18,7 @@ concurrency:
 
 env:
   DONOR_REPO: eggie-admin/vue-headless-cms
-  DONOR_REF: 574f4f5ae70ce56eca986cd5fb3452aa434ab955
+  DONOR_REF: ff50009c46bc3e3896833ed346eecc8166a1a346
   PACKAGE_ID: art.eggiebagelface.kai9000
   VERSION_NAME: 1.0.0
   VERSION_CODE: '100'
@@ -64,13 +64,19 @@ jobs:
           assert final['signing']['private_key_in_git'] is False
           assert final['signing']['private_key_in_drive'] is False
           assert final['gui']['global_jquery_published_before_ui'] is True
+          assert final['gui']['jquery_ui_runtime_dependency_preload'] is True
+          assert final['gui']['widget_factory_runtime_assertion'] is True
           assert final['gui']['visible_boot_error_fallback'] is True
           assert final['gui']['webview_layout']=='fullscreen'
+          assert final['android']['root_required'] is False
+          assert final['android']['automatic_root'] is False
           passes={p['pass']:p['status'] for p in audit['passes']}
           assert all(passes[n]=='GREEN' for n in range(1,10))
           assert passes[10]=='YELLOW'
           assert audit['definition']['deterministic_ci_is_authority'] is True
           assert audit['definition']['ai_review_can_override_failed_machine_gate'] is False
+          assert audit['runtime_hotfix']['no_root_boundary']['root_required'] is False
+          assert audit['runtime_hotfix']['no_root_boundary']['automatic_root'] is False
           assert audit['ai_chain']['mode']=='single_model_multi_role_review'
           assert audit['ai_chain']['independent_model_consensus'] is False
           assert audit['ai_chain']['signoff']=='APPROVED_WITH_GOVERNANCE_EXCEPTIONS'
@@ -114,7 +120,12 @@ jobs:
           grep -Fq '/src/bootstrap.ts' "$ROOT/apps/forge-ui/index.html"
           grep -Fq ';(window as any).jQuery = $' "$ROOT/apps/forge-ui/src/bootstrap.ts"
           grep -Fq ';(window as any).$ = $' "$ROOT/apps/forge-ui/src/bootstrap.ts"
-          grep -Fq "void import('./main').catch" "$ROOT/apps/forge-ui/src/bootstrap.ts"
+          grep -Fq "await import('jquery-ui/ui/widget')" "$ROOT/apps/forge-ui/src/bootstrap.ts"
+          grep -Fq "await import('jquery-ui/ui/widgets/button')" "$ROOT/apps/forge-ui/src/bootstrap.ts"
+          grep -Fq "await import('jquery-ui/ui/widgets/draggable')" "$ROOT/apps/forge-ui/src/bootstrap.ts"
+          grep -Fq "await import('jquery-ui/ui/widgets/resizable')" "$ROOT/apps/forge-ui/src/bootstrap.ts"
+          grep -Fq "typeof jq.widget !== 'function'" "$ROOT/apps/forge-ui/src/bootstrap.ts"
+          grep -Fq "void bootCockpit().catch" "$ROOT/apps/forge-ui/src/bootstrap.ts"
           grep -Fq 'KAI 9000 BOOT ERROR' "$ROOT/apps/forge-ui/src/bootstrap.ts"
           PLUGIN="$ROOT/godot/android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralAndroidPlugin.kt"
           grep -Fq 'ViewGroup.LayoutParams.MATCH_PARENT' "$PLUGIN"
