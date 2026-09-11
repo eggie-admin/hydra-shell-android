@@ -1,5 +1,5 @@
 {
-  "schema": "kai9000.ultima.seal.v1",
+  "schema": "kai9000.ultima.seal.v2",
   "milestone": "KAI9000_WITCHING_HOUR_ULTIMA_WEBVIEW_HOTFIX_GREEN_20260908",
   "status": {
     "machine_ultima": "GREEN",
@@ -74,7 +74,6 @@
   "governance_exceptions": [
     "hydra-shell-android repository observed public",
     "main branch observed unprotected",
-    "legacy Vercel status remains non-authoritative",
     "post-hotfix physical device UI retest remains pending"
   ],
   "promotion_policy": "machine ULTIMA is sealed GREEN; field UI validation must be GREEN before treating the hotfix as physically validated on the Samsung device"

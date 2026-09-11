@@ -1,126 +1,273 @@
 # LuHm OS · KAI 9000 · Project Hydra
 
-**LuHm OS** = Linux / Unix approach Hydra manifest.  
-**KAI 9000** = working title for the local-first AI/media/game subsystem.  
-**Project Hydra** = integration architecture.  
-**Samsung Android APK** = the current device-facing testing platform.
+**LuHm OS** = **Linux / Unix approach Hydra manifest**.  
+**KAI 9000** = working title for the local-first AI, media, game, and device subsystem.  
+**Project Hydra** = the integration architecture joining AI logic, backend services, frontend/cockpit surfaces, build forges, and platform targets.
 
-## Current lane
+`luhmos-main` is the **canonical integration branch**. Work is developed in bounded lanes, proven by CI, merged here, then promoted through explicit release channels. Main is not a scratch branch and stable is never a shortcut.
 
-```text
-testing/luhm-os-android
-        │
-        ├── doctrine + manifests
-        ├── Python/Ollama localhost plane
-        ├── Samsung/Termux trust contract
-        ├── Copilot agent instructions
-        ├── Oni Summoning / ULTIMA debug APK forge
-        └── Black Magic / F-Droid repository lane
-```
+## Final goal
 
-This branch is testing-only. Nothing here is automatically promoted or released.
+Build a **local-first, Unix-shaped creative operating environment** that can run as a secure Samsung Android application today and grow into a portable LuHm OS application family without rewriting the control plane for every platform.
 
-## Mission
-Build a reproducible Samsung Android cockpit that combines local AI, OpenAI-assisted coding/reasoning, Godot 4 UI/game systems, Python 3 orchestration, Ollama, FFmpeg/media tooling, Edge Gallery/widget surfaces, and controlled cloud integrations without giving models unrestricted device authority.
+The final system should provide:
 
-Project overview: `docs/LUHM_OS_KAI9000_OVERVIEW.md`  
-Build altar: `docs/ULTIMA_BUILD_ALTAR.md`  
-Fast build guide: `docs/BUILD_FAST.md`
+- one Lum user-facing AI agent with typed, policy-gated tools;
+- Python 3 as the orchestration and authorization layer;
+- local Ollama inference with optional OpenAI remote reasoning;
+- Godot 4 plus web/Vue surfaces for the interactive cockpit;
+- FFmpeg and media tooling for Video Forge Cathedral workflows;
+- deterministic GitHub CI for compilation, testing, provenance, and artifacts;
+- persistent Android signing identity for update continuity;
+- a signed F-Droid repository as the independent Android distribution lane;
+- staged platform homes for Android, Apple, Windows 11, and Ubuntu/Debian;
+- no requirement for a model to receive unrestricted shell, root, signing keys, or production authority.
 
-## Final form
+The architecture should remain understandable with ordinary Unix ideas: small components, explicit interfaces, text/configuration where practical, replaceable processes, observable state, least privilege, and boring recovery paths.
 
-The distribution goal is no longer merely an APK artifact. **Final form is a signed custom F-Droid repository that can be added/imported into an F-Droid client.**
+## Branch workflow
 
 ```text
-AIRSHIP KAI9000
-WARP GIT
-BLACK_MAGIC FDROID
-FINAL_FORM SIGNED_FDROID_REPOSITORY
+WORK LANES
+
+luhmos/ai-logic  ─┐
+luhmos/frontend  ─┼── PR + CI ──> luhmos-main
+luhmos/backend   ─┘                    │
+                                      ▼
+RELEASE PROMOTION
+
+luhmos-main
+    │
+    ▼
+luhmos/testing
+    │
+    ▼
+luhmos/proposed
+    │
+    ▼
+luhmos/beta
+    │
+    ▼
+luhmos/stable
 ```
 
-Canonical final-form doctrine: `docs/FDROID_FINAL_FORM.md`  
-Machine-readable goal: `fdroid/final-goal.manifest.json`  
-Black Magic staging workflow: `.github/workflows/oni-black-magic-fdroid-stage.yml`
+### Work-lane responsibilities
 
-The long-lived repository requires two protected persistent identities: an APK signing identity for Android update continuity and an F-Droid repository signing identity for index/fingerprint trust. Neither belongs in Git, APKs, logs, Base64 backups, or model context.
+**`luhmos/ai-logic`**
+- Lum agent behavior and routing
+- typed tool/spell plans
+- model/provider adapters
+- AI policy and evaluation
+- no direct production authority
 
-## Canonical doctrine
+**`luhmos/backend`**
+- Python 3 control plane
+- FastAPI/HTTP services and jobs
+- authorization and policy enforcement
+- persistent state and platform adapters
+- the final authority for privileged application actions
 
-- `lumh-os/kai9000/AI_MAGIC_DOCTRINE.md`
-- `lumh-os/kai9000/project.manifest.json`
-- `project/hydra/project.manifest.json`
-- `project/hydra/samsung/android/apk/app.reference.json`
-- `project/hydra/samsung/android/apk/testing-ingest.manifest.json`
-- `fdroid/final-goal.manifest.json`
+**`luhmos/frontend`**
+- Godot/Vue/WebView cockpit
+- Android/platform presentation
+- media/game/UI surfaces
+- consumes typed backend APIs
+- never owns private credentials or unrestricted shell authority
 
-## APK source and build
-This repository is the Android **orchestration altar**. The current APK body remains pinned in the public Samsung build candidate:
+**`luhmos-main`** integrates proven work. Release branches only receive forward promotion. Feature work does not target `beta` or `stable` directly.
 
-`eggie-admin/vue-headless-cms@86507ed7c72650ff508eb9a1a9e52842eb50e821`
+Canonical topology: `project/hydra/LUHMOS_BRANCH_TOPOLOGY.json`  
+Human workflow contract: `docs/LUHMOS_WORK_LANES.md`  
+CI enforcement: `.github/workflows/luhmos-lane-gates.yml`
 
-That candidate contains the Vue cockpit, Godot 4 project, Godot Android v2 plugin, Samsung widget surface, Android export preset, private F-Droid metadata, and build sanity tools.
+## Unix approach
 
-Canonical compile workflow:
+LuHm OS follows a Unix-style separation of concerns rather than building one giant privileged application.
 
-`.github/workflows/oni-ultima-debug-apk.yml`
+```text
+USER / LUM
+    │
+    ▼
+FRONTEND
+Godot · Vue · WebView
+    │ typed requests
+    ▼
+PYTHON CONTROL PLANE
+policy · state · jobs · authorization
+    │
+    ├── Ollama localhost inference
+    ├── OpenAI remote reasoning when authorized
+    ├── FFmpeg/media workers
+    ├── GitHub remote build forge
+    └── platform adapters
+```
 
-Testing output:
+Core laws:
 
-`kai9000-luhm-os-testing-debug.apk`
+1. **Local first.** Localhost services and local data paths are preferred when practical.
+2. **One job per layer.** UI presents, AI proposes, Python authorizes, workers execute.
+3. **Least privilege.** No automatic root and no model-generated arbitrary shell execution.
+4. **Explicit interfaces.** Cross-layer work uses typed requests, manifests, APIs, files, or bounded subprocess contracts.
+5. **Replaceable parts.** Ollama, remote AI, UI, and platform adapters can evolve without replacing the whole cathedral.
+6. **Observable state.** Health checks, CI evidence, hashes, signatures, manifests, and logs establish GREEN.
+7. **Fail closed.** Unknown commands, missing signing identity, failed tests, or unverifiable artifacts stop promotion.
+8. **Secrets stay outside source.** Private keys, API credentials, keystores, and passwords never belong in Git, APK assets, logs, or AI prompts.
 
-Android GREEN requires executed CI plus an installable APK, package identity, signature evidence, SHA-256, and 16 KiB alignment evidence.
+## Lum magic automation
 
-After a successful push-triggered APK run, the Black Magic workflow stages the verified APK and donor metadata into a private F-Droid repository input bundle.
+The Final Fantasy-inspired command language is a **typed automation vocabulary**, not a shell language.
 
-Release/debug template:
-`release/TESTING_APK_DEBUG_TEMPLATE.md`
+```text
+LIBRA   = read-only inspection
+SCAN    = deeper audit
+CURE    = smallest hotfix
+CURA    = bounded patch
+CURAGA  = full mutation; human approval required
+ESUNA   = hardening / cleanup
+METEO   = stage reviewed GREEN work into testing + CI
+ULTIMA  = invoke the verified remote compile forge on an explicit GREEN ref
+PHOENIX = rollback to an explicitly named sealed GREEN target
+```
 
-## Copilot compile architecture
-Copilot is the implementation assistant. GitHub Actions is the deterministic build oracle.
+A spell compiles into a policy-checked action plan. It cannot override branch gates, CI, signing requirements, or human approval. `ULTIMA` means **compile and prove**, not “merge everything.”
 
-Copilot reads:
-- `.github/copilot-instructions.md`
-- `.github/instructions/ultima-build.instructions.md`
-- `AGENTS.md`
+Doctrine: `docs/LUHMOS_LUM_MAGIC_DOCTRINE.md` after its AI-lane review is merged.  
+Machine contract: `project/hydra/LUHMOS_LUM_MAGIC_MANIFEST.json` after review.
 
-The lightweight setup workflow prepares Python, Java, Node, Gradle, doctrine references, and the pinned Samsung source without running the full APK export.
+## Android / Samsung current platform
 
-## AI stack
-- **Lum / OpenAI**: remote reasoning, coding/spell compiler, typed agent/tool requests. Credentials remain server-side.
-- **Ollama**: local inference at `127.0.0.1:11434`.
-- **Python 3**: orchestration, policy, tests, feeds, local backend.
-- **Godot 4**: Android cockpit/game/UI runtime.
-- **Edge Gallery**: Samsung-facing local media/gallery surface.
+Samsung Android is the first fully active platform lane.
 
-More: `docs/AI_STACK.md`
+Canonical application identity:
 
-## Samsung trust lane
-Ordinary Termux owns the daemon/control plane. Samsung Secure Folder is a protected cockpit/client.
+```text
+package/application ID: art.eggiebagelface.luhmos
+release signing alias:  luhmos-release
+target SDK:             API 36
+primary ABI:            arm64-v8a
+```
 
-Canonical local services:
+Production Android GREEN requires a persistent signing identity, verified package/signature evidence, successful tests, SHA-256/provenance, and native-library/16 KiB compatibility evidence. Private signing material remains outside Git.
+
+Ordinary Termux owns the local daemon/control plane. Samsung Secure Folder is treated as a protected cockpit/client rather than the owner of ordinary-Termux processes.
+
+Canonical localhost services currently include:
+
+- Hydra cockpit `127.0.0.1:8787`
+- Ollama `127.0.0.1:11434`
 - AcodeX/AXS `127.0.0.1:8767`
 - TigerVNC `127.0.0.1:5901`
 - WebSocket bridge `127.0.0.1:6080`
-- Hydra cockpit `127.0.0.1:8787`
-- Ollama `127.0.0.1:11434`
 
-No automatic root. Stock Shizuku is preferred when scoped privilege brokering is required. USB/UVC camera permission work stays isolated from the green control plane.
+## Distribution lanes
 
-## Community and security
-- `CONTRIBUTING.md`
+Android distribution is deliberately multi-lane:
+
+```text
+GitHub CI artifact
+      │
+      ├── Samsung / direct signed APK lane
+      ├── Google Play AAB lane when release policy is satisfied
+      └── signed F-Droid repository lane
+```
+
+The long-lived Android identities are the APK/app signing identity and the F-Droid repository signing identity. They are separate trust anchors and neither is stored in source control.
+
+Canonical F-Droid goal: `docs/FDROID_FINAL_FORM.md`  
+Machine-readable goal: `fdroid/final-goal.manifest.json`
+
+## Platform roadmap
+
+```text
+Android / Samsung    ACTIVE
+Apple                STAGED SCAFFOLD
+Windows 11           STAGED SCAFFOLD
+Ubuntu / Debian      STAGED SCAFFOLD
+```
+
+The goal is not to force identical platform shells. The portable asset is the **Python policy/control contract and shared application logic**. Each platform may use the native shell that makes the most sense while preserving the same security and agent boundaries.
+
+## Milestones
+
+### M0 · Doctrine and Source of Truth
+- establish LuHm OS naming, architecture, security boundaries, manifests, and reproducible repository doctrine
+- **state: established**
+
+### M1 · Local Cathedral
+- Python/local AI control plane
+- Ollama localhost inference
+- Termux/AcodeX/VNC/WebSocket control services
+- **state: GREEN baseline established**
+
+### M2 · Samsung Android Forge
+- Godot/Android application shell
+- canonical package `art.eggiebagelface.luhmos`
+- API 36 / ARM64 baseline
+- deterministic GitHub build lane
+- **state: active**
+
+### M3 · Persistent Signing and Distribution
+- prove persistent `luhmos-release` signer
+- produce install/update continuity evidence
+- maintain 16 KiB/native compatibility
+- harden direct/Samsung, Play, and F-Droid packaging lanes
+- **state: active gate**
+
+### M4 · Lum Typed Agent
+- one visible Lum personality
+- local/remote model routing
+- typed tool authorization
+- Final Fantasy-inspired magic automation
+- CI-backed GitHub forge invocation
+- **state: active development**
+
+### M5 · Video Forge Cathedral
+- FFmpeg/media orchestration
+- authored creative asset workflow
+- Godot media/game presentation
+- deterministic render/build provenance
+- **state: developing**
+
+### M6 · Cross-platform LuHm OS
+- mature Android implementation
+- activate Apple, Windows 11, and Ubuntu/Debian platform shells
+- preserve shared Python/agent/security contracts
+- **state: staged**
+
+### FINAL · Reproducible Creative Cathedral
+A signed, updateable, auditable, local-first application ecosystem where Lum can help plan, code, build, render, inspect, and recover the system through bounded automation while the human operator retains release, signing, and destructive authority.
+
+## Definition of GREEN
+
+A claim is GREEN only when evidence exists. Depending on the lane that means tests actually ran, builds actually completed, artifacts exist, expected package identity is verified, signing identity is verified, hashes/provenance are recorded, and required policy gates passed.
+
+Documentation intent is not build evidence. A queued workflow is YELLOW. A failed or unverifiable gate is RED.
+
+## Source of Truth
+
+Repository doctrine is authoritative for code-adjacent contracts and machine-readable manifests. Sealed milestones and private backup material are mirrored to the project's controlled Google Drive Source-of-Truth structure. Secrets are never copied into public doctrine.
+
+Key repository references:
+
+- `ARCHITECTURE.md`
+- `AGENTS.md`
 - `SECURITY.md`
-- `SUPPORT.md`
-- `CODE_OF_CONDUCT.md`
+- `docs/LUHMOS_WORK_LANES.md`
+- `project/hydra/LUHMOS_BRANCH_TOPOLOGY.json`
+- `project/hydra/LUHMOS_ANDROID_CONVERGENCE.json`
+- `docs/FDROID_FINAL_FORM.md`
+- `fdroid/final-goal.manifest.json`
+
+## Development principle
+
+> **AI proposes. Python authorizes. CI proves. The human promotes.**
+
+That is the center of LuHm OS.
 
 ## Copyright and licensing
 
-Copyright © 2026 Eggie Bagelface in copyrightable original Project Hydra / LuHm OS / KAI 9000 material, subject to the scope and exclusions in `COPYRIGHT.md`.
+Copyright © 2026 Eggie Bagelface in copyrightable original Project Hydra / LuHm OS / KAI 9000 material, subject to `COPYRIGHT.md`.
 
-This repository is **multi-license by component**:
+This repository is multi-license by component. Material governed by the root `LICENSE` remains under that license; third-party material remains under its own license; separately owned branding, artwork, characters, and specifically marked material retain their applicable terms. Existing open-source rights are not revoked or narrowed.
 
-- material governed by the root `LICENSE` remains GNU GPLv3;
-- third-party material remains under its own license;
-- independently owned Project Hydra beta material may be marked for noncommercial use under `docs/PROJECT_HYDRA_BETA_LICENSING.md`;
-- Project Hydra branding, original artwork, character assets, and other separately owned material are not automatically licensed merely because GPL-covered source code is available.
-
-Existing GPL rights are not revoked or narrowed. Commercial use of separately owned Project Hydra material marked `PROJECT HYDRA NONCOMMERCIAL BETA` requires separate permission.
+See `COPYRIGHT.md`, `LICENSE`, `CONTRIBUTING.md`, `SECURITY.md`, and `SUPPORT.md` for the controlling details.

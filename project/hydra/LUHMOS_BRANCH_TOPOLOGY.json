@@ -1,0 +1,36 @@
+{
+  "schema": "luhmos.branch-topology.v1",
+  "canonical_integration": "luhmos-main",
+  "work_lanes": {
+    "ai_logic": "luhmos/ai-logic",
+    "frontend": "luhmos/frontend",
+    "backend": "luhmos/backend"
+  },
+  "release_channels": [
+    "luhmos/testing",
+    "luhmos/proposed",
+    "luhmos/beta",
+    "luhmos/stable"
+  ],
+  "promotion_order": [
+    "luhmos-main",
+    "luhmos/testing",
+    "luhmos/proposed",
+    "luhmos/beta",
+    "luhmos/stable"
+  ],
+  "rules": {
+    "work_lanes_merge_only_to_integration": true,
+    "release_channels_feature_development": false,
+    "stable_direct_feature_merge": false,
+    "reverse_promotion": false,
+    "pr_required_by_doctrine": true,
+    "ci_required_by_doctrine": true
+  },
+  "authority": {
+    "ai_logic": "proposal_and_reasoning",
+    "frontend": "presentation_only",
+    "backend": "typed_policy_state_and_process_authority",
+    "python3": "orchestration_authority"
+  }
+}

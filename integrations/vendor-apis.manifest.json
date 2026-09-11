@@ -1,13 +1,10 @@
 {
-  "schema": "kai9000.vendor-apis.v4",
-  "date": "2026-09-06",
+  "schema": "kai9000.vendor-apis.v5",
+  "date": "2026-09-10",
   "airship": "KAI9000",
   "warp": "git",
   "crown": "Professor",
-  "orchestrator": {
-    "name": "Lum",
-    "role": "SUPREME_WITCH"
-  },
+  "orchestrator": {"name": "Lum", "role": "SUPREME_WITCH"},
   "public_identity": {
     "domain": "eggiebagelface.art",
     "fdroid_host": "fdroid.eggiebagelface.art",
@@ -15,19 +12,24 @@
   },
   "remote_ai_router": {
     "endpoint": "/api/remote-ai/chat",
+    "status_endpoint": "/api/remote-ai/status",
     "provider_mode": "auto|openai|huggingface",
     "auto_order": ["openai", "huggingface", "deterministic_mock"],
     "silent_cross_provider_failover": false,
-    "provider_output_is_untrusted": true
+    "provider_output_is_untrusted": true,
+    "input_secret_guard": true,
+    "output_secret_guard": true,
+    "requested_models_must_be_allowlisted": true,
+    "empty_provider_output_fails_closed": true
   },
   "providers": {
     "openai": {
-      "magic_color": null,
       "role": "primary_remote_reasoning_agent_and_typed_tool_request_lane",
       "api": "responses",
       "endpoint": "https://api.openai.com/v1/responses",
-      "default_model": "gpt-6-astra",
+      "default_model": "gpt-5.6-sol",
       "credential_env": "OPENAI_API_KEY",
+      "allowed_models_env": "KAI_OPENAI_ALLOWED_MODELS",
       "credential_location": "server_or_protected_ci_only",
       "store_default": false,
       "tool_policy": "typed_allowlist_only",
@@ -35,7 +37,6 @@
       "credentials_visible_to_model": false
     },
     "hugging_face": {
-      "magic_color": null,
       "role": "open_model_forge_catalog_and_remote_inference_provider_lane",
       "api": "responses_beta",
       "endpoint": "https://router.huggingface.co/v1/responses",
@@ -43,8 +44,8 @@
       "default_model": "openai/gpt-oss-120b:fastest",
       "lower_latency_candidate": "openai/gpt-oss-20b:fastest",
       "credential_env": "HF_TOKEN",
+      "allowed_models_env": "KAI_HF_ALLOWED_MODELS",
       "credential_strategy": "fine_grained_inference_permission",
-      "ci_preference": "trusted_publisher_oidc_with_inference_scope_when_available",
       "routing_policies": ["fastest", "cheapest", "preferred", "specific_provider"],
       "auto_download_models": false,
       "auto_execute_remote_code": false,
@@ -52,46 +53,12 @@
       "unrestricted_shell": false,
       "credentials_visible_to_model": false
     },
-    "cloudflare": {
-      "magic_color": null,
-      "role": "edge_access_perimeter_dns_tls_ddos_waf_zero_trust_and_tunnel_gate",
-      "api_base": "https://api.cloudflare.com/client/v4",
-      "zone": "eggiebagelface.art",
-      "fdroid_hostname": "fdroid.eggiebagelface.art",
-      "security_doctrine": "docs/CLOUDFLARE_EAP_SECURITY_REROLL.md",
-      "security_manifest": "integrations/cloudflare/security.manifest.json",
-      "server_connector": "cloudflared_outbound_only",
-      "client_connector": "cloudflare_one_client_warp",
-      "preferred_public_origin_transport": "cloudflare_tunnel",
-      "direct_origin_fallback": "proxied_ipv6_only",
-      "public_origin_ipv4": false,
-      "wan_port_forwarding": false,
-      "tls_mode": "full_strict",
-      "minimum_tls": "1.2",
-      "tls_1_3": true,
-      "origin_ca": "lets_encrypt_dns01",
-      "origin_key": "ecdsa_p256",
-      "dnssec": true,
-      "dnssec_expected_algorithm": "13_ecdsa_p256_sha256",
-      "ddos": "managed_default",
-      "waf": "enabled",
-      "private_admin_policy": "approved_identity_and_US_and_warp_or_device_posture",
-      "public_fdroid_geo_locked": false,
-      "credential_strategy": "split_least_privilege_api_tokens",
-      "ci_token_preference": "account_owned_api_token_when_supported",
-      "forbid_global_api_key_in_automation": true,
-      "credentials_visible_to_model": false
-    },
     "google_cloud": {
-      "magic_color": "white",
       "role": "approved_google_cloud_service_lane",
       "credential_strategy": "workload_identity_federation_for_github_actions",
       "github_auth": "oidc_to_workload_identity_pool_provider",
-      "preferred_access": "direct_resource_access",
-      "service_account_impersonation": "only_when_api_or_product_requires",
       "long_lived_service_account_json_in_repo": false,
       "iam_policy": "resource_specific_least_privilege",
-      "oidc_conditions": ["repository", "branch_or_ref", "workflow_when_available"],
       "credentials_visible_to_model": false
     }
   },
@@ -106,6 +73,7 @@
     "secrets_in_base64": false,
     "secrets_in_model_context": false,
     "provider_response_is_untrusted_data": true,
-    "execution_evidence_required_for_green": true
+    "execution_evidence_required_for_green": true,
+    "remote_provider_failure_does_not_grant_fallback_authority": true
   }
 }

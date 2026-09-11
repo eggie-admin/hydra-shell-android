@@ -21,14 +21,12 @@ Cloudflare Workers Static Assets
 eggiebagelface.art + www.eggiebagelface.art
 ```
 
-### Retired from the active Cloudflare lane
+### Active public-edge law
 
-- Vercel: forbidden, not a fallback, not a deployment target, not a status authority.
-- Local Termux: retired from active runtime and deployment doctrine.
-- Local VNC/websockify/AcodeX publication: not part of the public Cloudflare path.
-- Public origin IP publication for the Coming Soon site: not required.
-
-Historical files may mention retired components. Those references are archival only and cannot override this doctrine.
+- Cloudflare is the only public deployment edge in this doctrine.
+- Local VNC/websockify/AcodeX publication is not part of the public Cloudflare path.
+- Public origin IP publication for the Coming Soon site is not required.
+- Historical deployment providers are outside the active architecture and are not status authorities.
 
 ## Coming Soon deployment
 
@@ -114,11 +112,10 @@ Repository-side `CLOUDFLARE_ULTIMA_REPO_GREEN` requires:
 1. static Coming Soon HTML and robots files exist;
 2. no scripts, trackers, external assets, API keys, or private keys are embedded;
 3. production Wrangler config binds only the apex and `www` custom domains;
-4. no Vercel dependency exists in the active Coming Soon lane;
-5. no local Termux dependency exists in the active Coming Soon lane;
-6. Wrangler configuration parses and dry-run packaging succeeds;
-7. production deployment remains human-gated;
-8. credentials are sourced only from protected GitHub secret/variable stores.
+4. no unapproved external deployment dependency exists in the active Coming Soon lane;
+5. Wrangler configuration parses and dry-run packaging succeeds;
+6. production deployment remains human-gated;
+7. credentials are sourced only from protected GitHub secret/variable stores.
 
 Live `CLOUDFLARE_ULTIMA_GREEN` additionally requires evidence from Cloudflare/public DNS that:
 
@@ -127,7 +124,7 @@ Live `CLOUDFLARE_ULTIMA_GREEN` additionally requires evidence from Cloudflare/pu
 3. edge certificates are active;
 4. HTTPS succeeds on apex and `www`;
 5. DNSSEC is active and DS validates at the registrar;
-6. the active DNS/certificate configuration has no conflicting stale origin/Vercel record;
+6. the active DNS/certificate configuration has no conflicting stale external binding;
 7. no Cloudflare credential has leaked into Git/APK/log/model context.
 
 Repository green must never be mislabeled as live Cloudflare green without that external evidence.
@@ -136,10 +133,8 @@ Repository green must never be mislabeled as live Cloudflare green without that 
 
 ```text
 Professor = crown holder
-KAI 9000 APK = active product mutation target
+LuHm OS = product trunk
 GitHub = canonical source + remote terminal/build forge
 Cloudflare = public edge
 Google Drive = recovery mirror
-Vercel = PURGED
-Local Termux = RETIRED
 ```

@@ -1,0 +1,44 @@
+{
+  "schema": "luhmos.lum-magic.v1",
+  "milestone": "LUHMOS_LUM_MAGIC_AUTOMATION_20260910",
+  "canonical_branch": "luhmos-main",
+  "implementation_branch": "luhmos/ai-logic",
+  "authority": {
+    "human": "Professor",
+    "visible_agent": "Lum",
+    "policy_owner": "python3",
+    "remote_forge": "GitHub Actions",
+    "ci_is_authoritative": true,
+    "arbitrary_model_shell": false,
+    "implicit_stable_promotion": false
+  },
+  "spells": {
+    "LIBRA": {"intent": "inspect", "write": false, "human_approval": false},
+    "SCAN": {"intent": "audit", "write": false, "human_approval": false},
+    "CURE": {"intent": "hotfix", "write": true, "route": "work-lane->luhmos-main", "human_approval": false},
+    "CURA": {"intent": "patch", "write": true, "route": "work-lane->luhmos-main->luhmos/testing", "human_approval": false},
+    "CURAGA": {"intent": "full-mutation", "write": true, "route": "multi-lane->luhmos-main", "human_approval": true},
+    "METEO": {"intent": "stage-green", "write": true, "route": "luhmos-main->luhmos/testing", "human_approval": false},
+    "ULTIMA": {"intent": "finale-compile", "write": false, "route": "explicit-green-ref->remote-forge", "human_approval": true},
+    "ESUNA": {"intent": "harden-cleanup", "write": true, "route": "work-lane->luhmos-main", "human_approval": false},
+    "PHOENIX": {"intent": "rollback", "write": true, "route": "named-sealed-green-target", "human_approval": true}
+  },
+  "release_chain": ["luhmos-main", "luhmos/testing", "luhmos/proposed", "luhmos/beta", "luhmos/stable"],
+  "android": {
+    "application_id": "art.eggiebagelface.luhmos",
+    "signing_alias": "luhmos-release",
+    "certificate_dn": "CN=art.eggiebagelface.luhmos,O=Eggie Bagelface Art,C=US",
+    "target_sdk": 36,
+    "abi": "arm64-v8a",
+    "page_size_16k": "required"
+  },
+  "fail_closed": [
+    "unknown_spell",
+    "ambiguous_destructive_target",
+    "missing_required_human_approval",
+    "missing_required_green_evidence",
+    "missing_release_signer_for_release_claim",
+    "dirty_or_divergent_release_lineage",
+    "secret_or_private_key_detected_in_source"
+  ]
+}

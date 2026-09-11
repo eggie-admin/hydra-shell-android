@@ -1,0 +1,91 @@
+{
+  "schema": "luhmos.milestone.v1",
+  "milestone": "LUHMOS_FULL_MUTATION_MILESTONE_20260910",
+  "sealed_date": "2026-09-10",
+  "status": {
+    "architecture_and_testing": "GREEN",
+    "production_android_release": "YELLOW"
+  },
+  "canonical": {
+    "repository": "eggie-admin/hydra-shell-android",
+    "integration_branch": "luhmos-main",
+    "mutation_commit": "0f91a2476aa8bf0062fb57750da9a1dd94939b6a",
+    "testing_channel": "luhmos/testing"
+  },
+  "android": {
+    "application_id": "art.eggiebagelface.luhmos",
+    "target_sdk": 36,
+    "abi": "arm64-v8a",
+    "page_size_16k": "required",
+    "release_alias": "luhmos-release",
+    "donor_repository": "eggie-admin/vue-headless-cms",
+    "donor_branch": "luhmos/android-samsung",
+    "donor_commit": "0da5af914ec80266724d36c9451598a66a6ee3f7"
+  },
+  "mutation": {
+    "canonical_readme": true,
+    "canonical_doctrine": true,
+    "branch_topology_hardened": true,
+    "promotion_gate_parser_fixed": true,
+    "lum_magic_typed_compiler": true,
+    "lum_magic_fail_closed": true,
+    "work_lanes": [
+      "luhmos/ai-logic",
+      "luhmos/frontend",
+      "luhmos/backend"
+    ],
+    "release_chain": [
+      "luhmos-main",
+      "luhmos/testing",
+      "luhmos/proposed",
+      "luhmos/beta",
+      "luhmos/stable"
+    ]
+  },
+  "green_evidence": {
+    "magic_pr": 26,
+    "magic_head": "b57f03a3be3274abac1d9f14803e6ab0e84b9a92",
+    "lane_gate_run": 34547409113,
+    "lane_gate": "GREEN",
+    "python_backend_tests": "GREEN",
+    "ai_logic_compile_and_secret_guard": "GREEN",
+    "frontend_boundary": "GREEN",
+    "promotion_direction": "GREEN",
+    "pr_guardrails_run": 34547409108,
+    "pr_guardrails": "GREEN",
+    "android_source_gate_run": 34547409101,
+    "android_source_gate": "GREEN",
+    "hydra_local_ci_run": 34547409128,
+    "hydra_local_ci": "GREEN",
+    "cathedral_ci_run": 34547409110,
+    "cathedral_ci": "GREEN"
+  },
+  "yellow_gates": [
+    {
+      "gate": "persistent_android_release_signing",
+      "workflow_run": 34547409115,
+      "reason": "Required persistent luhmos-release signing secrets are not provisioned in GitHub Actions.",
+      "required_secrets": [
+        "LUHMOS_ANDROID_KEYSTORE_B64",
+        "LUHMOS_ANDROID_KEYSTORE_PASSWORD",
+        "LUHMOS_ANDROID_KEY_PASSWORD"
+      ],
+      "effect": "Production Android release and promotion beyond testing remain blocked."
+    }
+  ],
+  "promotion": {
+    "allowed_now": ["luhmos-main", "luhmos/testing"],
+    "blocked_until_signing_green": ["luhmos/proposed", "luhmos/beta", "luhmos/stable"]
+  },
+  "rollback": {
+    "immediate_pre_mutation_green": "854755a7af4f357291d32d1016aa0f72d4e09374",
+    "older_sealed_recovery_anchors": "preserved_in_source_of_truth"
+  },
+  "security": {
+    "private_keys_in_git": false,
+    "private_keys_in_apk": false,
+    "arbitrary_model_shell": false,
+    "human_release_authority": true
+  },
+  "canonical_law": "AI proposes. Python authorizes. CI proves. The human promotes."
+}
