@@ -91,7 +91,7 @@
         <div class="luhm-title"><strong>LuHm Cathedral</strong><br><small>private Firefox pet console</small></div>
         <button id="luhm-close" type="button" aria-label="Close">×</button>
       </div>
-      <div class="luhm-hud"><span>♥ AFF 17</span><span>⚡ SPARKS 500</span><span>🎲 PITY 0/20</span></div>
+      <div class="luhm-hud"><span>♥ AFF 17</span><span>⚡ SPARKS 500</span><span id="luhm-pity">🎲 PITY 0/20</span></div>
       <div class="luhm-grid">
         <button type="button" data-luhm="PET LUM">PET LUM</button>
         <button type="button" data-luhm="ROLL D20">ROLL D20</button>
@@ -100,6 +100,7 @@
         <button type="button" data-luhm="SUMMON IMAGE">SUMMON IMAGE</button>
         <button type="button" data-luhm="SAVEPOINT">SAVEPOINT</button>
         <button type="button" data-luhm="CAST ULTIMA">CAST ULTIMA ⚡</button>
+        <button type="button" data-private-gacha="after-dark">AFTER DARK PULL</button>
       </div>
       <div class="luhm-tools">
         <button type="button" data-tool="scan">SCAN PRIVATE CACHE</button>
@@ -110,6 +111,7 @@
 
     document.documentElement.append(launcher, panel);
     const status = panel.querySelector("#luhm-pet-status");
+    const pity = panel.querySelector("#luhm-pity");
 
     launcher.addEventListener("click", () => { panel.hidden = !panel.hidden; });
     panel.querySelector("#luhm-close").addEventListener("click", () => { panel.hidden = true; });
@@ -122,6 +124,17 @@
           : "Tap the ChatGPT composer once, then retry.";
         if (result.ok) panel.hidden = true;
       });
+    });
+
+    panel.querySelector('[data-private-gacha="after-dark"]').addEventListener("click", async () => {
+      status.textContent = "Rolling private reward banner…";
+      const result = await runtime({type:"LUHM_PRIVATE_GACHA_PULL"});
+      if (!result?.ok) {
+        status.textContent = "After Dark catalog offline. Sync the private reward pack first.";
+        return;
+      }
+      pity.textContent = `🎲 PITY ${result.pity}/${result.hard_pity}`;
+      status.textContent = `${result.tier.toUpperCase()} · ${result.reward.label}`;
     });
 
     panel.querySelector('[data-tool="scan"]').addEventListener("click", async () => {
