@@ -44,26 +44,68 @@ auto | openai | huggingface
 
 If no remote provider is configured, the APK still launches and keeps non-cloud features available.
 
-## OpenAI
+## OpenAI / Lum speed doctrine
 
 OpenAI is the primary remote reasoning/agent lane.
 
-Verified against current first-party OpenAI model documentation on 2026-09-10:
+Verified against current first-party OpenAI model and API documentation on 2026-09-11:
 
 ```text
-fast/default interactive model: gpt-5.6-luna
-deep architecture/review model: gpt-5.6-sol
-API surface: Responses API
+Lum default/front door:       gpt-5.6-luna
+Lum default reasoning effort: none
+Lum default output verbosity: low
+Lum API surface:              Responses API
+Lum transport:                streaming
+Lum paid latency mode:        service_tier=fast
+Deep architecture/review:     gpt-5.6-sol
 ```
 
-Configuration should remain overridable rather than compiled into application code:
+GPT-5.6 Luna is the fastest and lowest-cost model in the GPT-5.6 family. Fast mode may be requested per Responses API call with `service_tier=fast` (or `priority`; the returned service tier may normalize to the provider's served tier).
+
+Configuration remains overridable rather than compiled into application code:
 
 ```text
 OPENAI_MODEL_FAST=gpt-5.6-luna
 OPENAI_MODEL_DEEP=gpt-5.6-sol
+OPENAI_REASONING_FAST=none
+OPENAI_VERBOSITY_FAST=low
+OPENAI_SERVICE_TIER_FAST=fast
 ```
 
-Use the Responses API for typed/structured work and tool requests. Transport details such as persistent sockets are adapter implementation choices and must be revalidated against current first-party documentation before becoming normative architecture.
+### Routing rule
+
+Use Luna for the overwhelming majority of interactive Lum traffic:
+
+- chat and command parsing;
+- intent classification;
+- typed tool selection;
+- status/help/UI responses;
+- short coding assists;
+- deterministic orchestration proposals;
+- high-volume agent turns.
+
+Escalate to Sol only when the task crosses a deliberate complexity threshold, for example:
+
+- architecture redesign;
+- difficult multi-file debugging;
+- release/security audits;
+- high-consequence code review;
+- deep research/synthesis;
+- a failed Luna attempt where more reasoning is actually useful.
+
+Do not use GPT-6/Astra as Lum's default front door merely because it is more capable. Capability escalation is explicit and exceptional; latency remains the primary interactive objective.
+
+### Fast mode policy
+
+`service_tier=fast` is a paid API latency optimization, not a correctness requirement. The application may fall back to the normal/default service tier if Fast mode is unavailable, rate-limited, or deliberately disabled for cost control.
+
+Fast mode does not change Lum's authority. Faster inference never grants permission to mutate source, root a device, sign artifacts, publish releases, or execute unrestricted shell commands.
+
+### ChatGPT Pro versus OpenAI API billing
+
+ChatGPT Pro and the OpenAI API are separate billing systems. A ChatGPT Pro subscription does not fund arbitrary API calls made by the LuHm OS APK or its gateway.
+
+ChatGPT Pro can provide access to paid ChatGPT/Work/Codex experiences, but a programmatic in-app Lum agent uses the OpenAI API and therefore requires separately configured API billing/credits and a server-side/project API credential.
 
 `OPENAI_API_KEY` is secret server/gateway material. It never belongs in Android resources, WebView JavaScript, Godot project resources, Git, APK/AAB artifacts, Base64 manifests, prompts, screenshots, logs, or model context.
 
@@ -124,6 +166,8 @@ project/hydra/games/GODOT4_JRPG_DATING_DONORS_20260910.json
 
 - no cloud provider configured -> APK still opens;
 - OpenAI unavailable -> report OpenAI unavailable;
+- Fast mode unavailable -> fall back to normal OpenAI service tier unless policy says fail closed;
+- Luna insufficient for a task -> policy may explicitly escalate to Sol;
 - Hugging Face unavailable -> report Hugging Face unavailable;
 - selected provider fails -> do not silently resend to another provider;
 - optional local model unavailable -> keep base UI/game/runtime functional;
