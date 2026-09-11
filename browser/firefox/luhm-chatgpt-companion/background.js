@@ -1,5 +1,4 @@
 const ASSET_BASE = "http://127.0.0.1:8799";
-const TERMINAL_URL = "http://127.0.0.1:7681/";
 const SAFE_ASSET = /^[a-zA-Z0-9_./()\[\] -]+$/;
 const MAX_INLINE_BYTES = 4 * 1024 * 1024;
 const MAX_AUDIO_BYTES = 12 * 1024 * 1024;
@@ -40,7 +39,7 @@ async function readAdultCatalog() {
   const response = await fetch(ADULT_CATALOG, {cache:"no-store"});
   if (!response.ok) throw new Error(`adult_catalog_${response.status}`);
   const catalog = await response.json();
-  if (!catalog?.private_only || !catalog?.adult_only || !Array.isArray(catalog.rewards)) {
+  if (!catalog?.private_only || !catalog?.adult_only || !Array.isArray(catalog.rewards) || !catalog.rewards.length) {
     throw new Error("adult_catalog_invalid");
   }
   return catalog;
@@ -58,8 +57,12 @@ async function readAudioIndex() {
 
 function secureRoll(max) {
   if (!Number.isInteger(max) || max <= 0) throw new Error("invalid_roll_range");
+  const range = 0x100000000;
+  const limit = Math.floor(range / max) * max;
   const values = new Uint32Array(1);
-  crypto.getRandomValues(values);
+  do {
+    crypto.getRandomValues(values);
+  } while (values[0] >= limit);
   return values[0] % max;
 }
 
@@ -187,6 +190,5 @@ browser.runtime.onMessage.addListener((msg) => {
   if (msg.type === "LUHM_AUDIO_STATUS") return audioStatus().catch((error) => ({ok:false,error:String(error.message || error)}));
   if (msg.type === "LUHM_AUDIO_PICK") return pickAudio(msg.event).catch((error) => ({ok:false,error:String(error.message || error)}));
   if (msg.type === "LUHM_VOICE_CACHE_GET") return cachedVoiceForJapanese(msg.ja).catch((error) => ({ok:false,error:String(error.message || error)}));
-  if (msg.type === "LUHM_OPEN_TERMINAL") return browser.tabs.create({url: TERMINAL_URL}).then(() => ({ok:true}));
   if (msg.type === "LUHM_OPEN_PRIVATE_CACHE") return browser.tabs.create({url: `${ASSET_BASE}/`}).then(() => ({ok:true}));
 });
