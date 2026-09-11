@@ -17,16 +17,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Validate manifest
         run: python -m json.tool browser/firefox/luhm-chatgpt-companion/manifest.json >/dev/null
+
       - name: Guard against auto-send paths
         run: |
           ! grep -R -E 'requestSubmit\(|\.submit\(|send-button|data-testid=.send' browser/firefox/luhm-chatgpt-companion/*.js
+
+      - name: Guard public shell against private game assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=browser/firefox/luhm-chatgpt-companion
+          if find "$ROOT" -type f \( -iname '*.moc' -o -iname '*.moc3' -o -iname '*.pck' -o -iname '*.motion3.json' -o -iname '*.mtn' -o -iname '*.wav' -o -iname '*.ogg' -o -iname '*.mp3' \) | grep -q .; then
+            echo 'Private/copyrighted runtime asset detected in public extension tree.' >&2
+            exit 1
+          fi
+
       - name: Package unsigned XPI
         working-directory: browser/firefox/luhm-chatgpt-companion
-        run: zip -r "$GITHUB_WORKSPACE/luhm-chatgpt-companion-firefox-${GITHUB_SHA::7}-unsigned.xpi" .
+        run: zip -r "$GITHUB_WORKSPACE/luhm-chatgpt-companion-firefox-${GITHUB_SHA::7}-unsigned.xpi" . -x 'termux/*'
+
       - name: Hash artifact
         run: sha256sum luhm-chatgpt-companion-firefox-*-unsigned.xpi
+
       - uses: actions/upload-artifact@v4
         with:
           name: luhm-firefox-companion-unsigned
