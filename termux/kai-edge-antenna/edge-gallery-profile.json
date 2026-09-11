@@ -1,0 +1,37 @@
+{
+  "schema": "kai9000.edge-gallery-profile.v1",
+  "runtime": "Google AI Edge Gallery",
+  "android_package": "com.google.aiedge.gallery",
+  "mode": "manual_sandbox_runtime",
+  "preferred_model": {
+    "name": "Gemma-4-E2B-it",
+    "model_id": "litert-community/gemma-4-E2B-it-litert-lm",
+    "model_file": "gemma-4-E2B-it.litertlm",
+    "size_bytes": 2588147712,
+    "min_device_memory_gb": 8,
+    "max_context_length": 32000,
+    "inputs": ["text", "image", "audio"],
+    "accelerators": ["gpu", "cpu"],
+    "capabilities": ["llm_thinking", "speculative_decoding"]
+  },
+  "secondary_model": {
+    "name": "Gemma-4-E4B-it",
+    "model_file": "gemma-4-E4B-it.litertlm",
+    "size_bytes": 3659530240,
+    "min_device_memory_gb": 12,
+    "max_context_length": 32000
+  },
+  "observed_2026_09_11": {
+    "edge_gallery_ui_seen": true,
+    "preferred_model_download_confirmed": false,
+    "secure_folder_profile_confirmed": false,
+    "source": "user screenshot"
+  },
+  "integration_policy": {
+    "edge_gallery_http_api_assumed": false,
+    "termux_must_not_scrape_edge_gallery_private_storage": true,
+    "production_callable_path": "LiteRT-LM integrated in LuHm Android runtime",
+    "secure_folder_role": "protected client/sandbox",
+    "ordinary_termux_role": "daemon/orchestrator"
+  }
+}
