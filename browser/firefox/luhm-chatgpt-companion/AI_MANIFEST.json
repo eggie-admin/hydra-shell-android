@@ -1,8 +1,8 @@
 {
   "schema": "luhm.firefox-ai-manifest.v1",
-  "seal": "LUM_FIREFOX_WITCHING_HOUR_20260911",
-  "version": "0.3.3",
-  "status": "STAGED_FOR_10PASS",
+  "seal": "LUM_FIREFOX_LIVE2D_FULL_MUTATION_20260911",
+  "version": "0.4.0",
+  "status": "FULL_MUTATION_STAGED",
   "scope": "private Firefox Android ChatGPT companion only",
   "authority": {
     "human_final_authority": true,
@@ -55,6 +55,25 @@
     "soundboard_source": "private local Destiny Child audio index",
     "soundboard_role": "event cues only; never used to train or clone a voice"
   },
+  "live2d_runtime": {
+    "enabled": true,
+    "model_family": "Cubism 2 legacy .moc",
+    "cached_model_count_checkpoint": 9,
+    "renderer_package": "l2d@2.1.1",
+    "renderer_install": "termux/install-live2d-runtime",
+    "renderer_local_path": "~/luhm-private/runtime/l2d-2.1.1/index.min.js",
+    "renderer_public_git_bytes": false,
+    "renderer_remote_executable_code": false,
+    "renderer_injected_into_private_xpi_at_forge_time": true,
+    "public_ci_fallback": "vendor/l2d.stub.js",
+    "model_contract_builder": "termux/build-live2d-runtime-index.py",
+    "model_runtime_index": "~/luhm-private/assets/live2d-runtime-index.json",
+    "frame": "live2d-frame.html",
+    "host_bridge": "live2d-host.js",
+    "command_reactions": true,
+    "voice_mouth_bridge": true,
+    "model_assets_in_xpi": false
+  },
   "assets": {
     "canonical_source_of_truth": "Google Drive private vault via rclone",
     "drive_primary_folder": "DestinyChildMods",
@@ -90,10 +109,12 @@
   "forge": {
     "entrypoint": "forge.py",
     "audit_passes": 10,
-    "dependency_strategy": "stdlib-only local forge; no npm/pip install required for package build",
+    "dependency_strategy": "stdlib-only package forge; private Live2D runtime installed separately and injected locally",
     "syntax_checks": ["JSON parse", "Python py_compile", "bash -n when available", "node --check when available"],
-    "artifact": "dist/luhm-chatgpt-companion-firefox-0.3.3-unsigned.xpi",
-    "same_local_and_ci_logic": true
+    "artifact": "dist/luhm-chatgpt-companion-firefox-0.4.0-unsigned.xpi",
+    "same_local_and_ci_forge_logic": true,
+    "ci_live2d_mode": "STUB",
+    "private_termux_live2d_mode": "FULL_PRIVATE"
   },
   "out_of_scope": [
     "Edge Gallery",
