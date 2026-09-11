@@ -1,7 +1,7 @@
 {
   "schema": "lumh-os.project-hydra.directory-doctrine.v1",
-  "branch_is_os": "main",
-  "os_name": "LumH OS",
+  "branch_is_os": "luhmos-main",
+  "os_name": "LuHm OS",
   "project_namespace": "project",
   "project_slug": "hydra",
   "canonical_root": "project/hydra",
