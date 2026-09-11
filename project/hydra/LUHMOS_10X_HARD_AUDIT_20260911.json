@@ -1,0 +1,202 @@
+{
+  "schema": "luhmos.ten-pass-hard-audit.v1",
+  "date": "2026-09-11",
+  "scope": "LuHm OS / KAI 9000 project history, active GitHub architecture, Samsung Android donor, game donors, AI providers, signing, F-Droid publication, rooted lab separation, and physical-device release gates",
+  "overall": {
+    "state": "YELLOW",
+    "reason": "Source architecture has been materially hardened, but final GREEN still requires merge/CI evidence, persistent signing identities, a current signed public F-Droid repository, and physical S24 FE install/launch/update proof.",
+    "final_gate": "LUHMOS_S24FE_FDROID_PUBLIC_INSTALL_GREEN"
+  },
+  "passes": [
+    {
+      "pass": 1,
+      "name": "Source-of-Truth and branch authority",
+      "state": "YELLOW",
+      "findings": [
+        "luhmos-main remains canonical integration branch",
+        "current hardening lives on sanctioned luhmos/backend PR #34",
+        "historical chat decisions are subordinate to current Git contracts",
+        "legacy package/release workflows were active and have now been fail-closed"
+      ],
+      "evidence": [
+        "project/hydra/project.manifest.json",
+        "docs/LUHMOS_CHAT_HISTORY_RECONCILIATION_20260910.md",
+        "PR eggie-admin/hydra-shell-android#34"
+      ],
+      "green_requires": "PR #34 merged after required CI is green"
+    },
+    {
+      "pass": 2,
+      "name": "Device and privilege separation",
+      "state": "YELLOW",
+      "findings": [
+        "S24 FE stock production lane is no-root and standalone",
+        "SM-X400 rooted laboratory uses separate package identity art.eggiebagelface.luhmos.rooted",
+        "rooted lab assumes the device is already intentionally rooted",
+        "no automatic rooting or exploit delivery is part of LuHm OS"
+      ],
+      "evidence": [
+        "project/hydra/samsung/android/apk/app.reference.json",
+        "project/hydra/samsung/android/rooted/SMX400_ROOTED_DEV_GOAL_20260911.json"
+      ],
+      "green_requires": "stock release CI and rooted-lab implementation each prove their own isolated package/signing boundaries"
+    },
+    {
+      "pass": 3,
+      "name": "Package, version, and update lineage",
+      "state": "GREEN_SOURCE_CONTRACT",
+      "findings": [
+        "stock production package is art.eggiebagelface.luhmos",
+        "baseline is 1.0.0 versionCode 100",
+        "same-signer update proof target is 1.0.1 versionCode 101",
+        "art.eggiebagelface.videoforge.dev, art.eggiebagelface.kai9000.dev, and art.eggiebagelface.kai9000 are historical only",
+        "legacy workflows that could forge those identities are blocked"
+      ],
+      "evidence": [
+        "project/hydra/LUHMOS_REPO_CONVERGENCE_20260910.json",
+        ".github/workflows/kai9000-final-release.yml",
+        ".github/workflows/kai9000-ultima-apk.yml",
+        ".github/workflows/ultima-final-form.yml"
+      ]
+    },
+    {
+      "pass": 4,
+      "name": "Signing, secrets, and trust identities",
+      "state": "YELLOW",
+      "findings": [
+        "APK signing alias is luhmos-release",
+        "F-Droid repository signing alias is luhmos-fdroid-repo",
+        "APK and F-Droid repository use separate trust identities",
+        "new F-Droid signing script refuses to re-sign a mismatched APK",
+        "private material is forbidden from Git, APK, public F-Droid branch, logs, and model context",
+        "current public APK certificate and repository fingerprints are not yet sealed for the new LuHm OS package line"
+      ],
+      "evidence": [
+        "fdroid/trusted-signing-host.sh",
+        ".github/workflows/luhmos-fdroid-public-release.yml"
+      ],
+      "green_requires": "identity-proof release run succeeds and public certificate fingerprints are pinned as repository variables"
+    },
+    {
+      "pass": 5,
+      "name": "Reproducible Android build forge",
+      "state": "YELLOW",
+      "findings": [
+        "Godot 4.7.2 editor/export-template checksums are pinned",
+        "Gradle distribution checksum is pinned",
+        "npm lockfile mutation is rejected",
+        "Android SDK/build-tools 36.1.0 and target SDK 36 are explicit",
+        "production workflow exports --export-release instead of debug"
+      ],
+      "evidence": [
+        ".github/workflows/luhmos-fdroid-public-release.yml"
+      ],
+      "green_requires": "new release workflow completes from current source and produces verified persistent-signed artifact evidence"
+    },
+    {
+      "pass": 6,
+      "name": "Android manifest, WebView, and runtime attack surface",
+      "state": "YELLOW",
+      "findings": [
+        "audit found production donor still declared Termux RUN_COMMAND and Termux package query",
+        "audit removed Termux permission/query and widget daemon control",
+        "audit removed localhost health dependency",
+        "WebView now denies mixed content, cookies, popup JavaScript, geolocation, and database storage",
+        "external WebView navigation is limited to https and mailto",
+        "appassets origin-locked message bridge remains"
+      ],
+      "evidence": [
+        "eggie-admin/vue-headless-cms@96c23c87713800fc17c80b6a972ee2e93f1bb4b1",
+        "PR eggie-admin/vue-headless-cms#20"
+      ],
+      "green_requires": "hardened donor compiles and current release APK verification proves no Termux permission/package content and no debuggable flag"
+    },
+    {
+      "pass": 7,
+      "name": "Game/JRPG/dating donor ownership and licensing",
+      "state": "GREEN_SOURCE_CONTRACT",
+      "findings": [
+        "owned Godot donor is pinned to eggie-admin/3d-chat-interface commit 457c31f2bcb040aba3d6a0b36a25cf1a63587359",
+        "kuryart/godot-jrpg is tracked as MIT third-party framework reference",
+        "nathanhoad/godot_dialogue_manager is tracked as MIT third-party dialogue reference",
+        "sample/external media is not automatically reclassified as LuHm-owned material",
+        "asset distribution requires source, owner, license, and attribution/provenance"
+      ],
+      "evidence": [
+        "project/hydra/games/GODOT4_JRPG_DATING_DONORS_20260910.json",
+        "COPYRIGHT.md",
+        "LICENSE"
+      ]
+    },
+    {
+      "pass": 8,
+      "name": "AI providers, privacy, and authority boundaries",
+      "state": "YELLOW",
+      "findings": [
+        "OpenAI and Hugging Face are optional network adapters, not boot dependencies",
+        "current OpenAI references are gpt-5.6-luna and gpt-5.6-sol through Responses API",
+        "Hugging Face reference models and router are configuration rather than architecture constants",
+        "no cloud vendor credential belongs in the APK",
+        "cross-provider replay is not silent",
+        "AI cannot self-authorize signing, root, release, or arbitrary shell"
+      ],
+      "evidence": [
+        "docs/AI_STACK.md",
+        "docs/API_TRINITY_DOCTRINE.md",
+        "docs/HUGGINGFACE_API_REROLL.md"
+      ],
+      "green_requires": "latest source CI/provider smoke passes after the hardening branch changes"
+    },
+    {
+      "pass": 9,
+      "name": "F-Droid repository, metadata, and public publication",
+      "state": "YELLOW",
+      "findings": [
+        "stale Video Forge F-Droid manifests were replaced with canonical art.eggiebagelface.luhmos coordinates",
+        "release requires signed index-v2 and v1 compatibility indexes",
+        "public zero-secret bootstrap origin is fdroid-public branch on raw.githubusercontent.com",
+        "fdroid.eggiebagelface.art is a branded mirror target rather than the critical first-install dependency",
+        "stock metadata declares RequiresRoot false and rooted lab is a separate package",
+        "old v6/v7 signed Video Forge repository is historical and invalid as LuHm OS release proof"
+      ],
+      "evidence": [
+        "fdroid/final-goal.manifest.json",
+        "fdroid/publication.manifest.json",
+        "fdroid/config.template.yml",
+        ".github/workflows/luhmos-fdroid-public-release.yml"
+      ],
+      "green_requires": "current LuHm OS release APK and F-Droid indexes are persistently signed and the fdroid-public branch is published over HTTPS"
+    },
+    {
+      "pass": 10,
+      "name": "Physical S24 FE install, launcher, F-Droid provenance, update, and recovery",
+      "state": "YELLOW",
+      "findings": [
+        "device verifier now uses ADB instead of Termux",
+        "final proof checks SM-S721U1 SDK36, F-Droid installer source, exact versionCode, launcher resolution/start, and public repository signature",
+        "final GREEN requires baseline 100 install followed by same-package versionCode 101 upgrade"
+      ],
+      "evidence": [
+        "scripts/final-form-device-verify.sh"
+      ],
+      "green_requires": "run baseline-check and upgrade-check against the physical SM-S721U1 after current signed public repo publication"
+    }
+  ],
+  "critical_blockers": [
+    "PR #34 is not yet merged into luhmos-main",
+    "hardened Samsung donor PR #20 has not yet produced/merged CI evidence, although the production workflow pins its exact hardening commit",
+    "persistent LuHm OS APK signing secret availability is not yet proven by the new release workflow",
+    "persistent LuHm OS F-Droid repository signing secret availability is not yet proven by the new release workflow",
+    "new production release workflow has not yet completed",
+    "fdroid-public branch does not yet contain the new canonical signed repository",
+    "physical S24 FE F-Droid install/launcher/update proof is not yet recorded"
+  ],
+  "retired_as_release_authority": [
+    "art.eggiebagelface.videoforge.dev",
+    "art.eggiebagelface.kai9000.dev",
+    "art.eggiebagelface.kai9000",
+    "Termux/AcodeX/VNC/Secure Folder production-runtime doctrine",
+    "legacy v6/v7 Video Forge signed F-Droid bundles",
+    "debug or ephemeral signatures as production proof"
+  ]
+}

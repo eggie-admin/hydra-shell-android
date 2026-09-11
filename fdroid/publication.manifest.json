@@ -1,116 +1,112 @@
 {
-  "schema": "kai9000.fdroid-publication.v5",
-  "date": "2026-09-07",
-  "state": "SIGNED_BASELINE_AND_UPGRADE_READY_AWAITING_INTERACTIVE_OAUTH_CAST",
-  "repo_url": "https://fdroid.eggiebagelface.art/fdroid/repo/",
-  "package_id": "art.eggiebagelface.videoforge.dev",
-  "publication_phases": {
-    "baseline": {
-      "version": "0.6.0-dev",
-      "version_code": 6,
-      "bundle_name": "KAI9000_FDROID_SIGNED_BASELINE_V6_20260907.zip",
-      "bundle_sha256": "703ba08ca4c030c5cf0a553ece8da8e910c3b48549f10bfe02b9feb4c938547d",
-      "bundle_size_bytes": 28416232,
-      "drive_file_id": "16WTaD2zE25TzkbTDU_IcE82k_JJyMJxd"
-    },
-    "upgrade": {
-      "version": "0.6.1-dev",
-      "version_code": 7,
-      "bundle_name": "KAI9000_FDROID_SIGNED_V6_V7_20260907.zip",
-      "bundle_sha256": "6cb100f525229e5d6445aa8f2dfb5f39b8895073efb278fc39f609cc64799b7d",
-      "bundle_size_bytes": 56826920,
-      "drive_file_id": "1_jZRVqktQoMowxSxCPS54FFh_YZbVvP9"
-    },
-    "drive_source_of_truth_folder_id": "1AD_KgcM32sgli_pSSub0MXf-W0tPWIHr"
+  "schema": "luhmos.fdroid-publication.v7",
+  "date": "2026-09-11",
+  "state": "YELLOW_IZZY_CANDIDATE_NOT_YET_ACCEPTED",
+  "package_id": "art.eggiebagelface.luhmos",
+  "preferred_public_distribution": {
+    "provider": "IzzyOnDroid",
+    "repo_url": "https://apt.izzysoft.de/fdroid/repo",
+    "mode": "developer_signed_upstream_binary",
+    "upstream_release_source": "GitHub Releases",
+    "submission_process": "IzzyOnDroid Maintenance Repo on Codeberg",
+    "acceptance_is_external": true,
+    "status": "PREPARE_AND_SUBMIT"
   },
-  "apk_evidence": {
-    "6": {
-      "version": "0.6.0-dev",
-      "sha256": "52bfcceed893a380def0c7ad472a81931ac39bed925c67830dee3d55f15efdbc",
-      "v2_signature_verified": true
-    },
-    "7": {
-      "version": "0.6.1-dev",
-      "sha256": "11f88327d535f3af58815d6606d55475b81996e1ed5494d5ebd26d6bcf6ab283",
-      "v2_signature_verified": true
-    }
+  "fallback_public_distribution": {
+    "provider": "LuHm OS custom F-Droid repo",
+    "canonical_repo_url": "https://fdroid.eggiebagelface.art/fdroid/repo/",
+    "public_bootstrap_mirror": "https://raw.githubusercontent.com/eggie-admin/hydra-shell-android/fdroid-public/fdroid/repo/",
+    "public_branch": "fdroid-public",
+    "role": "independent trust anchor and fallback distribution"
   },
-  "supersedes": {
-    "bundle": "KAI9000_FDROID_SIGNED_20260906.zip",
-    "sha256": "fa350eeb2a2945b3b0e664f459ae1706cd3c19d0c02913e799e7ea005c6f3028",
-    "reason": "The previous v6 APK did not verify with the official Android Build Tools 36.1.0 apksigner. Corrected v6 and v7 APKs were re-signed from clean CI-staged inputs with the same persistent APK identity and indexed with the same persistent F-Droid repository identity."
+  "baseline": {
+    "version": "1.0.0",
+    "version_code": 100,
+    "github_release_tag": "v1.0.0",
+    "github_release_asset": "luhmos-1.0.0.apk",
+    "apk_sha256": null,
+    "apk_signer_sha256": null,
+    "github_release_published": false,
+    "izzy_accepted": false,
+    "installed_from_izzy": false
   },
-  "trust": {
-    "apk_signer_sha256": "A5E9364D5C21A119FE1D17FD39EE7BAE8192A872CE58A3E7A865248E0B070407",
-    "repo_fingerprint_sha256": "BFB900A9EC913D35C22F1DC3DE7B152D1AF5CA11B7B07E5FAFDD06B44811F66D",
-    "apk_v2_signature_verified": [6, 7],
-    "fdroid_index_jar_signature_verified": true,
-    "fdroid_signed": true,
-    "private_signing_keys_required_for_publication_preflight": false
+  "upgrade_test": {
+    "version": "1.0.1",
+    "version_code": 101,
+    "github_release_tag": "v1.0.1",
+    "apk_sha256": null,
+    "same_signer_verified": false,
+    "izzy_update_seen": false,
+    "upgraded_on_device": false
   },
-  "origin": {
-    "provider": "google_compute_engine_strict_free",
-    "machine_type": "e2-micro",
-    "external_ipv4": false,
-    "external_ipv6": "egress_only_not_published_in_dns",
-    "public_web_ingress": false,
-    "public_ssh": false,
-    "admin_transport": "google_iap_ssh_only",
-    "web_server": "nginx_loopback_127.0.0.1_8080",
-    "root": "/srv/kai9000/fdroid",
-    "nginx_config": "integrations/google-cloud/nginx-fdroid-origin.conf",
-    "human_auth": "gcloud_user_oauth",
-    "human_auth_helper": "integrations/google-cloud/bootstrap-oauth.sh login-remote",
-    "github_wif": "optional_for_unattended_ci_not_human_publication"
+  "izzy_candidate_requirements": {
+    "source_public": true,
+    "developer_signed_apk": true,
+    "immutable_tagged_release": true,
+    "persistent_signer": true,
+    "debuggable": false,
+    "test_only": false,
+    "cleartext_public_network": false,
+    "self_updater": "absent_or_strictly_opt_in_with_clear_provenance",
+    "permissions_documented": true,
+    "license_provenance_complete": true,
+    "apk_release_asset_preferred": true,
+    "fastlane_metadata_preferred": true,
+    "reproducible_build_evidence_preferred": true
   },
-  "edge": {
-    "provider": "cloudflare",
-    "hostname": "fdroid.eggiebagelface.art",
-    "route": "dedicated_locally_managed_cloudflare_tunnel",
-    "dns_record": "CNAME <CF_FDROID_TUNNEL_ID>.cfargotunnel.com",
-    "origin_ip_exposed_in_dns": false,
-    "public_access_policy": "none_fdroid_clients_sync_without_login",
-    "edge_tls": "cloudflare_managed",
-    "tunnel_transport": "outbound_only_encrypted",
-    "dnssec": true,
-    "human_auth": "wrangler_and_cloudflared_oauth_browser_flows",
-    "human_auth_helper": "integrations/cloudflare/bootstrap-oauth.sh",
-    "api_token": "optional_for_unattended_api_automation_not_human_publication"
+  "monetization": {
+    "manifest": "project/hydra/business/HUMAN_CODE_MONETIZATION_20260911.json",
+    "funding_endpoint": null,
+    "status": "FUNDING_ENDPOINT_PENDING",
+    "donation_metadata_allowed": true,
+    "ads_sdk_in_izzy_candidate": false,
+    "payment_sdk_for_donations_in_izzy_candidate": false,
+    "human_services_outside_apk_allowed": true
   },
-  "live_cast": {
-    "script": "scripts/cast-ultima-live.sh",
-    "default_phase": "baseline",
-    "baseline_bundle_default_on_termux": "~/storage/downloads/KAI9000_FDROID_SIGNED_BASELINE_V6_20260907.zip",
-    "upgrade_bundle_default_on_termux": "~/storage/downloads/KAI9000_FDROID_SIGNED_V6_V7_20260907.zip",
-    "cloudflare_tunnel_name": "kai9000-fdroid-origin",
-    "cloudflare_account_certificate_stays_on_operator": true,
-    "tunnel_specific_runtime_credential_only_on_origin": true,
-    "atomic_repo_swap": true,
-    "public_fingerprint_must_match_before_fdroid_published": true
+  "source": {
+    "canonical_repository": "eggie-admin/hydra-shell-android",
+    "canonical_branch": "luhmos-main",
+    "android_donor_repository": "eggie-admin/vue-headless-cms",
+    "android_donor_commit": "96c23c87713800fc17c80b6a972ee2e93f1bb4b1",
+    "android_donor_review_pr": 20,
+    "canonical_metadata": "fdroid/metadata/art.eggiebagelface.luhmos.yml",
+    "izzy_submission_doctrine": "docs/IZZYONDROID_PUBLICATION_AND_HUMAN_CODE_MONETIZATION_20260911.md"
   },
+  "rooted_lab": {
+    "device": "SM-X400",
+    "package_id": "art.eggiebagelface.luhmos.rooted",
+    "requires_root": true,
+    "shares_production_update_lineage": false,
+    "submit_as_stock_izzy_package": false
+  },
+  "historical_signed_material": {
+    "package_id": "art.eggiebagelface.videoforge.dev",
+    "status": "historical_only",
+    "valid_as_current_luhmos_proof": false
+  },
+  "release_workflow": ".github/workflows/luhmos-fdroid-public-release.yml",
+  "izzy_release_workflow": ".github/workflows/luhmos-izzy-github-release.yml",
+  "device_verification": "scripts/final-form-device-verify.sh",
   "final_sequence": [
-    "publish baseline v6 bundle",
-    "import repository and install versionCode 6",
-    "publish upgrade v6+v7 bundle",
-    "refresh F-Droid repository",
-    "upgrade installed package to versionCode 7",
-    "verify installed versionCode 7",
-    "FINAL_FORM_GREEN"
+    "produce non-debug art.eggiebagelface.luhmos APK with persistent luhmos-release signer",
+    "verify SDK36 arm64-v8a 16KiB identity and permission hardening",
+    "publish immutable GitHub tag/release with exact APK asset",
+    "submit LuHm OS to IzzyOnDroid using current Maintenance Repo process",
+    "wait for external IzzyOnDroid scanner/review acceptance",
+    "refresh IzzyOnDroid in F-Droid on SM-S721U1",
+    "install versionCode 100 from IzzyOnDroid",
+    "launch from Android launcher and verify standalone behavior",
+    "publish same-signer versionCode 101 GitHub release",
+    "verify IzzyOnDroid update arrives and upgrade 100 to 101",
+    "seal LUHMOS_IZZYONDROID_PUBLIC_INSTALL_GREEN"
   ],
-  "required_before_fdroid_published": [
-    "Cloudflare tunnel OAuth login proven",
-    "gcloud human OAuth login proven",
-    "live Google e2-micro origin exists",
-    "Google IAP SSH proven",
-    "legacy public web ingress rule absent",
-    "dedicated fdroid tunnel healthy",
-    "fdroid CNAME points to the tunnel",
-    "public index-v1.jar and index-v1.json fetch over HTTPS",
-    "public repository fingerprint matches pinned fingerprint"
-  ],
-  "required_before_final_form_green": [
-    "FDROID_PUBLISHED",
-    "FDROID_IMPORT_VERIFIED",
-    "UPGRADE_VERIFIED"
+  "final_green_requires": [
+    "RELEASE_APK_SIGNED",
+    "GITHUB_RELEASE_ASSET_PUBLISHED",
+    "IZZYONDROID_ACCEPTED",
+    "IZZYONDROID_REFRESH_VERIFIED",
+    "S24FE_INSTALL_FROM_IZZY_VERIFIED",
+    "S24FE_LAUNCH_VERIFIED",
+    "IZZY_SAME_SIGNER_UPGRADE_VERIFIED"
   ]
 }

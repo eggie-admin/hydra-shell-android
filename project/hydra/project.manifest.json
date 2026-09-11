@@ -1,28 +1,119 @@
 {
-  "schema": "lumh-os.project-hydra.v2",
+  "schema": "luhm-os.project-hydra.v6",
   "name": "Project Hydra",
   "canonical_root": "project/hydra",
-  "parent_os": "LumH OS",
-  "branch_authority": "main",
+  "parent_os": "LuHm OS",
+  "branch_authority": "luhmos-main",
   "directory_doctrine": "project/hydra/doctrine/directory-structure.json",
   "runtime": {
-    "kai9000": "project/hydra/runtime/kai9000.reference.json"
+    "kai9000_reference": "project/hydra/runtime/kai9000.reference.json",
+    "android_external_runtime_required": false
   },
   "forge": {
     "hugging_face": "project/hydra/forge/hugging-face/reference.json"
   },
+  "games": {
+    "godot4_jrpg_dating_donors": "project/hydra/games/GODOT4_JRPG_DATING_DONORS_20260910.json"
+  },
+  "business": {
+    "human_code_monetization": "project/hydra/business/HUMAN_CODE_MONETIZATION_20260911.json"
+  },
+  "source_of_truth": {
+    "chat_history_reconciliation": "docs/LUHMOS_CHAT_HISTORY_RECONCILIATION_20260910.md",
+    "ten_pass_hard_audit": "project/hydra/LUHMOS_10X_HARD_AUDIT_20260911.json",
+    "ten_pass_hard_audit_report": "docs/LUHMOS_10X_HARD_SYSTEM_AUDIT_20260911.md",
+    "canonical_doctrine": "docs/LUHMOS_CANONICAL_DOCTRINE.md",
+    "ai_stack": "docs/AI_STACK.md",
+    "api_doctrine": "docs/API_TRINITY_DOCTRINE.md",
+    "samsung_apk_reference": "project/hydra/samsung/android/apk/app.reference.json",
+    "fdroid_goal": "fdroid/final-goal.manifest.json",
+    "fdroid_publication": "fdroid/publication.manifest.json",
+    "izzy_publication": "docs/IZZYONDROID_PUBLICATION_AND_HUMAN_CODE_MONETIZATION_20260911.md",
+    "izzy_metadata": "fdroid/metadata/art.eggiebagelface.luhmos.yml"
+  },
   "platforms": {
-    "samsung_android_apk": "project/hydra/samsung/android/apk/app.reference.json"
+    "samsung_s24fe_stock": "project/hydra/samsung/android/apk/app.reference.json",
+    "samsung_smx400_rooted_lab": "project/hydra/samsung/android/rooted/SMX400_ROOTED_DEV_GOAL_20260911.json"
+  },
+  "android_goal": {
+    "device": "Samsung SM-S721U1",
+    "family": "Galaxy S24 FE",
+    "android": 16,
+    "application_id": "art.eggiebagelface.luhmos",
+    "target_sdk": 36,
+    "primary_abi": "arm64-v8a",
+    "release_signing_alias": "luhmos-release",
+    "normal_package_install": true,
+    "standalone_launch_required": true,
+    "termux_required": false,
+    "acode_required": false,
+    "acodex_required": false,
+    "vnc_required": false,
+    "secure_folder_required": false,
+    "external_localhost_daemon_required": false,
+    "root_required": false,
+    "final_distribution_gate": "LUHMOS_IZZYONDROID_PUBLIC_INSTALL_GREEN"
+  },
+  "distribution_goal": {
+    "preferred_public_repo": "IzzyOnDroid",
+    "izzy_repo_url": "https://apt.izzysoft.de/fdroid/repo",
+    "upstream_binary_source": "GitHub Releases",
+    "izzy_submission_process": "Maintenance Repo on Codeberg",
+    "custom_fdroid_fallback": "https://raw.githubusercontent.com/eggie-admin/hydra-shell-android/fdroid-public/fdroid/repo/",
+    "branded_custom_repo_target": "https://fdroid.eggiebagelface.art/fdroid/repo/",
+    "package": "art.eggiebagelface.luhmos",
+    "baseline_version_code": 100,
+    "upgrade_version_code": 101,
+    "persistent_apk_signer_required": true,
+    "izzy_acceptance_external": true,
+    "s24fe_install_from_izzy_required": true,
+    "launcher_proof_required": true,
+    "same_signer_upgrade_proof_required": true
+  },
+  "monetization_goal": {
+    "mode": "external_support_for_human_authored_work",
+    "funding_endpoint": null,
+    "status": "FUNDING_ENDPOINT_PENDING",
+    "donation_metadata_allowed": true,
+    "ads_sdk_in_production_apk": false,
+    "payment_sdk_for_donations_in_production_apk": false,
+    "human_services_allowed": true,
+    "copyright_notice": "COPYRIGHT.md",
+    "root_license": "GPL-3.0"
+  },
+  "rooted_lab_goal": {
+    "device": "Samsung SM-X400",
+    "application_id": "art.eggiebagelface.luhmos.rooted",
+    "device_must_be_rooted_before_install": true,
+    "automatic_rooting": false,
+    "shares_stock_signer": false,
+    "shares_stock_update_lineage": false
+  },
+  "ai_provider_goal": {
+    "cloud_ai_required_for_base_launch": false,
+    "static_vendor_secrets_in_apk": false,
+    "openai_api_surface": "Responses API",
+    "openai_fast_reference": "gpt-5.6-luna",
+    "openai_deep_reference": "gpt-5.6-sol",
+    "huggingface_responses": "https://router.huggingface.co/v1/responses",
+    "huggingface_reference_model": "openai/gpt-oss-120b:fastest",
+    "model_ids_are_runtime_configurable": true
   },
   "migration": {
     "strategy": "reference_not_copy",
     "legacy_paths_remain_compatible": true,
     "destructive_move_allowed": false,
-    "green_required_before_path_retirement": true
+    "green_required_before_path_retirement": true,
+    "legacy_termux_acodex_material": "historical_only",
+    "legacy_videoforge_and_kai_package_lines": "historical_only",
+    "superseded_chat_decisions": "historical_only_unless_reaffirmed_in_current_doctrine"
   },
   "authority": {
     "final": "Professor",
     "runtime_mutation_requires_evidence": true,
-    "secrets_in_repo": false
+    "secrets_in_repo": false,
+    "third_party_code_requires_provenance": true,
+    "documentation_claims_do_not_equal_green": true,
+    "physical_device_proof_required_for_final_android_green": true
   }
 }

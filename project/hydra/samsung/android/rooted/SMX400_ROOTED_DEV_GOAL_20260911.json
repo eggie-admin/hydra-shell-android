@@ -1,0 +1,55 @@
+{
+  "schema": "luhmos.android-rooted-lab.v1",
+  "date": "2026-09-11",
+  "status": "YELLOW_GOAL_DEFINED_NOT_RELEASED",
+  "device": {
+    "manufacturer": "Samsung",
+    "model": "SM-X400",
+    "role": "rooted development and elevated-capability laboratory"
+  },
+  "application": {
+    "name": "LuHm OS Rooted Lab",
+    "application_id": "art.eggiebagelface.luhmos.rooted",
+    "requires_root": true,
+    "install_assumption": "device is intentionally rooted before APK installation",
+    "automatic_rooting": false,
+    "root_exploit_delivery": false
+  },
+  "separation_from_production": {
+    "production_application_id": "art.eggiebagelface.luhmos",
+    "shared_package_identity": false,
+    "shared_release_signer": false,
+    "shared_update_lineage": false,
+    "root_capability_may_flow_into_stock_build": false,
+    "rooted_build_may_replace_stock_build": false
+  },
+  "allowed_lab_capabilities": [
+    "explicit superuser-mediated filesystem experiments",
+    "device/service inspection unavailable to ordinary apps",
+    "privileged local tooling experiments",
+    "Shizuku/ADB comparison testing",
+    "root-aware Godot/Kotlin bridge prototypes"
+  ],
+  "forbidden": [
+    "silent privilege escalation",
+    "root exploit implementation or delivery",
+    "automatic modification of boot images",
+    "automatic disabling of Android security controls",
+    "reusing production signing secrets in the lab lane",
+    "publishing a rooted build under the stock production package ID"
+  ],
+  "fdroid_metadata": {
+    "requires_root": true,
+    "custom_repo_only_until_separately_reviewed": true,
+    "description_must_explain_root_requirement": true
+  },
+  "green_requires": [
+    "separate rooted package identity",
+    "separate signing identity",
+    "root requirement visible in metadata and UI",
+    "install on already-rooted SM-X400",
+    "launch without affecting stock LuHm OS package",
+    "root actions require explicit user invocation",
+    "rollback/uninstall procedure documented"
+  ]
+}

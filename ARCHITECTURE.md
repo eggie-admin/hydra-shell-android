@@ -4,13 +4,20 @@
 
 Node/npm is a build-time tool only. The Android APK must not embed a Node runtime, npm, a package manager, shell package installation, or writable self-updating executable code.
 
+## Rule one
+
+The Samsung production APK must be a normal self-contained Android application. It must install through Android package installation and launch from the Android launcher without requiring Termux, Acode/AcodeX, TigerVNC, websockify, Secure Folder, or another separately launched local daemon.
+
+Optional external providers may augment capabilities, but the base application must still launch and expose its core UI when they are absent.
+
 ## Layers
 
-1. **Python 3 control plane** — `tools/cathedral.py` owns deterministic orchestration and validation.
-2. **npm/Vue build plane** — a pinned `vue-headless-cms` checkout is installed with `npm ci` and compiled with Vite.
-3. **Static payload** — generated `dist/` assets are copied into `godot/web/` for encapsulation by the app shell.
-4. **Godot Android shell** — Godot owns UI/native runtime and Android export. Use Gradle build templates when AAB/custom Android project behavior is required.
-5. **Distribution lanes** — build separate artifacts/configurations for F-Droid and commercial stores. Never make the F-Droid variant depend on proprietary SDKs, Google Play Services, Firebase, proprietary analytics, or secret API keys.
+1. **Policy/control plane** — Python 3 remains the reference orchestration implementation in source and CI. Android runtime policy must be packaged inside the application boundary or implemented through bounded native/application components. An external Python interpreter is not a production dependency.
+2. **npm/Vue build plane** — a pinned web frontend checkout is installed with `npm ci` and compiled with Vite.
+3. **Static payload** — generated `dist/` assets are copied into the application payload for encapsulation by the app shell.
+4. **Godot Android shell** — Godot owns UI/native runtime and Android export. Kotlin/native code provides only bounded Android bridges. Use Gradle build templates when AAB/custom Android project behavior is required.
+5. **Provider adapters** — AI/media/network integrations are explicit capabilities. External providers are optional unless a release flavor explicitly declares otherwise.
+6. **Distribution lanes** — build separate artifacts/configurations for direct Samsung APK, F-Droid, and commercial stores. Never make the F-Droid variant depend on proprietary SDKs, Google Play Services, Firebase, proprietary analytics, or secret API keys.
 
 ## Reproducibility gates
 
@@ -20,6 +27,10 @@ Node/npm is a build-time tool only. The Android APK must not embed a Node runtim
 - Do not commit keystores, deploy tokens, `.env`, generated credentials, or signing passwords.
 - Treat every native `.so` as part of the 16 KB page-size compatibility gate.
 - Produce unsigned or CI-signed artifacts according to the release lane; F-Droid upstream/source builds must remain fully buildable from source.
+- Verify `art.eggiebagelface.luhmos` identity before promotion.
+- Verify the expected persistent signer for production promotion.
+- Prove clean install, launcher start, and update continuity on the Samsung SM-S721U1 before standalone Android GREEN.
+- Fail the release gate if the application requires a development helper app or external localhost daemon to start.
 
 ## Release lanes
 
@@ -33,19 +44,20 @@ Use Godot Gradle Android export and release signing; produce AAB for Play distri
 
 ### Samsung / sideload
 
-APK may be produced from the same Godot project using a separate release preset/signing lane.
+Produce a release-signed APK from the same canonical source lineage. The direct APK is the primary physical-device proof lane for the SM-S721U1.
 
-## Wizard contract
+## Build contract
 
 ```text
-npm run wizard
-  -> python3 tools/cathedral.py wizard
-  -> doctor
-  -> npm ci --ignore-scripts in pinned CMS checkout
+source checkout
+  -> policy/doctrine validation
+  -> npm ci --ignore-scripts in pinned UI checkout
   -> npm run build
-  -> copy dist/ -> godot/web/
-  -> F-Droid source gate
+  -> bundle static UI into Android application
+  -> build Android-native bridges/plugins
   -> Godot/Gradle Android build in CI
+  -> verify package / signer / ABI / 16 KB / provenance
+  -> physical-device install + launcher smoke test
 ```
 
-The wizard prepares the source tree. It does not install software on the user's Android device and it does not bypass Android package installation/security policy.
+Build tooling prepares and verifies the application artifact. It does not bypass Android package installation/security policy, install a terminal environment, or create a hidden package manager inside the app.

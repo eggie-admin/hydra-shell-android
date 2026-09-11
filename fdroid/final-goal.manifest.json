@@ -1,125 +1,109 @@
 {
-  "schema": "kai9000.fdroid-final-form.v3",
-  "date": "2026-09-06",
-  "project": {
-    "os": "LuHm OS",
-    "airship": "KAI 9000",
-    "warp": "git",
-    "orchestrator": "Lum",
-    "orchestrator_role": "SUPREME_WITCH"
+  "schema": "luhmos.fdroid-final-form.v5",
+  "date": "2026-09-11",
+  "goal": "izzyondroid_public_install_with_custom_repo_fallback",
+  "production_package": {
+    "id": "art.eggiebagelface.luhmos",
+    "name": "LuHm OS",
+    "baseline_version": "1.0.0",
+    "baseline_version_code": 100,
+    "next_update_test_version": "1.0.1",
+    "next_update_test_version_code": 101,
+    "target_device": "Samsung SM-S721U1",
+    "android": 16,
+    "root_required": false,
+    "target_sdk": 36,
+    "abi": "arm64-v8a",
+    "page_size_16k_required": true
   },
-  "business_identity": {
-    "canonical_domain": "eggiebagelface.art",
-    "website": "https://eggiebagelface.art/",
-    "role": "public_business_and_developer_identity",
-    "legal_note": "DNS/domain ownership is not itself a government business license. Platform legal verification remains provider-specific."
+  "preferred_public_repo": {
+    "name": "IzzyOnDroid",
+    "repo_url": "https://apt.izzysoft.de/fdroid/repo",
+    "distribution_model": "official developer-signed upstream GitHub release binary",
+    "submission": "current IzzyOnDroid Maintenance Repo on Codeberg",
+    "acceptance_external": true,
+    "github_release_required": true,
+    "persistent_apk_signer_required": true
   },
-  "goal": "signed_importable_fdroid_repository",
-  "repository_lane": "testing/luhm-os-android",
-  "black_magic": {
-    "ecosystem": "F-Droid",
-    "mode": "custom_binary_repository",
-    "canonical_host": "fdroid.eggiebagelface.art",
-    "canonical_repo_url": "https://fdroid.eggiebagelface.art/fdroid/repo/",
-    "public_path_convention": "/fdroid/repo/",
-    "trusted_signing_host_script": "fdroid/trusted-signing-host.sh"
+  "fallback_public_repo": {
+    "name": "LuHm OS custom F-Droid repo",
+    "canonical_url": "https://fdroid.eggiebagelface.art/fdroid/repo/",
+    "public_bootstrap_mirror": "https://raw.githubusercontent.com/eggie-admin/hydra-shell-android/fdroid-public/fdroid/repo/",
+    "repo_keyalias": "luhmos-fdroid-repo",
+    "role": "independent fallback and trust anchor"
   },
-  "google_play_identity": {
-    "website": "https://eggiebagelface.art/",
-    "website_role": "organization/developer website identity",
-    "organization_verification_is_separate": true,
-    "expected_provider_checks": [
-      "Google Payments profile",
-      "legal organization name and address",
-      "D-U-N-S for organization accounts where required",
-      "identity/organization documentation",
-      "verified contact details",
-      "website verification"
-    ]
+  "rooted_lab_package": {
+    "id": "art.eggiebagelface.luhmos.rooted",
+    "device_reference": "Samsung SM-X400",
+    "requires_root": true,
+    "production_update_lineage_shared": false,
+    "submit_as_stock_package": false,
+    "manifest": "project/hydra/samsung/android/rooted/SMX400_ROOTED_DEV_GOAL_20260911.json"
   },
-  "package": {
-    "id": "art.eggiebagelface.videoforge.dev",
-    "version": "0.6.0-dev",
-    "version_code": 6,
-    "donor_repository": "eggie-admin/vue-headless-cms",
-    "donor_commit": "86507ed7c72650ff508eb9a1a9e52842eb50e821"
+  "source": {
+    "repository": "eggie-admin/hydra-shell-android",
+    "canonical_branch": "luhmos-main",
+    "work_lane": "luhmos/backend",
+    "android_donor_repository": "eggie-admin/vue-headless-cms",
+    "android_donor_commit": "96c23c87713800fc17c80b6a972ee2e93f1bb4b1",
+    "canonical_metadata": "fdroid/metadata/art.eggiebagelface.luhmos.yml",
+    "submission_draft": "release/IZZYONDROID_SUBMISSION_DRAFT_20260911.md"
   },
-  "current_apk_evidence": {
-    "workflow": "Oni Summoning - Ultima Debug APK",
-    "workflow_run_id": 34042299709,
-    "run_number": 30,
-    "source_commit": "410ee76a5c567a44d45f802cd7a88dd42e8f3e4b",
-    "artifact_id": 9992099572,
-    "artifact_name": "kai9000-luhm-os-testing-debug-30",
-    "artifact_archive_digest": "sha256:fb168ec748e405e3037930fe1a0c8bd233a4ce3fe890470de0cba1bc840b3f48",
-    "apk_signing_mode": "ephemeral_debug",
-    "apk_green": true,
-    "eligible_as_persistent_update_identity": false
+  "monetization": {
+    "manifest": "project/hydra/business/HUMAN_CODE_MONETIZATION_20260911.json",
+    "mode": "external voluntary support and paid human services",
+    "funding_endpoint": null,
+    "status": "FUNDING_ENDPOINT_PENDING",
+    "donation_metadata_allowed": true,
+    "ads_sdk": false,
+    "payment_sdk_for_donations": false,
+    "human_authorship_notice": "COPYRIGHT.md"
   },
-  "current_fdroid_stage_evidence": {
-    "workflow_run_id": 34042299709,
-    "run_number": 30,
-    "source_commit": "410ee76a5c567a44d45f802cd7a88dd42e8f3e4b",
-    "artifact_id": 9992103371,
-    "artifact_name": "kai9000-fdroid-stage-30",
-    "artifact_archive_digest": "sha256:c9191c10613616a51c4e782b9bd20f3d6534f066dd4565bf19011ee4aacc7781",
-    "fdroid_staged": true,
-    "signed_repo": false,
-    "published": false,
-    "import_verified": false
-  },
-  "ultima_testing_evidence": {
-    "workflow_run_id": 34042299709,
-    "run_number": 30,
-    "conclusion": "success",
-    "doctrine_green": true,
-    "apk_green": true,
-    "fdroid_staged": true,
-    "final_ultima_gate_green": true
-  },
-  "required_persistent_identities": {
-    "apk_signing_key": {
-      "required": true,
-      "established": false,
-      "purpose": "Android package update continuity",
-      "must_not_be_committed": true
-    },
-    "fdroid_repo_signing_key": {
-      "required": true,
-      "established": false,
-      "purpose": "F-Droid repository index trust and fingerprint continuity",
-      "must_not_be_committed": true
-    }
+  "workflows": {
+    "signed_apk_and_custom_repo": ".github/workflows/luhmos-fdroid-public-release.yml",
+    "immutable_github_release_for_izzy": ".github/workflows/luhmos-izzy-github-release.yml"
   },
   "states": [
-    "APK_GREEN",
-    "FDROID_STAGED",
-    "FDROID_SIGNED",
-    "DNS_READY",
-    "FDROID_PUBLISHED",
-    "FDROID_IMPORT_VERIFIED",
-    "FINAL_FORM_GREEN"
+    "SOURCE_GREEN",
+    "RELEASE_APK_SIGNED",
+    "APK_IDENTITY_VERIFIED",
+    "APK_16K_VERIFIED",
+    "GITHUB_RELEASE_ASSET_PUBLISHED",
+    "IZZY_SUBMITTED",
+    "IZZY_ACCEPTED",
+    "IZZY_INSTALL_VERIFIED",
+    "IZZY_UPDATE_VERIFIED",
+    "LUHMOS_IZZYONDROID_PUBLIC_INSTALL_GREEN"
   ],
   "final_form_requires": [
-    "declared_git_warp_coordinates",
-    "verified_apk_identity",
-    "persistent_apk_signing_identity",
-    "fdroid_metadata_matches_package",
-    "fdroid_repo_staged",
-    "persistent_fdroid_repo_signing_identity",
-    "signed_fdroid_indexes",
-    "repo_fingerprint_recorded",
-    "dns_fdroid_subdomain_resolves",
-    "https_repo_endpoint",
-    "fdroid_client_import_verified",
-    "upgrade_path_verified"
+    "art.eggiebagelface.luhmos stock package only",
+    "no Termux/AcodeX/VNC/Secure Folder/root/Shizuku production dependency",
+    "hardened donor commit pinned",
+    "persistent APK signing identity",
+    "release APK not debuggable or testOnly",
+    "target SDK 36",
+    "arm64-v8a",
+    "16 KiB alignment verification",
+    "no com.termux permission or package query",
+    "immutable GitHub release tag and developer-signed APK asset",
+    "IzzyOnDroid inclusion review passed",
+    "F-Droid client refresh sees LuHm OS in IzzyOnDroid",
+    "versionCode 100 installed from IzzyOnDroid on SM-S721U1",
+    "launcher start verified with no external runtime",
+    "same-signer versionCode 101 update delivered through IzzyOnDroid"
   ],
   "secret_policy": {
     "keys_in_git": false,
     "passwords_in_git": false,
     "keys_in_apk": false,
+    "keys_in_public_repo": false,
     "keys_in_model_context": false,
     "base64_is_secret_storage": false
   },
-  "status": "ULTIMA_TESTING_GREEN_FDROID_STAGED_AWAITING_PERSISTENT_SIGNING_DNS_PUBLICATION_IMPORT_AND_UPGRADE_VERIFICATION"
+  "historical_artifacts": {
+    "art.eggiebagelface.videoforge.dev": "retired_not_valid_luhmos_release_evidence",
+    "art.eggiebagelface.kai9000.dev": "retired_not_valid_luhmos_release_evidence",
+    "old_v6_v7_signed_repo": "historical_only_do_not_publish_as_luhmos"
+  },
+  "status": "YELLOW_IZZY_PIPELINE_PREPARED_AWAITING_SIGNED_GITHUB_RELEASE_SUBMISSION_ACCEPTANCE_AND_DEVICE_PROOF"
 }

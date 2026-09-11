@@ -1,0 +1,26 @@
+{
+  "schema": "luhmos.release-intent.v1",
+  "product": "LuHm OS",
+  "package_id": "art.eggiebagelface.luhmos",
+  "branch": "luhmos-main",
+  "version_name": "1.0.0",
+  "version_code": 100,
+  "tag": "v1.0.0",
+  "target_device": "Samsung SM-S721U1",
+  "distribution": {
+    "github_release": true,
+    "signed_fdroid_public_mirror": true,
+    "fdroid_repo_url": "https://raw.githubusercontent.com/eggie-admin/hydra-shell-android/fdroid-public/fdroid/repo/",
+    "izzyondroid_submission": "after immutable GitHub Release verification"
+  },
+  "gates": {
+    "persistent_android_signer": true,
+    "persistent_fdroid_repo_signer": true,
+    "non_debug_release": true,
+    "sdk_36": true,
+    "arm64_v8a": true,
+    "termux_required": false,
+    "root_required": false
+  },
+  "release_rule": "This file is a one-shot release intent. Merging it into luhmos-main launches the signed public release workflow."
+}

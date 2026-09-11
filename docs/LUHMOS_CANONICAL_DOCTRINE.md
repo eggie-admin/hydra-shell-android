@@ -17,7 +17,7 @@ Human operator
 Lum / AI planning
       │ typed proposal
       ▼
-Python 3 policy + control plane
+application policy/control contract
       │ authorized action
       ▼
 bounded worker / platform adapter / GitHub forge
@@ -29,7 +29,7 @@ CI + verification
 human promotion
 ```
 
-**Canonical law:** AI proposes. Python authorizes. CI proves. The human promotes.
+**Canonical law:** AI proposes. Policy authorizes. CI proves. The human promotes.
 
 No AI model is a root authority, signing authority, release authority, or unrestricted shell authority.
 
@@ -38,7 +38,7 @@ No AI model is a root authority, signing authority, release authority, or unrest
 Development lanes:
 
 - `luhmos/ai-logic`: models, routing, typed agent plans, AI policy, evaluations.
-- `luhmos/backend`: Python control plane, APIs, jobs, state, authorization, adapters.
+- `luhmos/backend`: policy/control contracts, APIs, jobs, state, authorization, adapters.
 - `luhmos/frontend`: Godot/Vue/WebView UI and platform presentation.
 
 Integration and release promotion:
@@ -62,18 +62,18 @@ LuHm OS prefers small, replaceable components connected by explicit contracts.
 
 - Frontend presents state and requests actions.
 - AI interprets intent and produces typed plans.
-- Python owns application policy and authorization.
+- Policy owns authorization and state transitions.
 - Workers perform bounded jobs.
 - Platform shells own platform lifecycle and permissions.
 - CI independently verifies builds and artifacts.
 
-Avoid hidden cross-layer authority. A UI component must not become a shell. A model adapter must not become a package manager. A build script must not become the runtime control plane.
+Unix-shaped architecture does not require a Unix terminal application on Android. A UI component must not become a shell. A model adapter must not become a package manager. A build script must not become the runtime control plane.
 
 ## 4. Runtime boundaries
 
 ### Python 3
 
-Python 3 is the canonical orchestration layer. It owns policy, state transitions, job coordination, API contracts, tool authorization, health checks, and recovery logic.
+Python 3 remains the canonical reference orchestration language for policy, state transitions, job coordination, API contracts, tool authorization, health checks, and recovery logic. On Android production builds, Python may be used only if its required runtime is deliberately packaged inside the application boundary and passes release gates. A production APK must not require the user to install or run an external Python interpreter.
 
 ### Node/npm
 
@@ -85,11 +85,11 @@ Godot owns interactive application/runtime surfaces where appropriate and partic
 
 ### Kotlin / native platform code
 
-Native platform code is a narrow bridge for capabilities that belong to Android or another host OS. Platform bridges should expose bounded functions to the shared control contract.
+Native platform code is a narrow bridge for capabilities that belong to Android or another host OS. Platform bridges expose bounded functions to the shared control contract.
 
-### Ollama and remote AI
+### AI providers
 
-Ollama is the preferred local inference daemon. Remote AI may provide reasoning or coding assistance when authorized. Provider choice never changes the authority model.
+AI inference is accessed through provider adapters. Local or remote providers may be supported, but no external daemon is a mandatory dependency for base Android application launch. Provider choice never changes the authority model.
 
 ## 5. Lum magic doctrine
 
@@ -109,7 +109,7 @@ Unknown spells fail closed. A spell never grants arbitrary model-generated shell
 
 ## 6. Android doctrine
 
-Current active reference platform: Samsung Android 16 / ARM64.
+Current active reference platform: Samsung SM-S721U1 (S24 FE), Android 16, ARM64.
 
 Canonical identity:
 
@@ -120,11 +120,15 @@ target SDK:     API 36
 primary ABI:    arm64-v8a
 ```
 
+The production Android goal is a normal installable APK that can be installed through Android package installation and launched directly from the Android launcher.
+
 Android production GREEN requires, at minimum:
 
 - successful required tests;
 - correct application/package identity;
 - persistent expected signer;
+- successful clean install on the SM-S721U1;
+- successful launcher start with no development-runtime dependency;
 - install/update continuity where applicable;
 - native-library and 16 KiB compatibility evidence;
 - artifact SHA-256/provenance;
@@ -133,11 +137,23 @@ Android production GREEN requires, at minimum:
 
 A debug or ephemeral signer can prove compilation but cannot prove production release continuity.
 
-## 7. Samsung Secure Folder doctrine
+## 7. Samsung standalone APK doctrine
 
-Ordinary Termux owns the local daemon/control plane. Samsung Secure Folder is a protected cockpit/client boundary.
+The Samsung production application is self-contained at the Android application boundary.
 
-The architecture must not depend on Secure Folder being able to inspect or control ordinary-Termux PIDs. Communication occurs through explicitly exposed local interfaces. The system must tolerate the protected cockpit being locked, stopped, or restarted without corrupting durable job state.
+The following are **not production runtime dependencies**:
+
+- Termux or Termux:API/Widget;
+- Acode or AcodeX/AXS;
+- TigerVNC;
+- websockify or another desktop bridge;
+- Samsung Secure Folder;
+- a separately launched localhost control daemon;
+- root or Shizuku for ordinary application operation.
+
+Historical experiments using those tools may remain in Git history or explicitly marked archival documentation, but they do not define current production architecture.
+
+Core application launch and ordinary operation must use packaged assets, Android-native capabilities, or explicitly configured network/provider adapters. Optional external services may enhance functionality, but the application must fail gracefully when they are absent rather than refusing to launch.
 
 No root dependency is required for normal operation. Privilege-brokering experiments remain optional development lanes and must not become silent production requirements.
 
@@ -187,7 +203,7 @@ Required checks actually executed and the evidence supports the claim.
 
 ### YELLOW
 
-Work is staged, queued, partially verified, waiting for credentials/signing, or otherwise incomplete.
+Work is staged, queued, partially verified, waiting for credentials/signing, physical-device proof, or otherwise incomplete.
 
 ### RED
 
@@ -218,7 +234,7 @@ Recovery should be boring.
 - Do not rewrite sealed history merely to make it look cleaner.
 - Roll back to named revisions, never vague labels inferred by an AI.
 - Durable jobs use explicit states such as queued, running, complete, failed, and interrupted.
-- A restarted daemon must be able to determine what happened without relying solely on volatile memory.
+- Runtime state must survive ordinary application restarts without depending solely on volatile memory.
 
 ## 14. Source-of-Truth hierarchy
 
@@ -230,6 +246,8 @@ When prose and executable policy disagree, stop promotion and reconcile them. Do
 
 ## 15. Final goal
 
-LuHm OS becomes a reproducible, signed, updateable, auditable, local-first creative application ecosystem. Lum can help inspect, plan, code, patch, build, render, test, and recover it through bounded automation. The human operator retains destructive authority, signing authority, and final release promotion.
+LuHm OS becomes a reproducible, signed, updateable, auditable, local-first creative application ecosystem. The first production gate is a proper standalone Samsung S24 FE APK: install, open, run core functions, and update without Termux, Acode/AcodeX, VNC, Secure Folder, or another development runtime.
+
+Lum can help inspect, plan, code, patch, build, render, test, and recover it through bounded automation. The human operator retains destructive authority, signing authority, and final release promotion.
 
 The project succeeds when recovery, builds, upgrades, and policy are as dependable as the creative surfaces are ambitious.

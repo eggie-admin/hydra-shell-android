@@ -1,25 +1,44 @@
 {
-  "schema": "luhmos.repo-convergence.v3",
+  "schema": "luhmos.repo-convergence.v4",
   "date": "2026-09-11",
-  "status": "all_related_repos_ingested_testing",
+  "status": "TEN_PASS_HARD_AUDIT_CANDIDATE",
   "canonical": {
     "repository": "eggie-admin/hydra-shell-android",
     "branch": "luhmos-main",
     "android_application_id": "art.eggiebagelface.luhmos"
   },
-  "staging": {
-    "branch": "luhmos/testing",
-    "ingest_branch": "luhmos/convergence-all-repos-20260911",
-    "source_head": "104590d087a839ff7e3d2749cad9b6336fc32681",
-    "promotion_rule": "fast_forward_only_after_green_ultima"
-  },
   "architecture": {
-    "python3": "control_plane_and_orchestration",
+    "python3": "reference_policy_build_test_and_optional_gateway_layer",
     "npm": "build_time_only",
-    "godot": "android_shell_and_packager",
+    "godot": "primary_android_runtime_game_shell_and_packager",
+    "kotlin": "bounded_android_bridge",
     "gradle": "android_build_layer",
-    "secure_folder": "protected_cockpit_client",
-    "ordinary_termux": "daemon_owner"
+    "vue_web": "bundled_assets_not_external_dev_server",
+    "external_runtime_required_for_base_launch": false,
+    "termux": "historical_or_lab_only",
+    "secure_folder": "optional_user_compartment_not_runtime_requirement"
+  },
+  "device_lanes": {
+    "s24fe_production": {
+      "device": "SM-S721U1",
+      "family": "Galaxy S24 FE",
+      "android": 16,
+      "root_required": false,
+      "shizuku_required": false,
+      "external_daemon_required": false,
+      "application_id": "art.eggiebagelface.luhmos",
+      "distribution": "signed APK through public custom F-Droid repository"
+    },
+    "sm_x400_rooted_lab": {
+      "device": "SM-X400",
+      "role": "rooted development and elevated-capability laboratory",
+      "root_state": "device_is_rooted_before_app_install",
+      "application_id": "art.eggiebagelface.luhmos.rooted",
+      "requires_root_metadata": true,
+      "automatic_rooting_or_exploit": false,
+      "signing_identity_shared_with_production": false,
+      "release_channel_shared_with_production": false
+    }
   },
   "ingest_policy": {
     "history_merge": false,
@@ -27,7 +46,8 @@
     "selective_feature_transplant": true,
     "reference_repos_are_runtime_dependencies": false,
     "license_boundaries_preserved": true,
-    "secrets_in_git": false
+    "secrets_in_git": false,
+    "chat_history_is_not_executable_source_of_truth": true
   },
   "repositories": [
     {
@@ -35,147 +55,62 @@
       "role": "canonical_product_root",
       "integration": "native",
       "branch": "luhmos-main",
-      "testing_branch": "luhmos/testing"
+      "work_lane": "luhmos/backend"
     },
     {
       "repository": "eggie-admin/vue-headless-cms",
-      "role": "canonical_samsung_android_ui_godot_and_updater_donor",
+      "role": "canonical_samsung_android_godot_webview_donor",
       "integration": "pinned_checkout_build_time",
-      "branch": "luhmos/inapp-updater-v1",
-      "ref": "dd9b3e68e14ce7a559b7b13aebfe10c630fa171b",
+      "branch": "luhmos/s24fe-standalone-hardening-20260911",
+      "ref": "96c23c87713800fc17c80b6a972ee2e93f1bb4b1",
+      "review_pr": 20,
       "android_application_id": "art.eggiebagelface.luhmos",
       "contains": [
-        "adaptive_godot_display",
-        "headless_godot_smoke",
+        "godot_android_shell",
         "bundled_vue_cockpit",
-        "packageinstaller_in_app_update",
-        "signer_and_package_validation",
-        "downgrade_rejection"
+        "origin_locked_webview_bridge",
+        "samsung_widget",
+        "termux_dependency_removed",
+        "mixed_content_disabled",
+        "safe_external_scheme_allowlist"
       ],
       "history_merge": false
     },
     {
-      "repository": "eggie-admin/amplify-godot-engine-template",
-      "role": "godot_android_reference_and_testing_template",
-      "integration": "reference_only",
-      "branch": "main",
-      "ref": "abcc991107ad9d6b3ef413083e6906029337c94c",
-      "history_merge": false
+      "repository": "eggie-admin/3d-chat-interface",
+      "role": "owned_godot4_jrpg_dating_game_donor",
+      "integration": "selective_transplant",
+      "branch": "kai9000-jrpg-dating-cathedral-20260906",
+      "ref": "457c31f2bcb040aba3d6a0b36a25cf1a63587359",
+      "license": "MIT"
     },
     {
-      "repository": "eggie-admin/android-foss",
-      "role": "android_foss_and_samsung_reference",
-      "integration": "reference_only",
-      "branch": "master",
-      "ref": "22226aa58659036cc8e88b632a41b4a21b3e78c9",
-      "history_merge": false
+      "repository": "kuryart/godot-jrpg",
+      "role": "third_party_jrpg_framework_reference",
+      "integration": "selective_vendor_after_license_review",
+      "ref": "6d62e6e75d9533240eddc289a991607f39ef5780",
+      "license": "MIT"
+    },
+    {
+      "repository": "nathanhoad/godot_dialogue_manager",
+      "role": "third_party_dialogue_runtime_reference",
+      "integration": "single_dialogue_runtime_candidate",
+      "ref": "934ff537cee96e1484a2430066b685283999d40c",
+      "license": "MIT"
     },
     {
       "repository": "eggie-admin/termux-app",
-      "role": "termux_upstream_and_android_daemon_reference",
-      "integration": "reference_only_not_runtime_dependency",
-      "branch": "master",
-      "ref": "121613ef1fba4002f3c6b63a254d31c6916ee1d5",
-      "history_merge": false
+      "role": "historical_android_shell_reference_and_rooted_lab_reference",
+      "integration": "reference_only_not_production_runtime_dependency",
+      "ref": "121613ef1fba4002f3c6b63a254d31c6916ee1d5"
     },
     {
       "repository": "eggie-admin/Shizuku",
-      "role": "optional_privilege_broker_reference",
-      "integration": "reference_only_not_runtime_dependency",
-      "branch": "master",
-      "ref": "9a0b7df5fa757f295b07ba6e3c7a3dc3182a20a0",
-      "history_merge": false
+      "role": "optional_lab_privilege_broker_reference",
+      "integration": "reference_only_not_production_runtime_dependency",
+      "ref": "9a0b7df5fa757f295b07ba6e3c7a3dc3182a20a0"
     }
   ],
-  "branch_ingest": {
-    "hydra_shell_android": [
-      {
-        "branch": "luhmos/testing",
-        "relation_to_main": "ahead",
-        "ahead_by": 15,
-        "selected": true,
-        "reason": "current adaptive display and in-app updater forge lane"
-      },
-      {
-        "branch": "luhmos/ultima-identity-hotfix-20260910",
-        "relation_to_main": "diverged",
-        "ahead_by": 3,
-        "behind_by": 1,
-        "selected": false,
-        "reason": "identity work is superseded by current testing workflows"
-      },
-      {
-        "branch": "testing/luhm-os-android",
-        "relation_to_main": "diverged",
-        "ahead_by": 7,
-        "behind_by": 68,
-        "selected": false,
-        "reason": "legacy KAI/Video Forge APK evidence only; no blind merge"
-      },
-      {
-        "branch": "luhmos/beta",
-        "relation_to_main": "behind",
-        "selected": false
-      },
-      {
-        "branch": "luhmos/frontend",
-        "relation_to_main": "behind",
-        "selected": false
-      },
-      {
-        "branch": "luhmos/proposed",
-        "relation_to_main": "behind",
-        "selected": false
-      },
-      {
-        "branch": "luhmos/stable",
-        "relation_to_main": "behind",
-        "selected": false
-      }
-    ],
-    "vue_headless_cms": [
-      {
-        "branch": "luhmos/inapp-updater-v1",
-        "ref": "dd9b3e68e14ce7a559b7b13aebfe10c630fa171b",
-        "selected": true,
-        "reason": "superset of adaptive-display-v1 plus guarded updater"
-      },
-      {
-        "branch": "luhmos/adaptive-display-v1",
-        "ref": "01bd5ad0c302997ed28a01a487257c2a37ab7197",
-        "selected": false,
-        "reason": "fully contained by updater donor"
-      },
-      {
-        "branch": "luhmos/android-samsung",
-        "selected": false,
-        "unique_reviewed_features": [
-          "private_fdroid_metadata",
-          "legacy_google_drive_install_card"
-        ],
-        "decision": {
-          "private_fdroid_metadata": "regenerate_from_current_1_0_1_coordinates",
-          "legacy_google_drive_install_card": "reject_hardcoded_url_and_ephemeral_signer_path"
-        }
-      },
-      {
-        "branch": "luhm-os-ultima",
-        "selected": false,
-        "reason": "divergent legacy integration history; reference only"
-      }
-    ]
-  },
-  "samsung_sources": {
-    "device": "SM-S721U1",
-    "android": 16,
-    "abi": "arm64-v8a",
-    "legacy_branches": [
-      "samsung-sm-s721u1-kai9000-edge",
-      "samsung-sm-s721u1-kai9000-fdroid-cathedral",
-      "samsung-sm-s721u1-kai9000-ultima"
-    ],
-    "convergence_rule": "selectively transplant reviewed features into the pinned LuHm OS Samsung donor; never blind-merge divergent histories"
-  },
   "display_contract": {
     "identity": "LuHm OS",
     "design_space_portrait": "1080x1920",
@@ -187,25 +122,32 @@
     "headless_policy": "display_bridge_noop_and_ci_smoke"
   },
   "update_contract": {
-    "ui_entrypoint": "in_app_install_update_button",
+    "production_baseline_version": "1.0.0",
+    "production_baseline_version_code": 100,
+    "next_update_test_version": "1.0.1",
+    "next_update_test_version_code": 101,
     "transport": "https_only",
-    "android_installer": "PackageInstaller_session",
     "package_lock": "art.eggiebagelface.luhmos",
     "signer_lock": "must_match_installed_app",
     "downgrade_policy": "reject",
-    "unknown_sources_policy": "user_must_allow_this_source",
     "silent_install": false,
-    "persistent_signing_required_for_real_updates": true,
-    "testing_version": "1.0.1",
-    "testing_version_code": 101
+    "persistent_signing_required": true,
+    "fdroid_client_upgrade_test_required": true
   },
   "distribution_gates": {
     "target_sdk": 36,
     "abi": "arm64-v8a",
     "page_size_16k": "required",
     "apk": true,
-    "aab": "release_lane",
-    "persistent_release_signing": "required_before_production"
+    "persistent_release_signing": "required",
+    "fdroid_custom_repo": "required",
+    "fdroid_canonical_url": "https://fdroid.eggiebagelface.art/fdroid/repo/",
+    "fdroid_public_bootstrap_mirror": "https://raw.githubusercontent.com/eggie-admin/hydra-shell-android/fdroid-public/fdroid/repo/",
+    "fdroid_index_v2": "required",
+    "fdroid_index_v1": "compatibility_required",
+    "fdroid_import_on_s24fe": "required",
+    "fdroid_install_on_s24fe": "required",
+    "fdroid_upgrade_100_to_101": "required_for_final_green"
   },
   "android_signing": {
     "application_id": "art.eggiebagelface.luhmos",
@@ -217,19 +159,41 @@
       "LUHMOS_ANDROID_KEYSTORE_B64",
       "LUHMOS_ANDROID_KEYSTORE_PASSWORD",
       "LUHMOS_ANDROID_KEY_PASSWORD"
-    ]
+    ],
+    "public_fingerprint_must_be_recorded_after_first_persistent_release": true
+  },
+  "fdroid_signing": {
+    "alias": "luhmos-fdroid-repo",
+    "private_key_in_git": false,
+    "private_key_on_public_origin": false,
+    "ci_or_trusted_signing_host_secret_contract": [
+      "LUHMOS_FDROID_KEYSTORE_B64",
+      "LUHMOS_FDROID_KEYSTORE_PASSWORD",
+      "LUHMOS_FDROID_KEY_PASSWORD"
+    ],
+    "historical_repo_fingerprint_may_be_reused_only_if_same_private_key_is_recovered": true
   },
   "security": {
     "private_keys_in_git": false,
     "private_keys_in_apk": false,
     "public_certificates_may_be_tracked": true,
     "tls_and_android_signing_keys_separate": true,
-    "optional_shizuku_dependency": false
+    "rooted_and_stock_package_ids_separate": true,
+    "production_termux_permission": false,
+    "production_root_permission": false,
+    "production_external_localhost_control": false,
+    "webview_mixed_content": "never_allow",
+    "webview_external_navigation": "https_and_mailto_only",
+    "webview_cookies": false
   },
   "migration": {
-    "old_dev_application_id": "art.eggiebagelface.kai9000.dev",
-    "old_release_application_id": "art.eggiebagelface.kai9000",
-    "new_application_id": "art.eggiebagelface.luhmos",
-    "install_relationship": "separate_android_app_lineage"
+    "retired_package_ids": [
+      "art.eggiebagelface.videoforge.dev",
+      "art.eggiebagelface.kai9000.dev",
+      "art.eggiebagelface.kai9000"
+    ],
+    "production_application_id": "art.eggiebagelface.luhmos",
+    "rooted_lab_application_id": "art.eggiebagelface.luhmos.rooted",
+    "legacy_termux_secure_folder_doctrine": "historical_only"
   }
 }

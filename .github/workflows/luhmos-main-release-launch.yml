@@ -1,0 +1,32 @@
+name: LuHm OS Main Release Launch
+
+on:
+  push:
+    branches:
+      - luhmos-main
+    paths:
+      - 'release/LUHMOS_RELEASE_INTENT_1.0.0.json'
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: luhmos-main-release-launch-v1.0.0
+  cancel-in-progress: false
+
+jobs:
+  dispatch-public-release:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Dispatch signed public release from canonical branch
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh workflow run luhmos-fdroid-public-release.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref luhmos-main \
+            -f publish_public_mirror=true
+          echo 'LUHMOS_PUBLIC_RELEASE_DISPATCHED'

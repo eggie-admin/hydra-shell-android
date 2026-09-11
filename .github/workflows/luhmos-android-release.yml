@@ -1,4 +1,4 @@
-name: LuHm OS Samsung Android Release
+name: LuHm OS Android Release Contract
 
 on:
   workflow_dispatch:
@@ -9,130 +9,55 @@ on:
     paths:
       - 'project/hydra/**'
       - 'platforms/android/**'
+      - 'fdroid/**'
       - '.github/workflows/luhmos-android-release.yml'
+      - '.github/workflows/luhmos-fdroid-public-release.yml'
 
 permissions:
   contents: read
 
 concurrency:
-  group: luhmos-android-release-${{ github.ref }}
+  group: luhmos-android-contract-${{ github.ref }}
   cancel-in-progress: true
 
 env:
   DONOR_REPO: eggie-admin/vue-headless-cms
-  DONOR_REF: 0da5af914ec80266724d36c9451598a66a6ee3f7
+  DONOR_REF: 96c23c87713800fc17c80b6a972ee2e93f1bb4b1
   PACKAGE_ID: art.eggiebagelface.luhmos
-  VERSION_NAME: 1.0.0
-  VERSION_CODE: '100'
-  APK_NAME: luhmos-1.0.0.apk
-  KEY_ALIAS: luhmos-release
 
 jobs:
   validate-contract:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
-      - name: Validate LuHm OS Android contract
-        shell: bash
-        run: |
-          set -euo pipefail
-          python -m json.tool project/hydra/LUHMOS_REPO_CONVERGENCE_20260910.json >/dev/null
-          grep -q '"android_application_id": "art.eggiebagelface.luhmos"' project/hydra/LUHMOS_REPO_CONVERGENCE_20260910.json
-          grep -q '"keystore_alias": "luhmos-release"' project/hydra/LUHMOS_REPO_CONVERGENCE_20260910.json
-          if git ls-files | grep -E '\.(jks|keystore|p12|pfx|pkcs12|key)$'; then
-            echo 'Private signing material must not be tracked' >&2
-            exit 1
-          fi
-
-  android-release:
-    needs: validate-contract
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout LuHm OS
-        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
 
-      - name: Checkout pinned Samsung donor
-        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - name: Checkout hardened Samsung donor
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: ${{ env.DONOR_REPO }}
           ref: ${{ env.DONOR_REF }}
           path: _forge/luhmos-android
           persist-credentials: false
 
-      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961
-        with:
-          distribution: temurin
-          java-version: '17'
-
-      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
-        with:
-          node-version: '24.18.0'
-
-      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
-        with:
-          python-version: '3.14'
-
-      - name: Install Android SDK 36
+      - name: Validate LuHm OS release contract without private secrets
         shell: bash
         run: |
           set -euo pipefail
-          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
-          yes | "$SDKMANAGER" --licenses >/dev/null || true
-          "$SDKMANAGER" 'platform-tools' 'build-tools;36.1.0' 'platforms;android-36'
-
-      - name: Verify donor identity
-        shell: bash
-        run: |
-          set -euo pipefail
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          data = json.loads(Path('_forge/luhmos-android/release/version.json').read_text())
-          assert data['packageId'] == 'art.eggiebagelface.luhmos'
-          assert data['version'] == '1.0.0'
-          assert data['versionCode'] == 100
-          PY
-          grep -q 'package/unique_name="art.eggiebagelface.luhmos"' _forge/luhmos-android/godot/export_presets.cfg
-          grep -q 'package/name="LuHm OS"' _forge/luhmos-android/godot/export_presets.cfg
-          grep -q 'gradle_build/target_sdk="36"' _forge/luhmos-android/godot/export_presets.cfg
-          grep -q 'architectures/arm64-v8a=true' _forge/luhmos-android/godot/export_presets.cfg
-
-      - name: Require persistent release signing secrets
-        shell: bash
-        env:
-          KS_B64: ${{ secrets.LUHMOS_ANDROID_KEYSTORE_B64 }}
-          KS_PASS: ${{ secrets.LUHMOS_ANDROID_KEYSTORE_PASSWORD }}
-          KEY_PASS: ${{ secrets.LUHMOS_ANDROID_KEY_PASSWORD }}
-        run: |
-          set -euo pipefail
-          test -n "$KS_B64"
-          test -n "$KS_PASS"
-          test -n "$KEY_PASS"
-          printf '%s' "$KS_B64" | base64 --decode > "$RUNNER_TEMP/luhmos-release.keystore"
-          keytool -list -keystore "$RUNNER_TEMP/luhmos-release.keystore" -storepass "$KS_PASS" -alias "$KEY_ALIAS" >/dev/null
-
-      - name: Build cockpit assets
-        working-directory: _forge/luhmos-android/apps
-        run: |
-          set -euo pipefail
-          npm install --global npm@12.0.2 --no-audit --no-fund
-          npm ci --ignore-scripts --no-audit --no-fund
-          npm run build --workspace=video-forge-ui
-          test -f forge-ui/dist/index.html
-
-      - name: Signing and export handoff gate
-        shell: bash
-        env:
-          KS_PASS: ${{ secrets.LUHMOS_ANDROID_KEYSTORE_PASSWORD }}
-          KEY_PASS: ${{ secrets.LUHMOS_ANDROID_KEY_PASSWORD }}
-        run: |
-          set -euo pipefail
-          echo "Persistent signer alias: $KEY_ALIAS"
-          echo "Package identity: $PACKAGE_ID"
-          echo "Samsung target: SM-S721U1 / Android 16 / arm64-v8a"
-          echo "Target SDK: 36"
-          echo "16 KB alignment remains a mandatory post-export verification gate"
-          echo "Private keystore material remains runner-temporary and is never committed"
-          echo 'LUHMOS_ANDROID_RELEASE_SIGNING_CONTRACT_GREEN'
+          python -m json.tool project/hydra/LUHMOS_REPO_CONVERGENCE_20260910.json >/dev/null
+          python -m json.tool project/hydra/samsung/android/apk/app.reference.json >/dev/null
+          python -m json.tool fdroid/final-goal.manifest.json >/dev/null
+          grep -q '"android_application_id": "art.eggiebagelface.luhmos"' project/hydra/LUHMOS_REPO_CONVERGENCE_20260910.json
+          grep -q '"keystore_alias": "luhmos-release"' project/hydra/LUHMOS_REPO_CONVERGENCE_20260910.json
+          grep -q '"commit": "96c23c87713800fc17c80b6a972ee2e93f1bb4b1"' project/hydra/samsung/android/apk/app.reference.json
+          test -f .github/workflows/luhmos-fdroid-public-release.yml
+          ! grep -R -nE 'com\.termux\.permission\.RUN_COMMAND|com\.termux\.RUN_COMMAND|RunCommandService' _forge/luhmos-android/godot/android-plugin
+          ! grep -R -n 'http://127.0.0.1' _forge/luhmos-android/godot/android-plugin/plugin/src/main/java
+          grep -q 'MIXED_CONTENT_NEVER_ALLOW' _forge/luhmos-android/godot/android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralAndroidPlugin.kt
+          if git ls-files | grep -E '\.(jks|keystore|p12|pfx|pkcs12|key|pem)$'; then
+            echo 'Private signing material must not be tracked' >&2
+            exit 1
+          fi
+          echo 'LUHMOS_ANDROID_RELEASE_CONTRACT_GREEN'
+          echo 'Production signing/export/publishing is intentionally isolated in luhmos-fdroid-public-release.yml.'

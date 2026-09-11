@@ -1,154 +1,182 @@
-# AI Stack: Lum, OpenAI, Hugging Face, Ollama, Python 3 and Edge Gallery
+# AI Stack: Lum, OpenAI, Hugging Face, optional local AI, Python policy and Godot 4
+
+## Status
+
+Canonical AI/provider architecture for the LuHm OS Samsung standalone APK lane.
+
+The base Android application must install and launch without Termux, Acode/AcodeX, Secure Folder, VNC, Ollama, Python daemons, cloud credentials, or any other separately started runtime.
 
 ## Design principle
 
-The AI stack is split by responsibility so no single model or vendor becomes the operating system.
-
 ```text
-User / Samsung cockpit
-        ↓
-Lum intent layer
-        ↓
-Python policy + provider router + typed tools
-   ↙               ↓                ↘
-OpenAI        Hugging Face          Ollama
-primary        forge/API             local
-remote         alternate             inference
-reasoning      remote lane           daemon
-      \            |              /
-       \           |             /
-          normalized result
-                 ↓
-          Godot / Edge Gallery
+User
+  ↓
+LuHm OS Android APK
+Godot 4 UI/game runtime + bounded Kotlin bridges
+  ↓ typed requests
+application policy/control contract
+  ├── packaged/offline deterministic features
+  └── optional authenticated AI gateway
+         ├── OpenAI
+         └── Hugging Face
 ```
 
-## Lum / provider router
+No provider, model, framework, or UI surface becomes operating-system authority, signing authority, release authority, or unrestricted shell authority.
 
-Lum is the user-facing spell compiler/persona layer. Python owns provider selection and policy.
+## Lum / provider routing
 
-Canonical remote endpoint:
+Lum is the user-facing intent and typed-plan layer. Provider selection is policy, not personality.
+
+Canonical application-facing contract remains:
 
 ```text
+GET  /api/remote-ai/status
 POST /api/remote-ai/chat
 ```
 
-Provider selector:
+Provider values:
 
 ```text
 auto | openai | huggingface
 ```
 
-`auto` prefers configured OpenAI, then configured Hugging Face, then deterministic/local behavior. A failed provider request is not silently replayed to a different external provider.
+`auto` selects only among explicitly configured remote adapters. A failed request is not silently replayed to another vendor because that would change the external data processor receiving the prompt.
 
-## OpenAI
+If no remote provider is configured, the APK still launches and keeps non-cloud features available.
 
-OpenAI is the primary remote reasoning and agent lane.
+## OpenAI / Lum speed doctrine
 
-Use OpenAI for:
+OpenAI is the primary remote reasoning/agent lane.
 
-- complex coding/review tasks;
-- structured intent generation;
-- typed function/tool requests;
-- guardrailed agent workflows;
-- current first-party Responses/Agents capabilities.
+Verified against current first-party OpenAI model and API documentation on 2026-09-11:
 
-Current testing default model: `gpt-6-astra`.
+```text
+Lum default/front door:       gpt-5.6-luna
+Lum default reasoning effort: none
+Lum default output verbosity: low
+Lum API surface:              Responses API
+Lum transport:                streaming
+Lum paid latency mode:        service_tier=fast
+Deep architecture/review:     gpt-5.6-sol
+```
 
-`OPENAI_API_KEY` is server-side only. It never belongs in Android resources, WebView JavaScript, source control, build artifacts, Base64 manifests, or debug APKs.
+GPT-5.6 Luna is the fastest and lowest-cost model in the GPT-5.6 family. Fast mode may be requested per Responses API call with `service_tier=fast` (or `priority`; the returned service tier may normalize to the provider's served tier).
+
+Configuration remains overridable rather than compiled into application code:
+
+```text
+OPENAI_MODEL_FAST=gpt-5.6-luna
+OPENAI_MODEL_DEEP=gpt-5.6-sol
+OPENAI_REASONING_FAST=none
+OPENAI_VERBOSITY_FAST=low
+OPENAI_SERVICE_TIER_FAST=fast
+```
+
+### Routing rule
+
+Use Luna for the overwhelming majority of interactive Lum traffic:
+
+- chat and command parsing;
+- intent classification;
+- typed tool selection;
+- status/help/UI responses;
+- short coding assists;
+- deterministic orchestration proposals;
+- high-volume agent turns.
+
+Escalate to Sol only when the task crosses a deliberate complexity threshold, for example:
+
+- architecture redesign;
+- difficult multi-file debugging;
+- release/security audits;
+- high-consequence code review;
+- deep research/synthesis;
+- a failed Luna attempt where more reasoning is actually useful.
+
+Do not use GPT-6/Astra as Lum's default front door merely because it is more capable. Capability escalation is explicit and exceptional; latency remains the primary interactive objective.
+
+### Fast mode policy
+
+`service_tier=fast` is a paid API latency optimization, not a correctness requirement. The application may fall back to the normal/default service tier if Fast mode is unavailable, rate-limited, or deliberately disabled for cost control.
+
+Fast mode does not change Lum's authority. Faster inference never grants permission to mutate source, root a device, sign artifacts, publish releases, or execute unrestricted shell commands.
+
+### ChatGPT Pro versus OpenAI API billing
+
+ChatGPT Pro and the OpenAI API are separate billing systems. A ChatGPT Pro subscription does not fund arbitrary API calls made by the LuHm OS APK or its gateway.
+
+ChatGPT Pro can provide access to paid ChatGPT/Work/Codex experiences, but a programmatic in-app Lum agent uses the OpenAI API and therefore requires separately configured API billing/credits and a server-side/project API credential.
+
+`OPENAI_API_KEY` is secret server/gateway material. It never belongs in Android resources, WebView JavaScript, Godot project resources, Git, APK/AAB artifacts, Base64 manifests, prompts, screenshots, logs, or model context.
+
+The production APK must not require a permanent OpenAI key to boot.
 
 ## Hugging Face
 
 Hugging Face is the open-model forge/catalog and alternate remote inference lane.
 
-Current API base:
+Verified against current Hugging Face Inference Providers documentation on 2026-09-10:
 
 ```text
-https://router.huggingface.co/v1
+OpenAI-compatible base: https://router.huggingface.co/v1
+Responses endpoint:      POST /v1/responses   (beta)
+Chat endpoint:           POST /v1/chat/completions
 ```
 
-KAI shared Responses path:
+Current reference models:
 
 ```text
-https://router.huggingface.co/v1/responses
+openai/gpt-oss-120b:fastest   # remote quality/reference lane
+openai/gpt-oss-20b:fastest    # lower-latency candidate
 ```
 
-Testing default model:
+Both referenced Hub repositories are Apache-2.0 models. Provider suffixes such as `:fastest`, `:cheapest`, `:preferred`, or an explicit provider are routing policy and must be recorded in evidence when reproducibility matters.
 
-```text
-openai/gpt-oss-120b:fastest
-```
+`HF_TOKEN` is secret gateway material. It is never stored in the APK, Git, prompts, WebView storage, logs, screenshots, build artifacts, or model context.
 
-Lower-latency candidate:
+Remote inference permission does not authorize automatic model download. Any downloaded Hub artifact requires repository, revision, license, file provenance, and `trust_remote_code=false` by default.
 
-```text
-openai/gpt-oss-20b:fastest
-```
+## Optional local AI
 
-`HF_TOKEN` is server-side only and should be fine-grained for Inference Providers. For eligible CI, prefer Trusted Publisher/OIDC identities with inference permission instead of long-lived broad tokens.
+Local inference remains an optional integration lane, not a production boot dependency.
 
-Hugging Face remote inference does not authorize automatic model download, remote-code execution, or bundling weights into the APK. Downloaded model artifacts require license/provenance review and a pinned revision.
+Historical Ollama/localhost work may be reused as development or desktop integration reference, but the Samsung S24 FE production APK must not require an external Ollama daemon or Termux process to launch.
 
-## Ollama
-
-Ollama is the local inference daemon and first offline model lane.
-
-Canonical endpoint:
-
-```text
-http://127.0.0.1:11434
-```
-
-Responsibilities:
-
-- fast local chat;
-- lightweight director/planner tasks;
-- local tool-selection proposals when supported;
-- offline fallback.
-
-Ollama has no unrestricted shell authority and is not publicly exposed.
+If a future on-device model is packaged or downloaded, it requires an explicit Android storage/runtime design, license/provenance record, device-resource budget, and release-gate review.
 
 ## Python 3
 
-Python 3 is the policy and orchestration layer.
+Python 3 remains the canonical reference language for policy, provider adapters, tests, build orchestration, evidence generation, and backend services.
 
-Responsibilities:
-
-- localhost API services;
-- OpenAI/Hugging Face/Ollama provider routing;
-- typed tool dispatch;
-- device/service probes;
-- RSS/feed sanitation;
-- SQLite state where appropriate;
-- FFmpeg wrappers;
-- build/test sanity;
-- release evidence generation.
-
-Prefer explicit functions and data structures over generated shell strings.
+For Android production, no external Python interpreter may be required. Policy logic used at runtime must either be migrated to packaged app code, deliberately bundled inside the application boundary, or hosted behind an optional authenticated network adapter.
 
 ## Godot 4
 
-Godot 4 owns the user-visible Android runtime, game systems, JRPG/social-link experiments, avatar/UI state, and WebView/plugin integration.
+Godot 4 owns the user-visible Android runtime and game/application systems, including JRPG, dating/social-link, avatar, media, and UI state.
 
-Godot talks to approved localhost APIs or typed Android plugin surfaces. It does not become a credential vault or arbitrary shell host.
+Godot must not hold permanent cloud credentials or become an arbitrary shell. Android-specific secure/platform capabilities are exposed through bounded native bridges.
 
-## Edge Gallery
+Game donor and licensing provenance is defined in:
 
-Edge Gallery is the Samsung-facing media/status surface.
-
-It may show generated previews, local image/video cards, build artifacts, status summaries, avatar/character references, approved gallery items, and widget/edge-panel state.
-
-It does not ingest secrets and does not decide build/release status.
+```text
+project/hydra/games/GODOT4_JRPG_DATING_DONORS_20260910.json
+```
 
 ## Failure behavior
 
-- OpenAI not configured -> `auto` may select configured Hugging Face.
-- Hugging Face not configured -> `auto` may select configured OpenAI.
-- Neither remote provider configured -> deterministic/local/Ollama behavior remains available.
-- Remote provider call fails after selection -> report failure; do not silently send the prompt to the other vendor.
-- Ollama unavailable -> UI remains responsive and reports offline state.
-- Optional media service unavailable -> chat/build shell still launches.
-- Secure Folder cannot inspect daemon PIDs -> probe localhost endpoints instead.
+- no cloud provider configured -> APK still opens;
+- OpenAI unavailable -> report OpenAI unavailable;
+- Fast mode unavailable -> fall back to normal OpenAI service tier unless policy says fail closed;
+- Luna insufficient for a task -> policy may explicitly escalate to Sol;
+- Hugging Face unavailable -> report Hugging Face unavailable;
+- selected provider fails -> do not silently resend to another provider;
+- optional local model unavailable -> keep base UI/game/runtime functional;
+- optional media/provider integrations fail -> degrade gracefully rather than blocking launcher start.
+
+## Security boundary
+
+Cloud credentials stay outside the distributable application. A remote AI feature may use an authenticated gateway or another reviewed short-lived credential design, but static vendor secrets are never bundled into the APK.
 
 ## Final authority
 
-The Professor defines the goal. Lum compiles intent. Python policy selects capabilities/providers. Models propose. Tools execute. CI verifies builds. Signing and F-Droid client evidence determine release-green.
+The Professor defines the goal. Lum compiles intent. Application policy authorizes. Models propose. Bounded tools execute. CI proves. Persistent signing and physical-device install/update evidence decide Android release GREEN.

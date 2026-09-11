@@ -1,0 +1,44 @@
+Categories:
+  - Development
+  - Multimedia
+License: GPL-3.0-only
+AuthorName: Eggie Bagelface
+AuthorWebSite: https://eggiebagelface.art/
+WebSite: https://eggiebagelface.art/
+SourceCode: https://github.com/eggie-admin/hydra-shell-android
+IssueTracker: https://github.com/eggie-admin/hydra-shell-android/issues
+Changelog: https://github.com/eggie-admin/hydra-shell-android/releases
+Name: LuHm OS
+Summary: Standalone Godot creative AI and game cockpit for Samsung Android
+Description: |-
+  LuHm OS is a standalone Android application built around Godot 4, a bundled
+  web cockpit, and bounded Android-native bridges. It combines local-first
+  creative tools, JRPG/social systems, media workflows, and optional AI
+  provider integrations.
+
+  The stock package does not require root, Termux, Acode/AcodeX, VNC,
+  Samsung Secure Folder, Shizuku, or a separately launched localhost daemon.
+
+  Optional remote AI features can connect to external non-free network
+  services such as OpenAI or Hugging Face only when explicitly configured.
+  The core application must still launch when those services are unavailable.
+
+  Development is AI-assisted, but project provenance distinguishes
+  human-authored code, editing, architecture, documentation, integration, and
+  other copyrightable human work from third-party and machine-generated
+  material.
+
+  The rooted SM-X400 laboratory build uses a different package identity and is
+  not an update or replacement for this stock package.
+RequiresRoot: false
+AntiFeatures:
+  - NonFreeNet
+CurrentVersion: 1.0.0
+CurrentVersionCode: 100
+UpdateCheckMode: Static
+MaintainerNotes: |-
+  IzzyOnDroid candidate metadata. The APK must be attached to an immutable
+  GitHub release and signed with the persistent luhmos-release certificate.
+  Donation/support metadata is intentionally omitted until the maintainer
+  publishes and verifies a real funding endpoint. No ad or payment SDK is
+  required for the human-code support lane.

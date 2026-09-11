@@ -1,0 +1,54 @@
+{
+  "schema": "luhmos.human-code-monetization.v1",
+  "date": "2026-09-11",
+  "status": "FUNDING_ENDPOINT_PENDING",
+  "principle": "Monetize support around human-authored work without inserting ad or payment SDKs into the IzzyOnDroid candidate APK.",
+  "project": {
+    "name": "LuHm OS",
+    "production_package": "art.eggiebagelface.luhmos",
+    "source": "https://github.com/eggie-admin/hydra-shell-android",
+    "website": "https://eggiebagelface.art/",
+    "root_license": "GPL-3.0"
+  },
+  "human_authorship": {
+    "notice": "COPYRIGHT.md",
+    "claim_only_human_authored_expression": true,
+    "ai_assistance_disclosed": true,
+    "third_party_licenses_preserved": true,
+    "machine_only_output_claimed_as_human": false
+  },
+  "allowed_revenue_lanes": [
+    "donations",
+    "Liberapay",
+    "Open Collective",
+    "GitHub Sponsors when configured",
+    "project-controlled HTTPS support page",
+    "paid human support",
+    "consulting",
+    "commissioned features",
+    "customization",
+    "training",
+    "asset creation",
+    "optional hosted services consistent with applicable licenses"
+  ],
+  "izzy_candidate_binary_policy": {
+    "ads_sdk": false,
+    "analytics_for_monetization": false,
+    "proprietary_payment_sdk_for_donations": false,
+    "hidden_telemetry": false,
+    "support_link_may_be_metadata_only": true,
+    "donation_url": null,
+    "funding_platform": null
+  },
+  "metadata_policy": {
+    "canonical_fdroid_metadata": "fdroid/metadata/art.eggiebagelface.luhmos.yml",
+    "add_donate_field_only_after_verified_endpoint_exists": true,
+    "github_funding_file_only_after_verified_account_exists": true
+  },
+  "next_actions": [
+    "choose and verify a real funding endpoint",
+    "add the verified support URL to F-Droid/Fastlane metadata",
+    "optionally add .github/FUNDING.yml",
+    "keep payment handling outside the APK unless separately reviewed"
+  ]
+}

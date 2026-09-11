@@ -1,0 +1,97 @@
+{
+  "schema": "luhmos.godot4-jrpg-dating-donors.v1",
+  "date": "2026-09-10",
+  "status": "canonical_provenance_reference",
+  "target": {
+    "platform": "Samsung SM-S721U1",
+    "android": 16,
+    "application_id": "art.eggiebagelface.luhmos",
+    "engine": "Godot 4"
+  },
+  "owned_donor": {
+    "repository": "eggie-admin/3d-chat-interface",
+    "branch": "kai9000-jrpg-dating-cathedral-20260906",
+    "commit": "457c31f2bcb040aba3d6a0b36a25cf1a63587359",
+    "repository_license": "MIT",
+    "role": "LuHm/KAI-owned prototype and game-layer donor",
+    "verified_paths": [
+      "pet/godot/jrpg/AnimationTaxonomy.gd",
+      "pet/godot/jrpg/BattleDirector.gd",
+      "pet/godot/jrpg/CathedralDirector.gd",
+      "pet/godot/jrpg/DatingDirector.gd",
+      "pet/godot/jrpg/JRPGCockpit.gd",
+      "pet/godot/jrpg/LumAvatarStage.gd",
+      "pet/godot/jrpg/OriginalFanfare.gd",
+      "pet/godot/jrpg/OverworldMap.gd",
+      "pet/godot/jrpg/RoleplayDirector.gd",
+      "pet/godot/jrpg/WorldMapOverlay.gd",
+      "pet/godot/jrpg/Main.tscn",
+      "pet/godot/jrpg/OverworldMap.tscn",
+      "pet/godot/jrpg/data/cathedral_content.json",
+      "pet/godot/jrpg/project.godot",
+      "pet/godot/jrpg/export_presets.cfg",
+      "pet/godot/jrpg/build-s24fe.sh"
+    ],
+    "ownership_rule": "Original LuHm/KAI code from this repository may be adapted into LuHm OS subject to its recorded license/history. Historical local-daemon assumptions from the donor do not become production APK requirements."
+  },
+  "third_party_donors": [
+    {
+      "repository": "kuryart/godot-jrpg",
+      "branch": "main",
+      "observed_commit": "6d62e6e75d9533240eddc289a991607f39ef5780",
+      "license": "MIT",
+      "role": "selective 2D JRPG framework reference/vendor candidate",
+      "engine_baseline": "Godot 4.6+",
+      "integration_rule": "Pin an exact revision before vendoring. Integrate selectively. Preserve MIT notice. Do not treat donor sample art/audio as LuHm-owned assets; each credited asset keeps its own license and attribution requirements."
+    },
+    {
+      "repository": "nathanhoad/godot_dialogue_manager",
+      "branch": "main",
+      "observed_commit": "934ff537cee96e1484a2430066b685283999d40c",
+      "license": "MIT",
+      "role": "single dialogue system for branching dialogue",
+      "engine_baseline": "Dialogue Manager 4 for Godot 4.6+",
+      "integration_rule": "Use one dialogue system rather than adding a competing dialogue runtime. Game/social state remains owned by LuHm game logic; Dialogue Manager reads/writes exposed state through its documented stateless contract. Preserve MIT notice."
+    }
+  ],
+  "owned_game_extensions": {
+    "present_in_owned_donor": [
+      "battle direction",
+      "overworld/map presentation",
+      "dating direction",
+      "roleplay direction",
+      "JRPG cockpit",
+      "Lum avatar stage",
+      "original fanfare system"
+    ],
+    "planned_or_evolving": [
+      "SocialState relationship authority",
+      "relationship ranks",
+      "flags",
+      "gifts",
+      "social events and rewards",
+      "save adapter",
+      "dialogue/story router integration"
+    ],
+    "claim_rule": "Planned/evolving items are not claimed as present in a pinned donor commit until code evidence exists."
+  },
+  "asset_policy": {
+    "copy_external_assets_automatically": false,
+    "external_corpus_role": "taxonomy, workflow study, high-level inspiration, or separately licensed build input",
+    "required_before_distribution": [
+      "source URL/repository",
+      "creator/owner",
+      "license",
+      "attribution text when required",
+      "pinned revision or artifact hash when practical"
+    ]
+  },
+  "android_rule": {
+    "standalone_apk_required": true,
+    "external_termux_required": false,
+    "external_acodex_required": false,
+    "external_vnc_required": false,
+    "external_localhost_daemon_required": false,
+    "root_required": false
+  }
+}
