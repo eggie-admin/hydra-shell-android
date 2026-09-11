@@ -29,31 +29,23 @@ else
     exit 2
   }
   echo "Refreshing private Destiny Child audio/package cache from Google Drive…"
+
+  FILTERS=(
+    wav mp3 ogg oga opus m4a aac flac webm
+    acb awb hca wem bnk adx at3 at9 xma
+    pck cpk
+  )
+  ARGS=()
+  for ext in "${FILTERS[@]}"; do
+    ARGS+=(--include "*.${ext}" --include "**/*.${ext}")
+  done
+  ARGS+=(--exclude '*')
+
   rclone copy "${REMOTE}:${REMOTE_PATH}" "$ROOT/DestinyChildMods" \
     --drive-shared-with-me \
     --create-empty-src-dirs \
     --update \
-    --include '**/*.wav' \
-    --include '**/*.mp3' \
-    --include '**/*.ogg' \
-    --include '**/*.oga' \
-    --include '**/*.opus' \
-    --include '**/*.m4a' \
-    --include '**/*.aac' \
-    --include '**/*.flac' \
-    --include '**/*.webm' \
-    --include '**/*.acb' \
-    --include '**/*.awb' \
-    --include '**/*.hca' \
-    --include '**/*.wem' \
-    --include '**/*.bnk' \
-    --include '**/*.adx' \
-    --include '**/*.at3' \
-    --include '**/*.at9' \
-    --include '**/*.xma' \
-    --include '**/*.pck' \
-    --include '**/*.cpk' \
-    --exclude '*' \
+    "${ARGS[@]}" \
     --checkers 8 \
     --transfers 4 \
     --progress
