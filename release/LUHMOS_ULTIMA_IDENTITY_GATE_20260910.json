@@ -1,0 +1,27 @@
+{
+  "schema": "luhmos.ultima-identity-gate.v1",
+  "milestone": "LUHMOS_ULTIMA_IDENTITY_GATE_20260910",
+  "status": "CANDIDATE_UNTIL_CI_GREEN",
+  "canonical_branch": "luhmos-main",
+  "testing_branch": "luhmos/testing",
+  "workflow": ".github/workflows/luhmos-ultima-debug-apk.yml",
+  "donor": {
+    "repository": "eggie-admin/vue-headless-cms",
+    "ref": "0da5af914ec80266724d36c9451598a66a6ee3f7"
+  },
+  "apk_contract": {
+    "application_id": "art.eggiebagelface.luhmos",
+    "application_label": "LuHm OS",
+    "version_name": "1.0.0",
+    "version_code": 100,
+    "target_sdk": 36,
+    "abi": "arm64-v8a",
+    "page_size_16k_alignment": "required",
+    "testing_signature": "ephemeral_debug_only"
+  },
+  "production_gate": {
+    "persistent_signing_alias": "luhmos-release",
+    "persistent_signing_required": true,
+    "automatic_stable_promotion": false
+  }
+}
