@@ -2,7 +2,9 @@ const ASSET_BASE = "http://127.0.0.1:8799";
 const TERMINAL_URL = "http://127.0.0.1:7681/";
 const SAFE_ASSET = /^[a-zA-Z0-9_./()\[\] -]+$/;
 const MAX_INLINE_BYTES = 4 * 1024 * 1024;
+const MAX_AUDIO_BYTES = 8 * 1024 * 1024;
 const ADULT_CATALOG = `${ASSET_BASE}/private-gacha/adult-rewards.json`;
+const AUDIO_INDEX = `${ASSET_BASE}/destiny-audio-index.json`;
 
 async function privateStatus() {
   const response = await fetch(`${ASSET_BASE}/luhm-manifest.json`, {cache: "no-store"});
@@ -43,6 +45,16 @@ async function readAdultCatalog() {
     throw new Error("adult_catalog_invalid");
   }
   return catalog;
+}
+
+async function readAudioIndex() {
+  const response = await fetch(AUDIO_INDEX, {cache:"no-store"});
+  if (!response.ok) throw new Error(`audio_index_${response.status}`);
+  const index = await response.json();
+  if (index?.schema !== "luhm.private-destiny-audio.v1" || !Array.isArray(index.files)) {
+    throw new Error("audio_index_invalid");
+  }
+  return index;
 }
 
 function secureRoll(max) {
@@ -96,6 +108,53 @@ async function pullAdultReward() {
   };
 }
 
+function mimeForAudioPath(path, serverMime) {
+  if (serverMime && serverMime.startsWith("audio/")) return serverMime;
+  const ext = (path.split(".").pop() || "").toLowerCase();
+  return ({wav:"audio/wav",mp3:"audio/mpeg",ogg:"audio/ogg",oga:"audio/ogg",opus:"audio/ogg",m4a:"audio/mp4",aac:"audio/aac",flac:"audio/flac",webm:"audio/webm"})[ext] || "application/octet-stream";
+}
+
+async function audioStatus() {
+  const index = await readAudioIndex();
+  return {
+    ok:true,
+    recognized:index.recognized_count || 0,
+    playable:index.playable_count || 0,
+    game_containers:index.game_audio_container_count || 0,
+    ffprobe:Boolean(index.ffprobe_available),
+    vgmstream:Boolean(index.vgmstream_available)
+  };
+}
+
+async function pickAudio(eventName) {
+  const index = await readAudioIndex();
+  const preferences = index.event_preferences?.[eventName] || [eventName];
+  const playable = index.files.filter((item) => item.directly_playable && typeof item.path === "string");
+  if (!playable.length) return {ok:false, error:"no_playable_audio"};
+
+  let candidates = playable.filter((item) => (item.tags || []).some((tag) => preferences.includes(tag)));
+  if (!candidates.length) candidates = playable;
+  const chosen = candidates[secureRoll(candidates.length)];
+  if (!SAFE_ASSET.test(chosen.path) || chosen.path.includes("..")) return {ok:false,error:"invalid_audio_path"};
+
+  const response = await fetch(`${ASSET_BASE}/${chosen.path}`, {cache:"no-store"});
+  if (!response.ok) return {ok:false,error:`audio_${response.status}`};
+  const blob = await response.blob();
+  if (blob.size > MAX_AUDIO_BYTES) return {ok:false,error:"audio_too_large",path:chosen.path};
+  const bytes = new Uint8Array(await blob.arrayBuffer());
+  let binary = "";
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
+  const mime = mimeForAudioPath(chosen.path, blob.type);
+  return {
+    ok:true,
+    event:eventName,
+    path:chosen.path,
+    tags:chosen.tags || [],
+    data_url:`data:${mime};base64,${btoa(binary)}`
+  };
+}
+
 browser.runtime.onMessage.addListener((msg) => {
   if (!msg || typeof msg !== "object") return;
 
@@ -107,6 +166,12 @@ browser.runtime.onMessage.addListener((msg) => {
   }
   if (msg.type === "LUHM_PRIVATE_GACHA_PULL") {
     return pullAdultReward().catch((error) => ({ok:false, error:String(error.message || error)}));
+  }
+  if (msg.type === "LUHM_AUDIO_STATUS") {
+    return audioStatus().catch((error) => ({ok:false,error:String(error.message || error)}));
+  }
+  if (msg.type === "LUHM_AUDIO_PICK") {
+    return pickAudio(msg.event).catch((error) => ({ok:false,error:String(error.message || error)}));
   }
   if (msg.type === "LUHM_OPEN_TERMINAL") {
     return browser.tabs.create({url: TERMINAL_URL}).then(() => ({ok:true}));
