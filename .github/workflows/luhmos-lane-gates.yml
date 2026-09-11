@@ -1,0 +1,105 @@
+name: LuHm OS lane gates
+
+on:
+  pull_request:
+    branches:
+      - luhmos-main
+      - luhmos/testing
+      - luhmos/proposed
+      - luhmos/beta
+      - luhmos/stable
+  push:
+    branches:
+      - luhmos/ai-logic
+      - luhmos/frontend
+      - luhmos/backend
+
+permissions:
+  contents: read
+
+jobs:
+  topology:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - name: Validate branch topology manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m json.tool project/hydra/LUHMOS_BRANCH_TOPOLOGY.json >/dev/null
+          grep -q '"canonical_integration": "luhmos-main"' project/hydra/LUHMOS_BRANCH_TOPOLOGY.json
+          grep -q '"ai_logic": "luhmos/ai-logic"' project/hydra/LUHMOS_BRANCH_TOPOLOGY.json
+          grep -q '"frontend": "luhmos/frontend"' project/hydra/LUHMOS_BRANCH_TOPOLOGY.json
+          grep -q '"backend": "luhmos/backend"' project/hydra/LUHMOS_BRANCH_TOPOLOGY.json
+
+  python-backend:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/luhmos/backend' || github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.14'
+      - name: Compile backend
+        run: python -m compileall -q backend tools
+      - name: Test backend
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -r backend/requirements.txt -r backend/requirements-dev.txt
+          python -m pytest -q backend/tests
+
+  ai-logic:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/luhmos/ai-logic' || github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.14'
+      - name: Compile AI and control modules
+        run: python -m compileall -q backend lumh-os ultima tools
+      - name: Reject embedded private material
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git ls-files | grep -E '(^|/)(\.secrets|private)/|\.(jks|keystore|p12|pfx|pkcs12|key|pem)$'; then
+            echo 'Tracked secret/signing material detected' >&2
+            exit 1
+          fi
+
+  frontend:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/luhmos/frontend' || github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - name: Frontend boundary sanity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d backend/web
+          if git grep -nE '-----BEGIN ([A-Z0-9 ]+ )?PRIVATE KEY-----|OPENAI_API_KEY[[:space:]]*=|HF_TOKEN[[:space:]]*=' -- backend/web platforms 2>/dev/null; then
+            echo 'Frontend contains forbidden credential material' >&2
+            exit 1
+          fi
+
+  promotion-direction:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Enforce supported PR direction
+        env:
+          BASE: ${{ github.base_ref }}
+          HEAD: ${{ github.head_ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "$HEAD->$BASE" in
+            luhmos/ai-logic->luhmos-main|luhmos/frontend->luhmos-main|luhmos/backend->luhmos-main|luhmos-main->luhmos/testing|luhmos/testing->luhmos/proposed|luhmos/proposed->luhmos/beta|luhmos/beta->luhmos/stable)
+              echo 'LUHMOS_PROMOTION_DIRECTION_GREEN'
+              ;;
+            *)
+              echo "Unsupported LuHm OS PR direction: $HEAD -> $BASE" >&2
+              exit 1
+              ;;
+          esac
