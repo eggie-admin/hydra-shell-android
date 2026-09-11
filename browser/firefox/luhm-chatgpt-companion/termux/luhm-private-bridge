@@ -10,6 +10,9 @@ mkdir -p "$ROOT" "$STATE"
 
 reindex() {
   LUHM_PRIVATE_ASSET_ROOT="$ROOT" python "$HERE/build-private-manifest.py"
+  if [ -f "$HERE/index-destiny-audio.py" ]; then
+    LUHM_PRIVATE_ASSET_ROOT="$ROOT" python "$HERE/index-destiny-audio.py"
+  fi
 }
 
 start_assets() {
@@ -25,7 +28,7 @@ start_assets() {
 
 start_terminal() {
   if ! command -v ttyd >/dev/null 2>&1; then
-    echo "ttyd not installed; install it from your Termux repo if available, or leave terminal bridge disabled."
+    echo "ttyd not installed; terminal bridge remains optional."
     return 0
   fi
   if [ -f "$STATE/terminal.pid" ] && kill -0 "$(cat "$STATE/terminal.pid")" 2>/dev/null; then
@@ -69,6 +72,13 @@ sync_destiny_drive() {
   reindex
 }
 
+sync_voice_cache() {
+  if [ ! -x "$HERE/sync-voice-cache" ]; then
+    chmod +x "$HERE/sync-voice-cache" 2>/dev/null || true
+  fi
+  LUHM_PRIVATE_ASSET_ROOT="$ROOT" "$HERE/sync-voice-cache" "${2:-}"
+}
+
 case "${1:-status}" in
   start) start_assets; start_terminal ;;
   stop) stop_one assets; stop_one terminal ;;
@@ -76,6 +86,7 @@ case "${1:-status}" in
   status) status_one assets; status_one terminal; echo "asset root: $ROOT" ;;
   reindex) reindex ;;
   sync-drive) sync_destiny_drive ;;
+  sync-voice) sync_voice_cache "$@" ;;
   logs) tail -n 80 "$STATE/assets.log" "$STATE/terminal.log" 2>/dev/null || true ;;
-  *) echo "usage: $0 {start|stop|restart|status|reindex|sync-drive|logs}"; exit 2 ;;
+  *) echo "usage: $0 {start|stop|restart|status|reindex|sync-drive|sync-voice [--force]|logs}"; exit 2 ;;
 esac
