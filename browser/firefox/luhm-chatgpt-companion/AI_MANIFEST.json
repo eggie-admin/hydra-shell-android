@@ -1,0 +1,106 @@
+{
+  "schema": "luhm.firefox-ai-manifest.v1",
+  "seal": "LUM_FIREFOX_WITCHING_HOUR_20260911",
+  "version": "0.3.3",
+  "status": "STAGED_FOR_10PASS",
+  "scope": "private Firefox Android ChatGPT companion only",
+  "authority": {
+    "human_final_authority": true,
+    "captain": "Professor",
+    "assistant_persona": "Lum",
+    "auto_send": false,
+    "background_actions": false,
+    "external_publish": false
+  },
+  "chat_ai": {
+    "provider": "ChatGPT",
+    "role": "dialogue, narration, Japanese voice-mode text, English subtitles",
+    "native_voice_engine_replacement": false,
+    "response_markers": ["LUM-JP", "LUM-EN", "LUM-EMOTION"],
+    "voice_style": "original warm playful sassy goth-alt oni/JRPG heroine energy",
+    "specific_character_or_actor_voice_imitation": false
+  },
+  "deterministic_game_logic": {
+    "owner": "Firefox extension local state",
+    "sealed_commands": [
+      "PET LUM",
+      "ROLL D20",
+      "GACHA PULL",
+      "DATE EVENT",
+      "SUMMON IMAGE",
+      "CAST ULTIMA",
+      "SAVEPOINT"
+    ],
+    "gacha": {
+      "real_money": false,
+      "hard_pity": 20,
+      "rng": "crypto.getRandomValues with rejection sampling",
+      "ai_may_rewrite_outcome": false
+    },
+    "nat20": {
+      "video_quest_eligible_only": true,
+      "video_generation_requires_explicit_user_request": true
+    }
+  },
+  "voice_runtime": {
+    "speech_language": "ja-JP",
+    "subtitle_language": "en-US",
+    "voice_mode_default": "off_per_page_session",
+    "newest_assistant_turn_read": "only while voice mode is explicitly enabled",
+    "playback_order": [
+      "local_generated_tts_ttl_cache",
+      "Firefox_Android_Web_Speech_ja-JP",
+      "subtitle_only"
+    ],
+    "soundboard_source": "private local Destiny Child audio index",
+    "soundboard_role": "event cues only; never used to train or clone a voice"
+  },
+  "assets": {
+    "canonical_source_of_truth": "Google Drive private vault via rclone",
+    "drive_primary_folder": "DestinyChildMods",
+    "source_of_truth_folder": "KAI9000_SOURCE_OF_TRUTH",
+    "local_cache_root": "~/luhm-private/assets",
+    "local_bridge": "http://127.0.0.1:8799",
+    "drive_audio_sync_ttl_seconds": 21600,
+    "generated_tts_ttl_seconds": 604800,
+    "third_party_asset_bytes_in_xpi": false,
+    "third_party_asset_bytes_in_public_git": false,
+    "redistribution": false
+  },
+  "optional_hugging_face": {
+    "required": false,
+    "purpose": "pre-generate original Japanese TTS into the local TTL cache",
+    "producer": "termux/hf-tts-cache.py",
+    "token_location": "HF_TOKEN in private Termux environment only",
+    "model_selector": "LUHM_HF_TTS_MODEL",
+    "fallback_if_unavailable": "Firefox Web Speech then subtitles only"
+  },
+  "privacy": {
+    "chat_history_scrape": false,
+    "credential_storage_in_extension": false,
+    "cookie_access": false,
+    "remote_executable_code": false,
+    "allowed_runtime_network": [
+      "https://chatgpt.com/*",
+      "https://chat.openai.com/*",
+      "http://127.0.0.1:8799/*",
+      "http://localhost:8799/*"
+    ]
+  },
+  "forge": {
+    "entrypoint": "forge.py",
+    "audit_passes": 10,
+    "dependency_strategy": "stdlib-only local forge; no npm/pip install required for package build",
+    "syntax_checks": ["JSON parse", "Python py_compile", "bash -n when available", "node --check when available"],
+    "artifact": "dist/luhm-chatgpt-companion-firefox-0.3.3-unsigned.xpi",
+    "same_local_and_ci_logic": true
+  },
+  "out_of_scope": [
+    "Edge Gallery",
+    "Ollama",
+    "APK mutation",
+    "LuHm OS daemon mutation",
+    "terminal launcher",
+    "Secure Folder process ownership changes"
+  ]
+}
