@@ -1,0 +1,88 @@
+name: LuHm OS GitHub Release Publisher
+
+on:
+  workflow_run:
+    workflows:
+      - LuHm OS Public F-Droid Release
+    types:
+      - completed
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: luhmos-github-release-v1.0.0
+  cancel-in-progress: false
+
+jobs:
+  publish-github-release:
+    if: >-
+      ${{ github.event.workflow_run.conclusion == 'success' &&
+          github.event.workflow_run.head_branch == 'luhmos-main' }}
+    runs-on: ubuntu-24.04
+    env:
+      VERSION_NAME: '1.0.0'
+      TAG_NAME: v1.0.0
+      APK_NAME: luhmos-1.0.0.apk
+    steps:
+      - name: Download signed release evidence
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/luhmos-release"
+          mkdir -p "$ROOT/evidence" "$ROOT/publish"
+          ARTIFACT_ID="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN_ID/artifacts" --jq '.artifacts[] | select(.name | startswith("luhmos-fdroid-signed-")) | .id' | head -n1)"
+          test -n "$ARTIFACT_ID"
+          gh api -H 'Accept: application/vnd.github+json' "repos/$GITHUB_REPOSITORY/actions/artifacts/$ARTIFACT_ID/zip" > "$ROOT/artifact.zip"
+          unzip -q "$ROOT/artifact.zip" -d "$ROOT/evidence"
+          APK_PATH="$(find "$ROOT/evidence" -type f -name "$APK_NAME" -print -quit)"
+          SHA_PATH="$(find "$ROOT/evidence" -type f -name 'sha256.txt' -print -quit)"
+          SIG_PATH="$(find "$ROOT/evidence" -type f -name 'signature.txt' -print -quit)"
+          APK_FP_PATH="$(find "$ROOT/evidence" -type f -name 'apk-signer-sha256.txt' -print -quit)"
+          REPO_FP_PATH="$(find "$ROOT/evidence" -type f -name 'fdroid-repo-fingerprint-sha256.txt' -print -quit)"
+          for f in "$APK_PATH" "$SHA_PATH" "$SIG_PATH" "$APK_FP_PATH" "$REPO_FP_PATH"; do test -s "$f"; done
+          EXPECTED_SHA="$(awk 'NR==1 {print $1}' "$SHA_PATH")"
+          ACTUAL_SHA="$(sha256sum "$APK_PATH" | awk '{print $1}')"
+          test "$EXPECTED_SHA" = "$ACTUAL_SHA"
+          cp "$APK_PATH" "$ROOT/publish/$APK_NAME"
+          cp "$SHA_PATH" "$ROOT/publish/SHA256SUMS.txt"
+          cp "$SIG_PATH" "$ROOT/publish/android-signature.txt"
+          cp "$APK_FP_PATH" "$ROOT/publish/android-signer-sha256.txt"
+          cp "$REPO_FP_PATH" "$ROOT/publish/fdroid-repo-fingerprint-sha256.txt"
+          echo "APK_SHA256=$ACTUAL_SHA" >> "$GITHUB_ENV"
+
+      - name: Publish immutable v1.0.0 from luhmos-main source SHA
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TARGET: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          PUBLISH="$RUNNER_TEMP/luhmos-release/publish"
+          NOTES="$RUNNER_TEMP/luhmos-release/notes.md"
+          cat > "$NOTES" <<EOF
+          # LuHm OS ${VERSION_NAME}
+
+          Canonical Samsung Galaxy S24 FE release.
+
+          - Package: art.eggiebagelface.luhmos
+          - Source branch: luhmos-main
+          - Source commit: ${RELEASE_TARGET}
+          - Version: ${VERSION_NAME} (100)
+          - Target SDK: 36
+          - ABI: arm64-v8a
+          - Root required: no
+          - Termux required: no
+          - APK SHA-256: ${APK_SHA256}
+          - F-Droid repo: https://raw.githubusercontent.com/eggie-admin/hydra-shell-android/fdroid-public/fdroid/repo/
+          EOF
+          if gh release view "$TAG_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$TAG_NAME" "$PUBLISH/$APK_NAME" "$PUBLISH/SHA256SUMS.txt" "$PUBLISH/android-signature.txt" "$PUBLISH/android-signer-sha256.txt" "$PUBLISH/fdroid-repo-fingerprint-sha256.txt" --repo "$GITHUB_REPOSITORY" --clobber
+          else
+            gh release create "$TAG_NAME" "$PUBLISH/$APK_NAME" "$PUBLISH/SHA256SUMS.txt" "$PUBLISH/android-signature.txt" "$PUBLISH/android-signer-sha256.txt" "$PUBLISH/fdroid-repo-fingerprint-sha256.txt" --repo "$GITHUB_REPOSITORY" --target "$RELEASE_TARGET" --title "LuHm OS ${VERSION_NAME}" --notes-file "$NOTES"
+          fi
+          echo 'LUHMOS_GITHUB_RELEASE_PUBLISHED'
