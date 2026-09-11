@@ -393,9 +393,9 @@ def hydra_turn():
     except urllib.error.HTTPError as exc:
         return jsonify({"error": "ollama_http_error", "status": exc.code}), 502
     except (urllib.error.URLError, TimeoutError) as exc:
-        return jsonify({"error": "ollama_connection_error", "detail": str(exc)}), 503
+        return jsonify({"error": "ollama_connection_error", "error_type": type(exc).__name__}), 503
     except Exception as exc:
-        return jsonify({"error": "agent_error", "detail": str(exc)}), 500
+        return jsonify({"error": "agent_error", "error_type": type(exc).__name__}), 500
 
     utterance = CanonicalUtterance(text=answer)
     tts = None

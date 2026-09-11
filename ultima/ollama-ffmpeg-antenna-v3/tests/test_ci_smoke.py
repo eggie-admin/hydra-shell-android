@@ -28,7 +28,8 @@ class Kai9000SmokeTests(unittest.TestCase):
             status = antenna.ollama_status()
         self.assertFalse(status["ok"])
         self.assertTrue(status["fail_closed"])
-        self.assertIn("loopback", status["error"].lower())
+        self.assertEqual(status["error"], "ollama_endpoint_policy_violation")
+        self.assertEqual(status["error_type"], "AntennaError")
 
     def test_health_boots_without_remote_services(self):
         with mock.patch.object(main, "antenna_status", return_value={"ok": True}), mock.patch.object(

@@ -70,7 +70,8 @@ def ollama_status(timeout: float = 4.0) -> dict[str, Any]:
             "ok": False,
             "url": OLLAMA_URL,
             "default_model": OLLAMA_MODEL,
-            "error": str(exc),
+            "error": "ollama_endpoint_policy_violation",
+            "error_type": type(exc).__name__,
             "fail_closed": True,
         }
     except Exception as exc:
@@ -78,7 +79,8 @@ def ollama_status(timeout: float = 4.0) -> dict[str, Any]:
             "ok": False,
             "url": OLLAMA_URL,
             "default_model": OLLAMA_MODEL,
-            "error": str(exc),
+            "error": "ollama_unavailable",
+            "error_type": type(exc).__name__,
             "fail_closed": True,
         }
 
