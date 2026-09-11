@@ -58,3 +58,11 @@ Missing optional capabilities are capability downgrades, not build failures.
 - do not trust stale PIDs
 - no secrets in source, logs, manifests, or APK assets
 - Shizuku remains optional and external to the APK dependency graph
+
+## Firefox Android companion shell (generic lane)
+
+An optional generic shell for Firefox Android is staged under:
+
+- `samsung-sm-x400/frontend/widget/firefox-android-companion/`
+
+It is Manifest V3 only, localhost scoped (`127.0.0.1`), and designed so private runtime asset packs stay on-device and out of this public repository.
