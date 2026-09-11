@@ -5,18 +5,24 @@ on:
   pull_request:
     paths:
       - "tools/kai9000_remote_smoke.py"
+      - "tools/remote_ai_smoke.py"
       - ".github/workflows/kai9000-remote-ai-smoke.yml"
       - "ultima/ollama-ffmpeg-antenna-v3/**"
       - "docs/API_TRINITY_DOCTRINE.md"
+      - "docs/LUHMOS_REMOTE_AI_10PASS_HARDENING.md"
       - "integrations/vendor-apis.manifest.json"
+      - "integrations/openai/responses.template.json"
   push:
     branches: [main]
     paths:
       - "tools/kai9000_remote_smoke.py"
+      - "tools/remote_ai_smoke.py"
       - ".github/workflows/kai9000-remote-ai-smoke.yml"
       - "ultima/ollama-ffmpeg-antenna-v3/**"
       - "docs/API_TRINITY_DOCTRINE.md"
+      - "docs/LUHMOS_REMOTE_AI_10PASS_HARDENING.md"
       - "integrations/vendor-apis.manifest.json"
+      - "integrations/openai/responses.template.json"
 
 permissions:
   contents: read
@@ -28,7 +34,8 @@ jobs:
 
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      OPENAI_SMOKE_MODEL: gpt-6-astra
+      OPENAI_SMOKE_MODEL: gpt-5.6-sol
+      OPENAI_MODEL: gpt-5.6-sol
 
     steps:
       - name: Checkout
@@ -50,6 +57,10 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e .
 
+      - name: Credential-safe provider smoke
+        run: |
+          python tools/remote_ai_smoke.py | tee luhmos-remote-provider-smoke.json
+
       - name: Remote GitHub + OpenAI + Edge Gallery + MP4 pipeline smoke
         run: |
           python tools/kai9000_remote_smoke.py --report kai9000-remote-smoke-report.json
@@ -57,12 +68,15 @@ jobs:
       - name: Show smoke report
         if: always()
         run: |
+          test -f luhmos-remote-provider-smoke.json && cat luhmos-remote-provider-smoke.json || true
           test -f kai9000-remote-smoke-report.json && cat kai9000-remote-smoke-report.json || true
 
-      - name: Upload smoke report
+      - name: Upload smoke reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: kai9000-remote-ai-media-smoke
-          path: kai9000-remote-smoke-report.json
+          path: |
+            luhmos-remote-provider-smoke.json
+            kai9000-remote-smoke-report.json
           if-no-files-found: ignore
