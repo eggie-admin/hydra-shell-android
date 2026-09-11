@@ -12,6 +12,9 @@ reindex() {
   if [ -f "$HERE/index-destiny-audio.py" ]; then
     LUHM_PRIVATE_ASSET_ROOT="$ROOT" python "$HERE/index-destiny-audio.py"
   fi
+  if [ -f "$HERE/index-live2d-reference.py" ]; then
+    LUHM_PRIVATE_ASSET_ROOT="$ROOT" python "$HERE/index-live2d-reference.py"
+  fi
 }
 
 start_assets() {
@@ -62,6 +65,13 @@ sync_voice_cache() {
   LUHM_PRIVATE_ASSET_ROOT="$ROOT" "$HERE/sync-voice-cache" "${2:-}"
 }
 
+sync_live2d_cache() {
+  if [ ! -x "$HERE/sync-live2d-reference" ]; then
+    chmod +x "$HERE/sync-live2d-reference" 2>/dev/null || true
+  fi
+  LUHM_PRIVATE_ASSET_ROOT="$ROOT" "$HERE/sync-live2d-reference"
+}
+
 case "${1:-status}" in
   start) start_assets ;;
   stop) stop_assets ;;
@@ -70,6 +80,7 @@ case "${1:-status}" in
   reindex) reindex ;;
   sync-drive) sync_destiny_drive ;;
   sync-voice) sync_voice_cache "$@" ;;
+  sync-live2d) sync_live2d_cache ;;
   logs) tail -n 80 "$STATE/assets.log" 2>/dev/null || true ;;
-  *) echo "usage: $0 {start|stop|restart|status|reindex|sync-drive|sync-voice [--force]|logs}"; exit 2 ;;
+  *) echo "usage: $0 {start|stop|restart|status|reindex|sync-drive|sync-voice [--force]|sync-live2d|logs}"; exit 2 ;;
 esac
