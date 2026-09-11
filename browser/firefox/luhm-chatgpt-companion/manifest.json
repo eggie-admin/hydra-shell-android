@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "LuHm ChatGPT Companion",
+  "version": "0.2.0",
+  "description": "Firefox-first companion for the sealed ChatGPT-only Lum roleplay lane. Adds a touch-friendly Lum command panel to ChatGPT.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "luhm-chatgpt-companion@eggiebagelface.art",
+      "strict_min_version": "128.0",
+      "data_collection_permissions": {"required": ["none"]}
+    },
+    "gecko_android": {}
+  },
+  "permissions": ["storage"],
+  "host_permissions": ["https://chatgpt.com/*", "https://chat.openai.com/*"],
+  "action": {
+    "default_title": "LuHm Companion",
+    "default_popup": "popup.html",
+    "default_icon": "icons/luhm.svg"
+  },
+  "icons": {"48": "icons/luhm.svg", "96": "icons/luhm.svg"},
+  "content_scripts": [{
+    "matches": ["https://chatgpt.com/*", "https://chat.openai.com/*"],
+    "js": ["content.js"],
+    "css": ["content.css"],
+    "run_at": "document_idle"
+  }]
+}
