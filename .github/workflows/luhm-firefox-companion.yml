@@ -40,9 +40,9 @@ jobs:
       - name: Upload unsigned XPI + audit seal
         uses: actions/upload-artifact@v4
         with:
-          name: luhm-firefox-witching-hour
+          name: luhm-firefox-live2d-v0.4.0
           path: |
-            browser/firefox/luhm-chatgpt-companion/dist/luhm-chatgpt-companion-firefox-0.3.3-unsigned.xpi
+            browser/firefox/luhm-chatgpt-companion/dist/luhm-chatgpt-companion-firefox-0.4.0-unsigned.xpi
             browser/firefox/luhm-chatgpt-companion/dist/witching-hour-audit.json
             browser/firefox/luhm-chatgpt-companion/dist/SHA256SUMS.txt
           if-no-files-found: error
