@@ -1,0 +1,39 @@
+name: LuHm OS Cloud Shell Bootstrap Check
+
+on:
+  push:
+    branches:
+      - luhmos/backend
+    paths:
+      - infra/gcp/full-samsung-release-bootstrap.sh
+      - infra/gcp/bootstrap-github-wif.sh
+      - .github/workflows/luhmos-cloudshell-bootstrap-check.yml
+  pull_request:
+    branches:
+      - luhmos-main
+    paths:
+      - infra/gcp/full-samsung-release-bootstrap.sh
+      - infra/gcp/bootstrap-github-wif.sh
+      - .github/workflows/luhmos-cloudshell-bootstrap-check.yml
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Validate bootstrap scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash -n infra/gcp/bootstrap-github-wif.sh
+          bash -n infra/gcp/full-samsung-release-bootstrap.sh
+          grep -q "gh auth login .*--git-protocol https" infra/gcp/full-samsung-release-bootstrap.sh
+          grep -q "gcloud secrets versions add" infra/gcp/full-samsung-release-bootstrap.sh
+          grep -q "gh secret set" infra/gcp/full-samsung-release-bootstrap.sh
+          grep -q "gh workflow run luhmos-fdroid-public-release.yml" infra/gcp/full-samsung-release-bootstrap.sh
+          grep -q "art.eggiebagelface.luhmos" infra/gcp/full-samsung-release-bootstrap.sh
+          ! grep -REn '(BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY|AIza[0-9A-Za-z_-]{30,}|sk-[A-Za-z0-9_-]{20,})' infra/gcp
+          echo 'LUHMOS_CLOUDSHELL_BOOTSTRAP_GREEN'
