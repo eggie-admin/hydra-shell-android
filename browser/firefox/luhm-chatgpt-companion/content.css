@@ -68,6 +68,28 @@
   border-color:#f0d17a;
   background:linear-gradient(135deg,#64247d,#184f70);
 }
-#luhm-pet-panel .luhm-tools{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-top:8px}
+#luhm-pet-panel .luhm-tools{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:8px}
 #luhm-pet-panel .luhm-tools button{min-height:38px;font-size:9px;border-color:#2d6f7a;background:#10242b}
 #luhm-pet-status { margin-top:9px; padding:7px; border-left:3px solid #7fe6ff; background:#0a1018; color:#7fe6ff; font-size:10px; min-height:28px; }
+
+#luhm-subtitle-overlay {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  z-index: 2147483645;
+  width: min(92vw, 760px);
+  padding: 11px 14px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(143,231,255,.72);
+  background: rgba(8,10,17,.92);
+  box-shadow: 0 12px 36px rgba(0,0,0,.52), inset 0 0 0 1px rgba(122,58,145,.48);
+  color: #fff;
+  pointer-events: none;
+  text-align: center;
+  font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+#luhm-subtitle-overlay[hidden]{display:none!important}
+#luhm-subtitle-overlay .luhm-subtitle-jp{font-size:12px;color:#a7dfff;margin-bottom:4px;opacity:.9}
+#luhm-subtitle-overlay .luhm-subtitle-en{font-size:16px;line-height:1.28;font-weight:750;text-shadow:0 1px 2px #000}
+#luhm-subtitle-overlay .luhm-subtitle-emotion{margin-top:5px;font:700 9px/1 ui-monospace,SFMono-Regular,monospace;color:#d9b8ff;letter-spacing:.06em;text-transform:uppercase}
