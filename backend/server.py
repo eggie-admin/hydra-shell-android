@@ -118,9 +118,9 @@ def service_status() -> dict[str, Any]:
     try:
         ollama_origin = _ollama_origin()
         ollama_policy_error = None
-    except ValueError as exc:
+    except ValueError:
         ollama_origin = OLLAMA_BASE
-        ollama_policy_error = str(exc)
+        ollama_policy_error = "ollama_origin_must_be_loopback"
     vnc_loopback = _is_loopback_host(VNC_HOST)
     return {
         "hydra": {"online": True, "host": HOST, "port": PORT},
