@@ -1,0 +1,113 @@
+name: LuHm OS Google Cloud OIDC Smoke
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - luhmos/gcp-oidc-auth
+      - luhmos-main
+    paths:
+      - .github/workflows/luhmos-gcp-oidc-smoke.yml
+      - infra/gcp/**
+  pull_request:
+    branches:
+      - luhmos-main
+    paths:
+      - .github/workflows/luhmos-gcp-oidc-smoke.yml
+      - infra/gcp/**
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: luhmos-gcp-oidc-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  preflight:
+    name: Google Cloud OIDC preflight
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Validate public configuration contract
+        env:
+          GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+          GCP_WIF_PROVIDER: ${{ vars.GCP_WIF_PROVIDER }}
+          GCP_SERVICE_ACCOUNT: ${{ vars.GCP_SERVICE_ACCOUNT }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          missing=0
+          for name in GCP_PROJECT_ID GCP_WIF_PROVIDER GCP_SERVICE_ACCOUNT; do
+            if [[ -z "${!name:-}" ]]; then
+              echo "MISSING_REPOSITORY_VARIABLE=$name"
+              missing=1
+            fi
+          done
+          if (( missing )); then
+            echo 'STATE=GCP_WIF_NOT_CONFIGURED'
+            echo 'NEXT=run infra/gcp/bootstrap-github-wif.sh from an authenticated Google Cloud Shell or gcloud session'
+          else
+            echo 'STATE=GCP_WIF_CONFIGURED'
+          fi
+
+  oidc-auth:
+    name: Keyless HTTPS authentication
+    needs: preflight
+    if: ${{ vars.GCP_PROJECT_ID != '' && vars.GCP_WIF_PROVIDER != '' && vars.GCP_SERVICE_ACCOUNT != '' }}
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+
+      - name: Exchange GitHub OIDC for Google Cloud credentials
+        id: auth
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+          create_credentials_file: true
+          export_environment_variables: true
+          token_format: access_token
+
+      - name: Install gcloud
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+
+      - name: Prove short-lived Google Cloud authentication
+        env:
+          GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ACCOUNT="$(gcloud auth list --filter=status:ACTIVE --format='value(account)' | head -n1)"
+          test -n "$ACCOUNT"
+          ACTIVE_PROJECT="$(gcloud config get-value project 2>/dev/null)"
+          test "$ACTIVE_PROJECT" = "$GCP_PROJECT_ID"
+          gcloud auth print-access-token >/dev/null
+          echo "AUTHENTICATED_ACCOUNT=$ACCOUNT"
+          echo "AUTHENTICATED_PROJECT=$ACTIVE_PROJECT"
+          echo 'STATE=GCP_OIDC_HTTPS_GREEN'
+
+      - name: Probe LuHm OS signing secrets without reading them to logs
+        if: ${{ vars.GCP_SIGNING_SECRETS_ENABLED == 'true' }}
+        env:
+          GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          secrets=(
+            luhmos-android-keystore-b64
+            luhmos-android-keystore-password
+            luhmos-android-key-password
+            luhmos-fdroid-keystore-b64
+            luhmos-fdroid-keystore-password
+            luhmos-fdroid-key-password
+          )
+          for secret in "${secrets[@]}"; do
+            test -n "$(gcloud secrets versions access latest --project="$GCP_PROJECT_ID" --secret="$secret")"
+            echo "SECRET_ACCESS_GREEN=$secret"
+          done
+          echo 'STATE=GCP_SIGNING_SECRET_ACCESS_GREEN'
