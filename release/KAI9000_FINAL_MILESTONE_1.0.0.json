@@ -1,6 +1,6 @@
 {
   "schema": "kai9000.final-release.v2",
-  "milestone": "KAI9000_WITCHING_HOUR_ULTIMA_WEBVIEW_HOTFIX_20260908",
+  "milestone": "KAI9000_SAMSUNG_NO_ROOT_WIDGET_FACTORY_HOTFIX_20260911",
   "release": {
     "name": "KAI 9000",
     "package_id": "art.eggiebagelface.kai9000",
@@ -15,14 +15,14 @@
     "first_ultima_source_sha": "1f180c04d312045dcacc75db2bddedc27f61e9c0",
     "first_ultima_run": 34177515509,
     "donor_repository": "eggie-admin/vue-headless-cms",
-    "previous_donor_ref": "903de4857f7554067a9cbfd2912202632f62c459",
-    "donor_ref": "574f4f5ae70ce56eca986cd5fb3452aa434ab955",
-    "donor_validation_pr": 16,
-    "donor_hotfix_head": "c9ce638454fbd62b1793a84a4039a933e0f10975",
-    "donor_hotfix_forge_run": 34182583449,
-    "donor_hotfix_android_run": 34182583489,
+    "previous_donor_ref": "574f4f5ae70ce56eca986cd5fb3452aa434ab955",
+    "donor_ref": "ff50009c46bc3e3896833ed346eecc8166a1a346",
+    "donor_validation_pr": 18,
+    "donor_hotfix_head": "4462f28b78ac6a308386970f14c0912466a33ba9",
+    "donor_hotfix_forge_run": 34557117208,
+    "donor_hotfix_android_run": 34557117261,
     "audit_doctrine": "release/KAI9000_WITCHING_HOUR_10PASS_20260907.json",
-    "ultima_recast_sequence": 2
+    "ultima_recast_sequence": 3
   },
   "gui": {
     "render_owner": "jquery_plugin",
@@ -32,6 +32,8 @@
     "bootstrap": "5.3.8",
     "bootstrap_entry": "apps/forge-ui/src/bootstrap.ts",
     "global_jquery_published_before_ui": true,
+    "jquery_ui_runtime_dependency_preload": true,
+    "widget_factory_runtime_assertion": true,
     "visible_boot_error_fallback": true,
     "webview_layout": "fullscreen",
     "page_finished_diagnostic": true,
@@ -50,6 +52,10 @@
     "target_sdk": 36,
     "abi": "arm64-v8a",
     "loopback_first": true,
+    "root_required": false,
+    "automatic_root": false,
+    "privilege_model": "stock_android_no_root_with_optional_scoped_shizuku",
+    "secure_folder_role": "cockpit_client_not_daemon_owner",
     "control_receiver_exported": false,
     "webview_file_access": false,
     "webview_content_access": false,
@@ -59,14 +65,16 @@
     "cms_webview_height": "MATCH_PARENT"
   },
   "field_validation": {
-    "previous_device_observation": "native surface launched but packaged cockpit remained blank in a 68-percent right-docked WebView",
-    "root_cause": "jQuery UI resolved the global jQuery symbol before the ESM cockpit initialized; native layout also intentionally constrained the CMS WebView to 68 percent width",
+    "previous_device_observation": "packaged cockpit reached the visible boot fallback and reported TypeError: e.widget is not a function before initialization",
+    "root_cause": "jQuery UI widgets could execute before the widget factory and required runtime dependency graph were initialized in the bundled WebView",
     "hotfix": [
-      "publish window.jQuery and window.$ before dynamically importing the cockpit",
-      "show KAI 9000 BOOT ERROR on bootstrap failure",
-      "use MATCH_PARENT width and height for the CMS WebView",
-      "emit cms.page.finished diagnostics"
+      "publish one window.jQuery and window.$ instance before jQuery UI initialization",
+      "preload jQuery UI version, widget factory, utilities, mouse, button, draggable and resizable in deterministic order",
+      "assert $.widget and required $.fn plugins before importing the cockpit",
+      "preserve visible KAI 9000 BOOT ERROR fallback",
+      "preserve MATCH_PARENT full-screen WebView and page-finished diagnostics"
     ],
+    "donor_ci_validation": "GREEN",
     "post_hotfix_device_retest": "PENDING_USER_DEVICE_RETEST"
   },
   "signing": {
@@ -85,7 +93,7 @@
       "repository visibility observed public",
       "main branch observed unprotected",
       "legacy Vercel status remains non-authoritative",
-      "post-hotfix physical device UI retest remains pending"
+      "post-widget-factory physical device UI retest remains pending"
     ],
     "ai_chain": {
       "mode": "single_model_multi_role_review",
@@ -97,15 +105,18 @@
   },
   "promotion": {
     "automatic": false,
-    "status": "witching_hour_ultima_hotfix_candidate",
+    "status": "samsung_no_root_widget_factory_hotfix_candidate",
     "requires": [
       "release_source_truth_green",
       "hard_10pass_doctrine_valid",
       "passes_1_through_9_green",
-      "jquery_bootstrap_order_green",
+      "jquery_global_bootstrap_green",
+      "jquery_ui_widget_factory_preload_green",
+      "jquery_ui_runtime_assertions_green",
       "fullscreen_webview_green",
       "python_control_plane_green",
       "android_plugin_green",
+      "no_root_boundary_green",
       "apk_identity_green",
       "apk_v2_or_later_signature_green",
       "fdroid_stage_green",
