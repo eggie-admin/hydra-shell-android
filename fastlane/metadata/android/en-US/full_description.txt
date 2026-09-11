@@ -1,0 +1,7 @@
+LuHm OS is a standalone Android creative cockpit built around Godot 4 with a bundled web interface and bounded Android-native bridges.
+
+The stock Samsung build does not require root, Termux, AcodeX, VNC, Shizuku, or a separately launched localhost daemon. It is intended to install and launch as a normal Android application.
+
+Release 1.0.0 targets Samsung Galaxy S24 FE / SM-S721U1 on Android 16, uses the package name art.eggiebagelface.luhmos, targets Android SDK 36, and ships an arm64-v8a APK.
+
+Optional remote AI integrations use network services only when explicitly configured. The application source is licensed under GPL-3.0-only. Official release APKs are signed with a persistent LuHm OS release identity and published from the canonical luhmos-main source branch.
