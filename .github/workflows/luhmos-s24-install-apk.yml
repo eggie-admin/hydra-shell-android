@@ -1,0 +1,265 @@
+name: LuHm OS S24 Install APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - luhmos-main
+    paths:
+      - '.github/workflows/luhmos-s24-install-apk.yml'
+      - 'luhmos/samsung-android-s24/**'
+      - 'project/hydra/samsung/android/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: luhmos-s24-install-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DONOR_REPO: eggie-admin/vue-headless-cms
+  DONOR_REF: 96c23c87713800fc17c80b6a972ee2e93f1bb4b1
+  PACKAGE_ID: art.eggiebagelface.luhmos
+  VERSION_NAME: '1.0.0'
+  VERSION_CODE: '100'
+  APK_NAME: luhmos-s24-install.apk
+  GODOT_RELEASE: 4.7.2-stable
+  GODOT_TEMPLATE_VERSION: 4.7.2.stable
+  GODOT_EDITOR_SHA256: cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4
+  GODOT_TEMPLATES_SHA256: f298490b8d44d934be425a5a65a51bf15f422428b229a06a6e11d9ffea248011
+
+jobs:
+  build-install-apk:
+    name: Build verified Samsung S24 install APK
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout LuHm OS source of truth
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Checkout hardened Samsung Android donor
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: ${{ env.DONOR_REPO }}
+          ref: ${{ env.DONOR_REF }}
+          path: _forge/luhmos-android
+          persist-credentials: false
+
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.18.0'
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+
+      - uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a
+        with:
+          gradle-version: '8.13'
+          cache-cleanup: on-success
+
+      - name: Validate canonical donor identity and purge rules
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path('_forge/luhmos-android/release/version.json').read_text(encoding='utf-8'))
+          assert data['packageId'] == 'art.eggiebagelface.luhmos'
+          assert data['version'] == '1.0.0'
+          assert data['versionCode'] == 100
+          PY
+          PRESET='_forge/luhmos-android/godot/export_presets.cfg'
+          PLUGIN='_forge/luhmos-android/godot/android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralAndroidPlugin.kt'
+          grep -q 'package/unique_name="art.eggiebagelface.luhmos"' "$PRESET"
+          grep -q 'gradle_build/target_sdk="36"' "$PRESET"
+          grep -q 'architectures/arm64-v8a=true' "$PRESET"
+          grep -q 'MIXED_CONTENT_NEVER_ALLOW' "$PLUGIN"
+          grep -q 'setAcceptCookie(false)' "$PLUGIN"
+          ! grep -R -nE 'com\.termux\.permission\.RUN_COMMAND|com\.termux\.RUN_COMMAND|RunCommandService' _forge/luhmos-android/godot/android-plugin
+          ! grep -R -n 'http://127.0.0.1' _forge/luhmos-android/godot/android-plugin/plugin/src/main/java
+          if git ls-files | grep -E '(^|/)(\.secrets|private)/|\.(jks|keystore|p12|pfx|pkcs12|key|pem)$'; then
+            echo 'Tracked secret/signing material detected' >&2
+            exit 1
+          fi
+          if find luhmos/samsung-android-s24 -type f \( -name '*.pck' -o -name '*.pck.bin' \) -print | grep -q .; then
+            echo 'Quarantined game asset payload detected in source tree' >&2
+            exit 1
+          fi
+          echo 'LUHMOS_S24_SOURCE_CONTRACT_GREEN'
+
+      - name: Install Android SDK 36
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" 'platform-tools' 'build-tools;36.1.0' 'platforms;android-36'
+
+      - name: Install verified Godot editor and Android templates
+        shell: bash
+        run: |
+          set -euo pipefail
+          WORK="$RUNNER_TEMP/luhmos-godot"
+          mkdir -p "$WORK"
+          cd "$WORK"
+          curl --fail --location --retry 5 --retry-all-errors -o godot.zip \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v4.7.2-stable_linux.x86_64.zip"
+          echo "${GODOT_EDITOR_SHA256}  godot.zip" | sha256sum --check --strict
+          unzip -q godot.zip
+          chmod +x Godot_v4.7.2-stable_linux.x86_64
+          echo "GODOT_BIN=$WORK/Godot_v4.7.2-stable_linux.x86_64" >> "$GITHUB_ENV"
+
+          curl --fail --location --retry 5 --retry-all-errors -o export_templates.tpz \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v4.7.2-stable_export_templates.tpz"
+          echo "${GODOT_TEMPLATES_SHA256}  export_templates.tpz" | sha256sum --check --strict
+          mkdir templates-unpack
+          unzip -q export_templates.tpz -d templates-unpack
+          TEMPLATE_DIR="$HOME/.local/share/godot/export_templates/${GODOT_TEMPLATE_VERSION}"
+          mkdir -p "$TEMPLATE_DIR"
+          cp -a templates-unpack/templates/. "$TEMPLATE_DIR/"
+          test -f "$TEMPLATE_DIR/android_debug.apk"
+          test -f "$TEMPLATE_DIR/android_source.zip"
+
+      - name: Build bundled LuHm cockpit
+        shell: bash
+        run: |
+          set -euo pipefail
+          pushd _forge/luhmos-android/apps
+          npm install --global npm@12.0.2 --no-audit --no-fund
+          LOCK_BEFORE="$(sha256sum package-lock.json | awk '{print $1}')"
+          npm ci --ignore-scripts --no-audit --no-fund
+          test "$LOCK_BEFORE" = "$(sha256sum package-lock.json | awk '{print $1}')"
+          npm run build --workspace=video-forge-ui
+          test -f forge-ui/dist/index.html
+          popd
+
+      - name: Build Godot Android WebView and widget plugin
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf _forge/luhmos-android/godot/android-plugin/plugin/src/main/assets/cms
+          mkdir -p _forge/luhmos-android/godot/android-plugin/plugin/src/main/assets/cms
+          cp -a _forge/luhmos-android/apps/forge-ui/dist/. _forge/luhmos-android/godot/android-plugin/plugin/src/main/assets/cms/
+          gradle -p _forge/luhmos-android/godot/android-plugin :plugin:assemble
+          test -f _forge/luhmos-android/godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-debug.aar
+          test -f _forge/luhmos-android/godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-release.aar
+          rm -rf _forge/luhmos-android/godot/addons/CathedralAndroid
+          mkdir -p _forge/luhmos-android/godot/addons/CathedralAndroid/bin/debug _forge/luhmos-android/godot/addons/CathedralAndroid/bin/release
+          cp -a _forge/luhmos-android/godot/android-plugin/plugin/export_scripts_template/. _forge/luhmos-android/godot/addons/CathedralAndroid/
+          cp _forge/luhmos-android/godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-debug.aar \
+            _forge/luhmos-android/godot/addons/CathedralAndroid/bin/debug/
+          cp _forge/luhmos-android/godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-release.aar \
+            _forge/luhmos-android/godot/addons/CathedralAndroid/bin/release/
+
+      - name: Configure ephemeral install signing
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.config/godot" build/android
+          cat > "$HOME/.config/godot/editor_settings-4.tres" <<EOF
+          [gd_resource type="EditorSettings" format=3]
+
+          [resource]
+          export/android/android_sdk_path = "$ANDROID_HOME"
+          export/android/java_sdk_path = "$JAVA_HOME"
+          EOF
+          KEYSTORE_PATH="$RUNNER_TEMP/luhmos-s24-debug.keystore"
+          keytool -genkeypair \
+            -keystore "$KEYSTORE_PATH" \
+            -storepass android \
+            -alias androiddebugkey \
+            -keypass android \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname 'CN=LuHm OS S24 Install,O=EggieBagelFace,C=US'
+          echo "GODOT_ANDROID_KEYSTORE_DEBUG_PATH=$KEYSTORE_PATH" >> "$GITHUB_ENV"
+          echo 'GODOT_ANDROID_KEYSTORE_DEBUG_USER=androiddebugkey' >> "$GITHUB_ENV"
+          echo 'GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD=android' >> "$GITHUB_ENV"
+          echo 'ephemeral-install-ci' > build/android/signing-mode.txt
+
+      - name: Import Godot project and export install APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$GODOT_BIN" --headless --editor --path _forge/luhmos-android/godot --quit
+          "$GODOT_BIN" --headless --path _forge/luhmos-android/godot \
+            --install-android-build-template \
+            --export-debug 'Android Release' \
+            "$GITHUB_WORKSPACE/build/android/$APK_NAME"
+          test -s "build/android/$APK_NAME"
+
+      - name: Verify S24 install contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="build/android/$APK_NAME"
+          BT="$ANDROID_HOME/build-tools/36.1.0"
+          "$BT/apksigner" verify --verbose --print-certs "$APK" | tee build/android/signature.txt
+          "$BT/zipalign" -c -P 16 -v 4 "$APK" | tee build/android/zipalign.txt
+          "$BT/aapt" dump badging "$APK" | tee build/android/badging.txt
+          "$BT/aapt" dump permissions "$APK" | tee build/android/permissions.txt
+          "$BT/aapt" dump xmltree "$APK" AndroidManifest.xml | tee build/android/manifest.txt
+          unzip -l "$APK" | tee build/android/contents.txt
+          sha256sum "$APK" | tee build/android/sha256.txt
+          grep -q "package: name='${PACKAGE_ID}'" build/android/badging.txt
+          grep -q "versionCode='${VERSION_CODE}'" build/android/badging.txt
+          grep -q "versionName='${VERSION_NAME}'" build/android/badging.txt
+          grep -q "application-label:'LuHm OS'" build/android/badging.txt
+          grep -q "targetSdkVersion:'36'" build/android/badging.txt
+          grep -q "native-code: 'arm64-v8a'" build/android/badging.txt
+          ! grep -q 'com.termux' build/android/permissions.txt
+          ! grep -q 'com.termux' build/android/contents.txt
+          grep -q 'assets/cms/index.html' build/android/contents.txt
+          grep -q 'org.godotengine.plugin.v2.CathedralAndroid' build/android/manifest.txt
+          grep -q 'art.eggiebagelface.cathedral.CathedralWidgetProvider' build/android/manifest.txt
+          echo 'LUHMOS_S24_INSTALL_APK_GREEN'
+
+      - name: Write install instructions
+        shell: bash
+        run: |
+          cat > build/android/INSTALL.txt <<'EOF'
+          LuHm OS Samsung S24/S24 FE install candidate
+
+          Package: art.eggiebagelface.luhmos
+          Signing: ephemeral CI debug key
+
+          Android UI install:
+          1. Copy luhmos-s24-install.apk to the phone.
+          2. Open it from Samsung My Files.
+          3. If prompted, allow Install unknown apps for My Files.
+          4. Install LuHm OS.
+
+          ADB install:
+          adb install -r luhmos-s24-install.apk
+
+          This install build is for device testing. A later persistently signed release must use the production signing identity for upgrade compatibility.
+          EOF
+
+      - name: Upload install APK
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: luhmos-s24-install-${{ github.run_number }}
+          path: |
+            build/android/${{ env.APK_NAME }}
+            build/android/INSTALL.txt
+            build/android/sha256.txt
+            build/android/signature.txt
+            build/android/zipalign.txt
+            build/android/badging.txt
+            build/android/permissions.txt
+            build/android/manifest.txt
+            build/android/signing-mode.txt
+          if-no-files-found: error
+          retention-days: 14
