@@ -1,0 +1,1 @@
+(function($){if(!$||!$.fn)return;$.fn.cathedralFloat=function(){return this.each(function(){var el=this,phase=Math.random()*Math.PI*2;function tick(t){var y=Math.sin(t/1400+phase)*3;el.style.setProperty('--float-y',y.toFixed(2)+'px');requestAnimationFrame(tick)}requestAnimationFrame(tick)})};$(function(){$('.actor.active').cathedralFloat()})})(window.jQuery);
