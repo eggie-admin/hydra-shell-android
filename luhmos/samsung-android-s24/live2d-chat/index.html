@@ -3,24 +3,64 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#090b12" />
+  <meta name="theme-color" content="#06070c" />
   <title>KAI 9000 Cathedral Girl</title>
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-<main id="scene" class="scene" aria-label="KAI 9000 floating 2D cathedral">
-  <div class="layer layer-bg" data-depth="0.05"></div>
-  <div class="layer layer-mid" data-depth="0.12"></div>
-  <div class="layer layer-stage" data-depth="0.19">
-    <section id="actor-left" class="actor actor-left active"><div class="live2d-slot" data-slot="left"><div class="placeholder-face"><i></i><b>L</b></div></div></section>
-    <section id="actor-right" class="actor actor-right"><div class="live2d-slot" data-slot="right"><div class="placeholder-face ghost"><b>AI</b></div></div></section>
+<main id="scene" class="scene" aria-label="KAI 9000 2D gacha cathedral">
+  <div class="layer layer-bg" data-depth="0.04"></div>
+  <div class="layer layer-city" data-depth="0.09"></div>
+  <div class="layer layer-ribbons" data-depth="0.14"><i></i><i></i><i></i></div>
+  <div class="layer layer-stage" data-depth="0.2">
+    <section id="actor-left" class="actor actor-left active">
+      <div class="live2d-slot" data-slot="left">
+        <div class="placeholder-face">
+          <span class="halo"></span><i class="horn h1"></i><i class="horn h2"></i><b>L</b>
+        </div>
+      </div>
+    </section>
+    <section id="actor-right" class="actor actor-right">
+      <div class="live2d-slot" data-slot="right"><div class="placeholder-face ghost"><b>AI</b></div></div>
+    </section>
   </div>
-  <div class="layer layer-front" data-depth="0.28"><span class="spark s1"></span><span class="spark s2"></span><span class="spark s3"></span></div>
+  <div class="layer layer-front" data-depth="0.28"><span class="spark s1"></span><span class="spark s2"></span><span class="spark s3"></span><span class="spark s4"></span></div>
 
-  <section class="cockpit">
-    <header class="titlebar"><span class="lights"><i></i><i></i><i></i></span><div><strong>KAI 9000 // CATHEDRAL GIRL</strong><small id="shell">NATIVE ANDROID</small></div><button id="status" type="button">STATUS</button></header>
-    <aside class="providerbar"><button data-provider="auto" class="selected">AUTO</button><button data-provider="ollama">OLLAMA</button><button data-provider="edge">EDGE</button><button id="gallery" type="button">GALLERY</button><span id="ollama-pill">OLLAMA ?</span><span id="edge-pill">EDGE ?</span></aside>
-    <section class="dialogue" aria-live="polite"><header><strong id="speaker">Lum</strong><span id="turn">TURN 01</span></header><p id="line">Native Cathedral shell online. No Firefox required.</p><div id="transcript" class="transcript"></div><form id="chat-form"><input id="prompt" maxlength="4000" autocomplete="off" placeholder="Talk to Lum…" /><button type="submit">SEND</button></form></section>
+  <section class="hud">
+    <header class="topbar">
+      <button class="profile sigil" type="button" aria-label="profile">L</button>
+      <div class="identity"><small>KAI 9000 // PRIVATE LOCAL</small><strong>CATHEDRAL GIRL</strong><span id="shell">NATIVE ANDROID</span></div>
+      <div class="wallet"><span>✦ <b id="spark-count">500</b></span><span>◆ <b>17</b></span></div>
+      <button id="status" class="hex-button" type="button">STATUS</button>
+    </header>
+
+    <nav class="rail rail-left" aria-label="scene controls">
+      <button class="selected" data-tab="story"><span>ST</span><small>STORY</small></button>
+      <button data-tab="pet"><span>♥</span><small>PET</small></button>
+      <button data-tab="gacha"><span>✦</span><small>GACHA</small></button>
+    </nav>
+
+    <aside class="rail rail-right" aria-label="local AI providers">
+      <button data-provider="auto" class="selected"><span>A</span><small>AUTO</small></button>
+      <button data-provider="ollama"><span>O</span><small>OLLAMA</small></button>
+      <button data-provider="edge"><span>E</span><small>EDGE</small></button>
+      <button id="gallery" type="button"><span>G</span><small>GALLERY</small></button>
+    </aside>
+
+    <section class="character-card" aria-hidden="true">
+      <span class="rarity">★★★★★</span>
+      <strong id="card-name">LUM // CATHEDRAL TYPE</strong>
+      <small id="mood">SUSPICIOUSLY CHEERFUL</small>
+    </section>
+
+    <section class="dialogue" aria-live="polite">
+      <div class="dialogue-edge"></div>
+      <header><div><small id="chapter">PRIVATE LOCAL // SCENE 01</small><strong id="speaker">Lum</strong></div><span id="turn">TURN 01</span></header>
+      <p id="line">Cathedral skin online. Pick a lane or talk to me.</p>
+      <div id="transcript" class="transcript"></div>
+      <form id="chat-form"><input id="prompt" maxlength="4000" autocomplete="off" placeholder="Talk to Lum…" /><button type="submit">SEND</button></form>
+      <footer><span id="ollama-pill">OLLAMA ?</span><span id="edge-pill">EDGE ?</span><span>LOCAL ONLY</span></footer>
+    </section>
   </section>
 </main>
 <script src="./vendor/jquery.min.js"></script>
