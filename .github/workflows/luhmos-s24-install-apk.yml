@@ -1,20 +1,13 @@
-name: LuHm OS S24 Install APK
+name: LuHm OS S24 Private Learning APK
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - luhmos-main
-    paths:
-      - '.github/workflows/luhmos-s24-install-apk.yml'
-      - 'luhmos/samsung-android-s24/**'
-      - 'project/hydra/samsung/android/**'
 
 permissions:
   contents: read
 
 concurrency:
-  group: luhmos-s24-install-${{ github.ref }}
+  group: luhmos-s24-private-learning-${{ github.ref }}
   cancel-in-progress: true
 
 env:
@@ -23,7 +16,7 @@ env:
   PACKAGE_ID: art.eggiebagelface.luhmos
   VERSION_NAME: '1.0.0'
   VERSION_CODE: '100'
-  APK_NAME: luhmos-s24-install.apk
+  APK_NAME: luhmos-s24-private-learning.apk
   GODOT_RELEASE: 4.7.2-stable
   GODOT_TEMPLATE_VERSION: 4.7.2.stable
   GODOT_EDITOR_SHA256: cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4
@@ -31,7 +24,7 @@ env:
 
 jobs:
   build-install-apk:
-    name: Build verified Samsung S24 install APK
+    name: Build private Samsung S24 learning APK
     runs-on: ubuntu-24.04
     timeout-minutes: 45
 
@@ -67,7 +60,7 @@ jobs:
           gradle-version: '8.13'
           cache-cleanup: on-success
 
-      - name: Validate canonical donor identity and purge rules
+      - name: Validate canonical donor identity and private-learning purge rules
         shell: bash
         run: |
           set -euo pipefail
@@ -96,7 +89,7 @@ jobs:
             echo 'Quarantined game asset payload detected in source tree' >&2
             exit 1
           fi
-          echo 'LUHMOS_S24_SOURCE_CONTRACT_GREEN'
+          echo 'LUHMOS_S24_PRIVATE_LEARNING_SOURCE_GREEN'
 
       - name: Install Android SDK 36
         shell: bash
@@ -162,7 +155,7 @@ jobs:
           cp _forge/luhmos-android/godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-release.aar \
             _forge/luhmos-android/godot/addons/CathedralAndroid/bin/release/
 
-      - name: Configure ephemeral install signing
+      - name: Configure ephemeral local-learning signing
         shell: bash
         run: |
           set -euo pipefail
@@ -174,7 +167,7 @@ jobs:
           export/android/android_sdk_path = "$ANDROID_HOME"
           export/android/java_sdk_path = "$JAVA_HOME"
           EOF
-          KEYSTORE_PATH="$RUNNER_TEMP/luhmos-s24-debug.keystore"
+          KEYSTORE_PATH="$RUNNER_TEMP/luhmos-s24-learning.keystore"
           keytool -genkeypair \
             -keystore "$KEYSTORE_PATH" \
             -storepass android \
@@ -183,13 +176,13 @@ jobs:
             -keyalg RSA \
             -keysize 2048 \
             -validity 10000 \
-            -dname 'CN=LuHm OS S24 Install,O=EggieBagelFace,C=US'
+            -dname 'CN=LuHm OS Private Learning,O=EggieBagelFace,C=US'
           echo "GODOT_ANDROID_KEYSTORE_DEBUG_PATH=$KEYSTORE_PATH" >> "$GITHUB_ENV"
           echo 'GODOT_ANDROID_KEYSTORE_DEBUG_USER=androiddebugkey' >> "$GITHUB_ENV"
           echo 'GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD=android' >> "$GITHUB_ENV"
-          echo 'ephemeral-install-ci' > build/android/signing-mode.txt
+          echo 'ephemeral-private-learning' > build/android/signing-mode.txt
 
-      - name: Import Godot project and export install APK
+      - name: Import Godot project and export private install APK
         shell: bash
         run: |
           set -euo pipefail
@@ -200,7 +193,7 @@ jobs:
             "$GITHUB_WORKSPACE/build/android/$APK_NAME"
           test -s "build/android/$APK_NAME"
 
-      - name: Verify S24 install contract
+      - name: Verify S24 private-learning install contract
         shell: bash
         run: |
           set -euo pipefail
@@ -224,33 +217,36 @@ jobs:
           grep -q 'assets/cms/index.html' build/android/contents.txt
           grep -q 'org.godotengine.plugin.v2.CathedralAndroid' build/android/manifest.txt
           grep -q 'art.eggiebagelface.cathedral.CathedralWidgetProvider' build/android/manifest.txt
-          echo 'LUHMOS_S24_INSTALL_APK_GREEN'
+          echo 'LUHMOS_S24_PRIVATE_LEARNING_APK_GREEN'
 
-      - name: Write install instructions
+      - name: Write private install instructions
         shell: bash
         run: |
           cat > build/android/INSTALL.txt <<'EOF'
-          LuHm OS Samsung S24/S24 FE install candidate
+          LuHm OS Samsung S24/S24 FE private learning build
 
+          Scope: private/local educational testing only.
           Package: art.eggiebagelface.luhmos
-          Signing: ephemeral CI debug key
+          Signing: disposable ephemeral debug key.
+          Distribution: do not publish, mirror, redistribute, or place in a public release.
+          Asset rule: quarantined Destiny Child / Live2D payloads are not bundled.
 
           Android UI install:
-          1. Copy luhmos-s24-install.apk to the phone.
+          1. Copy luhmos-s24-private-learning.apk to your phone.
           2. Open it from Samsung My Files.
           3. If prompted, allow Install unknown apps for My Files.
           4. Install LuHm OS.
 
           ADB install:
-          adb install -r luhmos-s24-install.apk
+          adb install -r luhmos-s24-private-learning.apk
 
-          This install build is for device testing. A later persistently signed release must use the production signing identity for upgrade compatibility.
+          Because the signing key is disposable, later builds signed with a different key may require uninstalling this learning build first.
           EOF
 
-      - name: Upload install APK
+      - name: Upload short-lived private-learning artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: luhmos-s24-install-${{ github.run_number }}
+          name: luhmos-s24-private-learning-${{ github.run_number }}
           path: |
             build/android/${{ env.APK_NAME }}
             build/android/INSTALL.txt
@@ -262,4 +258,4 @@ jobs:
             build/android/manifest.txt
             build/android/signing-mode.txt
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 1
