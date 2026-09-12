@@ -1,4 +1,4 @@
-name: LuHm OS S24 Widget Debug Candidate
+name: LuHm OS S24 2D Chat Debug Candidate
 
 on:
   workflow_dispatch:
@@ -7,12 +7,13 @@ on:
       - testing/luhm-os-android
     paths:
       - '.github/workflows/luhmos-s24-widget-debug-candidate.yml'
+      - 'luhmos/samsung-android-s24/live2d-chat/**'
 
 permissions:
   contents: read
 
 concurrency:
-  group: luhmos-s24-widget-debug-${{ github.ref }}
+  group: luhmos-s24-2d-chat-debug-${{ github.ref }}
   cancel-in-progress: true
 
 env:
@@ -21,10 +22,9 @@ env:
   PACKAGE_ID: art.eggiebagelface.kai9000.dev
   VERSION_NAME: 0.7.0-dev
   VERSION_CODE: '7'
-  APK_NAME: luhmos-s24-widget-debug.apk
+  APK_NAME: luhmos-s24-2d-chat-debug.apk
   APP_LABEL: LuHm OS Debug
   WIDGET_LABEL: LUHM OS DEBUG
-  NPM_LOCK_SHA256: 7929d5c53793563492ff0f5b39278904ecfa5508b10071d5b6d4b0b268fe653c
   GODOT_RELEASE: 4.7.2-stable
   GODOT_TEMPLATE_VERSION: 4.7.2.stable
   GODOT_EDITOR_SHA256: cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4
@@ -32,7 +32,7 @@ env:
 
 jobs:
   build:
-    name: Build Samsung S24 widget debug APK
+    name: Build Samsung S24 2D JRPG chat APK
     runs-on: ubuntu-24.04
     timeout-minutes: 45
 
@@ -55,20 +55,17 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
-        with:
-          node-version: '24.18.0'
-
       - uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a
         with:
           gradle-version: '8.13'
           cache-cleanup: on-success
 
-      - name: Validate donor and patch Samsung-facing labels
+      - name: Validate donor, labels and 2D-only source contract
         shell: bash
         run: |
           set -euo pipefail
           ROOT='_forge/s24'
+          SCENE='luhmos/samsung-android-s24/live2d-chat'
           python - <<'PY'
           import json
           from pathlib import Path
@@ -77,6 +74,19 @@ jobs:
           assert data['version'] == '0.7.0-dev'
           assert data['versionCode'] == 7
           PY
+          test -s "$SCENE/index.html"
+          test -s "$SCENE/style.css"
+          test -s "$SCENE/app.js"
+          test "$(grep -o 'class=\"layer ' "$SCENE/index.html" | wc -l)" -eq 4
+          grep -q 'actor-left' "$SCENE/index.html"
+          grep -q 'actor-right' "$SCENE/index.html"
+          grep -q 'class="dialogue"' "$SCENE/index.html"
+          grep -q 'window.LuHmLive2D' "$SCENE/app.js"
+          ! grep -R -nE 'fetch\(|XMLHttpRequest|WebSocket\(|sendBeacon\(' "$SCENE" --include='*.js'
+          if find "$SCENE" -type f \( -name '*.pck' -o -name '*.model3.json' -o -name '*.moc3' -o -name '*.motion3.json' -o -name '*.physics3.json' \) -print | grep -q .; then
+            echo 'Private Live2D/game model payload found in tracked source' >&2
+            exit 1
+          fi
           PRESET="$ROOT/godot/export_presets.cfg"
           PROJECT="$ROOT/godot/project.godot"
           WIDGET="$ROOT/godot/android-plugin/plugin/src/main/res/layout/cathedral_widget.xml"
@@ -89,7 +99,7 @@ jobs:
           grep -q 'package/name="LuHm OS Debug"' "$PRESET"
           grep -q 'config/name="LuHm OS Debug"' "$PROJECT"
           grep -q 'android:text="LUHM OS DEBUG"' "$WIDGET"
-          echo 'LUHMOS_S24_LABEL_PATCH_GREEN'
+          echo 'LUHMOS_S24_2D_CHAT_SOURCE_GREEN'
 
       - name: Install Android SDK 36
         shell: bash
@@ -123,16 +133,20 @@ jobs:
           test -f "$TEMPLATE_DIR/android_debug.apk"
           test -f "$TEMPLATE_DIR/android_source.zip"
 
-      - name: Build bundled Vue cockpit
-        working-directory: _forge/s24/apps
+      - name: Install dedicated 2D JRPG chat scene
         shell: bash
         run: |
           set -euo pipefail
-          npm install --global npm@12.0.2 --no-audit --no-fund
-          echo "${NPM_LOCK_SHA256}  package-lock.json" | sha256sum --check --strict
-          npm ci --ignore-scripts --no-audit --no-fund
-          npm run build --workspace=video-forge-ui
-          test -f forge-ui/dist/index.html
+          DIST='_forge/s24/apps/forge-ui/dist'
+          rm -rf "$DIST"
+          mkdir -p "$DIST"
+          cp -a luhmos/samsung-android-s24/live2d-chat/. "$DIST/"
+          test -f "$DIST/index.html"
+          test -f "$DIST/style.css"
+          test -f "$DIST/app.js"
+          grep -q 'data-depth="0.42"' "$DIST/index.html"
+          grep -q 'LuHmLive2D' "$DIST/app.js"
+          echo 'LUHMOS_2D_SCENE_STAGED'
 
       - name: Build Android widget and WebView plugin
         working-directory: _forge/s24
@@ -171,7 +185,7 @@ jobs:
             -keyalg RSA \
             -keysize 2048 \
             -validity 10000 \
-            -dname 'CN=LuHm OS S24 Debug,O=EggieBagelFace,C=US'
+            -dname 'CN=LuHm OS S24 2D Chat Debug,O=EggieBagelFace,C=US'
           echo "GODOT_ANDROID_KEYSTORE_DEBUG_PATH=$KEYSTORE" >> "$GITHUB_ENV"
           echo 'GODOT_ANDROID_KEYSTORE_DEBUG_USER=androiddebugkey' >> "$GITHUB_ENV"
           echo 'GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD=android' >> "$GITHUB_ENV"
@@ -189,7 +203,7 @@ jobs:
             "$GITHUB_WORKSPACE/build/android/$APK_NAME"
           test -s "$GITHUB_WORKSPACE/build/android/$APK_NAME"
 
-      - name: Verify Samsung debug candidate
+      - name: Verify Samsung 2D chat debug candidate
         shell: bash
         run: |
           set -euo pipefail
@@ -207,29 +221,37 @@ jobs:
           grep -q "application-label:'${APP_LABEL}'" build/android/badging.txt
           grep -q 'lib/arm64-v8a/' build/android/contents.txt
           grep -q 'assets/cms/index.html' build/android/contents.txt
+          grep -q 'assets/cms/style.css' build/android/contents.txt
+          grep -q 'assets/cms/app.js' build/android/contents.txt
           grep -q 'CathedralWidgetProvider' build/android/manifest.txt
-          echo 'LUHMOS_S24_WIDGET_DEBUG_CANDIDATE_GREEN'
+          unzip -p "$APK" assets/cms/index.html | grep -q 'actor-left'
+          unzip -p "$APK" assets/cms/index.html | grep -q 'actor-right'
+          unzip -p "$APK" assets/cms/app.js | grep -q 'LuHmLive2D'
+          echo 'LUHMOS_S24_2D_CHAT_DEBUG_CANDIDATE_GREEN'
 
       - name: Write install note
         shell: bash
         run: |
           cat > build/android/INSTALL.txt <<'EOF'
-          LuHm OS Debug candidate for Samsung S24 / S24 FE
+          LuHm OS Debug 2D JRPG chat candidate for Samsung S24 / S24 FE
           Private local learning/test build only.
           Package: art.eggiebagelface.kai9000.dev
           App label: LuHm OS Debug
           Widget label: LUHM OS DEBUG
+          Scene: four-layer 2D parallax, left/right character stage, JRPG dialogue flow
+          Live2D: renderer hooks only; private model payloads are not bundled
           Signing: disposable CI debug key
 
           Samsung install:
-          1. Copy luhmos-s24-widget-debug.apk to the phone.
+          1. Copy luhmos-s24-2d-chat-debug.apk to the phone.
           2. Open the APK from My Files.
           3. Allow Install unknown apps for My Files if Android prompts.
           4. Install LuHm OS Debug.
-          5. Add the LUHM OS DEBUG widget from the Samsung widget picker.
+          5. Launch the app to test the 2D dialogue scene.
+          6. Add LUHM OS DEBUG from Samsung's widget picker if desired.
 
           ADB alternative:
-          adb install -r luhmos-s24-widget-debug.apk
+          adb install -r luhmos-s24-2d-chat-debug.apk
 
           This debug signer is disposable. Treat each CI build as a fresh test candidate.
           EOF
@@ -237,7 +259,7 @@ jobs:
       - name: Upload debug candidate
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: luhmos-s24-widget-debug-${{ github.run_number }}
+          name: luhmos-s24-2d-chat-debug-${{ github.run_number }}
           path: |
             build/android/${{ env.APK_NAME }}
             build/android/INSTALL.txt
