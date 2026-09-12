@@ -1,7 +1,7 @@
 {
   "schema": "luhmos.repo-convergence.v4",
-  "date": "2026-09-11",
-  "status": "TEN_PASS_HARD_AUDIT_CANDIDATE",
+  "date": "2026-09-12",
+  "status": "DEBUG_UPDATER_COMPATIBILITY_CAST",
   "canonical": {
     "repository": "eggie-admin/hydra-shell-android",
     "branch": "luhmos-main",
@@ -59,20 +59,21 @@
     },
     {
       "repository": "eggie-admin/vue-headless-cms",
-      "role": "canonical_samsung_android_godot_webview_donor",
-      "integration": "pinned_checkout_build_time",
-      "branch": "luhmos/s24fe-standalone-hardening-20260911",
-      "ref": "96c23c87713800fc17c80b6a972ee2e93f1bb4b1",
-      "review_pr": 20,
+      "role": "transitional_updater_debug_build_bridge",
+      "integration": "pinned_checkout_build_time_debug_only",
+      "branch": "luhmos/inapp-updater-v1",
+      "ref": "dd9b3e68e14ce7a559b7b13aebfe10c630fa171b",
       "android_application_id": "art.eggiebagelface.luhmos",
+      "debug_only": true,
+      "promotable": false,
+      "new_code_ingestion_authorized": false,
+      "future_canonical_build_requires_kai_owned_donor_purged_source": true,
       "contains": [
         "godot_android_shell",
         "bundled_vue_cockpit",
         "origin_locked_webview_bridge",
         "samsung_widget",
-        "termux_dependency_removed",
-        "mixed_content_disabled",
-        "safe_external_scheme_allowlist"
+        "in_app_updater_v2_contract"
       ],
       "history_merge": false
     },
