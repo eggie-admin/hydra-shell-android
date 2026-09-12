@@ -42,8 +42,8 @@ jobs:
             echo 'Forbidden binary/private asset material found in plugin source' >&2
             exit 1
           fi
-          if grep -R -nE 'https?://(?!chatgpt\.com|chat\.openai\.com)' "$ROOT" --include='*.js' --include='*.json' 2>/dev/null; then
-            echo 'Unexpected network endpoint in plugin runtime source' >&2
+          if grep -R -nE 'https?://' "$ROOT" --include='*.js' 2>/dev/null; then
+            echo 'Unexpected network endpoint in plugin runtime JavaScript' >&2
             exit 1
           fi
           ! grep -R -nE 'fetch\(|XMLHttpRequest|WebSocket\(|sendBeacon\(' "$ROOT" --include='*.js'
