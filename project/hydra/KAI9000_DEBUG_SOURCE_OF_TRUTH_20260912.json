@@ -1,8 +1,8 @@
 {
-  "schema": "luhmos.kai9000.debug-source-of-truth.v2",
-  "milestone": "KAI9000_DEBUG_APK_TERMUX_OLLAMA_HANDOFF_GREEN_20260912",
+  "schema": "luhmos.kai9000.debug-source-of-truth.v3",
+  "milestone": "KAI9000_FINAL_WIDGET_TERMUX_OLLAMA_GREEN_20260912",
   "date": "2026-09-12",
-  "status": "DEBUG_APK_GREEN",
+  "status": "FINAL_WIDGET_DEBUG_APK_GREEN",
   "authority": {
     "human_final_authority": "Professor",
     "canonical_repository": "eggie-admin/hydra-shell-android",
@@ -20,39 +20,52 @@
     "target_sdk": 36,
     "application_label": "LuHm OS"
   },
-  "debug_compile": {
-    "goal": "produce an installable debug APK now, then hand interactive AI use to the local KAI 9000 Termux/Ollama terminal chat",
-    "mode": "transitional_compatibility_build",
+  "preferred_debug_artifact": {
+    "purpose": "final KAI 9000 Samsung home-screen widget plus LuHm OS debug APK",
     "testing_branch": "luhmos/testing",
-    "testing_commit": "5fdcb3d8004f63028830c61fe524f28e2ae43c47",
-    "workflow": ".github/workflows/luhmos-inapp-updater-v2.yml",
-    "workflow_run_id": 34721287711,
-    "workflow_run_number": 8,
+    "testing_commit": "5531863561a6882a51735de78c06e18576b913c0",
+    "workflow": ".github/workflows/kai9000-final-widget-debug.yml",
+    "workflow_run_id": 34722181734,
+    "workflow_run_number": 1,
     "workflow_result": "success",
-    "apk": "luhmos-1.0.1-inapp-updater-debug.apk",
-    "apk_sha256": "fdd08be8f27b40cf1db615793ad1b3eaa50bd5cc685a6868ae9a7c7126048b35",
+    "apk": "kai9000-final-widget-debug.apk",
+    "apk_sha256": "433a748619dd479f5ad15779b6fcfb9ed4f83f1918e625ae7dcfe3f391c9d886",
     "apk_signature_scheme_v2": true,
-    "debug_signer_certificate_sha256": "8c2510c876fb7a23ddf8f7c6154bb7b75167836dc33e24c69d975482a482756b",
+    "debug_signer_certificate_sha256": "ff39e34ee77ee06d2b139bc522e00a476fa58c577df0e0f6b9d064fca370b89b",
     "zipalign_16k_verified": true,
     "godot_headless_smoke": "green",
+    "widget_resources_verified_in_apk": true,
     "artifact": {
-      "id": 10306641230,
-      "name": "luhmos-inapp-updater-v2-8",
-      "archive_size_bytes": 29653946,
-      "archive_digest": "sha256:5e53f6c620b5b3ae5cd7400196d208cf0cbfdf456c68bcc3951f7366083ba4c9",
-      "expires_at": "2026-09-26T21:57:17Z"
+      "id": 10306866131,
+      "name": "kai9000-final-widget-1",
+      "archive_size_bytes": 29653912,
+      "archive_digest": "sha256:505bf3b00396920406197a0808b20df392e8ff422b2b169de1556c49f85442f5",
+      "expires_at": "2026-09-26T22:16:18Z"
     },
     "publish": false,
-    "merge_required": false,
     "promotable_release": false
+  },
+  "widget_contract": {
+    "identity": "KAI 9000",
+    "category": "home_screen",
+    "controls": ["ON", "OFF", "CHAT", "SMOKE", "GUARD", "BENCH"],
+    "title_tap": "open LuHm OS",
+    "status": "live widget status text",
+    "chat_target": "foreground Termux terminal session",
+    "chat_command": "ollama run qwen2.5:3b",
+    "ollama_endpoint": "http://127.0.0.1:11434",
+    "receiver_exported": false,
+    "termux_permission": "com.termux.permission.RUN_COMMAND",
+    "termux_allow_external_apps_required": true,
+    "android_10_plus_draw_over_apps_recommended_for_auto_foreground": true,
+    "network_policy": "loopback_first"
   },
   "temporary_build_bridge": {
     "repository": "eggie-admin/vue-headless-cms",
     "branch": "luhmos/inapp-updater-v1",
-    "ref": "dd9b3e68e14ce7a559b7b13aebfe10c630fa171b",
-    "purpose": "pinned build-time compatibility body for this debug cast only",
+    "ref": "cb5625aaa9e450be6268668cac176da812ce34f9",
+    "purpose": "pinned transitional Android body for the final widget debug cast only",
     "canonical_source": false,
-    "new_code_ingestion_authorized": false,
     "runtime_dependency_authorized": false,
     "release_promotion_authorized": false,
     "sunset_condition": "remove when the complete Android/Godot application body is KAI-owned inside hydra-shell-android"
@@ -73,13 +86,13 @@
     "ollama_model": "qwen2.5:3b",
     "terminal_chat_mode": "native_ollama_cli",
     "terminal_chat": "ollama run qwen2.5:3b",
+    "widget_chat_button": "foreground Termux RUN_COMMAND session",
     "kai_runtime": "ultima/ollama-ffmpeg-antenna-v3",
     "runtime_bootstrap": "npm run bootstrap",
     "runtime_doctor": "npm run doctor",
     "runtime_server": "npm start",
     "magic_chat_py_role": "FastAPI_router_not_terminal_REPL",
-    "network_policy": "loopback_first",
-    "handoff_status": "READY_AFTER_APK_INSTALL"
+    "handoff_status": "READY_AFTER_APK_INSTALL_AND_WIDGET_ADD"
   },
   "architecture": {
     "control_plane": "Python 3 + FastAPI + SQLite",
@@ -100,5 +113,5 @@
     "physical_device_validation_required_before_release": true,
     "debug_apk_may_be_installed_for_local_testing": true
   },
-  "operator_intent": "Get to a working APK and local KAI 9000 chat with minimum ceremony while preserving provenance and release safety."
+  "operator_intent": "Install the final widget debug APK, add the KAI 9000 home-screen widget, and enter local Termux/Ollama chat with one tap."
 }
