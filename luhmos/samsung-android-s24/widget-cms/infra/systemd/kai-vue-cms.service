@@ -1,0 +1,15 @@
+[Unit]
+Description=KAI Vue CMS FastAPI
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/kai-vue-cms-mutation
+EnvironmentFile=/etc/kai9000/kai-vue-cms.env
+ExecStart=/usr/local/bin/uv run fastapi run app/main.py --host 127.0.0.1 --port 8000
+Restart=on-failure
+RestartSec=3
+User=kai
+Group=kai
+
+[Install]
+WantedBy=multi-user.target
