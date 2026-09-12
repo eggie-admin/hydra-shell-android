@@ -1,0 +1,4 @@
+# Place the real file at /etc/letsencrypt/cloudflare.ini
+# chmod 600 /etc/letsencrypt/cloudflare.ini
+# Token should be restricted to the zone and DNS edit permission needed for DNS-01.
+dns_cloudflare_api_token = REPLACE_WITH_RESTRICTED_TOKEN
