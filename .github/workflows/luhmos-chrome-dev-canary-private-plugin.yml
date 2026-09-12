@@ -1,0 +1,93 @@
+name: LuHm OS Chrome Dev Canary Private Plugin
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: luhmos-chrome-dev-canary-private-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package:
+    name: Package private learning plugin
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout LuHm OS
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Validate Manifest V3 and private-learning rules
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT='luhmos/chrome-dev-canary-plugin'
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('luhmos/chrome-dev-canary-plugin/manifest.json')
+          data = json.loads(p.read_text(encoding='utf-8'))
+          assert data['manifest_version'] == 3
+          assert data['version'] == '0.1.0'
+          assert data['permissions'] == ['storage']
+          hosts = set(data['host_permissions'])
+          assert hosts == {'https://chatgpt.com/*', 'https://chat.openai.com/*'}
+          PY
+          if find "$ROOT" -type f \( -name '*.pck' -o -name '*.apk' -o -name '*.crx' -o -name '*.pem' -o -name '*.key' -o -name '*.jks' -o -name '*.keystore' \) -print | grep -q .; then
+            echo 'Forbidden binary/private asset material found in plugin source' >&2
+            exit 1
+          fi
+          if grep -R -nE 'https?://(?!chatgpt\.com|chat\.openai\.com)' "$ROOT" --include='*.js' --include='*.json' 2>/dev/null; then
+            echo 'Unexpected network endpoint in plugin runtime source' >&2
+            exit 1
+          fi
+          ! grep -R -nE 'fetch\(|XMLHttpRequest|WebSocket\(|sendBeacon\(' "$ROOT" --include='*.js'
+          echo 'LUHMOS_CHROME_PRIVATE_PLUGIN_SOURCE_GREEN'
+
+      - name: Package ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build
+          cd luhmos/chrome-dev-canary-plugin
+          zip -q -r ../../../build/luhmos-chrome-dev-canary-private-plugin.zip . \
+            -x '*.DS_Store' '__MACOSX/*'
+          cd ../../..
+          unzip -l build/luhmos-chrome-dev-canary-private-plugin.zip
+          sha256sum build/luhmos-chrome-dev-canary-private-plugin.zip | tee build/sha256.txt
+
+      - name: Write learning-use note
+        shell: bash
+        run: |
+          cat > build/INSTALL.txt <<'EOF'
+          LuHm OS Chrome Dev / Canary private learning plugin
+
+          Scope: private/local educational testing only.
+          Format: Manifest V3 unpacked extension / ZIP source package.
+          Distribution: do not publish or redistribute.
+          Android note: Chrome Dev/Canary on Android do not load normal desktop extensions.
+
+          Desktop Chrome Dev / Canary:
+          1. Unzip the package.
+          2. Open chrome://extensions.
+          3. Enable Developer mode.
+          4. Select Load unpacked.
+          5. Choose the unzipped plugin folder.
+          6. Open ChatGPT and use the LuHm orb.
+          EOF
+
+      - name: Upload short-lived private artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: luhmos-chrome-dev-canary-private-${{ github.run_number }}
+          path: |
+            build/luhmos-chrome-dev-canary-private-plugin.zip
+            build/INSTALL.txt
+            build/sha256.txt
+          if-no-files-found: error
+          retention-days: 1
