@@ -1,0 +1,251 @@
+name: LuHm OS S24 Widget Debug Candidate
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - testing/luhm-os-android
+    paths:
+      - '.github/workflows/luhmos-s24-widget-debug-candidate.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: luhmos-s24-widget-debug-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DONOR_REPO: eggie-admin/vue-headless-cms
+  DONOR_REF: 9344d12dd0f21ce5547dda531da8d6ff50db3cef
+  PACKAGE_ID: art.eggiebagelface.kai9000.dev
+  VERSION_NAME: 0.7.0-dev
+  VERSION_CODE: '7'
+  APK_NAME: luhmos-s24-widget-debug.apk
+  APP_LABEL: LuHm OS Debug
+  WIDGET_LABEL: LUHM OS DEBUG
+  NPM_LOCK_SHA256: 7929d5c53793563492ff0f5b39278904ecfa5508b10071d5b6d4b0b268fe653c
+  GODOT_RELEASE: 4.7.2-stable
+  GODOT_TEMPLATE_VERSION: 4.7.2.stable
+  GODOT_EDITOR_SHA256: cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4
+  GODOT_TEMPLATES_SHA256: f298490b8d44d934be425a5a65a51bf15f422428b229a06a6e11d9ffea248011
+
+jobs:
+  build:
+    name: Build Samsung S24 widget debug APK
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout Android testing branch
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Checkout pinned Samsung donor
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: ${{ env.DONOR_REPO }}
+          ref: ${{ env.DONOR_REF }}
+          path: _forge/s24
+          persist-credentials: false
+
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.18.0'
+
+      - uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a
+        with:
+          gradle-version: '8.13'
+          cache-cleanup: on-success
+
+      - name: Validate donor and patch Samsung-facing labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT='_forge/s24'
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path('_forge/s24/release/version.json').read_text(encoding='utf-8'))
+          assert data['packageId'] == 'art.eggiebagelface.kai9000.dev'
+          assert data['version'] == '0.7.0-dev'
+          assert data['versionCode'] == 7
+          PY
+          PRESET="$ROOT/godot/export_presets.cfg"
+          PROJECT="$ROOT/godot/project.godot"
+          WIDGET="$ROOT/godot/android-plugin/plugin/src/main/res/layout/cathedral_widget.xml"
+          grep -q 'package/name="KAI 9000 Dev"' "$PRESET"
+          grep -q 'config/name="KAI 9000"' "$PROJECT"
+          grep -q 'android:text="VIDEO FORGE"' "$WIDGET"
+          sed -i 's/package\/name="KAI 9000 Dev"/package\/name="LuHm OS Debug"/' "$PRESET"
+          sed -i 's/config\/name="KAI 9000"/config\/name="LuHm OS Debug"/' "$PROJECT"
+          sed -i 's/android:text="VIDEO FORGE"/android:text="LUHM OS DEBUG"/' "$WIDGET"
+          grep -q 'package/name="LuHm OS Debug"' "$PRESET"
+          grep -q 'config/name="LuHm OS Debug"' "$PROJECT"
+          grep -q 'android:text="LUHM OS DEBUG"' "$WIDGET"
+          echo 'LUHMOS_S24_LABEL_PATCH_GREEN'
+
+      - name: Install Android SDK 36
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" 'platform-tools' 'build-tools;36.1.0' 'platforms;android-36'
+
+      - name: Install verified Godot editor and templates
+        shell: bash
+        run: |
+          set -euo pipefail
+          WORK="$RUNNER_TEMP/luhmos-godot"
+          mkdir -p "$WORK"
+          cd "$WORK"
+          curl --fail --location --retry 5 --retry-all-errors -o godot.zip \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v4.7.2-stable_linux.x86_64.zip"
+          echo "${GODOT_EDITOR_SHA256}  godot.zip" | sha256sum --check --strict
+          unzip -q godot.zip
+          chmod +x Godot_v4.7.2-stable_linux.x86_64
+          echo "GODOT_BIN=$WORK/Godot_v4.7.2-stable_linux.x86_64" >> "$GITHUB_ENV"
+          curl --fail --location --retry 5 --retry-all-errors -o templates.tpz \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v4.7.2-stable_export_templates.tpz"
+          echo "${GODOT_TEMPLATES_SHA256}  templates.tpz" | sha256sum --check --strict
+          mkdir -p templates-unpack
+          unzip -q templates.tpz -d templates-unpack
+          TEMPLATE_DIR="$HOME/.local/share/godot/export_templates/${GODOT_TEMPLATE_VERSION}"
+          mkdir -p "$TEMPLATE_DIR"
+          cp -a templates-unpack/templates/. "$TEMPLATE_DIR/"
+          test -f "$TEMPLATE_DIR/android_debug.apk"
+          test -f "$TEMPLATE_DIR/android_source.zip"
+
+      - name: Build bundled Vue cockpit
+        working-directory: _forge/s24/apps
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --global npm@12.0.2 --no-audit --no-fund
+          echo "${NPM_LOCK_SHA256}  package-lock.json" | sha256sum --check --strict
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run build --workspace=video-forge-ui
+          test -f forge-ui/dist/index.html
+
+      - name: Build Android widget and WebView plugin
+        working-directory: _forge/s24
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf godot/android-plugin/plugin/src/main/assets/cms
+          mkdir -p godot/android-plugin/plugin/src/main/assets/cms
+          cp -a apps/forge-ui/dist/. godot/android-plugin/plugin/src/main/assets/cms/
+          gradle -p godot/android-plugin :plugin:assemble
+          test -f godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-debug.aar
+          test -f godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-release.aar
+          rm -rf godot/addons/CathedralAndroid
+          mkdir -p godot/addons/CathedralAndroid/bin/debug godot/addons/CathedralAndroid/bin/release
+          cp -a godot/android-plugin/plugin/export_scripts_template/. godot/addons/CathedralAndroid/
+          cp godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-debug.aar godot/addons/CathedralAndroid/bin/debug/
+          cp godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-release.aar godot/addons/CathedralAndroid/bin/release/
+
+      - name: Configure disposable debug signing
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.config/godot" build/android
+          cat > "$HOME/.config/godot/editor_settings-4.tres" <<EOF
+          [gd_resource type="EditorSettings" format=3]
+          [resource]
+          export/android/android_sdk_path = "$ANDROID_HOME"
+          export/android/java_sdk_path = "$JAVA_HOME"
+          EOF
+          KEYSTORE="$RUNNER_TEMP/luhmos-s24-debug.keystore"
+          keytool -genkeypair \
+            -keystore "$KEYSTORE" \
+            -storepass android \
+            -alias androiddebugkey \
+            -keypass android \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname 'CN=LuHm OS S24 Debug,O=EggieBagelFace,C=US'
+          echo "GODOT_ANDROID_KEYSTORE_DEBUG_PATH=$KEYSTORE" >> "$GITHUB_ENV"
+          echo 'GODOT_ANDROID_KEYSTORE_DEBUG_USER=androiddebugkey' >> "$GITHUB_ENV"
+          echo 'GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD=android' >> "$GITHUB_ENV"
+          echo 'ephemeral-debug' > build/android/signing-mode.txt
+
+      - name: Export debug candidate APK
+        working-directory: _forge/s24
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$GODOT_BIN" --headless --editor --path godot --quit
+          "$GODOT_BIN" --headless --path godot \
+            --install-android-build-template \
+            --export-debug 'Android Debug' \
+            "$GITHUB_WORKSPACE/build/android/$APK_NAME"
+          test -s "$GITHUB_WORKSPACE/build/android/$APK_NAME"
+
+      - name: Verify Samsung debug candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="build/android/$APK_NAME"
+          TOOLS="$ANDROID_HOME/build-tools/36.1.0"
+          "$TOOLS/apksigner" verify --verbose --print-certs "$APK" | tee build/android/signature.txt
+          "$TOOLS/zipalign" -c -P 16 -v 4 "$APK" | tee build/android/zipalign.txt
+          "$TOOLS/aapt" dump badging "$APK" | tee build/android/badging.txt
+          "$TOOLS/aapt" dump xmltree "$APK" AndroidManifest.xml | tee build/android/manifest.txt
+          unzip -l "$APK" | tee build/android/contents.txt
+          sha256sum "$APK" | tee build/android/sha256.txt
+          grep -q "package: name='${PACKAGE_ID}'" build/android/badging.txt
+          grep -q "versionCode='${VERSION_CODE}'" build/android/badging.txt
+          grep -q "versionName='${VERSION_NAME}'" build/android/badging.txt
+          grep -q "application-label:'${APP_LABEL}'" build/android/badging.txt
+          grep -q 'lib/arm64-v8a/' build/android/contents.txt
+          grep -q 'assets/cms/index.html' build/android/contents.txt
+          grep -q 'CathedralWidgetProvider' build/android/manifest.txt
+          echo 'LUHMOS_S24_WIDGET_DEBUG_CANDIDATE_GREEN'
+
+      - name: Write install note
+        shell: bash
+        run: |
+          cat > build/android/INSTALL.txt <<'EOF'
+          LuHm OS Debug candidate for Samsung S24 / S24 FE
+          Private local learning/test build only.
+          Package: art.eggiebagelface.kai9000.dev
+          App label: LuHm OS Debug
+          Widget label: LUHM OS DEBUG
+          Signing: disposable CI debug key
+
+          Samsung install:
+          1. Copy luhmos-s24-widget-debug.apk to the phone.
+          2. Open the APK from My Files.
+          3. Allow Install unknown apps for My Files if Android prompts.
+          4. Install LuHm OS Debug.
+          5. Add the LUHM OS DEBUG widget from the Samsung widget picker.
+
+          ADB alternative:
+          adb install -r luhmos-s24-widget-debug.apk
+
+          This debug signer is disposable. Treat each CI build as a fresh test candidate.
+          EOF
+
+      - name: Upload debug candidate
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: luhmos-s24-widget-debug-${{ github.run_number }}
+          path: |
+            build/android/${{ env.APK_NAME }}
+            build/android/INSTALL.txt
+            build/android/sha256.txt
+            build/android/signature.txt
+            build/android/zipalign.txt
+            build/android/badging.txt
+            build/android/manifest.txt
+            build/android/signing-mode.txt
+          if-no-files-found: error
+          retention-days: 1
