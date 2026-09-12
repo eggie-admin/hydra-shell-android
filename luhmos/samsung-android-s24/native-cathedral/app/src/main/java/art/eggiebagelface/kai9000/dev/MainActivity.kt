@@ -41,7 +41,7 @@ class MainActivity : Activity() {
             settings.allowContentAccess = false
             settings.javaScriptCanOpenWindowsAutomatically = false
             settings.setSupportMultipleWindows(false)
-            WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
+            WebView.setWebContentsDebuggingEnabled(true)
             webViewClient = object : WebViewClient() {
                 override fun shouldInterceptRequest(view: WebView?, request: WebResourceRequest): WebResourceResponse? =
                     loader.shouldInterceptRequest(request.url)
