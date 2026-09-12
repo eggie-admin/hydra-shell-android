@@ -1,0 +1,7 @@
+tunnel: kai-vue-cms
+credentials-file: /home/eggie/.cloudflared/kai-vue-cms.json
+
+ingress:
+  - hostname: cms.eggiebagelface.art
+    service: http://127.0.0.1:8000
+  - service: http_status:404
