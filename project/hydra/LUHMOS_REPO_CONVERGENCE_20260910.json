@@ -1,7 +1,7 @@
 {
   "schema": "luhmos.repo-convergence.v4",
   "date": "2026-09-12",
-  "status": "DEBUG_UPDATER_COMPATIBILITY_CAST",
+  "status": "FINAL_WIDGET_DEBUG_CAST",
   "canonical": {
     "repository": "eggie-admin/hydra-shell-android",
     "branch": "luhmos-main",
@@ -15,7 +15,7 @@
     "gradle": "android_build_layer",
     "vue_web": "bundled_assets_not_external_dev_server",
     "external_runtime_required_for_base_launch": false,
-    "termux": "historical_or_lab_only",
+    "termux": "local_operator_and_ollama_runtime_for_widget_chat_handoff",
     "secure_folder": "optional_user_compartment_not_runtime_requirement"
   },
   "device_lanes": {
@@ -59,10 +59,10 @@
     },
     {
       "repository": "eggie-admin/vue-headless-cms",
-      "role": "transitional_updater_debug_build_bridge",
+      "role": "transitional_final_widget_debug_build_bridge",
       "integration": "pinned_checkout_build_time_debug_only",
       "branch": "luhmos/inapp-updater-v1",
-      "ref": "dd9b3e68e14ce7a559b7b13aebfe10c630fa171b",
+      "ref": "cb5625aaa9e450be6268668cac176da812ce34f9",
       "android_application_id": "art.eggiebagelface.luhmos",
       "debug_only": true,
       "promotable": false,
@@ -73,6 +73,7 @@
         "bundled_vue_cockpit",
         "origin_locked_webview_bridge",
         "samsung_widget",
+        "kai9000_widget_chat_handoff",
         "in_app_updater_v2_contract"
       ],
       "history_merge": false
@@ -112,6 +113,18 @@
       "ref": "9a0b7df5fa757f295b07ba6e3c7a3dc3182a20a0"
     }
   ],
+  "widget_contract": {
+    "identity": "KAI 9000",
+    "category": "home_screen",
+    "controls": ["ON", "OFF", "CHAT", "SMOKE", "GUARD", "BENCH"],
+    "chat_target": "Termux foreground session",
+    "chat_command": "ollama run qwen2.5:3b",
+    "termux_run_command_permission_required": true,
+    "termux_allow_external_apps_required": true,
+    "android_10_plus_draw_over_apps_recommended_for_auto_foreground": true,
+    "widget_receiver_exported": false,
+    "loopback_first": true
+  },
   "display_contract": {
     "identity": "LuHm OS",
     "design_space_portrait": "1080x1920",
