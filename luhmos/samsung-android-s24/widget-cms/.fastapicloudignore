@@ -1,0 +1,12 @@
+.venv/
+.git/
+.env
+.env.*
+frontend/node_modules/
+*.pem
+*.key
+*.csr
+*.p12
+*.pfx
+cloudflared-*.json
+infra/local-only/
