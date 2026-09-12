@@ -1,0 +1,98 @@
+#luhmos-dev-canary-root {
+  all: initial;
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 2147483647;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #f6f1ff;
+}
+
+#luhmos-dev-canary-root *,
+#luhmos-dev-canary-root *::before,
+#luhmos-dev-canary-root *::after {
+  box-sizing: border-box;
+}
+
+.luhmos-orb,
+.luhmos-panel button {
+  border: 1px solid #5d4977;
+  background: #21162e;
+  color: #f6f1ff;
+  cursor: pointer;
+}
+
+.luhmos-orb {
+  width: 58px;
+  height: 58px;
+  border-radius: 999px;
+  font-weight: 800;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.luhmos-panel {
+  position: absolute;
+  right: 0;
+  bottom: 70px;
+  width: 260px;
+  padding: 14px;
+  border: 1px solid #4a3b5f;
+  border-radius: 18px;
+  background: rgba(18, 13, 25, 0.97);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+}
+
+.luhmos-panel[hidden] {
+  display: none !important;
+}
+
+.luhmos-panel header {
+  display: grid;
+  gap: 2px;
+}
+
+.luhmos-panel header strong {
+  font-size: 16px;
+}
+
+.luhmos-panel header span,
+.luhmos-note {
+  color: #c9b8dc;
+  font-size: 12px;
+}
+
+.luhmos-note {
+  margin: 10px 0;
+  line-height: 1.35;
+}
+
+.luhmos-row {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  gap: 8px;
+  align-items: center;
+}
+
+.luhmos-panel button {
+  min-height: 40px;
+  border-radius: 12px;
+  font-weight: 700;
+}
+
+.luhmos-zoom {
+  text-align: center;
+  font-weight: 800;
+}
+
+.luhmos-wide {
+  width: 100%;
+  margin-top: 8px;
+}
+
+html.luhmos-compact-chat main {
+  max-width: none !important;
+}
+
+html.luhmos-compact-chat [class*="max-w-"] {
+  max-width: 92% !important;
+}
