@@ -3,7 +3,7 @@ repo_description: >-
   Public custom F-Droid repository for signed LuHm OS Android releases.
   The stock Samsung release is art.eggiebagelface.luhmos and does not
   require root, Termux, AcodeX, VNC, Secure Folder, or an external daemon.
-repo_url: https://fdroid.eggiebagelface.art/fdroid/repo/
+repo_url: https://fdroid.eggiebagelface.art/fdroid/repo
 
 repo_keyalias: luhmos-fdroid-repo
 keystore: {env: FDROID_KEYSTORE}
