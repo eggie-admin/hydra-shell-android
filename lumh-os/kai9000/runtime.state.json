@@ -1,0 +1,66 @@
+{
+  "schema": "luhm-os.kai9000.runtime-state.v1",
+  "milestone": "KAI9000_TERMUX_RUNSV_SURVIVAL_GREEN_20260915",
+  "date": "2026-09-15",
+  "human_authority": "Professor",
+  "host_profile": "ordinary_termux_outside_samsung_secure_folder",
+  "supervisor": {
+    "family": "runit",
+    "runsvdir_active": true,
+    "interactive_shell_independent": true
+  },
+  "services": {
+    "kai-vnc": {
+      "bind": "127.0.0.1",
+      "port": 5901,
+      "display": ":1",
+      "geometry": "1280x720",
+      "depth": 24,
+      "status": "GREEN"
+    },
+    "kai-websocket": {
+      "bind": "127.0.0.1",
+      "port": 6080,
+      "forwards_to": "127.0.0.1:5901",
+      "status": "GREEN"
+    },
+    "kai-sshd": {
+      "bind": "127.0.0.1",
+      "port": 8022,
+      "public_key_authentication": true,
+      "password_authentication": false,
+      "keyboard_interactive_authentication": false,
+      "root_login": false,
+      "status": "GREEN"
+    },
+    "kai-ollama": {
+      "bind": "127.0.0.1",
+      "port": 11434,
+      "status": "GREEN"
+    }
+  },
+  "proof": {
+    "interactive_terminal_closed_and_reopened": true,
+    "all_four_loopback_probes_green_after_reopen": true,
+    "same_supervised_services_remained_active": true
+  },
+  "gates": {
+    "INTERACTIVE_SHELL_INDEPENDENCE": "GREEN",
+    "SERVICE_SUPERVISION": "GREEN",
+    "LOOPBACK_ONLY_BASELINE": "GREEN",
+    "REBOOT_PERSISTENCE": "NOT_YET_PROVEN",
+    "ANDROID_FORCE_STOP_SURVIVAL": "NOT_CLAIMED",
+    "WAKE_LOCK_CURRENT_PASS": "NOT_YET_REPROVEN",
+    "SHIZUKU_CURRENT_PASS": "NOT_YET_PROVEN",
+    "ACODEX_TO_TERMUX_LOGIN_CURRENT_PASS": "NOT_YET_PROVEN",
+    "AXS_8767_CURRENT_PASS": "NOT_TESTED"
+  },
+  "security": {
+    "public_bind": false,
+    "root_required": false,
+    "bootloader_unlock_required": false,
+    "secrets_recorded": false,
+    "sim_identifiers_recorded": false
+  },
+  "drive_proof_document_id": "14FzZojl-ZpbSDVb_EzWBwdgXzMdewHjy5kf0ZKTLePA"
+}
