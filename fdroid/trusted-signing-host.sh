@@ -43,6 +43,8 @@ done
 FDROID_REPO_KEYALIAS="${FDROID_REPO_KEYALIAS:-luhmos-fdroid-repo}"
 FDROID_CONFIG_TEMPLATE="${FDROID_CONFIG_TEMPLATE:-fdroid/config.template.yml}"
 APKSIGNER="${APKSIGNER:-$(command -v apksigner || true)}"
+FINAL_FORM_REPO_URL="${FINAL_FORM_REPO_URL:-https://fdroid.eggiebagelface.art/fdroid/repo/}"
+FINAL_FORM_PUBLIC_BOOTSTRAP_MIRROR="${FINAL_FORM_PUBLIC_BOOTSTRAP_MIRROR:-https://raw.githubusercontent.com/eggie-admin/hydra-shell-android/fdroid-public/fdroid/repo/}"
 
 [[ -n "$STAGE" && -d "$STAGE" ]] || { echo "Missing --stage directory" >&2; exit 2; }
 [[ -n "$OUT" ]] || { echo "Missing --out directory" >&2; exit 2; }
@@ -117,10 +119,11 @@ OUT_DIR="$OUT" REPO_FP="$REPO_FP" APK_FP="$EXPECTED_APK_FP" APK_COUNT="${#APKS[@
 import json, os
 from pathlib import Path
 out = Path(os.environ['OUT_DIR'])
+public_bootstrap_mirror = os.environ.get('FINAL_FORM_PUBLIC_BOOTSTRAP_MIRROR') or None
 status = {
     'schema': 'luhmos.fdroid-signed.v1',
-    'repo_url': 'https://fdroid.eggiebagelface.art/fdroid/repo/',
-    'public_bootstrap_mirror': 'https://raw.githubusercontent.com/eggie-admin/hydra-shell-android/fdroid-public/fdroid/repo/',
+    'repo_url': os.environ['FINAL_FORM_REPO_URL'],
+    'public_bootstrap_mirror': public_bootstrap_mirror,
     'apk_count': int(os.environ['APK_COUNT']),
     'repo_fingerprint_sha256': os.environ['REPO_FP'],
     'apk_signer_sha256': os.environ['APK_FP'],

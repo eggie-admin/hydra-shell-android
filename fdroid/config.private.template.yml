@@ -1,0 +1,19 @@
+repo_name: LuHm OS Cathedral Private
+repo_description: >-
+  Private owner-only LuHm OS Cathedral release stream. The repository bundle is
+  created in GitHub Actions and attached only to a draft GitHub release. It is
+  pulled by the Professor through authenticated GitHub access and served locally
+  to the F-Droid client. No public mirror is published.
+repo_url: http://127.0.0.1:8796/fdroid/repo
+
+repo_keyalias: luhmos-fdroid-repo
+keystore: {env: FDROID_KEYSTORE}
+keystorepass: {env: FDROID_KEYSTORE_PASS}
+keypass: {env: FDROID_KEY_PASS}
+keydname: CN=LuHm OS F-Droid Repo, O=Eggie Bagelface Art, C=US
+
+archive_older: 4
+make_current_version_link: true
+
+# Signing material is supplied only by the trusted CI environment.
+# No keys, passwords, tokens, serials, or account identifiers belong here.
