@@ -8,6 +8,15 @@
     "canonical_branch": "luhmos-main",
     "package_id": "art.eggiebagelface.luhmos"
   },
+  "candidate_android_donor": {
+    "repository": "eggie-admin/vue-headless-cms",
+    "base_branch": "luhmos/s24fe-standalone-hardening-20260911",
+    "base_commit": "96c23c87713800fc17c80b6a972ee2e93f1bb4b1",
+    "candidate_branch": "luhmos/sm-x400-play-install-portal-20260915",
+    "candidate_commit": "737942312e19dfac231fc5fbc5317c099277f4c7",
+    "scope": "cockpit trusted GitHub Releases install/update portal plus sanity gates",
+    "promotion_state": "not_promoted"
+  },
   "device": {
     "manufacturer": "Samsung",
     "model": "SM-X400",
