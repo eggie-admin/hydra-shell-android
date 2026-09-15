@@ -22,6 +22,7 @@ env:
   DONOR_REPO: eggie-admin/vue-headless-cms
   DONOR_REF: 96c23c87713800fc17c80b6a972ee2e93f1bb4b1
   PACKAGE_ID: art.eggiebagelface.luhmos
+  LOCAL_REPO_URL: http://127.0.0.1:8796/fdroid/repo
   KEY_ALIAS: luhmos-release
   FDROID_KEY_ALIAS: luhmos-fdroid-repo
   GODOT_RELEASE: 4.7.2-stable
@@ -155,10 +156,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          VERSION_CODE="$((900000 + GITHUB_RUN_NUMBER))"
-          VERSION_NAME="1.0.0-cathedral.${GITHUB_RUN_NUMBER}"
+          VERSION_ORDINAL="$(( ((GITHUB_RUN_NUMBER - 1) * 100) + GITHUB_RUN_ATTEMPT ))"
+          VERSION_CODE="$((100 + VERSION_ORDINAL))"
+          VERSION_NAME="1.0.${VERSION_ORDINAL}-cathedral"
           APK_NAME="luhmos-cathedral-${VERSION_CODE}.apk"
           PRIVATE_TAG="cathedral-private-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          echo "VERSION_ORDINAL=$VERSION_ORDINAL" >> "$GITHUB_ENV"
           echo "VERSION_CODE=$VERSION_CODE" >> "$GITHUB_ENV"
           echo "VERSION_NAME=$VERSION_NAME" >> "$GITHUB_ENV"
           echo "APK_NAME=$APK_NAME" >> "$GITHUB_ENV"
@@ -277,6 +280,18 @@ jobs:
           echo "APK_SIGNER_SHA256=$APK_FP" >> "$GITHUB_ENV"
           printf '%s\n' "$APK_FP" > build/release/apk-signer-sha256.txt
 
+      - name: Require pinned signer identities before private draft creation
+        shell: bash
+        env:
+          EXPECTED_APK_FP: ${{ vars.LUHMOS_ANDROID_CERT_SHA256 }}
+          EXPECTED_REPO_FP: ${{ vars.LUHMOS_FDROID_REPO_FINGERPRINT_SHA256 }}
+        run: |
+          set -euo pipefail
+          test -n "$EXPECTED_APK_FP" || { echo 'Set repository variable LUHMOS_ANDROID_CERT_SHA256 after identity-proof run.' >&2; exit 1; }
+          test -n "$EXPECTED_REPO_FP" || { echo 'Set repository variable LUHMOS_FDROID_REPO_FINGERPRINT_SHA256 after identity-proof run.' >&2; exit 1; }
+          norm() { tr -d ':[:space:]' | tr '[:lower:]' '[:upper:]'; }
+          test "$(printf '%s' "$APK_SIGNER_SHA256" | norm)" = "$(printf '%s' "$EXPECTED_APK_FP" | norm)"
+
       - name: Install pinned fdroidserver
         shell: bash
         run: |
@@ -325,12 +340,23 @@ jobs:
           export FDROID_CONFIG_TEMPLATE="$GITHUB_WORKSPACE/fdroid/config.private.template.yml"
           export FDROID_REPO_KEYALIAS="$FDROID_KEY_ALIAS"
           export APKSIGNER="$ANDROID_HOME/build-tools/36.1.0/apksigner"
+          export FINAL_FORM_REPO_URL="$LOCAL_REPO_URL"
+          export FINAL_FORM_PUBLIC_BOOTSTRAP_MIRROR=''
           bash fdroid/trusted-signing-host.sh --stage build/fdroid-stage --out build/fdroid-signed
           test -s build/fdroid-signed/repo/index-v2.json
           test -s build/fdroid-signed/repo/index-v1.jar
           REPO_FP="$(python -c 'import json; print(json.load(open("build/fdroid-signed/FINAL_FORM_SIGNED_STATUS.json"))["repo_fingerprint_sha256"])')"
           echo "FDROID_REPO_FINGERPRINT_SHA256=$REPO_FP" >> "$GITHUB_ENV"
           printf '%s\n' "$REPO_FP" > build/release/fdroid-repo-fingerprint-sha256.txt
+
+      - name: Require pinned F-Droid repository identity before private draft creation
+        shell: bash
+        env:
+          EXPECTED_REPO_FP: ${{ vars.LUHMOS_FDROID_REPO_FINGERPRINT_SHA256 }}
+        run: |
+          set -euo pipefail
+          norm() { tr -d ':[:space:]' | tr '[:lower:]' '[:upper:]'; }
+          test "$(printf '%s' "$FDROID_REPO_FINGERPRINT_SHA256" | norm)" = "$(printf '%s' "$EXPECTED_REPO_FP" | norm)"
 
       - name: Build private Cathedral bundle
         shell: bash
@@ -351,7 +377,7 @@ jobs:
           Package: ${PACKAGE_ID}
           APK signer SHA-256: ${APK_SIGNER_SHA256}
           F-Droid repo fingerprint SHA-256: ${FDROID_REPO_FINGERPRINT_SHA256}
-          Local repo URL: http://127.0.0.1:8796/fdroid/repo
+          Local repo URL: ${LOCAL_REPO_URL}
           Visibility: GitHub DRAFT RELEASE ONLY. No public mirror.
           EOF2
           BUNDLE="$GITHUB_WORKSPACE/LUHMOS_CATHEDRAL_PRIVATE_FDROID_${GITHUB_RUN_NUMBER}.zip"
@@ -387,7 +413,7 @@ jobs:
 
           This release is deliberately DRAFT. Do not publish it. The SM-X400 pull
           helper uses authenticated GitHub access, unpacks the repository locally,
-          and serves it to F-Droid on 127.0.0.1:8796.
+          and serves it to F-Droid on ${LOCAL_REPO_URL}.
           EOF2
           gh release create "$PRIVATE_TAG" "$BUNDLE" "$BUNDLE_SHA" \
             --repo "$GITHUB_REPOSITORY" \
@@ -407,4 +433,4 @@ jobs:
           echo "VERSION=$VERSION_NAME ($VERSION_CODE)"
           echo "TAG=$PRIVATE_TAG"
           echo 'PUBLIC_MIRROR=FALSE'
-          echo 'FDROID_URL=http://127.0.0.1:8796/fdroid/repo'
+          echo "FDROID_URL=$LOCAL_REPO_URL"
