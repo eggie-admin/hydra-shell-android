@@ -1,0 +1,105 @@
+{
+  "schema": "luhmos.sm-x400-play-testing.v1",
+  "date": "2026-09-15",
+  "status": "proposed_testing_only",
+  "project": {
+    "name": "LuHm OS / KAI 9000",
+    "canonical_repository": "eggie-admin/hydra-shell-android",
+    "canonical_branch": "luhmos-main",
+    "package_id": "art.eggiebagelface.luhmos"
+  },
+  "candidate_android_donor": {
+    "repository": "eggie-admin/vue-headless-cms",
+    "base_branch": "luhmos/s24fe-standalone-hardening-20260911",
+    "base_commit": "96c23c87713800fc17c80b6a972ee2e93f1bb4b1",
+    "candidate_branch": "luhmos/sm-x400-play-install-portal-20260915",
+    "candidate_commit": "737942312e19dfac231fc5fbc5317c099277f4c7",
+    "scope": "cockpit trusted GitHub Releases install/update portal plus sanity gates",
+    "promotion_state": "not_promoted"
+  },
+  "device": {
+    "manufacturer": "Samsung",
+    "model": "SM-X400",
+    "android": 16,
+    "abi": "arm64-v8a",
+    "root": false,
+    "bootloader_unlock_required": false,
+    "google_play_testing_lane": true,
+    "physical_keyboard_expected": true
+  },
+  "authority": {
+    "human_final_authority": "Professor",
+    "versioned_source": "GitHub",
+    "build_oracle": "GitHub Actions",
+    "android_install_authority": "Android package installer with explicit user confirmation",
+    "recovery_mirror": "Google Drive when explicitly configured",
+    "models_are_policy_authority": false
+  },
+  "runtime_boundary": {
+    "standalone_android_launch_required": true,
+    "termux_required": false,
+    "acode_required": false,
+    "vnc_required": false,
+    "localhost_daemon_required": false,
+    "shizuku_required": false,
+    "automatic_root": false,
+    "arbitrary_model_shell": false
+  },
+  "install_portal": {
+    "mode": "trusted_https_browser_handoff",
+    "latest_release_url": "https://github.com/eggie-admin/hydra-shell-android/releases/latest",
+    "trusted_hosts": [
+      "github.com"
+    ],
+    "request_install_packages_permission_in_app": false,
+    "silent_install": false,
+    "android_user_confirmation_required": true,
+    "persistent_signing_identity_required_for_updates": true,
+    "sha256_evidence_required": true,
+    "signer_evidence_required": true,
+    "future_signed_fdroid_feed_allowed_after_explicit_promotion": true
+  },
+  "remote_pipeline": {
+    "contract_workflow": ".github/workflows/luhmos-ultima-debug-apk.yml",
+    "signed_release_workflow": ".github/workflows/luhmos-fdroid-public-release.yml",
+    "gcp_oidc_workflow": ".github/workflows/luhmos-gcp-oidc-smoke.yml",
+    "public_feed_default": false,
+    "release_publication_requires_human_approval": true,
+    "required_evidence": [
+      "tests_green",
+      "doctrine_green",
+      "secret_scan_green",
+      "pinned_donor_green",
+      "package_identity_green",
+      "persistent_signer_green",
+      "apk_sha256_green",
+      "arm64_v8a_green",
+      "target_sdk_36_green",
+      "zipalign_16k_green"
+    ]
+  },
+  "remote_providers": {
+    "openai": "remote_reasoning_and_typed_proposals_not_release_authority",
+    "hugging_face": "model_registry_and_provenance_gated_forge_not_policy_authority",
+    "google_cloud": "optional_keyless_remote_infrastructure_via_oidc",
+    "github": "canonical_source_ci_release_and_provenance",
+    "google_drive": "controlled_recovery_or_artifact_mirror_not_silent_code_override"
+  },
+  "smoke_tests": [
+    "clean_install_on_stock_sm_x400",
+    "launcher_start_without_external_daemon",
+    "landscape_portrait_rotation",
+    "physical_keyboard_input",
+    "touch_and_trackpad_input",
+    "offline_base_app_start",
+    "install_portal_https_handoff",
+    "android_user_confirmed_install_or_update",
+    "same_signer_update_continuity",
+    "remote_provider_failure_is_graceful"
+  ],
+  "promotion": {
+    "automatic": false,
+    "may_replace_existing_production_device_contract": false,
+    "requires_professor_approval": true
+  }
+}

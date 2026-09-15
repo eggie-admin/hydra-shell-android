@@ -1,0 +1,37 @@
+{
+  "schema": "luhmos.samsung-universal-stock.v1",
+  "date": "2026-09-15",
+  "status": "testing_mutation",
+  "application": {
+    "name": "LuHm OS",
+    "package_id": "art.eggiebagelface.luhmos",
+    "abi": "arm64-v8a",
+    "min_sdk": 24,
+    "target_sdk": 36,
+    "root_required": false,
+    "silent_install": false
+  },
+  "devices": [
+    {"family":"Galaxy S24 FE","model_pattern":"SM-S721*","role":"phone_and_secure_folder_client"},
+    {"family":"Galaxy tablet","model_pattern":"SM-X400","role":"tablet_testing"},
+    {"family":"Galaxy S10 Lite","model_pattern":"SM-G770*","role":"unrooted_compatibility"}
+  ],
+  "secure_folder": {
+    "role": "protected_client",
+    "same_signed_apk": true,
+    "separate_profile_data": true,
+    "build_forge_inside_profile": false,
+    "signing_keys_inside_profile": false
+  },
+  "distribution": {
+    "bootstrap": "github_releases_latest",
+    "android_user_confirmation_required": true,
+    "same_signer_updates_required": true,
+    "google_play_testing_allowed": true,
+    "fdroid_optional_after_promotion": true
+  },
+  "promotion": {
+    "automatic": false,
+    "physical_device_smoke_tests_required": true
+  }
+}
