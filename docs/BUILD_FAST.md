@@ -1,97 +1,98 @@
-# LuHm OS Fast Build + Install Guide
+# Fast Build Guide
 
 ## Goal
+Get from a bounded patch to verified LuHm OS Samsung test evidence with the shortest safe feedback loop.
 
-Get from a reviewed patch to a verified, persistently signed Samsung Android artifact using the shortest safe feedback loop. Keep the tablet as an operator/cockpit surface and keep heavyweight Android compilation in deterministic remote CI.
+## Canonical integration lane
 
-## Canonical source of truth
+Canonical repository: `eggie-admin/hydra-shell-android`  
+Canonical integration branch: `luhmos-main`
 
-- Integration branch: `luhmos-main`
-- Production package: `art.eggiebagelface.luhmos`
-- Android donor: pinned immutable commit from `eggie-admin/vue-headless-cms`
-- Contract gate: `.github/workflows/luhmos-ultima-debug-apk.yml`
-- Signed release + F-Droid forge: `.github/workflows/luhmos-fdroid-public-release.yml`
-- Legacy `art.eggiebagelface.kai9000.dev` workflows are historical and must not be revived as the production package line.
-
-AI proposes. Policy authorizes. CI proves. The Professor promotes.
+Use work branches and draft PRs for mutations. CI proves them before promotion.
 
 ## Cheap checks first
 
-When a development terminal is available, run the inexpensive policy/test layer before Android build minutes are spent:
-
 ```bash
-python -m compileall -q backend tools
+python -m compileall -q backend tools ultima/ollama-ffmpeg-antenna-v3
 python -m pytest -q backend/tests
 bash tests/hydra-sanity-audit-test.sh
 ```
 
-A tablet does not need to run these locally. GitHub Actions remains the deterministic build oracle.
+If these fail, repair them before spending Android forge minutes.
 
-## Remote contract gate
+## Remote compile lane
 
-From GitHub Actions run:
+Use the LuHm contract forge:
 
-`LuHm OS ULTIMA Debug Contract`
+`Actions → LuHm OS ULTIMA Debug Contract → Run workflow`
 
-against the candidate branch or PR targeting `luhmos-main`.
+For production signing / release staging, use the separate manual workflow:
 
-This gate validates doctrine, Python tests, the pinned Samsung donor, package identity, API/ABI requirements, no-secret rules, and the standalone/no-Termux Android boundary. It deliberately cannot publish a production release.
+`Actions → LuHm OS Public F-Droid Release → Run workflow`
 
-## Signed installable build
+Debug CI cannot publish a production release. Production release publication remains an explicit human action.
 
-For a real install/update artifact run:
+## Samsung universal stock lane
 
-`LuHm OS Public F-Droid Release`
+The current testing mutation converges the Samsung development dungeon into one stock Samsung ARM64 package family:
 
-Start with:
+- Galaxy S24 FE family (`SM-S721*`), including owner-profile and Secure Folder client testing;
+- Samsung `SM-X400` tablet testing;
+- Galaxy S10 Lite family (`SM-G770*`) as an older unrooted compatibility target.
 
-`publish_public_mirror = false`
+The Android donor candidate is built as one package, `art.eggiebagelface.luhmos`, with `arm64-v8a`, explicit minimum API 24, target API 36, responsive small-through-xlarge screen support, and one persistent release signer for update continuity.
 
-That lane builds the non-debug APK with the persistent `luhmos-release` signing identity, verifies Android package identity, signature, SHA-256, arm64-v8a, target SDK 36 and 16 KiB alignment, then stages and signs F-Droid metadata/indexes. Publication of the custom F-Droid mirror remains an explicit separate choice.
+The current donor mutation lives on:
 
-Never use an ephemeral debug signer for update continuity.
+`eggie-admin/vue-headless-cms:luhmos/sm-x400-play-install-portal-20260915`
 
-## Current install surface
+The branch adds the cockpit `INSTALL / UPDATE` portal, the universal Samsung compatibility contract, and CI checks for the stock install boundary.
 
-The robust bootstrap install surface is the repository's GitHub Releases page:
+## Install / update bootstrap
 
-`https://github.com/eggie-admin/hydra-shell-android/releases/latest`
+Inside the cockpit, `INSTALL / UPDATE` opens the canonical GitHub Releases `latest` page over HTTPS. Android keeps final package-install authority and asks the user to confirm installation or update.
 
-A signed `LuHm OS` APK and its checksum/signature evidence can be attached to the release by the remote pipeline. On stock Android, installation is always user-confirmed through Android's normal package installer.
+The bootstrap design deliberately does not require root, a privileged installer service, or a broad package-install permission.
 
-The in-app Update Portal should hand the user to this trusted HTTPS release surface rather than requesting silent-install authority. The app itself does not need `REQUEST_INSTALL_PACKAGES` for this bootstrap design.
+Secure Folder is treated as a separate protected client instance of the same signed APK. It does not own the build forge or signing material.
 
-## SM-X400 Google Play test lane
+## Cache strategy
 
-The unrooted Samsung SM-X400 is a cockpit and compatibility target, not a second source of truth and not a build server. Its lane is defined in:
+Cache only disposable build inputs:
 
-- `docs/SMX400_PLAY_TESTING_LANE.md`
-- `project/hydra/samsung/android/apk/sm-x400-play-testing.manifest.json`
+- npm download cache;
+- Gradle dependency/build cache through `gradle/actions/setup-gradle`;
+- verified Godot editor/export-template archives.
 
-The tablet may use Google Play tooling, GitHub, ChatGPT, browser and other operator apps, but LuHm OS core launch must remain standalone and must not depend on Termux, Acode, VNC, Secure Folder, root or a localhost daemon.
+Do not cache secrets, keystores, generated APK signatures, user data, or private model assets.
 
-## Remote services
+## Donor pin rule
 
-- GitHub: canonical source history, CI, release artifacts and provenance.
-- Google Cloud: optional keyless remote infrastructure through GitHub OIDC. Long-lived cloud keys do not belong in Git or the APK.
-- OpenAI: remote reasoning/tool proposal behind policy gates.
-- Hugging Face: model registry/forge with provenance and license gates.
-- Google Drive: controlled recovery/artifact mirror where applicable, never a silent code-authority override.
+The Android source currently lives in `eggie-admin/vue-headless-cms`. Pulling a fixed commit gives the compile bot a deterministic Android body while Hydra Shell stays focused on integration policy, CI and release contracts.
 
-Optional provider failure must not prevent the base Android application from launching.
+Changing the donor pin is a dependency promotion and must be reviewed like a source update.
 
-## Promotion rules
+## Evidence contract
+
+Expected Android evidence includes:
+
+- test and doctrine results;
+- APK SHA-256;
+- APK signature / signer fingerprint;
+- package badging;
+- `arm64-v8a` evidence;
+- minimum/target SDK evidence;
+- 16 KiB zipalign/native compatibility evidence;
+- physical-device install and launch proof for every promoted Samsung family;
+- same-signer update continuity proof before declaring the universal lane GREEN.
+
+## Speed rules for agents
 
 - inspect before editing;
-- change the smallest surface;
-- keep donor revisions immutable once promoted;
+- edit the smallest surface;
 - do not regenerate lock files unless required;
-- do not bump toolchains during unrelated work;
-- never disable tests to obtain GREEN;
-- do not put private keys, API tokens or keystores in Git, APK assets, logs or prompts;
-- no automatic root, silent package installation or unrestricted model shell;
-- public publication, signer changes and production promotion remain human approval gates.
-
-## GREEN means evidence
-
-A release claim is GREEN only when the relevant CI actually ran and produced evidence: installable APK, expected package ID, persistent signing identity, SHA-256, ABI/SDK checks, 16 KiB alignment and required policy tests. Documentation alone is not build evidence.
+- do not bump toolchains during unrelated fixes;
+- do not disable tests to make a build pass;
+- do not download model weights during APK compilation;
+- do not start optional cloud providers during the compile path;
+- cancel stale runs and repair the newest failure.
