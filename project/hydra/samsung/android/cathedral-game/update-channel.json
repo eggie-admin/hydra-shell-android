@@ -14,11 +14,17 @@
   "public_publish": "manual_only",
   "crown_gate": "local_evidence_ledger_no_background_probe",
   "ui_mutation": "LUHM_OS_WINDOWS_VN_CATHEDRAL_1.0.8",
+  "reconciliation": "CATHEDRAL_VN_PLUS_PHYSICAL_PROOF",
   "world_first": true,
   "windows_vn_shell": true,
+  "physical_proof_harness": true,
+  "physical_proof_save_path": "user://luhmos_physical_proof.cfg",
+  "physical_proof_modes": ["SPRITE_BUBBLE", "WIDGET_DECK", "FULL_COCKPIT"],
+  "physical_proof_realms": ["GAME", "ADMIN", "SYSTEM"],
   "cockpit_auto_open": false,
   "cockpit_summon": "Lum micro menu -> CROWN -> explicit user gesture",
   "desktop_summon": "Lum micro menu -> DESK or small window launcher",
-  "doctrine": "WHISPER_CROSSING_RECKONING + PERSONAL_RECKONING_PARLEY + GODOT_WORLD_FIRST + WINDOWS_VN_SHELL",
-  "notes": "1.0.8 keeps the native Godot 4 world as the primary app layer and adds an original lightweight desktop/window interaction model plus bottom visual-novel dialogue dock. The persistent HUD remains minimal. Settings, Codex, Quest and Front/Back status open as floating windows. The full WebView cockpit still requires an explicit CROWN action. Android enforces package, signer, versionCode and installer confirmation."
+  "doctrine": "WHISPER_CROSSING_RECKONING + PERSONAL_RECKONING_PARLEY + GODOT_WORLD_FIRST + WINDOWS_VN_SHELL + PHYSICAL_PROOF_HARNESS",
+  "promotion_state": "CANDIDATE_ONLY_STABLE_1_0_7_UNCHANGED_UNTIL_EXPLICIT_PROMOTION",
+  "notes": "1.0.8 reconciliation keeps the native Godot 4 world as the primary app layer, adds the original lightweight desktop/window interaction model and bottom visual-novel dialogue dock, and integrates the local-only physical proof receipt for presentation mode, realm, session, savepoint counter and restored session. The persistent HUD remains minimal. The full WebView cockpit still requires an explicit CROWN action. Proof mode/realm changes never grant authority. Android enforces package, signer, versionCode and installer confirmation."
 }
