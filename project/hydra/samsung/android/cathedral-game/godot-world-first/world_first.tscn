@@ -169,7 +169,7 @@ offset_right = -24.0
 offset_bottom = 58.0
 theme_override_colors/font_color = Color(0.44, 0.95, 0.9, 1)
 theme_override_font_sizes/font_size = 18
-text = "♡  ◈  WHISPER"
+text = "♡  ◈  GAME"
 horizontal_alignment = 2
 
 [node name="MapSigil" type="Button" parent="HUD/HUDRoot"]
@@ -230,7 +230,7 @@ theme_override_constants/separation = 8
 [node name="Title" type="Label" parent="HUD/HUDRoot/MicroMenu/VBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
-text = "LUM // QUICK SIGILS"
+text = "LUM // WIDGET DECK"
 
 [node name="Pet" type="Button" parent="HUD/HUDRoot/MicroMenu/VBox"]
 layout_mode = 2
@@ -246,31 +246,53 @@ text = "PARLEY"
 
 [node name="Cockpit" type="Button" parent="HUD/HUDRoot/MicroMenu/VBox"]
 layout_mode = 2
-text = "CROWN / COCKPIT"
+text = "CROWN / FULL COCKPIT"
 
 [node name="CockpitOverlay" type="PanelContainer" parent="HUD/HUDRoot"]
 visible = false
 layout_mode = 0
 anchor_left = 0.06
-anchor_top = 0.12
+anchor_top = 0.10
 anchor_right = 0.94
-anchor_bottom = 0.88
+anchor_bottom = 0.90
 theme_override_styles/panel = SubResource("Style_hud")
 
 [node name="VBox" type="VBoxContainer" parent="HUD/HUDRoot/CockpitOverlay"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 10
 
 [node name="Title" type="Label" parent="HUD/HUDRoot/CockpitOverlay/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.8, 0.42, 1)
 theme_override_font_sizes/font_size = 26
-text = "CROWN // ADMIN COCKPIT"
+text = "CROWN // FULL COCKPIT"
 
 [node name="State" type="Label" parent="HUD/HUDRoot/CockpitOverlay/VBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "GAME ≠ ADMIN\nWHISPER · CROSSING · RECKONING\nNo silent install · no arbitrary shell"
+
+[node name="ProofState" type="Label" parent="HUD/HUDRoot/CockpitOverlay/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.58, 0.96, 0.86, 1)
+theme_override_font_sizes/font_size = 16
+text = "PHYSICAL PROOF HARNESS\nMODE: FULL_COCKPIT\nREALM: ADMIN\nSESSION: pending\nSAVEPOINT: 0\nRESTORED SESSION: NONE"
+
+[node name="RealmSwitch" type="HBoxContainer" parent="HUD/HUDRoot/CockpitOverlay/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Game" type="Button" parent="HUD/HUDRoot/CockpitOverlay/VBox/RealmSwitch"]
+layout_mode = 2
+text = "GAME"
+
+[node name="Admin" type="Button" parent="HUD/HUDRoot/CockpitOverlay/VBox/RealmSwitch"]
+layout_mode = 2
+text = "ADMIN"
+
+[node name="System" type="Button" parent="HUD/HUDRoot/CockpitOverlay/VBox/RealmSwitch"]
+layout_mode = 2
+text = "SYSTEM"
 
 [node name="Update" type="Button" parent="HUD/HUDRoot/CockpitOverlay/VBox"]
 layout_mode = 2
@@ -282,9 +304,12 @@ text = "LOG // READ ONLY"
 
 [node name="Close" type="Button" parent="HUD/HUDRoot/CockpitOverlay/VBox"]
 layout_mode = 2
-text = "RETURN TO WORLD"
+text = "RETURN TO SPRITE BUBBLE"
 
 [connection signal="pressed" from="HUD/HUDRoot/LumBubble" to="." method="_on_lum_bubble_pressed"]
 [connection signal="pressed" from="HUD/HUDRoot/ContextAction" to="." method="_on_context_action_pressed"]
 [connection signal="pressed" from="HUD/HUDRoot/MicroMenu/VBox/Cockpit" to="." method="_on_cockpit_pressed"]
+[connection signal="pressed" from="HUD/HUDRoot/CockpitOverlay/VBox/RealmSwitch/Game" to="." method="_on_realm_game_pressed"]
+[connection signal="pressed" from="HUD/HUDRoot/CockpitOverlay/VBox/RealmSwitch/Admin" to="." method="_on_realm_admin_pressed"]
+[connection signal="pressed" from="HUD/HUDRoot/CockpitOverlay/VBox/RealmSwitch/System" to="." method="_on_realm_system_pressed"]
 [connection signal="pressed" from="HUD/HUDRoot/CockpitOverlay/VBox/Close" to="." method="_on_cockpit_close_pressed"]
