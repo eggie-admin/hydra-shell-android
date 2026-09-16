@@ -14,8 +14,10 @@ on:
       - 'project/hydra/**'
       - 'docs/**'
       - 'fdroid/**'
+      - 'AGENTS.md'
       - '.github/workflows/luhmos-ultima-debug-apk.yml'
       - '.github/workflows/luhmos-fdroid-public-release.yml'
+      - '.github/workflows/luhmos-crown-gate-apk.yml'
 
 permissions:
   contents: read
@@ -108,12 +110,30 @@ jobs:
           ! grep -R -n 'http://127.0.0.1' _forge/luhmos-android/godot/android-plugin/plugin/src/main/java
           echo 'LUHMOS_ULTIMA_CONTRACT_GREEN'
 
-      - name: Assert production forge is separate and manual
+      - name: Assert Crown forge is isolated and public publishing is manual
         shell: bash
         run: |
           set -euo pipefail
-          test -f .github/workflows/luhmos-fdroid-public-release.yml
-          grep -q 'workflow_dispatch:' .github/workflows/luhmos-fdroid-public-release.yml
-          grep -q -- '--export-release' .github/workflows/luhmos-fdroid-public-release.yml
-          grep -q 'publish_public_mirror' .github/workflows/luhmos-fdroid-public-release.yml
+          PUBLIC='.github/workflows/luhmos-fdroid-public-release.yml'
+          CROWN='.github/workflows/luhmos-crown-gate-apk.yml'
+          test -f "$PUBLIC"
+          test -f "$CROWN"
+
+          grep -q 'workflow_dispatch:' "$PUBLIC"
+          grep -q 'contents: read' "$PUBLIC"
+          grep -q 'LUHMOS_PUBLIC_PUBLISH=OFF' "$PUBLIC"
+          grep -q 'KAI9000_PUBLIC_RELEASE_GUARD_GREEN' "$PUBLIC"
+          ! grep -q '^  push:' "$PUBLIC"
+          ! grep -q -- '--export-release' "$PUBLIC"
+          ! grep -q 'contents: write' "$PUBLIC"
+
+          grep -q 'LuHm Crown Gate APK' "$CROWN"
+          grep -q -- '--export-release' "$CROWN"
+          grep -q 'EXPECTED_SIGNER_SHA256' "$CROWN"
+          grep -q 'silent_install=false' "$CROWN"
+          grep -q 'public_publish=manual_only' "$CROWN"
+          grep -q 'permissions:' "$CROWN"
+          grep -q 'contents: read' "$CROWN"
+
           echo 'DEBUG_CI_CANNOT_PUBLISH_RELEASE'
+          echo 'CROWN_FORGE_ISOLATION_GREEN'
