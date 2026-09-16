@@ -4,6 +4,7 @@ import json
 import os
 from typing import Any
 
+import httpx
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
@@ -119,7 +120,7 @@ def lum_mesh(req: LumMeshRequest) -> dict[str, Any]:
         )
     except HTTPException:
         raise
-    except (ValueError, httpx.HTTPError) as exc:  # type: ignore[name-defined]
+    except (ValueError, httpx.HTTPError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except Exception as exc:
         raise HTTPException(
