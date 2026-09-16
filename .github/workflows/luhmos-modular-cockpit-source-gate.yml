@@ -1,0 +1,127 @@
+name: LuHm Modular Cockpit Source Gate
+
+on:
+  push:
+    branches:
+      - luhmos/modular-sprite-cockpit-seal-20260916
+    paths:
+      - 'project/hydra/samsung/android/cathedral-game/**'
+      - 'project/hydra/doctrine/LUHM_MODULAR_SPRITE_COCKPIT_SOURCE_SEAL_CANDIDATE_20260916.json'
+      - 'docs/LUHM_CROWN_GATE.md'
+      - 'docs/LUHM_MODULAR_SPRITE_COCKPIT.md'
+      - 'lumh-os/kai9000/AI_MAGIC_DOCTRINE.md'
+      - '.github/copilot-instructions.md'
+      - '.github/workflows/luhmos-modular-cockpit-source-gate.yml'
+  pull_request:
+    branches:
+      - luhmos-main
+    paths:
+      - 'project/hydra/samsung/android/cathedral-game/**'
+      - 'project/hydra/doctrine/LUHM_MODULAR_SPRITE_COCKPIT_SOURCE_SEAL_CANDIDATE_20260916.json'
+      - 'docs/LUHM_CROWN_GATE.md'
+      - 'docs/LUHM_MODULAR_SPRITE_COCKPIT.md'
+      - 'lumh-os/kai9000/AI_MAGIC_DOCTRINE.md'
+      - '.github/copilot-instructions.md'
+      - '.github/workflows/luhmos-modular-cockpit-source-gate.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: luhmos-modular-cockpit-source-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-contract:
+    name: Modular Cockpit Source Contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+
+      - name: Verify source topology and syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          GAME='project/hydra/samsung/android/cathedral-game'
+          test -f "$GAME/final-form.js"
+          test -f "$GAME/final-form.css"
+          test -f "$GAME/modular-cockpit.css"
+          test -f "$GAME/tests/modular-cockpit.test.mjs"
+          grep -q 'KAI9000_MODULAR_SPRITE_COCKPIT_V1' "$GAME/final-form.js"
+          grep -q 'KAI9000_FOLKLORE_CROSSING_V1' "$GAME/final-form.js"
+          grep -q 'KAI9000_PERSONAL_RECKONING_PARLEY_V1' "$GAME/final-form.js"
+          grep -q '@import url("modular-cockpit.css")' "$GAME/final-form.css"
+          grep -q 'prefers-reduced-motion' "$GAME/modular-cockpit.css"
+          node --check "$GAME/final-form.js"
+          node "$GAME/tests/modular-cockpit.test.mjs"
+
+      - name: Verify GAME ADMIN firewall and no execution escape hatch
+        shell: bash
+        run: |
+          set -euo pipefail
+          GAME='project/hydra/samsung/android/cathedral-game'
+          grep -q 'DENY_REALM_FIREWALL' "$GAME/final-form.js"
+          grep -q 'AWAITING_EXACT_PROFESSOR_AUTHORIZATION' "$GAME/final-form.js"
+          grep -q 'executed:false' "$GAME/final-form.js"
+          grep -q 'ROLEPLAY VOICE\|ffParleyVoice' "$GAME/final-form.js"
+          grep -q 'TRUTH STRIP' "$GAME/final-form.js"
+          grep -q 'MACHINE ENVELOPE\|ffMachineEnvelope' "$GAME/final-form.js"
+          ! grep -nE '\beval[[:space:]]*\(|new[[:space:]]+Function[[:space:]]*\(' "$GAME/final-form.js"
+          ! grep -nE '\b(XMLHttpRequest|WebSocket|EventSource)\b' "$GAME/final-form.js"
+          ! grep -nE '(OPENAI_API_KEY|HF_TOKEN|BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY|oauth.*token|refresh_token)' "$GAME/final-form.js" "$GAME/modular-cockpit.css"
+
+      - name: Verify active doctrine alignment
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'CURRENT CANONICAL ROLEPLAY / AGENT DOCTRINE' lumh-os/kai9000/AI_MAGIC_DOCTRINE.md
+          grep -q 'WHISPER / GREEN' lumh-os/kai9000/AI_MAGIC_DOCTRINE.md
+          grep -q 'CROSSING / AMBER' lumh-os/kai9000/AI_MAGIC_DOCTRINE.md
+          grep -q 'RECKONING / RED' lumh-os/kai9000/AI_MAGIC_DOCTRINE.md
+          grep -q 'ULTIMA.*historical compatibility' lumh-os/kai9000/AI_MAGIC_DOCTRINE.md
+          grep -q 'Canonical integration branch: `luhmos-main`' .github/copilot-instructions.md
+          grep -q 'SOURCE IMPLEMENTATION CANDIDATE' docs/LUHM_MODULAR_SPRITE_COCKPIT.md
+          grep -q 'final source-of-truth promotion' docs/LUHM_CROWN_GATE.md
+
+      - name: Verify seal candidate when present
+        shell: bash
+        run: |
+          set -euo pipefail
+          CANDIDATE='project/hydra/doctrine/LUHM_MODULAR_SPRITE_COCKPIT_SOURCE_SEAL_CANDIDATE_20260916.json'
+          if [ -f "$CANDIDATE" ]; then
+            python3 - "$CANDIDATE" <<'PY'
+          import json,sys
+          d=json.load(open(sys.argv[1],encoding='utf-8'))
+          assert d['schema']=='luhm.os.source_seal_candidate.v1'
+          assert d['status']=='SOURCE_GREEN_READY_FOR_FINAL_SOT_RECKONING'
+          assert d['origin']['branch']=='luhmos-main'
+          assert d['origin']['sha']=='f20d0eb171bfa4a2154f537a3dff11c6c4117801'
+          assert d['candidate']['branch']=='luhmos/modular-sprite-cockpit-seal-20260916'
+          assert d['evidence']['source_gate']['conclusion']=='success'
+          assert d['gates']['source_green'] is True
+          assert d['gates']['build_green_for_modular_candidate'] is False
+          assert d['gates']['device_green_for_modular_candidate'] is False
+          assert d['gates']['final_sot_promoted'] is False
+          assert d['public_publish']=='OFF'
+          PY
+          fi
+
+      - name: Source cleanliness
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check HEAD^ HEAD || true
+          ! git grep -nE 'delete\.me/acode\.apk|sephiroth|gpgkey\.bin' -- \
+            project/hydra/samsung/android/cathedral-game \
+            docs/LUHM_MODULAR_SPRITE_COCKPIT.md \
+            lumh-os/kai9000/AI_MAGIC_DOCTRINE.md
+          echo 'LUHM_MODULAR_SPRITE_COCKPIT_SOURCE_GREEN'

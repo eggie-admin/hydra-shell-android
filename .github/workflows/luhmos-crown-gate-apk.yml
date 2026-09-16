@@ -3,14 +3,17 @@ name: LuHm Crown Gate APK
 on:
   push:
     branches:
-      - luhmos/crown-gate-1.0.5-20260916
+      - luhmos/modular-sprite-cockpit-seal-20260916
       - luhmos-main
     paths:
       - 'project/hydra/samsung/android/cathedral-game/**'
       - 'ultima/ollama-ffmpeg-antenna-v3/lum_agent/**'
       - 'ultima/ollama-ffmpeg-antenna-v3/tests/test_lum_agent.py'
       - 'docs/LUHM_CROWN_GATE.md'
+      - 'docs/LUHM_MODULAR_SPRITE_COCKPIT.md'
+      - 'lumh-os/kai9000/AI_MAGIC_DOCTRINE.md'
       - 'AGENTS.md'
+      - '.github/copilot-instructions.md'
       - '.github/workflows/luhmos-crown-gate-apk.yml'
   workflow_dispatch:
 
@@ -25,10 +28,10 @@ env:
   DONOR_REPO: eggie-admin/vue-headless-cms
   DONOR_REF: 96c23c87713800fc17c80b6a972ee2e93f1bb4b1
   PACKAGE_ID: art.eggiebagelface.luhmos
-  VERSION_NAME: '1.0.5'
-  VERSION_CODE: '105'
-  PREVIOUS_VERSION_CODE: '104'
-  APK_NAME: luhmos-crown-gate-1.0.5.apk
+  VERSION_NAME: '1.0.6'
+  VERSION_CODE: '106'
+  PREVIOUS_VERSION_CODE: '105'
+  APK_NAME: luhmos-modular-cockpit-1.0.6.apk
   KEY_ALIAS: luhmos-release
   EXPECTED_SIGNER_SHA256: 598d7272d62dbebb71972d6164822636ad1439cd35631d0cd43321d003c92142
   GODOT_RELEASE: 4.7.2-stable
@@ -40,7 +43,7 @@ env:
 
 jobs:
   crown-gate:
-    name: Signed Crown Gate Same-Signer Update
+    name: Signed Modular Cockpit Same-Signer Update
     runs-on: ubuntu-24.04
     timeout-minutes: 50
     steps:
@@ -83,6 +86,26 @@ jobs:
           python -m pip install -e . pytest
           python -m pytest -q tests/test_lum_agent.py
           echo 'LUHMOS_LUM_AGENT_CROWN_GREEN'
+
+      - name: Modular cockpit source gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          GAME='project/hydra/samsung/android/cathedral-game'
+          test -f "$GAME/modular-cockpit.css"
+          test -f "$GAME/tests/modular-cockpit.test.mjs"
+          node --check "$GAME/final-form.js"
+          node "$GAME/tests/modular-cockpit.test.mjs"
+          grep -q 'KAI9000_MODULAR_SPRITE_COCKPIT_V1' "$GAME/final-form.js"
+          grep -q 'KAI9000_FOLKLORE_CROSSING_V1' "$GAME/final-form.js"
+          grep -q 'KAI9000_PERSONAL_RECKONING_PARLEY_V1' "$GAME/final-form.js"
+          grep -q 'DENY_REALM_FIREWALL' "$GAME/final-form.js"
+          grep -q 'AWAITING_EXACT_PROFESSOR_AUTHORIZATION' "$GAME/final-form.js"
+          grep -q 'executed:false' "$GAME/final-form.js"
+          grep -q 'prefers-reduced-motion' "$GAME/modular-cockpit.css"
+          ! grep -nE '\beval[[:space:]]*\(|new[[:space:]]+Function[[:space:]]*\(' "$GAME/final-form.js"
+          ! grep -nE '\b(XMLHttpRequest|WebSocket|EventSource)\b' "$GAME/final-form.js"
+          echo 'LUHM_MODULAR_SPRITE_COCKPIT_SOURCE_GREEN'
 
       - name: Install Android SDK 36
         shell: bash
@@ -149,7 +172,7 @@ jobs:
           (cd "$PATCH_DIR" && zip -q -r "$TEMPLATE_DIR/android_source.zip.new" .)
           mv "$TEMPLATE_DIR/android_source.zip.new" "$TEMPLATE_DIR/android_source.zip"
 
-      - name: Validate and compose Crown Gate Cathedral
+      - name: Validate and compose Modular Sprite Cockpit Cathedral
         shell: bash
         run: |
           set -euo pipefail
@@ -161,6 +184,7 @@ jobs:
           test -f "$GAME/index.html"
           test -f "$GAME/final-form.css"
           test -f "$GAME/final-form.js"
+          test -f "$GAME/modular-cockpit.css"
           test -f "$GAME/update-channel.json"
           test -f "$CLEARED/PROMOTION_MANIFEST.json"
           test -f "$CLEARED/secondary-motion-profile.json"
@@ -168,6 +192,7 @@ jobs:
           grep -q 'KAI9000_CATHEDRAL_GAME_V1' "$GAME/index.html"
           grep -q 'KAI9000_CROWN_GATE_UI_V1' "$GAME/final-form.css"
           grep -q 'KAI9000_CROWN_GATE_V1' "$GAME/final-form.js"
+          grep -q 'KAI9000_MODULAR_SPRITE_COCKPIT_V1' "$GAME/final-form.js"
           grep -q 'LOCAL PROOF CHECKLIST COMPLETE' "$GAME/final-form.js"
           ! grep -R -nE 'openai-api-key|env\.local|gpgkey\.bin|sephiroth|delete\.me/acode\.apk' "$GAME"
           ! grep -nE '\b(fetch|XMLHttpRequest|WebSocket|EventSource)\b' "$GAME/final-form.js"
@@ -179,8 +204,8 @@ jobs:
           promo=json.load(open(sys.argv[2],encoding='utf-8'))
           profile=json.load(open(sys.argv[3],encoding='utf-8'))
           assert update['package']=='art.eggiebagelface.luhmos'
-          assert update['current_version_name']=='1.0.5'
-          assert update['current_version_code']==105
+          assert update['current_version_name']=='1.0.6'
+          assert update['current_version_code']==106
           assert update['signer_sha256']=='598d7272d62dbebb71972d6164822636ad1439cd35631d0cd43321d003c92142'
           assert update['update_rule']=='same_package_same_signer_higher_version_code'
           assert update['silent_install'] is False
@@ -188,6 +213,7 @@ jobs:
           assert update['orientation']=='portrait'
           assert update['public_publish']=='manual_only'
           assert update['crown_gate']=='local_evidence_ledger_no_background_probe'
+          assert update['ui_mutation']=='KAI9000_LUHM_MODULAR_SPRITE_COCKPIT_20260916'
           assert promo['integrity']['multipart_pack']['crc']=='GREEN'
           assert promo['integrity']['multipart_pack']['provenance']=='MIXED_BLOCKED'
           assert profile['engine']['version']=='4.7.2'
@@ -271,7 +297,7 @@ jobs:
           echo "GODOT_ANDROID_KEYSTORE_RELEASE_USER=$KEY_ALIAS" >> "$GITHUB_ENV"
           echo "GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD=$ANDROID_KS_PASS" >> "$GITHUB_ENV"
 
-      - name: Export signed Crown Gate APK
+      - name: Export signed Modular Cockpit APK
         shell: bash
         run: |
           set -euo pipefail
@@ -290,7 +316,7 @@ jobs:
             "$GITHUB_WORKSPACE/build/release/$APK_NAME"
           test -s "build/release/$APK_NAME"
 
-      - name: Hard verify Crown Gate same-signer update APK
+      - name: Hard verify Modular Cockpit same-signer update APK
         shell: bash
         run: |
           set -euo pipefail
@@ -314,6 +340,7 @@ jobs:
           grep -q 'assets/cms/index.html' build/release/contents.txt
           grep -q 'assets/cms/final-form.css' build/release/contents.txt
           grep -q 'assets/cms/final-form.js' build/release/contents.txt
+          grep -q 'assets/cms/modular-cockpit.css' build/release/contents.txt
           grep -q 'assets/cms/update-channel.json' build/release/contents.txt
           ! grep -q 'com.termux' build/release/permissions.txt
           ! grep -Eqi 'openai-api-key|env\.local|gpgkey\.bin|sephiroth|delete\.me/acode\.apk' build/release/contents.txt
@@ -322,7 +349,7 @@ jobs:
           test "$(cat build/release/apk-signer-sha256.txt)" = "$EXPECTED_SIGNER_SHA256"
 
           cat > build/release/CROWN_GATE_RECEIPT.txt <<EOF
-          KAI9000_LUHM_CROWN_GATE_BUILD_GREEN
+          KAI9000_LUHM_MODULAR_SPRITE_COCKPIT_BUILD_GREEN
           version=${VERSION_NAME}/${VERSION_CODE}
           previous_version_code=${PREVIOUS_VERSION_CODE}
           package=${PACKAGE_ID}
@@ -331,18 +358,19 @@ jobs:
           target_sdk=36
           abi=arm64-v8a
           orientation=portrait
+          modular_cockpit_source_test=required_and_passed
           lum_agent_authority_test=required_and_passed
           public_publish=manual_only
           install_confirmation=required
           silent_install=false
           physical_device_proof=pending_human_observation
           EOF
-          echo 'LUHMOS_CROWN_GATE_APK_GREEN'
+          echo 'LUHMOS_MODULAR_COCKPIT_APK_GREEN'
 
-      - name: Upload signed Crown Gate APK and proof
+      - name: Upload signed Modular Cockpit APK and proof
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: luhmos-crown-gate-${{ env.VERSION_NAME }}
+          name: luhmos-modular-cockpit-${{ env.VERSION_NAME }}
           path: |
             build/release/${{ env.APK_NAME }}
             build/release/sha256.txt
