@@ -95,12 +95,24 @@ jobs:
         run: |
           set -euo pipefail
           route="${HEAD}->${BASE}"
+
           case "$route" in
             'luhmos/ai-logic->luhmos-main'|'luhmos/frontend->luhmos-main'|'luhmos/backend->luhmos-main'|'luhmos-main->luhmos/testing'|'luhmos/testing->luhmos/proposed'|'luhmos/proposed->luhmos/beta'|'luhmos/beta->luhmos/stable')
               echo 'LUHMOS_PROMOTION_DIRECTION_GREEN'
-              ;;
-            *)
-              echo "Unsupported LuHm OS PR direction: $HEAD -> $BASE" >&2
-              exit 1
+              exit 0
               ;;
           esac
+
+          if [ "$BASE" = 'luhmos-main' ]; then
+            case "$HEAD" in
+              luhmos/testing|luhmos/proposed|luhmos/beta|luhmos/stable|luhmos-main)
+                ;;
+              luhmos/*)
+                echo "LUHMOS_FEATURE_PROMOTION_GREEN: $HEAD -> $BASE"
+                exit 0
+                ;;
+            esac
+          fi
+
+          echo "Unsupported LuHm OS PR direction: $HEAD -> $BASE" >&2
+          exit 1
