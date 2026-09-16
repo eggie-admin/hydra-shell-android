@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "project": "LuHm OS",
+  "platform_scope": "samsung-android-only",
+  "package": "art.eggiebagelface.luhmos",
+  "canonical_product_branch": "luhmos-main",
+  "paid_pro_development_branch": "luhmos/dev/samsung-android-paid-pro",
+  "promotion_order": [
+    "testing",
+    "proposed",
+    "preview",
+    "beta",
+    "stable"
+  ],
+  "channels": {
+    "testing": {
+      "branch": "luhmos/testing",
+      "tag_pattern": "vX.Y.Z-testing.N",
+      "github_release": "draft_prerelease",
+      "requires": ["source_gate", "secret_scan", "ci_smoke"]
+    },
+    "proposed": {
+      "branch": "luhmos/proposed",
+      "tag_pattern": "vX.Y.Z-proposed.N",
+      "github_release": "draft_prerelease",
+      "requires": ["testing_receipt", "artifact_hash", "review_candidate"]
+    },
+    "preview": {
+      "branch": "luhmos/preview",
+      "tag_pattern": "vX.Y.Z-preview.N",
+      "github_release": "prerelease",
+      "requires": ["proposed_receipt", "controlled_tester_ready"]
+    },
+    "beta": {
+      "branch": "luhmos/beta",
+      "tag_pattern": "vX.Y.Z-beta.N",
+      "github_release": "prerelease",
+      "requires": ["preview_receipt", "broader_test_ready", "signer_fingerprint"]
+    },
+    "stable": {
+      "branch": "luhmos/stable",
+      "tag_pattern": "vX.Y.Z",
+      "github_release": "normal_release",
+      "requires": ["beta_receipt", "physical_samsung_proof", "artifact_sha256", "signer_fingerprint", "professor_release_approval"]
+    }
+  },
+  "authority": {
+    "ci_success_grants_release_authority": false,
+    "paid_service_status_grants_release_authority": false,
+    "stable_publish_requires_human_approval": true
+  },
+  "security": {
+    "secrets_in_repo": false,
+    "signing_keys_in_repo": false,
+    "payment_credentials_in_repo": false
+  }
+}
