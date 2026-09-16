@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="620" viewBox="0 0 420 620">
+  <defs>
+    <linearGradient id="hair" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff1b4"/><stop offset="1" stop-color="#e6c36f"/></linearGradient>
+    <linearGradient id="coat" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#24172d"/><stop offset="1" stop-color="#09070d"/></linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <g stroke-linecap="round" stroke-linejoin="round">
+    <path d="M112 132 C72 71 89 24 117 15 C112 64 137 86 156 111Z" fill="#f5e4bd" stroke="#6f3650" stroke-width="8"/>
+    <path d="M308 132 C348 71 331 24 303 15 C308 64 283 86 264 111Z" fill="#f5e4bd" stroke="#6f3650" stroke-width="8"/>
+    <path d="M104 160 C92 96 135 67 210 66 C286 68 327 104 314 170 L335 392 C292 442 250 464 210 466 C169 463 126 443 85 392Z" fill="url(#hair)" opacity=".97"/>
+    <ellipse cx="210" cy="193" rx="100" ry="105" fill="#9c324d" stroke="#e4679a" stroke-width="6"/>
+    <path d="M145 190 Q170 173 190 191" fill="none" stroke="#2c1024" stroke-width="8"/>
+    <path d="M230 191 Q252 173 276 190" fill="none" stroke="#2c1024" stroke-width="8"/>
+    <ellipse cx="169" cy="218" rx="18" ry="9" fill="#74f4ff" filter="url(#glow)"/>
+    <ellipse cx="251" cy="218" rx="18" ry="9" fill="#74f4ff" filter="url(#glow)"/>
+    <path d="M174 262 Q210 286 246 260" fill="none" stroke="#2d1022" stroke-width="8"/>
+    <path d="M146 309 L210 346 L275 309 L300 405 L267 566 L153 566 L120 405Z" fill="url(#coat)" stroke="#4b264d" stroke-width="7"/>
+    <path d="M176 326 L210 350 L244 326 L225 381 L195 381Z" fill="#c43d64"/>
+    <path d="M196 381 L224 381 L241 479 L210 503 L179 479Z" fill="#a92f4f"/>
+    <path d="M120 367 Q80 392 69 455 Q58 515 93 559" fill="none" stroke="#32111f" stroke-width="12"/>
+    <path d="M91 558 l18 -10 l-8 21 z" fill="#32111f"/>
+    <path d="M300 382 Q346 409 347 463 Q347 507 323 538" fill="none" stroke="#32111f" stroke-width="9"/>
+    <path d="M323 538 l17 -4 l-11 16 z" fill="#32111f"/>
+    <path d="M145 566 L113 604 H186 L200 566Z" fill="#111017"/>
+    <path d="M275 566 L307 604 H234 L220 566Z" fill="#111017"/>
+    <rect x="118" y="548" width="75" height="23" rx="8" fill="#15111d" stroke="#7c5d86" stroke-width="4"/>
+    <rect x="227" y="548" width="75" height="23" rx="8" fill="#15111d" stroke="#7c5d86" stroke-width="4"/>
+  </g>
+</svg>

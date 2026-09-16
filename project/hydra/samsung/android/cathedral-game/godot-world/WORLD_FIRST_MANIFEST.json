@@ -1,0 +1,35 @@
+{
+  "schema": "luhmos.godot.world_first.v1",
+  "mutation": "LUHM_OS_GODOT_WORLD_FIRST_HUD_1.0.7",
+  "status": "SOURCE_CANDIDATE",
+  "engine": "Godot 4.7.2",
+  "main_layer": "native Godot 3D world",
+  "hud": "CanvasLayer minimal floating HUD",
+  "cockpit": "CathedralAndroid WebView opened only by explicit CROWN action",
+  "world": {
+    "zone": "Corktown Switchyard",
+    "style": "original Detroit-ish cathedral-tech procedural diorama",
+    "runtime_assets": "LuHm-authored SVG + generated Godot primitive geometry"
+  },
+  "persistent_hud": [
+    "quest sigil",
+    "map ping",
+    "context action",
+    "Lum floating icon",
+    "tiny status line"
+  ],
+  "lum_micro_menu": ["PET", "QUEST", "CROWN"],
+  "authority": {
+    "game_to_admin_escalation": false,
+    "cockpit_auto_open": false,
+    "crown_action": "explicit user gesture only",
+    "silent_install": false,
+    "public_publish": "OFF"
+  },
+  "rights": {
+    "lum_world_sprite.svg": "LUHM_ORIGINAL",
+    "lum_hud_icon.svg": "LUHM_ORIGINAL",
+    "procedural_geometry": "LUHM_ORIGINAL",
+    "third_party_private_reference_bundled": false
+  }
+}
