@@ -1,0 +1,240 @@
+name: LuHm Cathedral One-Click APK
+
+on:
+  push:
+    branches:
+      - luhmos-main
+    paths:
+      - 'project/hydra/samsung/android/cathedral-game/**'
+      - '.github/workflows/luhmos-cathedral-oneclick.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: luhmos-cathedral-oneclick
+  cancel-in-progress: true
+
+env:
+  DONOR_REPO: eggie-admin/vue-headless-cms
+  DONOR_REF: 96c23c87713800fc17c80b6a972ee2e93f1bb4b1
+  PACKAGE_ID: art.eggiebagelface.luhmos
+  VERSION_NAME: '1.0.1'
+  VERSION_CODE: '101'
+  APK_NAME: luhmos-cathedral-1.0.1.apk
+  KEY_ALIAS: luhmos-release
+  GODOT_RELEASE: 4.7.2-stable
+  GODOT_TEMPLATE_VERSION: 4.7.2.stable
+  GODOT_EDITOR_SHA256: cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4
+  GODOT_TEMPLATES_SHA256: f298490b8d44d934be425a5a65a51bf15f422428b229a06a6e11d9ffea248011
+  ANDROID_GRADLE_VERSION: 8.11.1
+  ANDROID_GRADLE_SHA256: f397b287023acdba1e9f6fc5ea72d22dd63669d59ed4a289a29b1a76eee151c6
+
+jobs:
+  apk:
+    name: Signed Cathedral APK
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout LuHm OS
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Checkout hardened Android forge
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: ${{ env.DONOR_REPO }}
+          ref: ${{ env.DONOR_REF }}
+          path: _forge/luhmos-android
+          persist-credentials: false
+
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a
+        with:
+          gradle-version: '8.13'
+          cache-cleanup: on-success
+
+      - name: Install Android SDK 36
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" 'platform-tools' 'build-tools;36.1.0' 'platforms;android-36'
+
+      - name: Install verified Godot and export templates
+        shell: bash
+        run: |
+          set -euo pipefail
+          CACHE="$HOME/.cache/luhmos/godot-4.7.2"
+          WORK="$RUNNER_TEMP/luhmos-godot"
+          mkdir -p "$CACHE" "$WORK"
+
+          curl --fail --location --retry 5 --retry-all-errors -o "$CACHE/godot.zip" \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v4.7.2-stable_linux.x86_64.zip"
+          echo "${GODOT_EDITOR_SHA256}  $CACHE/godot.zip" | sha256sum --check --strict
+
+          curl --fail --location --retry 5 --retry-all-errors -o "$CACHE/export_templates.tpz" \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v4.7.2-stable_export_templates.tpz"
+          echo "${GODOT_TEMPLATES_SHA256}  $CACHE/export_templates.tpz" | sha256sum --check --strict
+
+          GRADLE_ZIP="$CACHE/gradle-${ANDROID_GRADLE_VERSION}-bin.zip"
+          curl --fail --location --retry 5 --retry-all-errors -o "$GRADLE_ZIP" \
+            "https://services.gradle.org/distributions/gradle-${ANDROID_GRADLE_VERSION}-bin.zip"
+          echo "${ANDROID_GRADLE_SHA256}  $GRADLE_ZIP" | sha256sum --check --strict
+
+          unzip -q -o "$CACHE/godot.zip" -d "$WORK"
+          chmod +x "$WORK/Godot_v4.7.2-stable_linux.x86_64"
+          echo "GODOT_BIN=$WORK/Godot_v4.7.2-stable_linux.x86_64" >> "$GITHUB_ENV"
+
+          rm -rf "$WORK/templates"
+          mkdir -p "$WORK/templates"
+          unzip -q "$CACHE/export_templates.tpz" -d "$WORK/templates"
+          TEMPLATE_DIR="$HOME/.local/share/godot/export_templates/${GODOT_TEMPLATE_VERSION}"
+          mkdir -p "$TEMPLATE_DIR"
+          cp -a "$WORK/templates/templates/." "$TEMPLATE_DIR/"
+
+          PATCH_DIR="$WORK/android-source-patched"
+          mkdir -p "$PATCH_DIR"
+          unzip -q "$TEMPLATE_DIR/android_source.zip" -d "$PATCH_DIR"
+          WRAPPER_PROPS="$(find "$PATCH_DIR" -type f -path '*/gradle/wrapper/gradle-wrapper.properties' -print -quit)"
+          test -n "$WRAPPER_PROPS"
+          python3 - "$WRAPPER_PROPS" "$GRADLE_ZIP" "$ANDROID_GRADLE_SHA256" <<'PY'
+          from pathlib import Path
+          import sys
+          path = Path(sys.argv[1])
+          uri = Path(sys.argv[2]).resolve().as_uri()
+          digest = sys.argv[3]
+          lines = path.read_text(encoding='utf-8').splitlines()
+          out=[]; saw_url=False; saw_sha=False
+          for line in lines:
+              if line.startswith('distributionUrl='):
+                  out.append('distributionUrl=' + uri); saw_url=True
+              elif line.startswith('distributionSha256Sum='):
+                  out.append('distributionSha256Sum=' + digest); saw_sha=True
+              else:
+                  out.append(line)
+          if not saw_url:
+              raise SystemExit('missing Gradle distributionUrl')
+          if not saw_sha:
+              out.append('distributionSha256Sum=' + digest)
+          path.write_text('\n'.join(out) + '\n', encoding='utf-8')
+          PY
+          (cd "$PATCH_DIR" && zip -q -r "$TEMPLATE_DIR/android_source.zip.new" .)
+          mv "$TEMPLATE_DIR/android_source.zip.new" "$TEMPLATE_DIR/android_source.zip"
+
+      - name: Crown bundle Cathedral and patch version
+        shell: bash
+        run: |
+          set -euo pipefail
+          GAME="$GITHUB_WORKSPACE/project/hydra/samsung/android/cathedral-game"
+          PRESET="_forge/luhmos-android/godot/export_presets.cfg"
+          test -f "$GAME/index.html"
+          grep -q 'KAI9000_CATHEDRAL_GAME_V1' "$GAME/index.html"
+          ! grep -R -nE 'https?://' "$GAME"
+
+          rm -rf _forge/luhmos-android/godot/android-plugin/plugin/src/main/assets/cms
+          mkdir -p _forge/luhmos-android/godot/android-plugin/plugin/src/main/assets/cms
+          cp -a "$GAME"/. _forge/luhmos-android/godot/android-plugin/plugin/src/main/assets/cms/
+
+          python3 - "$PRESET" "$VERSION_CODE" "$VERSION_NAME" <<'PY'
+          from pathlib import Path
+          import re, sys
+          path = Path(sys.argv[1])
+          code, name = sys.argv[2], sys.argv[3]
+          text = path.read_text(encoding='utf-8')
+          text, c1 = re.subn(r'(?m)^version/code=\d+$', f'version/code={code}', text)
+          text, c2 = re.subn(r'(?m)^version/name="[^"]*"$', f'version/name="{name}"', text)
+          text, c3 = re.subn(r'(?m)^export_path="[^"]*"$', f'export_path="../build/android/luhmos-{name}.apk"', text, count=1)
+          if c1 != 1 or c2 != 1 or c3 != 1:
+              raise SystemExit(f'export preset patch failed: code={c1} name={c2} path={c3}')
+          path.write_text(text, encoding='utf-8')
+          PY
+          grep -q "version/code=${VERSION_CODE}" "$PRESET"
+          grep -q "version/name=\"${VERSION_NAME}\"" "$PRESET"
+
+          gradle -p _forge/luhmos-android/godot/android-plugin :plugin:assemble
+          rm -rf _forge/luhmos-android/godot/addons/CathedralAndroid
+          mkdir -p _forge/luhmos-android/godot/addons/CathedralAndroid/bin/debug _forge/luhmos-android/godot/addons/CathedralAndroid/bin/release
+          cp -a _forge/luhmos-android/godot/android-plugin/plugin/export_scripts_template/. _forge/luhmos-android/godot/addons/CathedralAndroid/
+          cp _forge/luhmos-android/godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-debug.aar _forge/luhmos-android/godot/addons/CathedralAndroid/bin/debug/
+          cp _forge/luhmos-android/godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-release.aar _forge/luhmos-android/godot/addons/CathedralAndroid/bin/release/
+
+      - name: Restore persistent release signing identity
+        shell: bash
+        env:
+          ANDROID_KS_B64: ${{ secrets.LUHMOS_ANDROID_KEYSTORE_B64 }}
+          ANDROID_KS_PASS: ${{ secrets.LUHMOS_ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_PASS: ${{ secrets.LUHMOS_ANDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          test -n "$ANDROID_KS_B64" && test -n "$ANDROID_KS_PASS" && test -n "$ANDROID_KEY_PASS"
+          test "$ANDROID_KS_PASS" = "$ANDROID_KEY_PASS"
+          ANDROID_KS="$RUNNER_TEMP/luhmos-release.keystore"
+          printf '%s' "$ANDROID_KS_B64" | base64 --decode > "$ANDROID_KS"
+          chmod 600 "$ANDROID_KS"
+          keytool -list -keystore "$ANDROID_KS" -storepass "$ANDROID_KS_PASS" -alias "$KEY_ALIAS" >/dev/null
+          echo "GODOT_ANDROID_KEYSTORE_RELEASE_PATH=$ANDROID_KS" >> "$GITHUB_ENV"
+          echo "GODOT_ANDROID_KEYSTORE_RELEASE_USER=$KEY_ALIAS" >> "$GITHUB_ENV"
+          echo "GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD=$ANDROID_KS_PASS" >> "$GITHUB_ENV"
+
+      - name: Export signed production APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.config/godot" build/release
+          cat > "$HOME/.config/godot/editor_settings-4.tres" <<EOF
+          [gd_resource type="EditorSettings" format=3]
+
+          [resource]
+          export/android/android_sdk_path = "$ANDROID_HOME"
+          export/android/java_sdk_path = "$JAVA_HOME"
+          EOF
+          "$GODOT_BIN" --headless --editor --path _forge/luhmos-android/godot --quit
+          "$GODOT_BIN" --headless --path _forge/luhmos-android/godot \
+            --install-android-build-template \
+            --export-release 'Android Release' \
+            "$GITHUB_WORKSPACE/build/release/$APK_NAME"
+          test -s "build/release/$APK_NAME"
+
+      - name: Hard verify final APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="build/release/$APK_NAME"
+          BT="$ANDROID_HOME/build-tools/36.1.0"
+          "$BT/apksigner" verify --verbose --print-certs "$APK" | tee build/release/signature.txt
+          "$BT/zipalign" -c -P 16 -v 4 "$APK" > build/release/zipalign.txt
+          "$BT/aapt" dump badging "$APK" | tee build/release/badging.txt
+          "$BT/aapt" dump permissions "$APK" > build/release/permissions.txt
+          unzip -l "$APK" > build/release/contents.txt
+          sha256sum "$APK" | tee build/release/sha256.txt
+          grep -q "package: name='${PACKAGE_ID}'" build/release/badging.txt
+          grep -q "versionCode='${VERSION_CODE}'" build/release/badging.txt
+          grep -q "versionName='${VERSION_NAME}'" build/release/badging.txt
+          grep -q "targetSdkVersion:'36'" build/release/badging.txt
+          grep -q "native-code: 'arm64-v8a'" build/release/badging.txt
+          grep -q 'assets/cms/index.html' build/release/contents.txt
+          ! grep -q 'com.termux' build/release/permissions.txt
+          grep -Eq 'Verified using v(2|3|4) scheme .*: true' build/release/signature.txt
+          sed -n 's/^Signer #1 certificate SHA-256 digest: //p' build/release/signature.txt | head -n1 > build/release/apk-signer-sha256.txt
+          echo 'LUHMOS_CATHEDRAL_ONECLICK_GREEN'
+
+      - name: Upload one-click APK
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: luhmos-cathedral-oneclick-${{ env.VERSION_NAME }}
+          path: |
+            build/release/${{ env.APK_NAME }}
+            build/release/sha256.txt
+            build/release/signature.txt
+            build/release/badging.txt
+            build/release/apk-signer-sha256.txt
+          if-no-files-found: error
+          retention-days: 30
