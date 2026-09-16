@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#080710">
+<title>LuHm OS // Cathedral</title>
+<style>
+:root{--bg:#080710;--panel:rgba(13,11,24,.78);--ink:#f7edf8;--muted:#b9adc1;--pink:#ff4b88;--violet:#8a5cff;--cyan:#59e5ff;--gold:#ffc76b;--red:#ff5e68;--x:0;--y:0}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}body{overflow-x:hidden}
+.scene{position:fixed;inset:0;overflow:hidden;z-index:-4;background:radial-gradient(circle at 70% 20%,#41205d 0,transparent 33%),linear-gradient(#100d20,#080710 58%,#030207)}
+.layer{position:absolute;inset:-8%;will-change:transform;transition:background .35s ease}
+.layer.sky{background:radial-gradient(circle at 50% 10%,#8847b244 0 10%,transparent 34%),linear-gradient(180deg,#161127,#06050a);transform:translate3d(calc(var(--x)*-.2px),calc(var(--y)*-.12px),0) scale(1.05)}
+.layer.city{background:repeating-linear-gradient(90deg,transparent 0 7%,#0d0b16 7.5% 10%,transparent 10.5% 16%),linear-gradient(180deg,transparent 42%,#110c1c 43% 100%);clip-path:polygon(0 42%,8% 35%,15% 47%,22% 25%,27% 50%,34% 33%,39% 51%,48% 22%,53% 48%,60% 36%,66% 50%,74% 26%,81% 45%,88% 32%,94% 48%,100% 37%,100% 100%,0 100%);transform:translate3d(calc(var(--x)*-.55px),calc(var(--y)*-.25px),0) scale(1.06)}
+.layer.neon{background:radial-gradient(circle at 18% 58%,#ff2e7840,transparent 14%),radial-gradient(circle at 78% 48%,#4eeaff35,transparent 15%),linear-gradient(115deg,transparent 0 42%,#ff4b881c 43% 44%,transparent 45% 100%);transform:translate3d(calc(var(--x)*-1px),calc(var(--y)*-.45px),0) scale(1.08)}
+.layer.fore{background:linear-gradient(180deg,transparent 70%,#030207 71%),repeating-linear-gradient(100deg,transparent 0 12%,#05040a 12.5% 13%,transparent 13.5% 24%);transform:translate3d(calc(var(--x)*-1.5px),calc(var(--y)*-.7px),0) scale(1.1)}
+.scan{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 3px,#fff 4px);opacity:.025;pointer-events:none}
+body[data-scene="date"] .sky{background:radial-gradient(circle at 50% 14%,#ef9bd933 0 11%,transparent 35%),linear-gradient(#201128,#080710)}body[data-scene="lab"] .neon{background:radial-gradient(circle at 25% 50%,#58e6ff40,transparent 16%),radial-gradient(circle at 72% 44%,#805cff44,transparent 18%),repeating-linear-gradient(90deg,transparent 0 12%,#59e5ff0d 12.5% 13%,transparent 13.5% 24%)}body[data-scene="furnace"] .sky{background:radial-gradient(circle at 50% 70%,#ff6a213b,transparent 22%),linear-gradient(#1a0b12,#050308)}
+.app{max-width:980px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top)) 14px calc(22px + env(safe-area-inset-bottom))}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}.brand b{font-size:18px;letter-spacing:.12em}.brand small{display:block;color:var(--muted);font-size:11px;margin-top:3px}.badge{font-size:10px;border:1px solid #ffffff24;padding:6px 9px;border-radius:999px;background:#07060bb8;color:#d8cce1}
+.grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(270px,.8fr);gap:12px}@media(max-width:760px){.grid{grid-template-columns:1fr}.side{order:-1}}
+.panel{background:var(--panel);border:1px solid #ffffff1d;border-radius:22px;box-shadow:0 18px 70px #0008,inset 0 1px #ffffff10;backdrop-filter:blur(14px);overflow:hidden}
+.stage{min-height:410px;position:relative;padding:18px;display:flex;flex-direction:column;justify-content:space-between;background:radial-gradient(circle at 50% 30%,#7d4cff20,transparent 38%)}
+.avatar{display:grid;place-items:center;min-height:240px}.oni{width:min(64vw,260px);filter:drop-shadow(0 24px 45px #000b);transform:translate3d(calc(var(--x)*.2px),calc(var(--y)*.1px),0)}.oni .skin{fill:#9a303e}.oni .dark{fill:#100d17}.oni .horn{fill:#e7d6be}.oni .hair{fill:#ead99a}.oni .eye{fill:#79efff}.oni .line{stroke:#2b1118;stroke-width:3;fill:none}.oni.jealous .eye{fill:#ff4b88}.oni.cast{filter:drop-shadow(0 0 24px #805cff)}
+.dialogue{background:#080710d9;border:1px solid #ffffff20;border-radius:18px;padding:13px 14px;min-height:90px}.speaker{font-size:11px;color:var(--pink);font-weight:900;letter-spacing:.12em}.line{font-size:15px;line-height:1.45;margin-top:5px}.hint{font-size:11px;color:var(--muted);margin-top:6px}
+.side{padding:14px}.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.stat{background:#ffffff08;border:1px solid #ffffff10;padding:9px 10px;border-radius:14px}.stat small{display:block;color:var(--muted);font-size:9px;letter-spacing:.1em;text-transform:uppercase}.stat b{font-size:16px}.meter{height:4px;background:#ffffff10;border-radius:99px;margin-top:6px;overflow:hidden}.meter i{display:block;height:100%;background:linear-gradient(90deg,var(--pink),var(--violet));width:40%}
+.quest{margin-top:10px;padding:11px;background:#0005;border-radius:14px;border:1px solid #ffffff0d}.quest b{font-size:12px}.quest p{font-size:11px;color:var(--muted);margin:5px 0 0;line-height:1.35}
+.controls{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}@media(max-width:560px){.controls{grid-template-columns:repeat(2,1fr)}}button{appearance:none;border:0;border-radius:15px;padding:12px 8px;color:white;background:linear-gradient(180deg,#2a203d,#171120);font-weight:800;font-size:11px;letter-spacing:.04em;box-shadow:inset 0 1px #ffffff18,0 8px 18px #0005}button:active{transform:translateY(1px);filter:brightness(1.15)}button.primary{background:linear-gradient(135deg,#d62e68,#7546df)}button.gold{background:linear-gradient(135deg,#885b17,#b33b70)}
+.log{margin-top:12px;max-height:190px;overflow:auto;border-radius:18px;background:#05040aa8;border:1px solid #ffffff0f;padding:10px}.entry{font-size:11px;line-height:1.4;color:#d8ccdf;padding:6px 2px;border-bottom:1px solid #ffffff0a}.entry:last-child{border-bottom:0}.entry b{color:var(--cyan)}
+.sheet{margin-top:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.card{background:#090711c9;border:1px solid #ffffff12;border-radius:16px;padding:10px}.card small{color:var(--muted);font-size:9px}.card b{display:block;font-size:11px;margin-top:3px}.card.locked{opacity:.4}.foot{text-align:center;color:#897d91;font-size:9px;margin-top:12px;letter-spacing:.08em}.pulse{animation:pulse .55s ease}@keyframes pulse{50%{transform:scale(1.018)}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.layer,.oni{transform:none!important}}
+</style>
+</head>
+<body data-scene="steel">
+<div class="scene" aria-hidden="true"><div class="layer sky"></div><div class="layer city"></div><div class="layer neon"></div><div class="layer fore"></div><div class="scan"></div></div>
+<div class="app" id="app">
+  <header class="top"><div class="brand"><b>LUHM OS // CATHEDRAL</b><small>KAI9000_CATHEDRAL_GAME_V1 · local-first Samsung build</small></div><div class="badge" id="stageBadge">WI-FI DAHLING</div></header>
+  <div class="grid">
+    <section class="panel stage" id="stage">
+      <div class="avatar">
+        <svg id="oni" class="oni" viewBox="0 0 320 360" role="img" aria-label="Original red oni companion Lum">
+          <path class="horn" d="M104 83 C58 49 62 13 95 3 C81 35 105 45 127 62 Z"/><path class="horn" d="M216 83 C262 49 258 13 225 3 C239 35 215 45 193 62 Z"/>
+          <path class="hair" d="M86 106 Q84 48 160 43 Q236 48 234 106 L259 252 Q218 314 160 318 Q102 314 61 252 Z"/>
+          <ellipse class="skin" cx="160" cy="116" rx="61" ry="69"/><path class="dark" d="M106 158 Q160 187 214 158 L230 300 Q194 340 160 342 Q126 340 90 300 Z"/>
+          <path class="skin" d="M127 178 Q160 196 193 178 L209 253 Q189 281 160 283 Q131 281 111 253 Z"/>
+          <path class="dark" d="M108 210 L82 333 L123 333 L149 236 Z M212 210 L238 333 L197 333 L171 236 Z"/>
+          <path class="dark" d="M115 172 L76 237 L99 250 L137 197 Z M205 172 L244 237 L221 250 L183 197 Z"/>
+          <ellipse class="eye" cx="137" cy="112" rx="8" ry="5"/><ellipse class="eye" cx="183" cy="112" rx="8" ry="5"/><path class="line" d="M139 143 Q160 156 181 143"/><path class="line" d="M112 92 Q136 81 150 91 M170 91 Q184 81 208 92"/>
+          <path class="line" d="M218 217 Q285 235 254 296 Q285 267 278 222"/>
+        </svg>
+      </div>
+      <div class="dialogue"><div class="speaker">LUM</div><div class="line" id="dialogue">Dahling. Cathedral is awake. Pick a bad idea and roll for it.</div><div class="hint" id="hint">Everything here saves locally on this device. No cloud required.</div></div>
+    </section>
+    <aside class="panel side">
+      <div class="stats">
+        <div class="stat"><small>Affection</small><b id="affection">17</b><div class="meter"><i id="affectionM"></i></div></div>
+        <div class="stat"><small>Jealousy</small><b id="jealousy">8%</b><div class="meter"><i id="jealousyM"></i></div></div>
+        <div class="stat"><small>Bond</small><b id="bond">0</b><div class="meter"><i id="bondM"></i></div></div>
+        <div class="stat"><small>Sparks</small><b id="sparks">500</b><div class="meter"><i id="sparksM"></i></div></div>
+        <div class="stat"><small>Mana</small><b id="mana">5</b></div>
+        <div class="stat"><small>Turn</small><b id="turn">0</b></div>
+      </div>
+      <div class="quest"><b id="zone">People Mover Ghost Loop</b><p id="quest">Explore weird Detroit-ish zones, CONTACT recruits, earn Sigils, BOND, FUSE, descend.</p></div>
+      <div class="controls">
+        <button class="primary" data-a="explore">EXPLORE</button><button data-a="contact">CONTACT</button><button class="gold" data-a="roll">ROLL D20</button><button data-a="bond">BOND</button>
+        <button data-a="fusion">FUSION</button><button data-a="date">DATE</button><button data-a="rest">REST</button><button data-a="save">SAVEPOINT</button>
+      </div>
+      <div class="log" id="log"></div>
+    </aside>
+  </div>
+  <div class="sheet" id="compendium"></div>
+  <div class="foot">PRIVATE PLAY BUILD · ORIGINAL KAI/LUHM SYSTEMS · NO COPIED FRANCHISE ASSETS OR DIALOGUE</div>
+</div>
+<script>
+(()=>{'use strict';
+const KEY='kai9000_luhmos_cathedral_v1';
+const zones=['People Mover Ghost Loop','Corktown Switchyard','Riverfront Relay','Furnace Cathedral','Mirror Spire Afterhours'];
+const recruits=[
+ ['Moth-Witch Bassist','nocturne/fey','Velvet Feedback','Moon-Moth Sigil'],['Basilisk Mechanic','serpent/forge','Cold Start','Coil-Wrench Sigil'],['Gargoyle Bouncer','stone/guardian','Door Policy','Stone-Lace Sigil'],['Cyclops Arcade Clerk','oracle/electric','Continue?','One-Eye Token'],['Cathedral Oni Technician','oni/signal','Localhost Ward','Crimson Loop Sigil'],['Marrow Mermaid','abyss/song','Deep Cache','Bone-Pearl Sigil'],['Velvet Minotaur Archivist','beast/archive','Index Everything','Labyrinth Stamp'],['Neon Harpy Courier','storm/signal','Packet Wing','Static Feather']
+];
+const weird=['A unionized save crystal demands a break.','A Wi-Fi spirit appears. SSID: LUM_IS_NOT_MAD.','An emotionally judgmental elevator refuses floor 4.','A vending-machine shrine accepts exactly one bent coin.','The parking garage moon is much too close tonight.','A wrench denies existing. Loudly.','Three health bars appear around one grocery bag.','The river payphone rings. Caller ID: TOMORROW.','A club that burned down in 1998 has a line outside.','Administrative Form 27-B has become a miniboss.','A sad convenience store asks whether you are okay.','Monster Girl Book Club has weaponized footnotes.','The Furnace organ begins playing by itself.'];
+const fusionNames=['Velvet Static','Moonwire','Cathedral Bloom','Neon Reliquary','Black-Lace Chimera','Rose-Engine','Dream Circuit','Gutter Seraph'];
+const defaultState={affection:17,jealousy:8,bond:0,sparks:500,mana:5,turn:0,zone:0,sigils:[],recruits:[],fusions:[],lastRecruit:null,stage:'WI-FI DAHLING',chaos:3};
+let s=load();
+function load(){try{return Object.assign({},defaultState,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch{return {...defaultState}}}
+function save(){localStorage.setItem(KEY,JSON.stringify(s));render()}
+const $=id=>document.getElementById(id); const pick=a=>a[Math.floor(Math.random()*a.length)];
+function clamp(n,a,b){return Math.max(a,Math.min(b,n))}
+function stage(){if(s.bond>=28&&s.jealousy>=28&&s.chaos>=6)return'DARK VOW CANDIDATE';if(s.bond>=22)return'CATHEDRAL PARTNER';if(s.bond>=15&&s.jealousy>=15)return'NEON JEALOUS ONI';if(s.bond>=8&&s.affection>=20)return'DOWNTOWN GOTH GIRLFRIEND';return'WI-FI DAHLING'}
+function say(t,h=''){ $('dialogue').textContent=t;$('hint').textContent=h||'Local save crystal updated.';$('stage').classList.remove('pulse');void $('stage').offsetWidth;$('stage').classList.add('pulse') }
+function log(t){const d=document.createElement('div');d.className='entry';d.innerHTML=t;$('log').prepend(d);while($('log').children.length>12)$('log').lastChild.remove()}
+function beep(freq=540,d=.08){try{const A=window.AudioContext||window.webkitAudioContext,c=new A,o=c.createOscillator(),g=c.createGain();o.frequency.value=freq;g.gain.setValueAtTime(.05,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+d);o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+d)}catch{}}
+function roll(){const n=1+Math.floor(Math.random()*20);let tier,txt;if(n===1){tier='CRITICAL FAIL';s.mana=clamp(s.mana-1,0,10);txt='The dice file a complaint. Repair quest issued.'}else if(n<=5){tier='FAIL';s.mana=clamp(s.mana-1,0,10);txt='No bonus. Mana tax collected by bureaucracy.'}else if(n<=9){tier='WEAK SUCCESS';txt='Partial progress. Cleanup quest unlocked.'}else if(n<=14){tier='SUCCESS';txt='Standard success. Cathedral accepts the offering.'}else if(n<=19){tier='STRONG SUCCESS';s.sparks+=25;s.affection+=1;txt='Strong success. Perk token and sparks.'}else{tier='NATURAL 20';s.sparks+=100;s.affection+=2;txt='Video quest eligibility only. Nothing external starts without you.'}log(`<b>D20 ${n}</b> · ${tier} · ${txt}`);say(`D20: ${n}. ${txt}`);beep(n===20?880:420+n*12,.12);save()}
+function explore(){s.turn++;s.zone=(s.zone+1)%zones.length;document.body.dataset.scene=['steel','date','lab','furnace','date'][s.zone];const e=pick(weird);s.chaos=clamp(s.chaos+(Math.random()<.35?1:0),0,10);say(e,`Zone: ${zones[s.zone]}`);log(`<b>EXPLORE</b> · ${zones[s.zone]} · ${e}`);save()}
+function contact(){s.turn++;const r=pick(recruits);s.lastRecruit=r[0];const d=1+Math.floor(Math.random()*20);if(d>=10){if(!s.recruits.includes(r[0]))s.recruits.push(r[0]);if(!s.sigils.includes(r[3]))s.sigils.push(r[3]);s.sparks+=20;s.bond+=1;say(`${r[0]} laughs at exactly the wrong moment and hands you the ${r[3]}.`,`${r[1]} · ${r[2]}`);log(`<b>CONTACT ${d}</b> · recruited ${r[0]} · ${r[3]}`)}else{say(`${r[0]} stares at you, then at Lum. Negotiations become extremely complicated.`,`CONTACT roll ${d} · try another approach`);log(`<b>CONTACT ${d}</b> · ${r[0]} declined, dramatically`)}save()}
+function bond(){s.turn++;if(!s.lastRecruit&&s.recruits.length)s.lastRecruit=pick(s.recruits);s.bond+=2;s.affection+=1;if(Math.random()<.45)s.jealousy=clamp(s.jealousy+2,0,100);say(s.lastRecruit?`You spend a quiet hour with ${s.lastRecruit}. Lum pretends not to keep score.`:`Lum steals your attention for an hour and calls it “routine maintenance.”`,'Trust + comfort + spark. Intimacy remains fade-to-black.');log(`<b>BOND</b> · bond +2 · affection +1`);save()}
+function fusion(){s.turn++;if(s.sigils.length<2){say('Two Sigils, dahling. Even forbidden alchemy has paperwork.','CONTACT more recruits first.');log('<b>FUSION</b> · blocked · need 2 Sigils');return}const a=pick(s.sigils),b=pick(s.sigils.filter(x=>x!==a));const name=pick(fusionNames)+(s.chaos>=7&&Math.random()<.3?' // Moonstatic Mutation':'');if(!s.fusions.includes(name))s.fusions.push(name);s.sparks=clamp(s.sparks-50,0,9999);say(`${a} + ${b} → ${name}. The cathedral lights flicker approvingly.`,'Original fusion result recorded in Compendium.');log(`<b>FUSION</b> · ${name}`);beep(720,.14);save()}
+function date(){s.turn++;s.bond+=2;s.affection+=2;s.jealousy=clamp(s.jealousy+1,0,100);document.body.dataset.scene='date';const t=stage();say(t==='DARK VOW CANDIDATE'?'The black-lace door appears. Lum does not touch the handle. “Only if you choose it.”':'Neon, bad coffee, and one suspiciously perfect song. Lum declares the night acceptable.','Relationship route advanced. Dark Vow remains opt-in.');log('<b>DATE</b> · bond +2 · affection +2');save()}
+function rest(){s.turn++;s.mana=5;s.jealousy=clamp(s.jealousy-2,0,100);say('Save crystal. Water. Snack. No heroics for five minutes.','Recovery is a mechanic, not a punishment.');log('<b>REST</b> · mana restored · jealousy -2');save()}
+function render(){s.stage=stage();$('affection').textContent=s.affection;$('jealousy').textContent=s.jealousy+'%';$('bond').textContent=s.bond;$('sparks').textContent=s.sparks;$('mana').textContent=s.mana;$('turn').textContent=s.turn;$('zone').textContent=zones[s.zone];$('stageBadge').textContent=s.stage;$('affectionM').style.width=clamp(s.affection,0,40)/40*100+'%';$('jealousyM').style.width=clamp(s.jealousy,0,100)+'%';$('bondM').style.width=clamp(s.bond,0,30)/30*100+'%';$('sparksM').style.width=clamp(s.sparks,0,1000)/10+'%';$('oni').classList.toggle('jealous',s.jealousy>=15);$('oni').classList.toggle('cast',s.fusions.length>0);$('compendium').innerHTML=recruits.slice(0,6).map(r=>`<div class="card ${s.recruits.includes(r[0])?'':'locked'}"><small>${r[1]}</small><b>${s.recruits.includes(r[0])?r[0]:'UNKNOWN CONTACT'}</b></div>`).join('')+s.fusions.slice(-3).map(f=>`<div class="card"><small>FUSION</small><b>${f}</b></div>`).join('')}
+document.addEventListener('click',e=>{const b=e.target.closest('button[data-a]');if(!b)return;({explore,contact,roll,bond,fusion,date,rest,save:()=>{save();say('Savepoint sealed.','Local state persisted on this device.');log('<b>SAVEPOINT</b> · sealed')}}[b.dataset.a]||(()=>{}))()});
+addEventListener('pointermove',e=>{document.documentElement.style.setProperty('--x',((e.clientX/innerWidth)-.5)*12);document.documentElement.style.setProperty('--y',((e.clientY/innerHeight)-.5)*10)},{passive:true});
+addEventListener('deviceorientation',e=>{if(e.gamma==null)return;document.documentElement.style.setProperty('--x',clamp(e.gamma/3,-12,12));document.documentElement.style.setProperty('--y',clamp((e.beta-45)/4,-10,10))},{passive:true});
+render();log('<b>BOOT</b> · Cathedral local game ready');
+})();
+</script>
+</body>
+</html>
