@@ -1,7 +1,7 @@
 {
   "schema": "luhmos.godot.world_first.v1",
   "mutation": "LUHM_OS_GODOT_WORLD_FIRST_HUD_1.0.7",
-  "status": "SOURCE_CANDIDATE",
+  "status": "SOURCE_GREEN_BUILD_GREEN_DEVICE_PENDING",
   "engine": "Godot 4.7.2",
   "main_layer": "native Godot 3D world",
   "hud": "CanvasLayer minimal floating HUD",
@@ -20,6 +20,7 @@
   ],
   "lum_micro_menu": ["PET", "QUEST", "CROWN"],
   "authority": {
+    "human_final_authority": "Professor",
     "game_to_admin_escalation": false,
     "cockpit_auto_open": false,
     "crown_action": "explicit user gesture only",
@@ -31,5 +32,36 @@
     "lum_hud_icon.svg": "LUHM_ORIGINAL",
     "procedural_geometry": "LUHM_ORIGINAL",
     "third_party_private_reference_bundled": false
-  }
+  },
+  "verified_build": {
+    "workflow": "LuHm Godot World First APK",
+    "run_id": 35083853376,
+    "artifact_id": 10441064288,
+    "artifact_name": "luhmos-world-first-1.0.7",
+    "artifact_zip_sha256": "2b2c80319647c1dbd3d4c4aa27c813666af7d4ac9705389a64a2e80ebac0c869",
+    "apk_sha256": "7c74dcb546021c5938fcbb94121671d09c617d86e1189821f6e914018f59c487",
+    "signer_sha256": "598d7272d62dbebb71972d6164822636ad1439cd35631d0cd43321d003c92142",
+    "package": "art.eggiebagelface.luhmos",
+    "version_name": "1.0.7",
+    "version_code": 107,
+    "min_sdk": 24,
+    "target_sdk": 36,
+    "abi": "arm64-v8a",
+    "conclusion": "success"
+  },
+  "private_update_handoff": {
+    "stable_drive_file_id": "1FgtidWj7C_IgBb0q3JWYwc47zwiNzQlp",
+    "versioned_drive_file_id": "1b088Jm8SVomIyxWpOPfNlnx6eVMy7hdD",
+    "stable_alias_name": "LUHM_OS_LATEST_SIGNED.apk",
+    "owner_only": true
+  },
+  "remaining_physical_gates": [
+    "install/update acceptance on intended Samsung",
+    "native Godot world launch/render",
+    "Lum floating HUD interaction",
+    "explicit CROWN cockpit summon",
+    "save/reload",
+    "Secure Folder behavior where intended",
+    "reboot/return persistence"
+  ]
 }
