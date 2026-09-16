@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "project_id": "luhmos-paid-pro-samsung-android",
+  "project_name": "LuHm OS Paid Pro",
+  "owner": "eggie-admin",
+  "repository": "eggie-admin/hydra-shell-android",
+  "working_branch": "luhmos/dev/samsung-android-paid-pro",
+  "release_anchor_branch": "luhmos-main",
+  "control_branch": "main",
+  "platform_scope": [
+    "samsung-android"
+  ],
+  "platform_exclusions": [
+    "ios",
+    "macos",
+    "windows",
+    "linux-desktop",
+    "generic-web-product"
+  ],
+  "paid_pro_policy": {
+    "this_is_the_only_paid_pro_working_project": true,
+    "monthly_budget_usd": 80.0,
+    "hard_stop_on_unknown_billing": true,
+    "hard_stop_on_budget_overrun": true,
+    "live_spend_requires_registered_service": true,
+    "provider_reachability_does_not_grant_spend_authority": true
+  },
+  "security": {
+    "secrets_in_repo": false,
+    "credential_values_in_source": false,
+    "local_secret_refs_only": true,
+    "ollama_loopback_only": true,
+    "remote_connections_outbound_only": true,
+    "public_inbound_admin_ports": false,
+    "game_to_admin_escalation": false
+  },
+  "authority": {
+    "professor_final_authority": true,
+    "ai_consensus_grants_authority": false,
+    "paid_service_status_grants_authority": false,
+    "reckoning_requires_exact_human_approval": true
+  },
+  "status": "ACTIVE_DEVELOPMENT_SCOPE"
+}
