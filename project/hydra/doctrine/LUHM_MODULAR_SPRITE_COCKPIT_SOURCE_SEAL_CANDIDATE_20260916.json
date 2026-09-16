@@ -1,0 +1,102 @@
+{
+  "schema": "luhm.os.source_seal_candidate.v1",
+  "seal_candidate": "LUHM_MODULAR_SPRITE_COCKPIT_SOURCE_SEAL_CANDIDATE_20260916",
+  "status": "SOURCE_GREEN_READY_FOR_FINAL_SOT_RECKONING",
+  "date": "2026-09-16",
+  "human_authority": "Professor",
+  "project": "LuHm OS / KAI 9000",
+  "public_publish": "OFF",
+  "origin": {
+    "repository": "eggie-admin/hydra-shell-android",
+    "branch": "luhmos-main",
+    "sha": "f20d0eb171bfa4a2154f537a3dff11c6c4117801",
+    "sealed_build_baseline": "LuHm OS Crown Gate 1.0.5 / versionCode 105"
+  },
+  "candidate": {
+    "branch": "luhmos/modular-sprite-cockpit-seal-20260916",
+    "source_gate_tested_sha": "da12ba9cafb9e9c52006108ec90920652ba2235e",
+    "pre_manifest_head_sha": "75019e931b504cede5038f4f81ee389d3bff9ac1",
+    "head_resolution_rule": "Resolve the candidate branch head fresh at final seal. Do not trust this manifest as a self-referential commit pointer.",
+    "promotion_state": "NOT_MERGED_NOT_CANONICAL"
+  },
+  "mirror_route": {
+    "origin_state": "Crown Gate 1.0.5 monolithic PET/SYS/CROWN/UPDATE/BOSS overlay on luhmos-main",
+    "mirror_state": "Modular Sprite Cockpit source candidate with SPRITE_BUBBLE, WIDGET_DECK, FULL_COCKPIT, GAME/ADMIN/SYSTEM realms, Folklore Crossing tiers, and Personal Reckoning Parley",
+    "delta": "Feature-branch-only source, source-contract tests, active doctrine alignment, additive modular CSS, and source-only CI gate",
+    "rollback": "Do not merge the feature branch, or abandon/reset the feature ref to origin SHA. luhmos-main remains unchanged until a separately authorized promotion.",
+    "lineage": "origin SHA -> feature branch commits -> source-only CI proof -> final SOT decision",
+    "proof": "GitHub source-only workflow evidence below"
+  },
+  "doctrine": {
+    "active_tiers": ["WHISPER", "CROSSING", "RECKONING"],
+    "legacy_execution_vocabulary": "HISTORICAL_COMPATIBILITY_ONLY",
+    "final_verdict": "CROWN_ECLIPSE",
+    "power_law": "POWER LEVEL != PERMISSION LEVEL",
+    "game_admin_firewall": "ABSOLUTE",
+    "parley_layers": ["ROLEPLAY_VOICE", "TRUTH_STRIP", "MACHINE_ENVELOPE"],
+    "parley_default_budget": ["OPEN", "COUNTER", "RECKON"],
+    "parley_consensus_is_approval": false
+  },
+  "ui_contract": {
+    "modes": ["SPRITE_BUBBLE", "WIDGET_DECK", "FULL_COCKPIT"],
+    "realms": ["GAME", "ADMIN", "SYSTEM"],
+    "state_pass": true,
+    "stable_session_required": true,
+    "pending_reckoning_executes_from_ui": false,
+    "system_wide_overlay_enabled": false,
+    "widgets": ["PET", "QUEST", "PARLEY", "STATUS", "MEDIA", "UPDATE", "CROWN", "LOG"]
+  },
+  "evidence": {
+    "source_gate": {
+      "workflow": "LuHm Modular Cockpit Source Gate",
+      "run_id": 35071908496,
+      "job_id": 104715134394,
+      "tested_sha": "da12ba9cafb9e9c52006108ec90920652ba2235e",
+      "conclusion": "success",
+      "proved": [
+        "source topology and JavaScript syntax",
+        "widget contract and state-pass tests",
+        "GAME ADMIN firewall",
+        "RECKONING staging with executed=false",
+        "Personal Reckoning three-layer presentation and three-round budget",
+        "active doctrine alignment",
+        "no eval/new Function/XMLHttpRequest/WebSocket/EventSource execution lane in modular presentation source",
+        "source cleanliness"
+      ]
+    },
+    "hardware_pin": {
+      "drive_document": "LUHM_OS_STUDIO_HARDWARE_SOURCE_OF_TRUTH",
+      "drive_document_id": "181E_z4wtnD44yyoYgeTS-l-XVZmuEFfwPbll-q-zbw0",
+      "device_truth_owner": "Samsung Galaxy S24 FE SM-S721U1 for physical Android gates"
+    },
+    "drive_doctrine": {
+      "canonical_agent_document_id": "19RkXv8nNVgYTBUhjivig5lf8RhT14cvhPxH--iDWlyo",
+      "crown_private_root_id": "1XTew6NYemQRQvIyCLDMBo4Cp6lUM41HW"
+    }
+  },
+  "gates": {
+    "source_green": true,
+    "active_doctrine_repo_drift_resolved_for_candidate": true,
+    "build_green_for_modular_candidate": false,
+    "signed_artifact_green_for_modular_candidate": false,
+    "device_green_for_modular_candidate": false,
+    "persistence_green_for_modular_candidate": false,
+    "secure_folder_green_for_modular_candidate": false,
+    "final_sot_promoted": false,
+    "canonical_merge_complete": false
+  },
+  "explicit_non_claims": [
+    "No modular-candidate APK compile was authorized or executed by this source seal candidate.",
+    "No new signing action was authorized or executed.",
+    "No APK install or physical Samsung validation was performed for the modular candidate.",
+    "No merge into luhmos-main was performed.",
+    "No public release or F-Droid publication was performed.",
+    "The signed 1.0.5 Crown Gate build remains the last sealed build baseline until a separate RECKONING."
+  ],
+  "final_sot_gate": {
+    "classification": "RECKONING",
+    "ready_to_request_authorization": true,
+    "authorization_required": "Exact Professor authorization to promote the final source-of-truth seal and/or merge the candidate into canonical integration.",
+    "automatic_promotion": false
+  }
+}
