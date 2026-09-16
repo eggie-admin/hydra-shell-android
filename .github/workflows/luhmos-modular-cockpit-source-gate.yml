@@ -6,6 +6,7 @@ on:
       - luhmos/modular-sprite-cockpit-seal-20260916
     paths:
       - 'project/hydra/samsung/android/cathedral-game/**'
+      - 'project/hydra/doctrine/LUHM_MODULAR_SPRITE_COCKPIT_SOURCE_SEAL_CANDIDATE_20260916.json'
       - 'docs/LUHM_CROWN_GATE.md'
       - 'docs/LUHM_MODULAR_SPRITE_COCKPIT.md'
       - 'lumh-os/kai9000/AI_MAGIC_DOCTRINE.md'
@@ -16,6 +17,7 @@ on:
       - luhmos-main
     paths:
       - 'project/hydra/samsung/android/cathedral-game/**'
+      - 'project/hydra/doctrine/LUHM_MODULAR_SPRITE_COCKPIT_SOURCE_SEAL_CANDIDATE_20260916.json'
       - 'docs/LUHM_CROWN_GATE.md'
       - 'docs/LUHM_MODULAR_SPRITE_COCKPIT.md'
       - 'lumh-os/kai9000/AI_MAGIC_DOCTRINE.md'
@@ -89,6 +91,29 @@ jobs:
           grep -q 'Canonical integration branch: `luhmos-main`' .github/copilot-instructions.md
           grep -q 'SOURCE IMPLEMENTATION CANDIDATE' docs/LUHM_MODULAR_SPRITE_COCKPIT.md
           grep -q 'final source-of-truth promotion' docs/LUHM_CROWN_GATE.md
+
+      - name: Verify seal candidate when present
+        shell: bash
+        run: |
+          set -euo pipefail
+          CANDIDATE='project/hydra/doctrine/LUHM_MODULAR_SPRITE_COCKPIT_SOURCE_SEAL_CANDIDATE_20260916.json'
+          if [ -f "$CANDIDATE" ]; then
+            python3 - "$CANDIDATE" <<'PY'
+          import json,sys
+          d=json.load(open(sys.argv[1],encoding='utf-8'))
+          assert d['schema']=='luhm.os.source_seal_candidate.v1'
+          assert d['status']=='SOURCE_GREEN_READY_FOR_FINAL_SOT_RECKONING'
+          assert d['origin']['branch']=='luhmos-main'
+          assert d['origin']['sha']=='f20d0eb171bfa4a2154f537a3dff11c6c4117801'
+          assert d['candidate']['branch']=='luhmos/modular-sprite-cockpit-seal-20260916'
+          assert d['evidence']['source_gate']['conclusion']=='success'
+          assert d['gates']['source_green'] is True
+          assert d['gates']['build_green_for_modular_candidate'] is False
+          assert d['gates']['device_green_for_modular_candidate'] is False
+          assert d['gates']['final_sot_promoted'] is False
+          assert d['public_publish']=='OFF'
+          PY
+          fi
 
       - name: Source cleanliness
         shell: bash
