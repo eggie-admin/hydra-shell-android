@@ -8,6 +8,12 @@ on:
         required: true
         type: boolean
         default: false
+  push:
+    branches:
+      - luhmos-main
+    paths:
+      - 'project/hydra/samsung/android/cathedral-game/**'
+      - '.github/workflows/luhmos-fdroid-public-release.yml'
 
 permissions:
   contents: write
@@ -20,9 +26,9 @@ env:
   DONOR_REPO: eggie-admin/vue-headless-cms
   DONOR_REF: 96c23c87713800fc17c80b6a972ee2e93f1bb4b1
   PACKAGE_ID: art.eggiebagelface.luhmos
-  VERSION_NAME: '1.0.0'
-  VERSION_CODE: '100'
-  APK_NAME: luhmos-1.0.0.apk
+  VERSION_NAME: '1.0.1'
+  VERSION_CODE: '101'
+  APK_NAME: luhmos-1.0.1.apk
   KEY_ALIAS: luhmos-release
   FDROID_KEY_ALIAS: luhmos-fdroid-repo
   GODOT_RELEASE: 4.7.2-stable
@@ -67,6 +73,8 @@ jobs:
           ! grep -R -n 'http://127.0.0.1' _forge/luhmos-android/godot/android-plugin/plugin/src/main/java
           grep -q 'MIXED_CONTENT_NEVER_ALLOW' _forge/luhmos-android/godot/android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralAndroidPlugin.kt
           grep -q 'setAcceptCookie(false)' _forge/luhmos-android/godot/android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralAndroidPlugin.kt
+          test -f project/hydra/samsung/android/cathedral-game/index.html
+          grep -q 'KAI9000_CATHEDRAL_GAME_V1' project/hydra/samsung/android/cathedral-game/index.html
           if git ls-files | grep -E '\.(jks|keystore|p12|pfx|pkcs12|key|pem)$'; then
             echo 'Private signing material must not be tracked' >&2
             exit 1
@@ -77,10 +85,6 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
-        with:
-          node-version: '24.18.0'
 
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
@@ -160,22 +164,21 @@ jobs:
           (cd "$PATCH_DIR" && zip -q -r "$TEMPLATE_DIR/android_source.zip.new" .)
           mv "$TEMPLATE_DIR/android_source.zip.new" "$TEMPLATE_DIR/android_source.zip"
 
-      - name: Build bundled cockpit and Android plugin
+      - name: Bundle Cathedral game and build Android plugin
         shell: bash
         run: |
           set -euo pipefail
-          pushd _forge/luhmos-android/apps
-          npm install --global npm@12.0.2 --no-audit --no-fund
-          LOCK_BEFORE="$(sha256sum package-lock.json | awk '{print $1}')"
-          npm ci --ignore-scripts --no-audit --no-fund
-          test "$LOCK_BEFORE" = "$(sha256sum package-lock.json | awk '{print $1}')"
-          npm run build --workspace=video-forge-ui
-          test -f forge-ui/dist/index.html
-          popd
+          GAME="$GITHUB_WORKSPACE/project/hydra/samsung/android/cathedral-game"
+          test -f "$GAME/index.html"
+          grep -q 'KAI9000_CATHEDRAL_GAME_V1' "$GAME/index.html"
+          ! grep -R -nE 'https?://' "$GAME" || {
+            echo 'Cathedral game bundle must remain network-free.' >&2
+            exit 1
+          }
 
           rm -rf _forge/luhmos-android/godot/android-plugin/plugin/src/main/assets/cms
           mkdir -p _forge/luhmos-android/godot/android-plugin/plugin/src/main/assets/cms
-          cp -a _forge/luhmos-android/apps/forge-ui/dist/. _forge/luhmos-android/godot/android-plugin/plugin/src/main/assets/cms/
+          cp -a "$GAME"/. _forge/luhmos-android/godot/android-plugin/plugin/src/main/assets/cms/
           gradle -p _forge/luhmos-android/godot/android-plugin :plugin:assemble
           test -f _forge/luhmos-android/godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-release.aar
           rm -rf _forge/luhmos-android/godot/addons/CathedralAndroid
@@ -247,8 +250,8 @@ jobs:
           unzip -l "$APK" | tee build/release/contents.txt
           sha256sum "$APK" | tee build/release/sha256.txt
           grep -q "package: name='art.eggiebagelface.luhmos'" build/release/badging.txt
-          grep -q "versionCode='100'" build/release/badging.txt
-          grep -q "versionName='1.0.0'" build/release/badging.txt
+          grep -q "versionCode='101'" build/release/badging.txt
+          grep -q "versionName='1.0.1'" build/release/badging.txt
           grep -q "application-label:'LuHm OS'" build/release/badging.txt
           grep -q "targetSdkVersion:'36'" build/release/badging.txt
           grep -q "native-code: 'arm64-v8a'" build/release/badging.txt
@@ -293,24 +296,18 @@ jobs:
           cp "build/release/$APK_NAME" "build/fdroid-stage/repo/${PACKAGE_ID}_${VERSION_CODE}.apk"
           cat > "build/fdroid-stage/metadata/${PACKAGE_ID}.yml" <<EOF
           Categories:
-            - Development
-            - Multimedia
+            - Games
           License: GPL-3.0-only
           Name: LuHm OS
-          Summary: Standalone Godot creative AI and game cockpit for Samsung Android
+          Summary: Standalone Cathedral JRPG and companion cockpit for Samsung Android
           Description: |-
             LuHm OS is a standalone Android application built around Godot 4 with a
-            bundled web cockpit and bounded Android-native bridges. The stock package
-            does not require root, Termux, AcodeX, VNC, Secure Folder, Shizuku, or a
-            separately launched localhost daemon.
-
-            Optional remote AI integrations may connect to external network services
-            only when explicitly configured by the user or deployment environment.
+            bundled offline Cathedral game cockpit and bounded Android-native bridge.
+            This stock package does not require root, Termux, AcodeX, VNC, Secure
+            Folder, Shizuku, or a separately launched localhost daemon to play.
           SourceCode: https://github.com/eggie-admin/hydra-shell-android
           IssueTracker: https://github.com/eggie-admin/hydra-shell-android/issues
           RequiresRoot: false
-          AntiFeatures:
-            - NonFreeNet
           CurrentVersion: ${VERSION_NAME}
           CurrentVersionCode: ${VERSION_CODE}
           UpdateCheckMode: Static
@@ -429,8 +426,7 @@ jobs:
           echo "Public repo: $PUBLIC_REPO_URL"
           if [[ '${{ inputs.publish_public_mirror }}' == 'true' ]]; then
             echo 'STATE=FDROID_PUBLIC_MIRROR_PUBLISHED'
-            echo 'NEXT=S24 FE F-Droid import/install/launcher proof, then versionCode 101 same-signer upgrade proof'
           else
-            echo 'STATE=IDENTITY_PROOF_READY_NOT_PUBLISHED'
-            echo 'NEXT=record the two public fingerprints as repository variables, then rerun with publish_public_mirror=true'
+            echo 'STATE=CROWN_PLAYABLE_BUILD_READY_NOT_PUBLIC'
           fi
+          echo 'NEXT=S24 FE install/launch/save-reload proof'
