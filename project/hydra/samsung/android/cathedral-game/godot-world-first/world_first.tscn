@@ -1,0 +1,290 @@
+[gd_scene load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://luhm/world-first/world_first.gd" id="1_world"]
+
+[sub_resource type="Environment" id="Environment_cathedral"]
+background_mode = 1
+background_color = Color(0.018, 0.008, 0.028, 1)
+ambient_light_source = 3
+ambient_light_color = Color(0.42, 0.16, 0.48, 1)
+ambient_light_energy = 0.72
+
+[sub_resource type="BoxMesh" id="Box_floor"]
+size = Vector3(22, 0.2, 26)
+
+[sub_resource type="StandardMaterial3D" id="Mat_floor"]
+albedo_color = Color(0.035, 0.025, 0.055, 1)
+metallic = 0.35
+roughness = 0.58
+
+[sub_resource type="BoxMesh" id="Box_rail"]
+size = Vector3(0.12, 0.12, 24)
+
+[sub_resource type="StandardMaterial3D" id="Mat_rail"]
+albedo_color = Color(0.18, 0.12, 0.22, 1)
+metallic = 0.9
+roughness = 0.22
+emission_enabled = true
+emission = Color(0.12, 0.02, 0.15, 1)
+emission_energy_multiplier = 1.3
+
+[sub_resource type="CylinderMesh" id="Cylinder_shrine"]
+top_radius = 0.65
+bottom_radius = 0.9
+height = 2.8
+radial_segments = 8
+
+[sub_resource type="StandardMaterial3D" id="Mat_shrine"]
+albedo_color = Color(0.1, 0.025, 0.12, 1)
+metallic = 0.6
+roughness = 0.3
+emission_enabled = true
+emission = Color(0.75, 0.05, 0.42, 1)
+emission_energy_multiplier = 2.2
+
+[sub_resource type="SphereMesh" id="Sphere_lum"]
+radius = 0.55
+height = 1.1
+
+[sub_resource type="StandardMaterial3D" id="Mat_lum"]
+albedo_color = Color(0.63, 0.13, 0.28, 1)
+roughness = 0.42
+emission_enabled = true
+emission = Color(0.08, 0.5, 0.68, 1)
+emission_energy_multiplier = 0.55
+
+[sub_resource type="CylinderMesh" id="Cone_horn"]
+top_radius = 0.0
+bottom_radius = 0.14
+height = 0.8
+radial_segments = 12
+
+[sub_resource type="StandardMaterial3D" id="Mat_horn"]
+albedo_color = Color(0.95, 0.78, 0.52, 1)
+roughness = 0.65
+
+[sub_resource type="StyleBoxFlat" id="Style_hud"]
+bg_color = Color(0.025, 0.012, 0.04, 0.86)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.92, 0.19, 0.58, 0.58)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+
+[node name="WorldFirstRoot" type="Node3D"]
+script = ExtResource("1_world")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_cathedral")
+
+[node name="MoonLight" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-52, -28, 0)
+light_color = Color(0.72, 0.62, 1, 1)
+light_energy = 2.2
+shadow_enabled = true
+
+[node name="World3D" type="Node3D" parent="."]
+
+[node name="CathedralFloor" type="MeshInstance3D" parent="World3D"]
+mesh = SubResource("Box_floor")
+material_override = SubResource("Mat_floor")
+position = Vector3(0, -0.1, 0)
+
+[node name="RailLeft" type="MeshInstance3D" parent="World3D"]
+mesh = SubResource("Box_rail")
+material_override = SubResource("Mat_rail")
+position = Vector3(-1.15, 0.05, 0)
+
+[node name="RailRight" type="MeshInstance3D" parent="World3D"]
+mesh = SubResource("Box_rail")
+material_override = SubResource("Mat_rail")
+position = Vector3(1.15, 0.05, 0)
+
+[node name="Shrine" type="MeshInstance3D" parent="World3D"]
+mesh = SubResource("Cylinder_shrine")
+material_override = SubResource("Mat_shrine")
+position = Vector3(0, 1.4, -7.5)
+
+[node name="LumGuide" type="Node3D" parent="World3D"]
+position = Vector3(2.7, 1.3, -2.2)
+
+[node name="Body" type="MeshInstance3D" parent="World3D/LumGuide"]
+mesh = SubResource("Sphere_lum")
+material_override = SubResource("Mat_lum")
+scale = Vector3(0.85, 1.2, 0.72)
+
+[node name="HornLeft" type="MeshInstance3D" parent="World3D/LumGuide"]
+mesh = SubResource("Cone_horn")
+material_override = SubResource("Mat_horn")
+position = Vector3(-0.34, 0.56, 0)
+rotation_degrees = Vector3(0, 0, -20)
+
+[node name="HornRight" type="MeshInstance3D" parent="World3D/LumGuide"]
+mesh = SubResource("Cone_horn")
+material_override = SubResource("Mat_horn")
+position = Vector3(0.34, 0.56, 0)
+rotation_degrees = Vector3(0, 0, 20)
+
+[node name="CameraRig" type="Node3D" parent="."]
+position = Vector3(0, 2.6, 7.8)
+rotation_degrees = Vector3(-8, 0, 0)
+
+[node name="Camera3D" type="Camera3D" parent="CameraRig"]
+current = true
+fov = 56.0
+
+[node name="HUD" type="CanvasLayer" parent="."]
+layer = 20
+
+[node name="HUDRoot" type="Control" parent="HUD"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="QuestSigil" type="Label" parent="HUD/HUDRoot"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 22.0
+offset_right = 250.0
+offset_bottom = 58.0
+theme_override_colors/font_color = Color(0.95, 0.72, 1, 1)
+theme_override_font_sizes/font_size = 20
+text = "◇ CORKTOWN"
+
+[node name="StatusSigils" type="Label" parent="HUD/HUDRoot"]
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -190.0
+offset_top = 22.0
+offset_right = -24.0
+offset_bottom = 58.0
+theme_override_colors/font_color = Color(0.44, 0.95, 0.9, 1)
+theme_override_font_sizes/font_size = 18
+text = "♡  ◈  WHISPER"
+horizontal_alignment = 2
+
+[node name="MapSigil" type="Button" parent="HUD/HUDRoot"]
+layout_mode = 0
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 22.0
+offset_top = -92.0
+offset_right = 90.0
+offset_bottom = -24.0
+theme_override_font_sizes/font_size = 28
+text = "⌖"
+
+[node name="ContextAction" type="Button" parent="HUD/HUDRoot"]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -98.0
+offset_top = -96.0
+offset_right = 98.0
+offset_bottom = -24.0
+theme_override_font_sizes/font_size = 18
+text = "EXPLORE"
+
+[node name="LumBubble" type="Button" parent="HUD/HUDRoot"]
+layout_mode = 0
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -102.0
+offset_top = -104.0
+offset_right = -22.0
+offset_bottom = -24.0
+theme_override_colors/font_color = Color(1, 0.72, 0.9, 1)
+theme_override_font_sizes/font_size = 22
+text = "LUM"
+
+[node name="MicroMenu" type="PanelContainer" parent="HUD/HUDRoot"]
+visible = false
+layout_mode = 0
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -300.0
+offset_top = -330.0
+offset_right = -22.0
+offset_bottom = -116.0
+theme_override_styles/panel = SubResource("Style_hud")
+
+[node name="VBox" type="VBoxContainer" parent="HUD/HUDRoot/MicroMenu"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="HUD/HUDRoot/MicroMenu/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "LUM // QUICK SIGILS"
+
+[node name="Pet" type="Button" parent="HUD/HUDRoot/MicroMenu/VBox"]
+layout_mode = 2
+text = "PET / BOND"
+
+[node name="Quest" type="Button" parent="HUD/HUDRoot/MicroMenu/VBox"]
+layout_mode = 2
+text = "QUEST"
+
+[node name="Parley" type="Button" parent="HUD/HUDRoot/MicroMenu/VBox"]
+layout_mode = 2
+text = "PARLEY"
+
+[node name="Cockpit" type="Button" parent="HUD/HUDRoot/MicroMenu/VBox"]
+layout_mode = 2
+text = "CROWN / COCKPIT"
+
+[node name="CockpitOverlay" type="PanelContainer" parent="HUD/HUDRoot"]
+visible = false
+layout_mode = 0
+anchor_left = 0.06
+anchor_top = 0.12
+anchor_right = 0.94
+anchor_bottom = 0.88
+theme_override_styles/panel = SubResource("Style_hud")
+
+[node name="VBox" type="VBoxContainer" parent="HUD/HUDRoot/CockpitOverlay"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="HUD/HUDRoot/CockpitOverlay/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.42, 1)
+theme_override_font_sizes/font_size = 26
+text = "CROWN // ADMIN COCKPIT"
+
+[node name="State" type="Label" parent="HUD/HUDRoot/CockpitOverlay/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "GAME ≠ ADMIN\nWHISPER · CROSSING · RECKONING\nNo silent install · no arbitrary shell"
+
+[node name="Update" type="Button" parent="HUD/HUDRoot/CockpitOverlay/VBox"]
+layout_mode = 2
+text = "UPDATE // STAGE RECKONING"
+
+[node name="Log" type="Button" parent="HUD/HUDRoot/CockpitOverlay/VBox"]
+layout_mode = 2
+text = "LOG // READ ONLY"
+
+[node name="Close" type="Button" parent="HUD/HUDRoot/CockpitOverlay/VBox"]
+layout_mode = 2
+text = "RETURN TO WORLD"
+
+[connection signal="pressed" from="HUD/HUDRoot/LumBubble" to="." method="_on_lum_bubble_pressed"]
+[connection signal="pressed" from="HUD/HUDRoot/ContextAction" to="." method="_on_context_action_pressed"]
+[connection signal="pressed" from="HUD/HUDRoot/MicroMenu/VBox/Cockpit" to="." method="_on_cockpit_pressed"]
+[connection signal="pressed" from="HUD/HUDRoot/CockpitOverlay/VBox/Close" to="." method="_on_cockpit_close_pressed"]
