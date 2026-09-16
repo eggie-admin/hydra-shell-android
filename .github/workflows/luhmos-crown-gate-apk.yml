@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - luhmos-main
+      - luhmos/candidate-1.0.8-physical-proof-20260916
     paths:
       - 'project/hydra/samsung/android/cathedral-game/**'
       - '.github/workflows/luhmos-crown-gate-apk.yml'
@@ -20,10 +21,10 @@ env:
   DONOR_REPO: eggie-admin/vue-headless-cms
   DONOR_REF: 96c23c87713800fc17c80b6a972ee2e93f1bb4b1
   PACKAGE_ID: art.eggiebagelface.luhmos
-  VERSION_NAME: '1.0.7'
-  VERSION_CODE: '107'
-  PREVIOUS_VERSION_CODE: '106'
-  APK_NAME: luhmos-world-first-1.0.7.apk
+  VERSION_NAME: '1.0.8'
+  VERSION_CODE: '108'
+  PREVIOUS_VERSION_CODE: '107'
+  APK_NAME: luhmos-physical-proof-candidate-1.0.8.apk
   KEY_ALIAS: luhmos-release
   EXPECTED_SIGNER_SHA256: 598d7272d62dbebb71972d6164822636ad1439cd35631d0cd43321d003c92142
   GODOT_RELEASE: 4.7.2-stable
@@ -35,7 +36,7 @@ env:
 
 jobs:
   crown-gate:
-    name: Signed World-First Godot Update
+    name: Signed Physical-Proof Candidate
     runs-on: ubuntu-24.04
     timeout-minutes: 50
     steps:
@@ -70,7 +71,7 @@ jobs:
           gradle-version: '8.13'
           cache-cleanup: on-success
 
-      - name: World-first source contract
+      - name: Physical-proof source contract
         shell: bash
         run: |
           set -euo pipefail
@@ -80,12 +81,20 @@ jobs:
           test -f "$ROOT/README.md"
           grep -q 'CanvasLayer' "$ROOT/world_first.tscn"
           grep -q 'LumBubble' "$ROOT/world_first.tscn"
+          grep -q 'MicroMenu' "$ROOT/world_first.tscn"
           grep -q 'CockpitOverlay' "$ROOT/world_first.tscn"
-          grep -q 'visible = false' "$ROOT/world_first.tscn"
+          grep -q 'ProofState' "$ROOT/world_first.tscn"
+          grep -q 'RealmSwitch' "$ROOT/world_first.tscn"
           grep -q 'GAME ≠ ADMIN' "$ROOT/world_first.tscn"
+          grep -q 'PHYSICAL PROOF HARNESS' "$ROOT/world_first.tscn"
+          grep -q 'ConfigFile' "$ROOT/world_first.gd"
+          grep -q 'user://luhmos_physical_proof.cfg' "$ROOT/world_first.gd"
+          grep -q 'SPRITE_BUBBLE' "$ROOT/world_first.gd"
+          grep -q 'WIDGET_DECK' "$ROOT/world_first.gd"
+          grep -q 'FULL_COCKPIT' "$ROOT/world_first.gd"
           grep -q 'No shell, no network, no privilege bridge' "$ROOT/world_first.gd"
           ! grep -R -nE '\b(OS\.execute|JavaScriptBridge|HTTPRequest|WebSocketPeer)\b' "$ROOT"
-          echo 'LUHM_OS_GODOT_WORLD_FIRST_SOURCE_GREEN'
+          echo 'LUHM_OS_1_0_8_PHYSICAL_PROOF_SOURCE_GREEN'
 
       - name: Install Android SDK 36
         shell: bash
@@ -144,7 +153,7 @@ jobs:
           (cd "$PATCH_DIR" && zip -q -r "$TEMPLATE_DIR/android_source.zip.new" .)
           mv "$TEMPLATE_DIR/android_source.zip.new" "$TEMPLATE_DIR/android_source.zip"
 
-      - name: Compose Godot world-first runtime
+      - name: Compose Godot physical-proof runtime
         shell: bash
         run: |
           set -euo pipefail
@@ -198,12 +207,12 @@ jobs:
           cp _forge/luhmos-android/godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-debug.aar _forge/luhmos-android/godot/addons/CathedralAndroid/bin/debug/
           cp _forge/luhmos-android/godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-release.aar _forge/luhmos-android/godot/addons/CathedralAndroid/bin/release/
 
-      - name: Parse world-first Godot project
+      - name: Parse physical-proof Godot project
         shell: bash
         run: |
           set -euo pipefail
           "$GODOT_BIN" --headless --editor --path _forge/luhmos-android/godot --quit
-          echo 'LUHM_OS_GODOT_WORLD_FIRST_PARSE_GREEN'
+          echo 'LUHM_OS_1_0_8_PHYSICAL_PROOF_PARSE_GREEN'
 
       - name: Restore persistent release signer
         shell: bash
@@ -223,7 +232,7 @@ jobs:
           echo "GODOT_ANDROID_KEYSTORE_RELEASE_USER=$KEY_ALIAS" >> "$GITHUB_ENV"
           echo "GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD=$ANDROID_KS_PASS" >> "$GITHUB_ENV"
 
-      - name: Export signed world-first APK
+      - name: Export signed physical-proof APK
         shell: bash
         run: |
           set -euo pipefail
@@ -241,7 +250,7 @@ jobs:
             "$GITHUB_WORKSPACE/build/release/$APK_NAME"
           test -s "build/release/$APK_NAME"
 
-      - name: Verify 1.0.7 APK
+      - name: Verify 1.0.8 APK
         shell: bash
         run: |
           set -euo pipefail
@@ -264,25 +273,27 @@ jobs:
           sed -n 's/^Signer #1 certificate SHA-256 digest: //p' build/release/signature.txt | head -n1 > build/release/apk-signer-sha256.txt
           test "$(cat build/release/apk-signer-sha256.txt)" = "$EXPECTED_SIGNER_SHA256"
           cat > build/release/CROWN_GATE_RECEIPT.txt <<EOF
-          LUHM_OS_GODOT_WORLD_FIRST_HUD_BUILD_GREEN
+          LUHM_OS_1_0_8_PHYSICAL_PROOF_CANDIDATE_BUILD_GREEN
           version=${VERSION_NAME}/${VERSION_CODE}
           previous_version_code=${PREVIOUS_VERSION_CODE}
           package=${PACKAGE_ID}
           signer_sha256=${EXPECTED_SIGNER_SHA256}
           main_scene=res://luhm/world-first/world_first.tscn
-          game_world_first=true
-          lum_floating_hud=true
-          cockpit_default_visible=false
+          proof_harness=true
+          ui_modes=SPRITE_BUBBLE,WIDGET_DECK,FULL_COCKPIT
+          realms=GAME,ADMIN,SYSTEM
+          local_savepath=user://luhmos_physical_proof.cfg
+          candidate_state=AMBER_PENDING_PHYSICAL_DEVICE_PROOF
           public_publish=OFF
           silent_install=false
           physical_device_proof=pending
           EOF
-          echo 'LUHM_OS_GODOT_WORLD_FIRST_APK_GREEN'
+          echo 'LUHM_OS_1_0_8_PHYSICAL_PROOF_APK_GREEN'
 
-      - name: Upload signed world-first APK and proof
+      - name: Upload signed physical-proof APK and proof
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: luhmos-world-first-${{ env.VERSION_NAME }}
+          name: luhmos-physical-proof-candidate-${{ env.VERSION_NAME }}
           path: |
             build/release/${{ env.APK_NAME }}
             build/release/sha256.txt
