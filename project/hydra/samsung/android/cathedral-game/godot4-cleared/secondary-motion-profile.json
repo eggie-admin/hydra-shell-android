@@ -1,0 +1,66 @@
+{
+  "schema": "luhmos.godot4.secondary_motion_profile.v1",
+  "seal": "KAI9000_GODOT4_CLEARED_PROMOTION_20260916",
+  "engine": {
+    "name": "Godot",
+    "version": "4.7.2",
+    "native_baseline": "SpringBoneSimulator3D",
+    "modifier_family": "SkeletonModifier3D"
+  },
+  "android": {
+    "package": "art.eggiebagelface.luhmos",
+    "min_sdk": 24,
+    "target_sdk": 36,
+    "abi": ["arm64-v8a"]
+  },
+  "intended_character_zones": [
+    "hair",
+    "cloth",
+    "tails",
+    "soft_secondary_motion"
+  ],
+  "runtime_policy": {
+    "engine_native_first": true,
+    "community_plugin_activation": false,
+    "third_party_runtime_code_bundled": false,
+    "raw_multipart_assets_bundled": false,
+    "private_reference_assets_bundled": false,
+    "secret_material_bundled": false
+  },
+  "community_references": [
+    {
+      "project": "detomon/wigglebone",
+      "pin": "d45042dd05680149b4c1174771f1f666f262057d",
+      "license": "MIT",
+      "status": "REFERENCE_ONLY"
+    },
+    {
+      "project": "yaelatletl/godot-jigglebones",
+      "pin": "e861ae953cc13e01acb2da086e7b5fd6e02c5535",
+      "license": "MIT",
+      "status": "REFERENCE_ONLY_OLDER_ARCHITECTURE"
+    },
+    {
+      "project": "V-Sekai/godot-vrm",
+      "pin": "e15199f980064028bfa4fbee5e70dddb82dd55c3",
+      "status": "REFERENCE_ONLY_PRESERVE_UPSTREAM_LICENSE_NOTICE"
+    },
+    {
+      "project": "2Retr0/GodotHair",
+      "pin": "763bb304503b5f76774d9dd175217b97c6f9bca5",
+      "status": "REFERENCE_ONLY_NONCOMMERCIAL_MODEL_CONTENT_NOT_PROMOTED"
+    },
+    {
+      "project": "ibrews/VitruvianGodot",
+      "pin": "bdecdcd537b4031fdd0fb299b7e4f93f084fffa0",
+      "status": "REFERENCE_ONLY"
+    }
+  ],
+  "source_integrity": {
+    "curated_drive_zip_sha256": "931881e695f138fb2cf37ea4b636a850ed2e8bd0e3861a2bbbf23c315d520e75",
+    "curated_internal_sha256s": "GREEN",
+    "multipart_split_sequence": "GREEN",
+    "multipart_crc": "GREEN",
+    "multipart_provenance": "MIXED_BLOCKED"
+  }
+}

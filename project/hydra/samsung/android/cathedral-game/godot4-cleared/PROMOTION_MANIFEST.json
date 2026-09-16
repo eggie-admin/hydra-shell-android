@@ -1,0 +1,57 @@
+{
+  "schema": "luhmos.godot4.cleared_promotion.v1",
+  "seal": "KAI9000_GODOT4_CLEARED_PROMOTION_20260916",
+  "source_of_truth": "KAI9000_ASSET_HANDOFF_SOURCE_OF_TRUTH_20260916",
+  "promotion_target": {
+    "package": "art.eggiebagelface.luhmos",
+    "candidate_version": "1.0.3",
+    "candidate_version_code": 103
+  },
+  "integrity": {
+    "curated_drive_pack": {
+      "file_id": "1zRf8EFtCWIa8XfSpBLpMBPhRx3wlyzdO",
+      "sha256": "931881e695f138fb2cf37ea4b636a850ed2e8bd0e3861a2bbbf23c315d520e75",
+      "zip_crc": "GREEN",
+      "embedded_sha256_manifest": "GREEN"
+    },
+    "multipart_pack": {
+      "source_folder_id": "1sZwG26ACO_FwdLcmzpetQdTPjNrpYI6m",
+      "parts": 6,
+      "observed_bytes": 514287647,
+      "recombined_sha256": "a1a35dd9412902633e7636819b5811382f4dde360b2d9fdde57aca1c019a9d57",
+      "crc": "GREEN",
+      "entry_count": 255,
+      "provenance": "MIXED_BLOCKED"
+    }
+  },
+  "promoted": [
+    {
+      "path": "README.md",
+      "class": "KAI_OWNED",
+      "purpose": "release boundary and provenance explanation"
+    },
+    {
+      "path": "secondary-motion-profile.json",
+      "class": "KAI_OWNED",
+      "purpose": "Godot 4.7.2 engine-native SpringBoneSimulator3D configuration contract"
+    },
+    {
+      "path": "COMMUNITY_SOURCE_RECEIPTS.md",
+      "class": "KAI_OWNED_DOCUMENTATION",
+      "purpose": "attribution and non-promotion receipts"
+    }
+  ],
+  "not_promoted": [
+    "raw multipart archive contents",
+    "secret-like files",
+    "private/reference media",
+    "third-party APK/binaries",
+    "recognizable franchise reference imagery",
+    "CC BY-NC model content",
+    "incomplete community plugin snapshots",
+    "Meshy-generated source assets lacking embedded redistribution/right receipt",
+    "Crimson Horned Enchanter donor assets explicitly quarantined by source manifest"
+  ],
+  "decision": "Use Godot engine-native SpringBoneSimulator3D baseline. Preserve community projects as references only in this candidate. No third-party runtime plugin code is activated or bundled by this promotion lane.",
+  "install_policy": "human-confirmed Android package installer only; no silent install"
+}
