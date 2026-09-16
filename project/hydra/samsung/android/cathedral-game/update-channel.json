@@ -2,8 +2,8 @@
   "schema": "luhmos.update.channel.v1",
   "channel": "private-drive-owner-confirmed",
   "package": "art.eggiebagelface.luhmos",
-  "current_version_name": "1.0.6",
-  "current_version_code": 106,
+  "current_version_name": "1.0.7",
+  "current_version_code": 107,
   "signer_sha256": "598d7272d62dbebb71972d6164822636ad1439cd35631d0cd43321d003c92142",
   "update_rule": "same_package_same_signer_higher_version_code",
   "update_vault": "https://drive.google.com/drive/folders/17nODHVpnjQ1jtzJxvjxy0Ec1X-osLCkB",
@@ -13,7 +13,10 @@
   "orientation": "portrait",
   "public_publish": "manual_only",
   "crown_gate": "local_evidence_ledger_no_background_probe",
-  "ui_mutation": "KAI9000_LUHM_MODULAR_SPRITE_COCKPIT_20260916",
-  "doctrine": "WHISPER_CROSSING_RECKONING + PERSONAL_RECKONING_PARLEY",
-  "notes": "1.0.6 is the Modular Sprite Cockpit candidate. The in-app UPDATE surface can open the private staging vault by explicit user gesture only. Android performs package, signer and version enforcement and requires user confirmation. Crown Gate proof marks are human observations, not live probes."
+  "ui_mutation": "LUHM_OS_GODOT_WORLD_FIRST_HUD_1.0.7",
+  "world_first": true,
+  "cockpit_auto_open": false,
+  "cockpit_summon": "Lum micro menu -> CROWN -> explicit user gesture",
+  "doctrine": "WHISPER_CROSSING_RECKONING + PERSONAL_RECKONING_PARLEY + GODOT_WORLD_FIRST",
+  "notes": "1.0.7 promotes the native Godot 4 world to the primary app layer. The persistent HUD is minimal and Lum floats over the world. The full WebView cockpit remains available but opens only after an explicit CROWN action. Android still enforces package, signer, versionCode, and installer confirmation."
 }
