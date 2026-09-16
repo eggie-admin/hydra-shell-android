@@ -6,6 +6,7 @@ signal dialogue_visibility_changed(visible: bool)
 
 const WindowManagerScript = preload("res://scripts/ui/window_manager.gd")
 const SettingsStoreScript = preload("res://scripts/ui/settings_store.gd")
+const PROOF_SAVE_PATH := "user://luhmos_physical_proof.cfg"
 
 var manager: LuHmWindowManager
 var settings_store: LuHmSettingsStore
@@ -18,9 +19,18 @@ var _settings_window: PanelContainer
 var _codex_window: PanelContainer
 var _backend_window: PanelContainer
 var _quest_window: PanelContainer
+var _proof_window: PanelContainer
+var _proof_label: Label
+
+var proof_ui_mode := "SPRITE_BUBBLE"
+var proof_realm := "GAME"
+var proof_session_id := ""
+var proof_counter := 0
+var proof_last_saved_session := "NONE"
 
 func _ready() -> void:
     layer = 20
+    proof_session_id = "%s-%s" % [Time.get_unix_time_from_system(), randi_range(1000, 9999)]
     settings_store = SettingsStoreScript.new()
     add_child(settings_store)
 
@@ -37,7 +47,9 @@ func _ready() -> void:
     _build_launcher()
     _build_dialogue_dock()
     _build_windows()
+    _load_proof_state()
     _apply_saved_settings()
+    _sync_proof()
 
 func _build_launcher() -> void:
     var launcher := Button.new()
@@ -56,7 +68,7 @@ func _build_launcher() -> void:
     _launcher_panel = PanelContainer.new()
     _launcher_panel.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
     _launcher_panel.position = Vector2(-260, 150)
-    _launcher_panel.size = Vector2(230, 250)
+    _launcher_panel.size = Vector2(230, 310)
     _launcher_panel.visible = false
     _launcher_panel.add_theme_stylebox_override("panel", _panel_style(Color(0.025, 0.018, 0.04, 0.95), Color("7d5b87"), 18))
     _root.add_child(_launcher_panel)
@@ -68,6 +80,7 @@ func _build_launcher() -> void:
     list.add_child(_launcher_item("CODEX", "codex"))
     list.add_child(_launcher_item("SETTINGS", "settings"))
     list.add_child(_launcher_item("BACKEND", "backend"))
+    list.add_child(_launcher_item("PROOF", "proof"))
 
 func _launcher_item(label_text: String, window_id: String) -> Button:
     var button := Button.new()
@@ -151,6 +164,12 @@ func _build_windows() -> void:
     backend_parts.body.text = "FRONT END\nGodot 4 world + CanvasLayer windows + VN dialogue\n\nBACK END\nTyped local bridge to the existing control plane\nFastAPI / SQLite where already configured\n\nMODE\nOffline-safe. No direct shell. No hidden network fetch."
     manager.register_window("backend", _backend_window, backend_parts.header)
 
+    var proof_parts := _make_window("PHYSICAL PROOF", Vector2(56, 132), Vector2(720, 720))
+    _proof_window = proof_parts.panel
+    proof_parts.body.queue_free()
+    _populate_proof(proof_parts.content)
+    manager.register_window("proof", _proof_window, proof_parts.header)
+
     var settings_parts := _make_window("SETTINGS", Vector2(84, 178), Vector2(680, 670))
     _settings_window = settings_parts.panel
     settings_parts.body.queue_free()
@@ -199,6 +218,64 @@ func _make_window(title_text: String, pos: Vector2, window_size: Vector2) -> Dic
 
     close.pressed.connect(func(): panel.visible = false)
     return {"panel": panel, "header": header, "content": content, "body": body}
+
+func _populate_proof(content: MarginContainer) -> void:
+    var column := VBoxContainer.new()
+    column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    column.size_flags_vertical = Control.SIZE_EXPAND_FILL
+    column.add_theme_constant_override("separation", 12)
+    content.add_child(column)
+
+    _proof_label = Label.new()
+    _proof_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+    _proof_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    _proof_label.add_theme_font_size_override("font_size", 17)
+    _proof_label.add_theme_color_override("font_color", Color("a5f4d5"))
+    column.add_child(_proof_label)
+
+    var mode_title := Label.new()
+    mode_title.text = "PRESENTATION MODE"
+    column.add_child(mode_title)
+    var mode_row := HBoxContainer.new()
+    mode_row.add_theme_constant_override("separation", 8)
+    column.add_child(mode_row)
+    var bubble := _small_button("BUBBLE")
+    bubble.pressed.connect(func(): _set_proof_mode("SPRITE_BUBBLE"))
+    mode_row.add_child(bubble)
+    var deck := _small_button("DECK")
+    deck.pressed.connect(func(): _set_proof_mode("WIDGET_DECK"))
+    mode_row.add_child(deck)
+    var full := _small_button("FULL")
+    full.pressed.connect(func(): _set_proof_mode("FULL_COCKPIT"))
+    mode_row.add_child(full)
+
+    var realm_title := Label.new()
+    realm_title.text = "PRESENTATION REALM"
+    column.add_child(realm_title)
+    var realm_row := HBoxContainer.new()
+    realm_row.add_theme_constant_override("separation", 8)
+    column.add_child(realm_row)
+    var game := _small_button("GAME")
+    game.pressed.connect(func(): _set_proof_realm("GAME"))
+    realm_row.add_child(game)
+    var admin := _small_button("ADMIN")
+    admin.pressed.connect(func(): _set_proof_realm("ADMIN"))
+    realm_row.add_child(admin)
+    var system := _small_button("SYSTEM")
+    system.pressed.connect(func(): _set_proof_realm("SYSTEM"))
+    realm_row.add_child(system)
+
+    var save := Button.new()
+    save.text = "SAVEPOINT // LOCAL PROOF RECEIPT"
+    save.custom_minimum_size = Vector2(0, 52)
+    save.pressed.connect(_save_proof_state)
+    column.add_child(save)
+
+    var boundary := Label.new()
+    boundary.text = "GAME cannot grant ADMIN authority. Realm/mode controls are presentation only.\nActual ADMIN cockpit still requires explicit Lum → CROWN.\nNo shell, no network, no privilege bridge, no silent install."
+    boundary.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+    boundary.add_theme_color_override("font_color", Color("c7b8cc"))
+    column.add_child(boundary)
 
 func _populate_settings(content: MarginContainer) -> void:
     var scroll := ScrollContainer.new()
@@ -255,6 +332,44 @@ func _populate_settings(content: MarginContainer) -> void:
     reset.text = "RESET UI DEFAULTS"
     reset.pressed.connect(_reset_defaults)
     list.add_child(reset)
+
+func _load_proof_state() -> void:
+    var cfg := ConfigFile.new()
+    var err := cfg.load(PROOF_SAVE_PATH)
+    if err == OK:
+        proof_counter = int(cfg.get_value("proof", "counter", 0))
+        proof_last_saved_session = str(cfg.get_value("proof", "session_id", "NONE"))
+    proof_ui_mode = "SPRITE_BUBBLE"
+    proof_realm = "GAME"
+
+func _save_proof_state() -> void:
+    proof_counter += 1
+    var cfg := ConfigFile.new()
+    cfg.set_value("proof", "counter", proof_counter)
+    cfg.set_value("proof", "session_id", proof_session_id)
+    cfg.set_value("proof", "mode", proof_ui_mode)
+    cfg.set_value("proof", "realm", proof_realm)
+    var err := cfg.save(PROOF_SAVE_PATH)
+    if err == OK:
+        proof_last_saved_session = proof_session_id
+        emit_signal("typed_intent", "proof.savepoint.sealed", {"counter": proof_counter})
+    else:
+        emit_signal("typed_intent", "proof.savepoint.error", {"error": err})
+    _sync_proof()
+
+func _set_proof_mode(next_mode: String) -> void:
+    proof_ui_mode = next_mode
+    emit_signal("typed_intent", "proof.ui.mode", {"mode": next_mode})
+    _sync_proof()
+
+func _set_proof_realm(next_realm: String) -> void:
+    proof_realm = next_realm
+    emit_signal("typed_intent", "proof.ui.realm", {"realm": next_realm, "authority_changed": false})
+    _sync_proof()
+
+func _sync_proof() -> void:
+    if _proof_label:
+        _proof_label.text = "PHYSICAL PROOF HARNESS\nMODE: %s\nREALM: %s\nSESSION: %s\nSAVEPOINT: %d\nRESTORED SESSION: %s" % [proof_ui_mode, proof_realm, proof_session_id, proof_counter, proof_last_saved_session]
 
 func show_dialogue(speaker: String, line: String) -> void:
     if not bool(settings_store.get_value("dialogue", "visual_novel_mode", true)):
