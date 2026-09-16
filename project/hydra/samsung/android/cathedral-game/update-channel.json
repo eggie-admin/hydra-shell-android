@@ -1,0 +1,15 @@
+{
+  "schema": "luhmos.update.channel.v1",
+  "channel": "private-drive-owner-confirmed",
+  "package": "art.eggiebagelface.luhmos",
+  "current_version_name": "1.0.4",
+  "current_version_code": 104,
+  "signer_sha256": "598d7272d62dbebb71972d6164822636ad1439cd35631d0cd43321d003c92142",
+  "update_rule": "same_package_same_signer_higher_version_code",
+  "update_vault": "https://drive.google.com/drive/folders/17nODHVpnjQ1jtzJxvjxy0Ec1X-osLCkB",
+  "install_handoff": "android_package_installer",
+  "silent_install": false,
+  "background_update_check": false,
+  "orientation": "portrait",
+  "notes": "The in-app UPDATE tab opens the private staging vault externally. Android performs package, signer and version enforcement and requires user confirmation."
+}
