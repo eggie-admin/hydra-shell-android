@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "project": "LuHm OS Paid Pro Samsung Android",
+  "working_branch": "luhmos/dev/samsung-android-paid-pro",
+  "policy": {
+    "never_claim_vendor_approval_without_evidence": true,
+    "partner_program_status_requires_artifact_or_vendor_confirmation": true,
+    "secrets_in_repo": false,
+    "vendor_program_membership_grants_no_machine_authority": true
+  },
+  "programs": [
+    {
+      "id": "google-play-edge-tester-lane",
+      "vendor": "Google",
+      "kind": "testing_or_early_access",
+      "status": "USER_ASSERTED_APPROVED_TESTER_LANE",
+      "verification": "exact_program_name_and_vendor_approval_artifact_not_yet_recovered",
+      "notes": "Preserve as existing edge/testing lane, but do not label vendor-verified partner status until an approval artifact is attached."
+    },
+    {
+      "id": "samsung-remote-test-lab-partner",
+      "vendor": "Samsung",
+      "kind": "device_testing_partner_program",
+      "status": "TARGET_APPLY_NOW",
+      "benefits": ["additional Remote Test Lab credits", "extended usage time", "Galaxy device testing"],
+      "official": "https://developer.samsung.com/sdp/news/en/2026/07/29/july-2026-samsung-dev-insight"
+    },
+    {
+      "id": "samsung-galaxy-store-commercial-seller",
+      "vendor": "Samsung",
+      "kind": "proprietary_distribution_and_api_channel",
+      "status": "TARGET_APPLY_NOW",
+      "requirements": ["Samsung account", "Seller Portal registration", "commercial seller status", "app registration for Developer API"],
+      "official": "https://developer.samsung.com/galaxy-store/galaxy-store-developer-api/get-started-with-the-gsd-api.html"
+    },
+    {
+      "id": "github-developer-program",
+      "vendor": "GitHub",
+      "kind": "developer_program",
+      "status": "READY_PENDING_SUPPORT_CONTACT",
+      "requirements": ["integration in production or development using GitHub API", "support email for GitHub users"],
+      "official": "https://docs.github.com/en/integrations/concepts/github-developer-program"
+    },
+    {
+      "id": "cloudflare-technology-partner",
+      "vendor": "Cloudflare",
+      "kind": "technology_partner_program",
+      "status": "TARGET_AFTER_FUNCTIONAL_INTEGRATION",
+      "notes": "Best fit once LuHm OS has a validated Cloudflare integration for application, Zero Trust, network, or developer services.",
+      "official": "https://www.cloudflare.com/partners/technology-partners/"
+    },
+    {
+      "id": "cloudflare-startups",
+      "vendor": "Cloudflare",
+      "kind": "startup_credit_program",
+      "status": "CONDITIONAL_ELIGIBILITY",
+      "notes": "Potentially valuable, but requires the business/startup eligibility criteria to be verified before application.",
+      "official": "https://www.cloudflare.com/startups/"
+    },
+    {
+      "id": "openai-for-startups",
+      "vendor": "OpenAI",
+      "kind": "startup_resources_and_credit_path",
+      "status": "RESOURCE_TRACK_CONDITIONAL_CREDITS",
+      "notes": "Builder resources are open; API credit benefits are commonly unlocked through eligible VC partners or qualifying events/programs.",
+      "official": "https://openai.com/business/why-openai/startups/"
+    },
+    {
+      "id": "sentry-custom-integration",
+      "vendor": "Sentry",
+      "kind": "integration_track",
+      "status": "BUILD_INTEGRATION_NOT_PARTNER_CLAIM",
+      "notes": "Use OAuth/custom integration and scoped API access. No public partner-program approval should be claimed from this manifest alone.",
+      "official": "https://docs.sentry.io/api/auth/"
+    },
+    {
+      "id": "huggingface-team-enterprise",
+      "vendor": "Hugging Face",
+      "kind": "paid_platform_track",
+      "status": "PAID_PLAN_NOT_PARTNER_CLAIM",
+      "notes": "Treat Team/Enterprise as service entitlements with governance and spend controls, not a partner-program approval.",
+      "official": "https://huggingface.co/docs/hub/enterprise"
+    }
+  ]
+}
