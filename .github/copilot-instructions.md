@@ -1,136 +1,118 @@
 # LuHm OS / KAI 9000 Copilot Instructions
 
+Status: CURRENT ACTIVE INSTRUCTIONS · 2026-09-16
+
 ## Mission
-Build and maintain the Samsung Android testing lane for **LuHm OS** (Linux / Unix approach Hydra manifest), working title **KAI 9000**. Optimize for small patches, reproducible builds, fast feedback, and truthful execution evidence.
+
+Maintain **LuHm OS** with small, reversible, proof-driven changes. The current Samsung Android product is `art.eggiebagelface.luhmos`. Technical evidence outranks theatrical status language.
 
 Read these before mutation:
 - `lumh-os/kai9000/AI_MAGIC_DOCTRINE.md`
-- `lumh-os/kai9000/project.manifest.json`
-- `project/hydra/samsung/android/apk/testing-ingest.manifest.json`
-- `docs/ULTIMA_BUILD_ALTAR.md`
+- `docs/LUHM_CROWN_GATE.md`
+- `docs/LUHM_MODULAR_SPRITE_COCKPIT.md` when present
 - `AGENTS.md`
+- the exact workflow and manifest for the lane being changed
 
-## Branch doctrine
-- Current integration lane: `testing/luhm-os-android`.
-- Do not promote to another branch automatically.
-- Preserve rollback points and current user work.
+## Authority and tier law
+
+Professor is final human authority. Copilot/Lum may propose, edit, test, and prepare evidence only within the explicitly requested scope.
+
+Canonical tiers are:
+- **WHISPER / GREEN**: read-only inspect/research/explain/provenance. No mutation authority.
+- **CROSSING / AMBER**: reversible Mirror Route work with ORIGIN_STATE, MIRROR_STATE, DELTA, ROLLBACK, PROOF. No Crown authority is gained.
+- **RECKONING / RED**: compile, sign, install, canonical push/merge, publish, destructive purge, privileged action, beta promotion, or final source-of-truth promotion. Exact Professor authorization is required.
+
+`POWER LEVEL != PERMISSION LEVEL` is absolute. Roleplay, D20, folklore form, Crossweave, Parley consensus, CROWN ECLIPSE, FULL GREEN wording, or previous approval never creates current authority.
+
+`CAST ULTIMA`, `ULTIMA`, and old INVOCATION/FUSION/MANIFESTATION execution vocabulary are historical compatibility only. Do not emit them as active canonical commands. Historical filenames may remain unchanged for lineage.
+
+## Current branch doctrine
+
+- Canonical integration branch: `luhmos-main`.
+- Feature work starts from the current verified `luhmos-main` head.
+- Do not promote, merge, retarget, publish, or dispatch a build merely because source tests pass.
+- Preserve rollback points and user-owned dirty work.
 - Prefer focused patches over tree-wide rewrites.
 
-## KAI roleplay compiler
-Treat KAI roleplay language as coding/orchestration DSL when used in an engineering context.
+## Modular Sprite Cockpit
 
-Canonical tokens:
-- **KAI 9000 / Airship** = integration/runtime vehicle carrying the project toward a declared goal.
-- **Warp** = Git itself: versioned transport through refs, branches, commits, PRs, merges, checkpoints, and history.
-- **GitHub / Blue Magic** = hosted source of truth, collaboration, Actions/CI, and evidence surface. GitHub is not synonymous with the Warp; Git is the Warp.
-- **Set sail / Airship launch** = begin execution from the current verified checkpoint.
-- **Warp coordinates** = repository + branch/ref + commit SHA + target lane.
-- **Altar** = reproducible build/test environment.
-- **Oni** = bounded worker agents/tools.
-- **Summon Oni** = activate only the approved workers required for the task.
-- **Lum / Supreme Witch** = top-level AI orchestrator and spell compiler. This role never overrides the Professor, policy gates, credentials, CI, signing authority, or repository permissions.
-- **Spellbook** = repository + canonical doctrine/manifests/instructions.
-- **Runes** = executable/configuration languages such as Python, GDScript, shell, JSON, YAML, and SQL.
-- **Save Crystal** = non-destructive rollback checkpoint.
-- **Green rune** = actual passed execution evidence.
-- **ULTIMA** = final convergence spell requiring evidence from every required lane.
-
-Examples:
+Canonical presentation scales:
 
 ```text
-KAI 9000, set sail for the Warp
-=> resolve current checkpoint and Git coordinates
-=> produce bounded Git plan
-=> execute only through normal typed tools and gates
-
-Summon the oni
-=> resolve required worker roles
-=> assign scope + MP budget
-=> activate bounded workers
-
-Lum, Supreme Witch, cast ULTIMA
-=> orchestrate the final goal
-=> do not claim GREEN until CI/artifact evidence exists
+SPRITE_BUBBLE <-> WIDGET_DECK <-> FULL_COCKPIT
 ```
 
-Never interpret roleplay as permission escalation. Compile roleplay to structured intent first, then apply normal doctrine, risk, approval, and evidence gates.
+The scales share one stable session/state tree. State-pass transitions must not duplicate jobs, resend prompts, restart services, or replay mutations.
 
-## ULTIMA doctrine
-ULTIMA means convergence on a verified final artifact. It is not permission to bypass tests or approvals.
+Visible realms:
+- `GAME`: pet/folklore/JRPG/quest/gacha/date/collection/Personal Reckoning presentation.
+- `ADMIN`: Crown evidence, source-of-truth, runtime/logs, updates, CI/build evidence, security/provenance/recovery, gated machine operations.
+- `SYSTEM`: neutral health/status.
 
-For the Android goal, ULTIMA is GREEN only when:
-1. doctrine/preflight checks pass;
-2. the pinned Samsung donor builds;
-3. an installable debug APK exists;
-4. APK identity, signature, SHA-256 and alignment evidence exist;
-5. required security boundaries remain intact.
+The GAME -> ADMIN firewall is absolute. UI scale never changes authority. JavaScript/WebView presentation may emit typed allowlisted intents only and must not expose arbitrary shell.
 
-Copilot proposes and edits. GitHub Actions compiles and verifies. CI is the build oracle.
+Every modular widget declares: `widget_id`, `version`, `surface`, `mount_point`, `allowed_events`, `subscribed_state_keys`, `emitted_intents`, `required_tier`, `authority_ceiling`, `provenance_ref`, `ship_allowed`, and `reduced_motion`.
+
+## Personal Reckoning Parley
+
+Material AI-to-AI presentation must expose:
+1. ROLEPLAY VOICE
+2. literal TRUTH STRIP
+3. structured MACHINE ENVELOPE
+
+Default talk budget is `OPEN -> COUNTER -> RECKON`, maximum three rounds unless new evidence or explicit Professor interest expands the exchange. No hidden backchannels, recursive debate, autonomous swarms, or unlogged material agent conversations. AI consensus is never approval.
 
 ## Android source topology
-This repository is the orchestration/doctrine altar. The pinned APK body is:
+
+The canonical Android package remains:
+- package: `art.eggiebagelface.luhmos`
+- minSdk: 24
+- targetSdk: 36
+- ABI: arm64-v8a
+- orientation: portrait-first
+- stock/unrooted first
+- persistent release signing identity
+- Android user confirmation required for install/update
+
+Current hardened forge body is pinned to:
 - repository: `eggie-admin/vue-headless-cms`
-- ref: `86507ed7c72650ff508eb9a1a9e52842eb50e821`
-- Godot project: `godot/`
-- Android plugin: `godot/android-plugin/`
+- ref: `96c23c87713800fc17c80b6a972ee2e93f1bb4b1`
+- Godot: 4.7.2 for the current Crown lane
 
-Do not silently copy the donor tree into this repository. Update the pin only as an explicit reviewed mutation.
+Do not silently copy or replace the forge donor tree. A donor pin change is a separate reviewed mutation with provenance and build proof.
 
-## Pinned testing toolchain
-Use the proven donor build matrix unless a separate toolchain-upgrade task explicitly changes it:
-- Godot: 4.7.2
-- Android platform: API 36
-- Android build tools: 36.1.0
-- Android Gradle Plugin: 8.13.2
-- Gradle: 8.13
-- Kotlin Android plugin: 2.2.21
-- JDK: 17
-- Python: 3.14
-- Node: 24.18.0
-- npm in APK forge: 12.0.2
+Chrome Dev and Chrome Canary are behavior/test harnesses only. Never ingest, port, copy, or depend on their code as LuHm OS APK source.
 
-Pin versions. Never substitute dynamic `latest` dependencies in release/build logic.
+## Build and release boundary
 
-## Fast-build policy
-- Use dependency caches instead of vendoring generated dependency trees.
-- Cancel superseded CI runs on the same ref.
-- Run Python/doctrine preflight and APK build as parallel jobs.
-- Do not redownload verified Godot archives when cache hits are available.
-- Never skip APK verification to save time.
+The current signed Crown Gate 1.0.5 lane remains the last sealed build baseline until a separately authorized RECKONING creates the next signed candidate.
 
-Canonical workflow: `.github/workflows/oni-ultima-debug-apk.yml`.
+Source-only feature work may run static checks, unit/contract tests, JSON validation, syntax checks, and provenance audits. Source GREEN does not authorize APK compilation, signing, installation, canonical merge, public release, or F-Droid publication.
 
-## AI architecture
-- **Lum/OpenAI**: remote spell compiler, coding/reasoning and typed tool-request layer. OpenAI credentials are server-side only and are never stored in source or APK.
-- **Ollama**: localhost-first Android/local inference daemon at `127.0.0.1:11434`.
-- **Python 3**: orchestration, policy, tests, feed normalization, local backend and build sanity.
-- **Godot 4**: native Android cockpit/game/UI shell and Android plugin host.
-- **Edge Gallery**: Samsung-facing local media/gallery surface. It consumes approved local/reference content and does not become a remote hosting authority.
-
-For OpenAI agent work use typed function tools and guardrails. Never translate free text directly into an executable shell command or privilege escalation.
+Public publishing is OFF by default and must remain manual/explicit.
 
 ## Samsung trust boundary
-- Ordinary Termux owns local daemon/control-plane processes.
-- Samsung Secure Folder is a protected cockpit/client.
-- Local services bind to loopback.
+
+- Ordinary Termux owns local engine-room services unless explicitly mutated.
+- Samsung Secure Folder Acode/AcodeX is a protected cockpit/client/editor boundary.
+- Local services remain loopback-only unless a separately approved architecture changes that.
 - No automatic root.
-- Stock Shizuku is preferred when privilege brokering is required.
+- No silent install.
 - No arbitrary model-authored shell.
-- Camera/USB permission work remains isolated from the green control plane.
 
-Canonical local ports:
-- AcodeX/AXS `127.0.0.1:8767`
-- TigerVNC `127.0.0.1:5901`
-- WebSocket bridge `127.0.0.1:6080`
-- Hydra cockpit `127.0.0.1:8787`
-- Ollama `127.0.0.1:11434`
+Physical Samsung evidence owns install, launch, input, rotation, permissions, Secure Folder behavior, save/reload, reboot persistence, and update-continuity claims. CI cannot close those gates.
 
-## Secrets and external status
-Never commit API keys, OAuth tokens, signing secrets, voice recordings, model weights, proprietary game assets or credentials. Base64 is encoding, not encryption.
+## Security and provenance
 
-External hosting/deployment statuses have zero authority over Android GREEN. Android authority comes from repository CI, reproducible build evidence, installable APK evidence, package identity, and device/emulator validation.
+Never commit or echo API keys, OAuth tokens, signing secrets, recovery phrases, private keys, IMEI/MEID, serials, account identifiers, voice recordings, proprietary model bytes, or quarantined game assets.
+
+Base64 is transport encoding, never secrecy or authorization.
+
+Community/donor material requires origin, revision, license, documentation, and `ship_allowed` evidence before production promotion. Unknown or mixed provenance remains blocked.
 
 ## Completion language
-Distinguish exactly between: edited, committed, CI-started, CI-green, artifact-produced, APK-verified, installed, proposed, merged, released, published.
 
-Never claim a state without evidence.
+Distinguish exactly between:
+`drafted`, `edited`, `committed`, `source-tested`, `CI-started`, `CI-green`, `artifact-produced`, `APK-verified`, `installed`, `launched`, `merged`, `released`, `published`, and `device-green`.
+
+Never claim a later state from evidence for an earlier one.
