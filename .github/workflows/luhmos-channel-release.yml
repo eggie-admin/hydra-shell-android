@@ -1,0 +1,182 @@
+name: LuHm OS Samsung Android Channel Releases
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/luhmos-channel-release.yml
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: Release channel
+        required: true
+        type: choice
+        options:
+          - testing
+          - proposed
+          - preview
+          - beta
+          - stable
+      version:
+        description: SemVer without leading v, for example 1.0.8
+        required: true
+        type: string
+      sequence:
+        description: Prerelease sequence number for non-stable channels
+        required: false
+        default: "1"
+        type: string
+      stable_confirmation:
+        description: For stable only, type PUBLISH STABLE
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: luhmos-channel-release-${{ github.event_name }}-${{ inputs.channel || 'bootstrap' }}
+  cancel-in-progress: false
+
+jobs:
+  bootstrap-channel-pages:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create draft channel landing releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for channel in testing proposed preview beta stable; do
+            branch="luhmos/${channel}"
+            tag="channel-${channel}"
+            title="LuHm OS ${channel^} Channel"
+            if gh release view "$tag" --repo "$REPO" >/dev/null 2>&1; then
+              echo "$tag already exists"
+              continue
+            fi
+            cat > /tmp/channel-notes.md <<EOF
+          # LuHm OS ${channel^} Channel
+
+          Samsung Android release-channel landing page.
+
+          - Branch: \`$branch\`
+          - Package: \`art.eggiebagelface.luhmos\`
+          - Canonical product anchor: \`luhmos-main\`
+          - Paid-Pro development source: \`luhmos/dev/samsung-android-paid-pro\`
+
+          This is a **draft channel pointer**, not an installable version release.
+          Versioned channel releases use the repository release policy:
+
+          - Testing: \`vX.Y.Z-testing.N\`
+          - Proposed: \`vX.Y.Z-proposed.N\`
+          - Preview: \`vX.Y.Z-preview.N\`
+          - Beta: \`vX.Y.Z-beta.N\`
+          - Stable: \`vX.Y.Z\`
+
+          Promotion, signing, publishing, installation, and stable release remain human-gated.
+          EOF
+            gh release create "$tag" \
+              --repo "$REPO" \
+              --target "$branch" \
+              --title "$title" \
+              --notes-file /tmp/channel-notes.md \
+              --draft
+          done
+
+  create-versioned-release:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve channel contract
+        id: meta
+        shell: bash
+        env:
+          CHANNEL: ${{ inputs.channel }}
+          VERSION: ${{ inputs.version }}
+          SEQUENCE: ${{ inputs.sequence }}
+          STABLE_CONFIRMATION: ${{ inputs.stable_confirmation }}
+        run: |
+          set -euo pipefail
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "version must be SemVer X.Y.Z" >&2
+            exit 2
+          fi
+          if [[ ! "$SEQUENCE" =~ ^[0-9]+$ ]]; then
+            echo "sequence must be a positive integer" >&2
+            exit 2
+          fi
+
+          branch="luhmos/$CHANNEL"
+          prerelease=true
+          draft=false
+          case "$CHANNEL" in
+            testing|proposed)
+              tag="v${VERSION}-${CHANNEL}.${SEQUENCE}"
+              draft=true
+              ;;
+            preview|beta)
+              tag="v${VERSION}-${CHANNEL}.${SEQUENCE}"
+              ;;
+            stable)
+              tag="v${VERSION}"
+              prerelease=false
+              if [[ "$STABLE_CONFIRMATION" != "PUBLISH STABLE" ]]; then
+                echo "stable requires exact confirmation: PUBLISH STABLE" >&2
+                exit 3
+              fi
+              ;;
+            *)
+              echo "unsupported channel: $CHANNEL" >&2
+              exit 2
+              ;;
+          esac
+
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "prerelease=$prerelease" >> "$GITHUB_OUTPUT"
+          echo "draft=$draft" >> "$GITHUB_OUTPUT"
+
+      - name: Create versioned GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          CHANNEL: ${{ inputs.channel }}
+          VERSION: ${{ inputs.version }}
+          BRANCH: ${{ steps.meta.outputs.branch }}
+          TAG: ${{ steps.meta.outputs.tag }}
+          PRERELEASE: ${{ steps.meta.outputs.prerelease }}
+          DRAFT: ${{ steps.meta.outputs.draft }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh release view "$TAG" --repo "$REPO" >/dev/null 2>&1; then
+            echo "release $TAG already exists; refusing duplicate"
+            exit 4
+          fi
+
+          cat > /tmp/release-notes.md <<EOF
+          # LuHm OS $VERSION · ${CHANNEL^}
+
+          Samsung Android release lane: **$CHANNEL**
+
+          - Source branch: \`$BRANCH\`
+          - Package: \`art.eggiebagelface.luhmos\`
+          - Canonical product anchor: \`luhmos-main\`
+
+          This page records the source release point. APK/signing/build receipts are attached only by separately reviewed build workflows.
+          A successful GitHub release does not grant installation, publishing, DNS, billing, signing, or Crown authority.
+          EOF
+
+          args=(release create "$TAG" --repo "$REPO" --target "$BRANCH" --title "LuHm OS $VERSION · ${CHANNEL^}" --notes-file /tmp/release-notes.md)
+          if [[ "$PRERELEASE" == "true" ]]; then
+            args+=(--prerelease)
+          fi
+          if [[ "$DRAFT" == "true" ]]; then
+            args+=(--draft)
+          fi
+          gh "${args[@]}"
