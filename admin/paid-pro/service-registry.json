@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "project_id": "luhmos-paid-pro-samsung-android",
+  "budget": {
+    "monthly_cap_usd": 80.0,
+    "currency": "USD",
+    "unknown_cost_policy": "block",
+    "over_cap_policy": "block_and_require_explicit_approval"
+  },
+  "services": [
+    {
+      "service_id": "openai-boss-lum",
+      "provider": "OpenAI",
+      "service_class": "ai",
+      "enabled": true,
+      "billing_mode": "metered_or_subscription_external_to_repo",
+      "credential_ref": "local-secret:OPENAI_API_KEY",
+      "allowed_layers": ["personal", "development"],
+      "capabilities": ["reasoning", "orchestration", "typed-tool-proposals"],
+      "authority": "none"
+    },
+    {
+      "service_id": "google-drive",
+      "provider": "Google",
+      "service_class": "storage",
+      "enabled": true,
+      "billing_mode": "subscription_or_workspace_external_to_repo",
+      "credential_ref": "connector-or-local-secret",
+      "allowed_layers": ["personal", "development"],
+      "capabilities": ["sot", "artifact-mirror", "docs"],
+      "authority": "none"
+    },
+    {
+      "service_id": "gmail",
+      "provider": "Google",
+      "service_class": "communications",
+      "enabled": true,
+      "billing_mode": "subscription_external_to_repo",
+      "credential_ref": "connector",
+      "allowed_layers": ["personal"],
+      "capabilities": ["mail-read", "draft", "send-only-on-explicit-user-action"],
+      "authority": "none"
+    },
+    {
+      "service_id": "google-cloud-api",
+      "provider": "Google Cloud",
+      "service_class": "cloud-api",
+      "enabled": true,
+      "billing_mode": "metered",
+      "credential_ref": "workload-identity-or-local-secret-reference",
+      "allowed_layers": ["development"],
+      "capabilities": ["cloud-api", "remote-build-adapter", "artifact-service"],
+      "authority": "none"
+    },
+    {
+      "service_id": "cloudflare-edge",
+      "provider": "Cloudflare",
+      "service_class": "network-security",
+      "enabled": true,
+      "billing_mode": "subscription_or_metered_external_to_repo",
+      "credential_ref": "local-secret:CLOUDFLARE_API_TOKEN",
+      "allowed_layers": ["personal", "development"],
+      "capabilities": ["dns", "tls", "zero-trust", "warp", "tunnel", "ddos", "waf"],
+      "public_zone": "eggiebagelface.art",
+      "authority": "none"
+    },
+    {
+      "service_id": "sentry",
+      "provider": "Sentry",
+      "service_class": "observability",
+      "enabled": true,
+      "billing_mode": "subscription_or_metered_external_to_repo",
+      "credential_ref": "local-secret:SENTRY_DSN",
+      "allowed_layers": ["development"],
+      "capabilities": ["https-error-reporting", "release-health", "crash-observability"],
+      "authority": "none"
+    },
+    {
+      "service_id": "github-copilot",
+      "provider": "GitHub",
+      "service_class": "development-ai",
+      "enabled": true,
+      "billing_mode": "subscription_external_to_repo",
+      "credential_ref": "github-account-entitlement",
+      "allowed_layers": ["development"],
+      "capabilities": ["code-assist", "review-assist", "remote-dev-assist"],
+      "authority": "none"
+    },
+    {
+      "service_id": "github-actions-forge",
+      "provider": "GitHub",
+      "service_class": "remote-build",
+      "enabled": true,
+      "billing_mode": "included_or_metered_external_to_repo",
+      "credential_ref": "github-actions-secrets-only",
+      "allowed_layers": ["development"],
+      "capabilities": ["android-ci", "remote-build", "artifact-output", "test"],
+      "authority": "none"
+    }
+  ],
+  "global_rules": {
+    "no_raw_credentials_in_git": true,
+    "no_payment_credentials_in_git": true,
+    "all_billable_calls_pass_local_spend_gate": true,
+    "all_remote_side_effects_require_typed_tool_intent": true,
+    "release_build_sign_install_merge_publish_require_exact_human_authorization": true
+  }
+}
