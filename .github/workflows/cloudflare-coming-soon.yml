@@ -19,6 +19,7 @@ on:
   pull_request:
     branches:
       - luhmos-main
+      - 'luhmos/**'
       - testing/luhm-os-android
     paths:
       - 'site/coming-soon/**'
