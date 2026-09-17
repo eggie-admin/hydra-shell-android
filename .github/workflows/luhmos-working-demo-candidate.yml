@@ -11,7 +11,7 @@ on:
       - '.github/workflows/luhmos-universal-forge-gate.yml'
   pull_request:
     branches:
-      - luhmos/public-private-boundary-20260917
+      - luhmos-main
     paths:
       - 'project/hydra/samsung/android/cathedral-game/**'
       - 'project/hydra/doctrine/proposed-source-of-truth/LUHM_OS_PROPOSED_REMOTE_BUILD_FASTPATH_20260917.json'
