@@ -29,6 +29,15 @@ def find_repo_root(start: Path) -> Path:
     die("repository root not found")
 
 
+def require_text(path: Path, needles: list[str]) -> None:
+    if not path.is_file():
+        die(f"missing required file: {path}")
+    text = path.read_text(encoding="utf-8")
+    missing = [needle for needle in needles if needle not in text]
+    if missing:
+        die(f"{path}: missing contract markers {missing}")
+
+
 def main() -> int:
     game = Path(sys.argv[1] if len(sys.argv) > 1 else ".").resolve()
     repo = find_repo_root(game)
@@ -91,6 +100,55 @@ def main() -> int:
     if 'requires = ["hatchling==1.32.3"]' not in pyproject:
         die("Python build backend is not exactly pinned")
 
+    wizard = lock.get("wizard", {})
+    if wizard.get("schema") != "luhm_os.npm_compile_wizard.v1":
+        die("npm wizard schema drift")
+    if wizard.get("zero_dependency") is not True:
+        die("npm wizard must remain zero-dependency")
+    if wizard.get("npm_install_lifecycle_device_mutation") is not False:
+        die("npm install lifecycle must never mutate a device")
+    if wizard.get("install_default") != "staged_only":
+        die("wizard install default must stay staged-only")
+    if wizard.get("explicit_install_apply_flag") != "--apply":
+        die("wizard explicit apply flag drift")
+    if wizard.get("candidate_package") != "art.eggiebagelface.luhmos.candidate":
+        die("candidate package drift")
+    if wizard.get("production_package") != "art.eggiebagelface.luhmos":
+        die("production package drift")
+
+    package = load_json(repo / wizard["package_manifest"])
+    package_lock = load_json(repo / wizard["package_lock"])
+    if package.get("private") is not True:
+        die("root npm package must remain private")
+    if package.get("version") != "1.0.10":
+        die("root npm package version drift")
+    if package.get("dependencies") or package.get("devDependencies"):
+        die("root compile wizard must remain dependency-free")
+    required_scripts = {"start", "options", "test", "dryrun", "audit", "build", "install"}
+    scripts = package.get("scripts", {})
+    if not required_scripts.issubset(scripts):
+        die(f"npm command surface incomplete: {sorted(required_scripts - set(scripts))}")
+    if package_lock.get("lockfileVersion") != 3:
+        die("package-lock version drift")
+    if set(package_lock.get("packages", {})) != {""}:
+        die("package-lock is no longer zero-dependency")
+
+    wizard_path = repo / wizard["entrypoint"]
+    test_path = repo / wizard["test_file"]
+    require_text(wizard_path, [
+        "LUHM_COMPILE_WIZARD_V1",
+        "INSTALL_STAGED_CROWN_REQUIRED",
+        "art.eggiebagelface.luhmos.candidate",
+        "npm_command === 'install'",
+        "requestedApply(args)",
+        "adb",
+    ])
+    require_text(test_path, [
+        "ordinary npm install lifecycle cannot mutate a device",
+        "device mutation requires explicit apply flag",
+        "wizard accepts only the collision-free candidate package",
+    ])
+
     workflows = [
         repo / ".github/workflows/luhmos-drive-avatar-candidate.yml",
         repo / ".github/workflows/luhmos-source-vendor-gate.yml",
@@ -131,6 +189,17 @@ def main() -> int:
     if not required_actions.issubset(seen_actions):
         die(f"locked action set not fully exercised: {sorted(required_actions - seen_actions)}")
 
+    universal = workflows[2].read_text(encoding="utf-8")
+    for marker in [
+        "npm ci --ignore-scripts --offline",
+        "npm test",
+        "npm run dryrun",
+        "tools/luhm-compile-wizard.mjs",
+        "package-lock.json",
+    ]:
+        if marker not in universal:
+            die(f"universal forge workflow missing npm wizard marker: {marker}")
+
     drive = workflows[0].read_text(encoding="utf-8")
     if lock["pinned_inputs"]["android_forge_commit"] not in drive:
         die("Android donor commit drift")
@@ -147,6 +216,7 @@ def main() -> int:
     print("LUHM_UNIVERSAL_FORGE_LOCK_GREEN")
     print(f"locked_actions={len(actions)}")
     print(f"locked_workflows={len(workflows)}")
+    print(f"wizard_commands={','.join(wizard['commands'])}")
     return 0
 
 
