@@ -21,6 +21,12 @@
     "native_updater_donor": "eggie-admin/vue-headless-cms",
     "native_updater_ref": "dd9b3e68e14ce7a559b7b13aebfe10c630fa171b"
   },
+  "doctrine_alignment": {
+    "crowned_source_receipt": "project/hydra/source-of-truth/KAI9000_SEAL_OF_TRUTH_CROWN_20260917.json",
+    "requires_sealed_source_of_truth": true,
+    "modular_cockpit_source_gate_repaired_for_current_crown": true,
+    "pre_crown_wording_may_not_override_current_seal": true
+  },
   "install_contract": {
     "explicit_user_gesture_required": true,
     "https_only": true,
