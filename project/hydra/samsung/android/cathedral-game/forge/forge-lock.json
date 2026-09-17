@@ -26,6 +26,7 @@
     "python_build_backend": "hatchling==1.32.3",
     "java": "17",
     "node": "24",
+    "npm": "11",
     "godot": "4.7.2-stable",
     "godot_template": "4.7.2.stable",
     "android_min_sdk": 24,
@@ -34,6 +35,21 @@
     "android_target_abi": "arm64-v8a",
     "godot_android_gradle": "8.11.1",
     "plugin_gradle": "8.13"
+  },
+  "wizard": {
+    "schema": "luhm_os.npm_compile_wizard.v1",
+    "entrypoint": "tools/luhm-compile-wizard.mjs",
+    "test_file": "tools/luhm-compile-wizard.test.mjs",
+    "package_manifest": "package.json",
+    "package_lock": "package-lock.json",
+    "zero_dependency": true,
+    "commands": ["start", "options", "test", "dryrun", "audit", "build", "install"],
+    "remote_build_workflow": "luhmos-drive-avatar-candidate.yml",
+    "candidate_package": "art.eggiebagelface.luhmos.candidate",
+    "production_package": "art.eggiebagelface.luhmos",
+    "install_default": "staged_only",
+    "explicit_install_apply_flag": "--apply",
+    "npm_install_lifecycle_device_mutation": false
   },
   "pinned_inputs": {
     "android_forge_repository": "eggie-admin/vue-headless-cms",
