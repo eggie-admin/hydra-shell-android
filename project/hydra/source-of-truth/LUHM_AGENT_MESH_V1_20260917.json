@@ -1,0 +1,45 @@
+{
+  "schema": "luhmos.agent_mesh.v1",
+  "seal": "LUHM_AGENT_MESH_V1_20260917",
+  "date": "2026-09-17",
+  "authority": "Professor",
+  "status": "SOURCE_CANDIDATE_IMPLEMENTED_BUILD_PENDING",
+  "boss": "Lum",
+  "default_blades": ["CONTEXT", "BUILD", "RESEARCH"],
+  "conditional_blade": "CRITIC",
+  "deterministic_edge": "TOOL_EXECUTOR",
+  "rules": {
+    "boss_speaks_to_professor": true,
+    "helpers_speak_to_boss": true,
+    "recursive_helper_recruitment": false,
+    "direct_questions_bypass_mesh": true,
+    "default_helpers": 0,
+    "max_helpers_per_turn": 3,
+    "max_parallel_read_only_helpers": 2,
+    "max_delegation_depth": 1,
+    "helper_history": "NONE",
+    "max_ai_to_ai_rounds": 3,
+    "max_evidence_passes": 10,
+    "null_never_becomes_green": true,
+    "consequential_actions_crown_gated": true
+  },
+  "for_loop_terminal_states": ["PROVEN", "BLOCKED", "CROWN_REQUIRED", "NEEDS_HUMAN"],
+  "provider_boundary": {
+    "policy_core_provider_independent": true,
+    "fast_interactive_adapter": "RESPONSES",
+    "managed_long_horizon_adapter": "AGENTS_API",
+    "local_custom_orchestration_adapter": "AGENTS_SDK",
+    "provider_capability_changes_authority": false
+  },
+  "debug_candidate": {
+    "purpose": "offline Android routing and Crown-gate proof harness",
+    "network_required": false,
+    "shell_bridge": false,
+    "privilege_bridge": false,
+    "silent_install": false,
+    "public_publish": "OFF",
+    "stable_alias_replacement": false,
+    "physical_proof_required_for_green": true
+  },
+  "promotion_law": "SOURCE_GREEN -> SIGNED_DEBUG_BUILD_GREEN -> AMBER_INSTALL_CANDIDATE -> DEVICE_DEBUG_PROOF -> GREEN"
+}
