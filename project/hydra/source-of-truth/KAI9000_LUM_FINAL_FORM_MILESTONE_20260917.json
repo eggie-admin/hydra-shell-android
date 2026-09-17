@@ -86,6 +86,15 @@
     "speed_claim_allowed": false,
     "benchmark_required_before_speed_claim": true
   },
+  "private_drive_source_of_truth": {
+    "document_id": "18lvC_M8KB-FeiEAh7sNAKEs5xhg3RmDFKv_-mNL144I",
+    "document_title": "PRIVATE_CANONICAL_LUHM_OS_CROWN_DOCTRINE_20260916",
+    "observed_revision_before_append": "ANLCKQn-N3xU4rmUuhn744GZanaeVQn6UlzRowsO3skxrWuDKCSHIRtcioai_SXZYIw8OBfSzyMsH1TCqc55wi_5AxFhW4Es_i6r9pRQkg",
+    "final_form_append_revision": "ANLCKQnhGDBEhMtVi6cwfxepFetAiqAWN9iDVcRm1QasqVnKHGbDvaRGplhWzE3S8X0UzGt-QczdxH_zUJ_J4VmPiHNT2vsvaq3zC0a4KA",
+    "append_only": true,
+    "history_preserved": true,
+    "final_form_receipt_present": true
+  },
   "release_and_external_boundaries": {
     "public_publish": false,
     "apk_install_by_this_seal": false,
