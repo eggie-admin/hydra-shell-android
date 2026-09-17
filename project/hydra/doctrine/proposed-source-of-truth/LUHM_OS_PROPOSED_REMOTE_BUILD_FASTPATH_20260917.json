@@ -35,7 +35,7 @@
       "df -Pk /"
     ],
     "arm_hosted_runner_for_android_forge": false,
-    "reason": "The x64 hosted image is the Android forge lane. Target ABI is independent of host ISA, and the forge requires the Android SDK/tooling contract."
+    "reason": "The x64 hosted image is the Android forge lane. Target ABI is independent of host ISA, and this forge requires the preloaded Android SDK/tooling contract."
   },
   "android_contract": {
     "target_abi": "arm64-v8a",
@@ -50,21 +50,26 @@
     "java": "17",
     "node": "24",
     "godot": "4.7.2-stable",
-    "github_gradle": "8.13",
+    "android_plugin": "8.13.2",
+    "plugin_gradle": "8.13",
+    "plugin_gradle_sha256": "20f1b1176237254a6fc204d8434196fa11a4cfb387567519c61556e8710aed78",
     "godot_android_wrapper_gradle": "8.11.1",
     "godot_editor_sha256": "cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4",
     "godot_templates_sha256": "f298490b8d44d934be425a5a65a51bf15f422428b229a06a6e11d9ffea248011",
-    "android_gradle_zip_sha256": "f397b287023acdba1e9f6fc5ea72d22dd63669d59ed4a289a29b1a76eee151c6"
+    "android_gradle_zip_sha256": "f397b287023acdba1e9f6fc5ea72d22dd63669d59ed4a289a29b1a76eee151c6",
+    "duplicate_gradle_bootstrap": false
   },
   "cache_contract": {
-    "gradle_user_home": "gradle_actions_setup_gradle_managed",
+    "gradle_user_home": "actions_cache_buildfile_keyed",
+    "plugin_gradle_distribution": "actions_cache_sha_keyed",
     "godot_editor_archive": "actions_cache_sha_keyed",
     "godot_export_templates": "actions_cache_sha_keyed",
     "godot_prepared_android_template": "actions_cache_sha_keyed",
     "android_gradle_distribution": "actions_cache_sha_keyed",
     "hash_validation_after_restore": true,
     "cache_miss_downloads_only": true,
-    "cache_key_contains_tool_hashes": true
+    "cache_key_contains_tool_hashes": true,
+    "source_derived_gradle_cache_key_contains_donor_ref_and_buildfile_hash": true
   },
   "parallelism": {
     "max_gradle_workers": 4,
@@ -88,6 +93,7 @@
   "security_and_authority": {
     "pinned_action_revisions": true,
     "pinned_tool_hashes": true,
+    "tool_archives_verified_before_execution": true,
     "ephemeral_candidate_signer": true,
     "production_signing_authority": false,
     "automatic_public_publish": false,
@@ -102,8 +108,8 @@
     "LUHM_DRIVE_AVATAR_CANDIDATE_GREEN"
   ],
   "performance_goal": {
-    "cold_build": "download only immutable Godot and Gradle assets not already cached; avoid redundant Android SDK installation when hosted image satisfies contract",
-    "hot_build": "restore Godot archives, prepared Android template, Android Gradle distribution and Gradle user-home caches; perform compile/export/verification only",
+    "cold_build": "download only immutable Godot and pinned Gradle archives not already cached; avoid redundant Android SDK installation and redundant Gradle action distribution bootstrap",
+    "hot_build": "restore Godot archives, prepared Android template, both pinned Gradle distributions and Gradle dependency/build-state caches; perform compile/export/verification only",
     "artifact_semantics_changed": false
   }
 }
