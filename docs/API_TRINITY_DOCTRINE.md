@@ -55,6 +55,8 @@ Model IDs are runtime configuration, not architectural constants. Record the res
 
 The connected OpenAI Platform project label is `LuHm OS`; persistent project identifiers are not committed to public source merely for branding consistency.
 
+Current CI state: the remote provider smoke is wired for `OPENAI_API_KEY`, but when that secret is absent the OpenAI live inference test is recorded as `SKIPPED`, not GREEN. An unauthenticated 401 boundary probe is not a substitute for live inference evidence.
+
 ## Google lane
 
 Google has two intentionally separate sublanes.
@@ -80,6 +82,8 @@ GCP_SERVICE_ACCOUNT
 ```
 
 Provisioning remains manual and requires the typed confirmation `PROVISION`. Resource IAM stays least-privilege. The live Google Cloud trust policy is external state and must not be claimed GREEN unless it is read back from Google Cloud.
+
+Current CI state: the Google OIDC preflight is wired correctly, but if the three public repository variables above are absent the live keyless-authentication job is `SKIPPED`. A successful preflight therefore means the contract is valid, not that Google Cloud authentication is live.
 
 ### Google Drive
 
@@ -140,6 +144,8 @@ The Responses API is OpenAI-SDK compatible. `:fastest`, `:cheapest`, and `:prefe
 
 `HF_TOKEN` is server/gateway secret material with only the inference-provider permission needed. Remote inference does not authorize automatic weight download, remote-code execution, or bundling model weights into the APK. Downloaded Hub inputs require pinned revision, license/provenance review, and `trust_remote_code=false` by default.
 
+Current CI state: the remote provider smoke is wired for `HF_TOKEN`, but when that secret is absent Hugging Face live inference is recorded as `SKIPPED`, not GREEN.
+
 ## Remote AI gateway
 
 Only OpenAI and Hugging Face participate in the AI-provider selector:
@@ -174,15 +180,17 @@ The credential-safe provider smoke is wired to both `OPENAI_API_KEY` and `HF_TOK
 
 ## Drift policy
 
-A vendor lane is GREEN only for what was actually verified. Static source checks may prove the repository contract, but they do not prove live Cloudflare token scopes, Google IAM/WIF conditions, Hugging Face account state, GitHub server protection, or GitHub OIDC subject mode unless those external surfaces are read back.
+A vendor lane is GREEN only for what was actually verified. Static source checks may prove the repository contract, but they do not prove live Cloudflare token scopes, Google IAM/WIF conditions, Hugging Face account state, GitHub server protection, GitHub OIDC subject mode, or live remote inference unless those external surfaces are read back or exercised.
 
 Current known external debt is carried explicitly rather than painted green:
 
 - GitHub server-side canonical branch governance is `RED_EXTERNAL` until protection/rulesets are active and read back.
 - GitHub immutable OIDC subject mode is `UNVERIFIED_EXTERNAL` for this pre-rollout repository until read back through a suitable admin/Actions surface.
 - Google Cloud WIF trust conditions are `UNVERIFIED_EXTERNAL` until read back from Google Cloud; bootstrap now refuses to mutate them without confirmed immutable GitHub OIDC.
+- Google Cloud live OIDC authentication is `NOT_CONFIGURED` while the required GitHub repository variables are absent.
 - Cloudflare live token/tunnel state is `UNVERIFIED_EXTERNAL` without an authorized account connector.
-- Hugging Face live account state is `UNVERIFIED_EXTERNAL` when account-level read actions are unavailable.
+- OpenAI live inference is `NOT_VERIFIED` while `OPENAI_API_KEY` is absent from the smoke workflow.
+- Hugging Face live inference is `NOT_VERIFIED` while `HF_TOKEN` is absent from the smoke workflow; account-level state is also unavailable through the current connector.
 
 ## Final authority
 
