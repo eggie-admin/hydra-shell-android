@@ -510,7 +510,7 @@ jobs:
           EOF
           echo 'LUHM_BRANDED_ENTERPRISE_CANDIDATE_GREEN'
 
-      - name: Bind artifact and stage GitHub Release manifest
+      - name: Bind artifact and demo proof
         shell: bash
         env:
           LUHM_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -521,50 +521,45 @@ jobs:
           python3 "$GAME/tools/forge-fingerprint.py" "$GAME" build/android/FORGE_FINGERPRINT.json
           sha256sum "$GAME/forge/forge-lock.json" | tee build/android/forge-lock-sha256.txt
           sha256sum build/android/FORGE_FINGERPRINT.json | tee build/android/forge-fingerprint-sha256.txt
-          python3 - "$APK" "$GAME/forge/forge-lock.json" build/android/FORGE_FINGERPRINT.json build/android/ARTIFACT_MANIFEST.json <<'PY'
+          python3 - "$APK" "$GAME/forge/forge-lock.json" build/android/FORGE_FINGERPRINT.json build/android/ARTIFACT_MANIFEST.json build/android/DEMO_ARTIFACT_RECEIPT.json <<'PY'
           from pathlib import Path
           import hashlib,json,os,sys
-          apk,lock_path,fingerprint_path,out=map(Path,sys.argv[1:])
+          apk,lock_path,fingerprint_path,artifact_out,demo_out=map(Path,sys.argv[1:])
           fingerprint=json.loads(fingerprint_path.read_text())
-          payload={
+          sha=hashlib.sha256(apk.read_bytes()).hexdigest()
+          artifact={
             'schema':'luhm_os.artifact_manifest.v1',
             'source_sha':os.environ['LUHM_SOURCE_SHA'],
-            'artifact':{'name':apk.name,'sha256':hashlib.sha256(apk.read_bytes()).hexdigest()},
+            'artifact':{'name':apk.name,'sha256':sha},
             'forge_lock_sha256':hashlib.sha256(lock_path.read_bytes()).hexdigest(),
             'forge_contract_sha256':fingerprint['contract_sha256'],
-            'distribution':{'provider':'github_releases','manifest_asset':'luhmos-release.json','publish':'NOT_TRIGGERED'},
+            'distribution':{'mode':'demo_artifact_only','publish':'NOT_TRIGGERED'},
             'authority':{'merge':'NOT_TRIGGERED','deploy':'NOT_TRIGGERED','release_signing':'NOT_TRIGGERED','release_publish':'NOT_TRIGGERED','crown':'NOT_TRIGGERED'},
           }
-          out.write_text(json.dumps(payload,indent=2,sort_keys=True)+'\n')
-          print('LUHM_ARTIFACT_FORGE_BINDING_GREEN')
-          PY
-          CONTRACT_SHA="$(python3 -c 'import json;print(json.load(open("build/android/FORGE_FINGERPRINT.json"))["contract_sha256"])')"
-          RELEASE_TAG="v${VERSION_NAME}-proposed.${GITHUB_RUN_NUMBER}"
-          python3 "$GAME/tools/make-release-manifest.py" \
-            --apk "$APK" \
-            --tag "$RELEASE_TAG" \
-            --channel proposed \
-            --package-id "$PACKAGE_ID" \
-            --version-name "$VERSION_NAME" \
-            --version-code "$VERSION_CODE" \
-            --source-sha "$LUHM_SOURCE_SHA" \
-            --forge-contract-sha256 "$CONTRACT_SHA" \
-            --output build/android/luhmos-release.json
-          python3 - "$APK" build/android/luhmos-release.json <<'PY'
-          from pathlib import Path
-          import hashlib,json,sys
-          apk=Path(sys.argv[1]); m=json.load(open(sys.argv[2],encoding='utf-8'))
-          assert m['schema']=='luhm_os.release.v1'
-          assert m['apk_asset']==apk.name
-          assert m['apk_sha256']==hashlib.sha256(apk.read_bytes()).hexdigest()
-          assert m['package_id']=='art.eggiebagelface.luhmos.demo'
-          assert m['channel']=='proposed'
-          print('LUHM_GITHUB_RELEASE_PAYLOAD_GREEN')
+          receipt={
+            'schema':'luhm_os.crown_cathedral.demo_artifact.v1',
+            'source_sha':os.environ['LUHM_SOURCE_SHA'],
+            'package_id':'art.eggiebagelface.luhmos.demo',
+            'version_name':'1.0.11',
+            'version_code':111,
+            'apk':{'name':apk.name,'sha256':sha},
+            'signer':'EPHEMERAL_DEBUG_CANDIDATE',
+            'install':'ANDROID_USER_CONFIRMATION_REQUIRED',
+            'public_publish':False,
+            'release_promotion':False,
+            'persistent_signing':False,
+            'physical_install_proof':'PENDING_USER_DEVICE',
+          }
+          artifact_out.write_text(json.dumps(artifact,indent=2,sort_keys=True)+'\n')
+          demo_out.write_text(json.dumps(receipt,indent=2,sort_keys=True)+'\n')
+          print('LUHM_CROWN_CATHEDRAL_ARTIFACT_BINDING_GREEN')
           PY
           cp "$GAME/distribution/enterprise-distribution.json" build/android/ENTERPRISE_DISTRIBUTION.json
+          cp "$GAME/CROWN_CATHEDRAL_DEMO_MANIFEST.json" build/android/CROWN_CATHEDRAL_DEMO_MANIFEST.json
           grep -q '"release_signing": "NOT_TRIGGERED"' build/android/ARTIFACT_MANIFEST.json
           grep -q '"release_publish": "NOT_TRIGGERED"' build/android/ARTIFACT_MANIFEST.json
-          echo 'LUHM_RELEASE_PUBLISH_NOT_TRIGGERED'
+          grep -q '"package_id": "art.eggiebagelface.luhmos.demo"' build/android/DEMO_ARTIFACT_RECEIPT.json
+          echo 'LUHM_DEMO_RELEASE_PUBLISH_NOT_TRIGGERED'
 
       - name: Upload branded candidate and release proof
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
@@ -572,8 +567,9 @@ jobs:
           name: luhmos-working-demo-${{ env.VERSION_NAME }}-${{ github.run_number }}
           path: |
             build/android/${{ env.APK_NAME }}
-            build/android/luhmos-release.json
             build/android/ENTERPRISE_DISTRIBUTION.json
+            build/android/CROWN_CATHEDRAL_DEMO_MANIFEST.json
+            build/android/DEMO_ARTIFACT_RECEIPT.json
             build/android/sha256.txt
             build/android/signature.txt
             build/android/zipalign.txt
