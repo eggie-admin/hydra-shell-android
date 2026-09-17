@@ -205,6 +205,17 @@ def propose_spell(spell: str, args_json: str = "{}") -> str:
     )
 
 
+# The mini agent is intentionally narrower than Lum. It can only inspect and
+# summarize allow-listed source. It cannot compile subprocesses, propose casts,
+# invoke MCP, use shell/computer tools, write files, or delegate again.
+MINI_TOOLS = [
+    list_lum_skills,
+    load_lum_skill,
+    read_source,
+    search_source,
+    python_outline,
+]
+
 LUM_TOOLS = [
     list_lum_skills,
     load_lum_skill,
