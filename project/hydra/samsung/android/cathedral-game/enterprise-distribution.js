@@ -7,7 +7,8 @@
 const REPO='eggie-admin/hydra-shell-android';
 const RELEASES_PAGE=`https://github.com/${REPO}/releases`;
 const RELEASES_API=`https://api.github.com/repos/${REPO}/releases`;
-const ASSET_PREFIX=`https://github.com/${REPO}/releases/download/`;
+const RELEASE_ASSET_PATH_PREFIX='/eggie-admin/hydra-shell-android/releases/download/';
+const ASSET_PREFIX=`https://github.com${RELEASE_ASSET_PATH_PREFIX}`;
 const MANIFEST_ASSET='luhmos-release.json';
 const CANDIDATE_PACKAGE='art.eggiebagelface.luhmos.candidate';
 const PROD_PACKAGE='art.eggiebagelface.luhmos';
@@ -26,7 +27,7 @@ function tagMatchesChannel(tag,channel){
 }
 function trustedReleaseAssetUrl(value){
   let u; try{u=new URL(String(value||''))}catch{return false}
-  return u.protocol==='https:' && u.hostname==='github.com' && u.pathname.startsWith(`/${REPO}/releases/download/`);
+  return u.protocol==='https:' && u.hostname==='github.com' && u.pathname.startsWith(RELEASE_ASSET_PATH_PREFIX);
 }
 function validSha256(value){return /^[0-9a-f]{64}$/.test(String(value||'').toLowerCase())}
 function validPackage(value){return value===CANDIDATE_PACKAGE || value===PROD_PACKAGE}
@@ -127,7 +128,7 @@ function mount(){
   document.getElementById('luhmProbeLocal').onclick=async()=>{status.textContent='Probing local loopback harness…';const r=await probeLocalHarness();status.textContent=r.ok?`LOCAL GREEN · ${r.origin}`:'LOCAL OFFLINE · packaged frontend remains available.'};
   document.getElementById('luhmUninstall').onclick=()=>{const r=postUninstall(window);status.textContent=r.ok?'Opening Android removal confirmation…':r.error};
 }
-const core=Object.freeze({REPO,RELEASES_PAGE,RELEASES_API,ASSET_PREFIX,MANIFEST_ASSET,CANDIDATE_PACKAGE,PROD_PACKAGE,LOCAL_BACKENDS,CHANNELS,tagMatchesChannel,trustedReleaseAssetUrl,validSha256,validPackage,pickManifestAsset,pickApkAsset,resolveRelease,resolveInstallPlan,bridgeAvailable,postUpdate,postUninstall,probeLocalHarness,retireLegacyInstallDock});
+const core=Object.freeze({REPO,RELEASES_PAGE,RELEASES_API,RELEASE_ASSET_PATH_PREFIX,ASSET_PREFIX,MANIFEST_ASSET,CANDIDATE_PACKAGE,PROD_PACKAGE,LOCAL_BACKENDS,CHANNELS,tagMatchesChannel,trustedReleaseAssetUrl,validSha256,validPackage,pickManifestAsset,pickApkAsset,resolveRelease,resolveInstallPlan,bridgeAvailable,postUpdate,postUninstall,probeLocalHarness,retireLegacyInstallDock});
 globalThis.LuHmEnterpriseDistribution=core;
 if(globalThis.__LUHM_TEST__)return;
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
