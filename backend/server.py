@@ -7,6 +7,7 @@ import socket
 import subprocess
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from dataclasses import asdict, dataclass
 from datetime import datetime
@@ -63,7 +64,35 @@ def tcp_probe(host: str, port: int, timeout: float = 0.5) -> bool:
         return False
 
 
+def _is_loopback_host(host: str) -> bool:
+    value = (host or "").strip().strip("[]")
+    return value in {"127.0.0.1", "::1", "localhost"}
+
+
+def _ollama_origin() -> str:
+    parsed = urllib.parse.urlsplit(OLLAMA_BASE)
+    if (
+        parsed.scheme != "http"
+        or parsed.hostname not in {"127.0.0.1", "::1"}
+        or parsed.path not in {"", "/"}
+        or parsed.query
+        or parsed.fragment
+        or parsed.username is not None
+        or parsed.password is not None
+    ):
+        raise ValueError("OLLAMA_BASE_URL must remain a bare loopback HTTP origin")
+    return OLLAMA_BASE
+
+
 def axs_probe() -> dict[str, Any]:
+    if not _is_loopback_host(AXS_HOST):
+        return {
+            "online": False,
+            "host": AXS_HOST,
+            "port": AXS_PORT,
+            "role": "AcodeX terminal backend",
+            "policy_error": "AXS host must remain loopback-only",
+        }
     online = tcp_probe(AXS_HOST, AXS_PORT)
     result: dict[str, Any] = {
         "online": online,
@@ -80,20 +109,36 @@ def axs_probe() -> dict[str, Any]:
             result["http_ok"] = 200 <= response.status < 400
     except Exception as exc:
         result["http_ok"] = False
-        result["detail"] = str(exc)
+        result["http_error"] = "probe_failed"
+        result["http_error_type"] = type(exc).__name__
     return result
 
 
 def service_status() -> dict[str, Any]:
+    try:
+        ollama_origin = _ollama_origin()
+        ollama_policy_error = None
+    except ValueError:
+        ollama_origin = OLLAMA_BASE
+        ollama_policy_error = "ollama_origin_must_be_loopback"
+    vnc_loopback = _is_loopback_host(VNC_HOST)
     return {
         "hydra": {"online": True, "host": HOST, "port": PORT},
-        "ollama": {"online": ollama_alive(), "host": "127.0.0.1", "port": 11434},
+        "ollama": {
+            "online": ollama_alive(),
+            "host": "127.0.0.1",
+            "port": 11434,
+            "origin": ollama_origin,
+            "policy_error": ollama_policy_error,
+            "fail_closed": True,
+        },
         "axs": axs_probe(),
         "vnc": {
-            "online": tcp_probe(VNC_HOST, VNC_PORT),
+            "online": vnc_loopback and tcp_probe(VNC_HOST, VNC_PORT),
             "host": VNC_HOST,
             "port": VNC_PORT,
             "display": ":1",
+            "policy_error": None if vnc_loopback else "VNC host must remain loopback-only",
         },
         "tts": {"online": bool(shutil.which("termux-tts-speak"))},
     }
@@ -146,7 +191,7 @@ def _json_request(url: str, payload: dict[str, Any] | None = None, timeout: floa
 
 def ollama_alive() -> bool:
     try:
-        _json_request(f"{OLLAMA_BASE}/api/tags", timeout=2.0)
+        _json_request(f"{_ollama_origin()}/api/tags", timeout=2.0)
         return True
     except Exception:
         return False
@@ -185,6 +230,7 @@ def run_tool(name: str, arguments: dict[str, Any] | None) -> dict[str, Any]:
 
 
 def chat_with_ollama(messages: list[dict[str, Any]], model: str) -> tuple[str, list[dict[str, Any]]]:
+    ollama_origin = _ollama_origin()
     working = list(messages)
     trace: list[dict[str, Any]] = []
 
@@ -200,7 +246,7 @@ def chat_with_ollama(messages: list[dict[str, Any]], model: str) -> tuple[str, l
             payload["think"] = False
 
         started = time.monotonic()
-        response = _json_request(f"{OLLAMA_BASE}/api/chat", payload)
+        response = _json_request(f"{ollama_origin}/api/chat", payload)
         elapsed_ms = round((time.monotonic() - started) * 1000)
         message = response.get("message") or {}
         tool_calls = message.get("tool_calls") or []
@@ -276,6 +322,7 @@ def health():
             "service": "hydra-ollama-local",
             "ollama": ollama_alive(),
             "ollama_base": OLLAMA_BASE,
+            "ollama_loopback_enforced": True,
             "model": DEFAULT_MODEL,
             "fast_model": FAST_MODEL,
             "deep_model": DEEP_MODEL,
@@ -347,9 +394,9 @@ def hydra_turn():
     except urllib.error.HTTPError as exc:
         return jsonify({"error": "ollama_http_error", "status": exc.code}), 502
     except (urllib.error.URLError, TimeoutError) as exc:
-        return jsonify({"error": "ollama_connection_error", "detail": str(exc)}), 503
+        return jsonify({"error": "ollama_connection_error", "error_type": type(exc).__name__}), 503
     except Exception as exc:
-        return jsonify({"error": "agent_error", "detail": str(exc)}), 500
+        return jsonify({"error": "agent_error", "error_type": type(exc).__name__}), 500
 
     utterance = CanonicalUtterance(text=answer)
     tts = None

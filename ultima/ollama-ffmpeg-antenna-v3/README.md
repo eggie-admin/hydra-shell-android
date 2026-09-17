@@ -9,6 +9,8 @@ Canonical split:
 - GitHub remote plane: versioned readable source and fast-forward-only update metadata.
 - Google Drive recovery plane: sealed manifests, hashes, and approved media artifacts.
 
+Edge Gallery remains a Samsung-facing local UI/media surface. The antenna does not assume Google AI Edge Gallery exports an on-device HTTP API, and it does not scrape private app storage.
+
 GitHub is not the AI runtime. Drive is not the execution plane. Local Ollama and FFmpeg stay the live services. OpenAI is a remote coding planner and does not receive shell authority.
 
 ## Install
@@ -108,7 +110,11 @@ Do not force-reset local work and do not commit secrets.
 
 The antenna probes local Ollama, FFmpeg, and ffprobe, and can send chat requests only to the configured local Ollama endpoint by default.
 
+That Ollama compatibility facade is loopback-only and fail-closed: non-loopback endpoints are rejected instead of silently falling back to another model host.
+
 Default model: `qwen2.5:3b`.
+
+Future native LiteRT-LM or optional llama.cpp integration remains a separate explicit architecture change; this runtime does not enable either backend by default.
 
 ## Media lane
 
