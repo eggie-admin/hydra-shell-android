@@ -32,6 +32,30 @@ The source law is: AI proposes. Policy authorizes. CI proves. The human promotes
 7. **Prove**: for bounded mutation workflow changes, emit one SHA-256-bound proof payload rendered as JSON, scriptless HTML, and chat-safe text.
 8. **Stop correctly**: if evidence is missing, report the missing gate instead of inventing GREEN.
 
+## Latency ladder
+
+Use the cheapest proven route that still satisfies the task:
+
+```text
+DETERMINISTIC_LOCAL
+→ ON_DEVICE_BOUNDED_HELPER_IF_PROVEN
+→ OPENAI_FAST_PARENT
+→ OPENAI_DEEP_ON_COMPLEXITY_TRIGGER
+```
+
+Performance rules:
+
+- cache the resolved authority/source graph for the current head instead of rescanning it;
+- avoid duplicate reads of the same `path@sha`;
+- batch independent remote reads when possible;
+- parallelize only read/search/audit helper work;
+- use focused tests before broad CI;
+- keep handoff JSON compact and avoid repeating source prose already represented by exact refs;
+- escalate to the deep route only for difficult security/release audits, architecture redesign, conflicting authority evidence, or multi-file debugging where the fast route is insufficient;
+- benchmark on-device helpers before preferring them. Local does not automatically mean faster.
+
+Google AI Edge Gallery is an optional evaluation harness for on-device helper experiments. It has no source, mutation, release, signing, or deployment authority. Use `skills/google-ai-edge-gallery/SKILL.md` for that lane.
+
 ## Mini helper roles
 
 Mini helpers are role-specialists, not independent authorities:
@@ -89,7 +113,7 @@ Proof receipts must exclude approval tokens and staged file contents.
 ```json
 {
   "request_id": "...",
-  "lane": "FAST|MINI|DEEP",
+  "lane": "FAST|MINI|EDGE|DEEP",
   "authority": "READ_ONLY|PROPOSE_ONLY|HUMAN_GATE_REQUIRED",
   "source_refs": ["path@sha"],
   "intent": "...",

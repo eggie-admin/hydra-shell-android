@@ -1,0 +1,141 @@
+{
+  "schema": "luhm-os.project-hydra.performance-policy.v1",
+  "status": "PROPOSED_ACTIVE_ON_CANDIDATE_BRANCH",
+  "date_local": "2026-09-17",
+  "project": "Project Hydra",
+  "canonical_branch": "luhmos-main",
+  "human_authority": "Professor",
+  "source_law": "AI proposes. Policy authorizes. CI proves. The human promotes.",
+  "objective": "Minimize wall-clock latency and repeated work without weakening source-of-truth, approval, provenance, release, security, or physical-device proof gates.",
+  "invariants": {
+    "power_level_equals_permission_level": false,
+    "human_approval_required_for_reckoning": true,
+    "public_publish_default": false,
+    "silent_install": false,
+    "ai_output_direct_to_shell": false,
+    "helper_consensus_grants_authority": false,
+    "cloud_ai_required_for_base_launch": false,
+    "physical_device_proof_required_for_final_android_green": true,
+    "historical_evidence_preserved": true
+  },
+  "source_resolution": {
+    "resolve_once_per_exact_head": true,
+    "cache_key": [
+      "repository",
+      "branch",
+      "head_sha",
+      "private_drive_revision_when_applicable"
+    ],
+    "immutable_git_blob_reuse": true,
+    "repeat_same_path_same_sha_fetch": false,
+    "refresh_mutable_refs_before_mutation": true,
+    "authority_order": [
+      "exact current Professor instruction",
+      "fresh physical/runtime proof when target state depends on it",
+      "newest applicable crowned source-of-truth",
+      "project/hydra/project.manifest.json",
+      "AGENTS.md and exact lane workflow/tests",
+      "proposed doctrine",
+      "legacy/history"
+    ]
+  },
+  "execution_routing": {
+    "default_helpers": 0,
+    "max_parallel_read_only_helpers": 2,
+    "max_delegation_depth": 1,
+    "max_ai_rounds": 3,
+    "parallel_reads": true,
+    "parallel_writes": false,
+    "single_parent_writer": true,
+    "deterministic_local_validation_first": true,
+    "ordinary_ai_route": "OPENAI_FAST_PARENT",
+    "deep_ai_route": "OPENAI_DEEP_ON_COMPLEXITY_TRIGGER",
+    "optional_on_device_route": "BOUNDED_LOCAL_HELPER_ONLY_AFTER_MEASUREMENT",
+    "provider_racing_for_consensus": false,
+    "speculative_duplicate_model_calls": false,
+    "structured_handoffs": "COMPACT_JSON",
+    "stop_on_first_meaningful_blocker": true
+  },
+  "deep_route_triggers": [
+    "security architecture",
+    "release or signing audit",
+    "difficult multi-file debugging",
+    "source-of-truth conflict reconciliation",
+    "high-consequence migration design"
+  ],
+  "ci_strategy": {
+    "focused_changed_path_tests_first": true,
+    "full_exact_head_ci_after_focused_green": true,
+    "cancel_superseded_runs": true,
+    "reuse_verified_toolchain_caches": true,
+    "pin_external_actions_and_tool_versions": true,
+    "heavy_apk_signing_only_when_lane_requires_it": true,
+    "proof_bound_to_exact_source": true,
+    "do_not_remove_required_checks_for_speed": true
+  },
+  "runtime_strategy": {
+    "base_launch_network_independent": true,
+    "cloud_ai_lazy": true,
+    "admin_surfaces_lazy": true,
+    "background_update_check": false,
+    "idle_agent_mesh": false,
+    "loopback_services_on_demand_where_practical": true,
+    "bounded_structured_logs": true,
+    "duplicate_proof_computation": false,
+    "one_proof_payload_many_views": true
+  },
+  "android_ui_strategy": {
+    "first_render_requires_network": false,
+    "tap_first": true,
+    "reduced_motion_supported": true,
+    "compositor_friendly_transforms": true,
+    "avoid_continuous_fullscreen_expensive_filters": true,
+    "lazy_load_noncritical_panels": true,
+    "game_admin_firewall_unchanged": true
+  },
+  "godot_strategy": {
+    "profile_before_claiming_speedup": true,
+    "avoid_unbounded_per_frame_allocations": true,
+    "disable_processing_for_inactive_nodes_where_safe": true,
+    "keep_proof_and_authority_logic_off_render_hot_path": true,
+    "behavior_changes_require_existing_test_or_device_proof": true
+  },
+  "proof_strategy": {
+    "generate_after_postwrite_verification": true,
+    "shared_digest": "sha256",
+    "views": [
+      "json",
+      "scriptless_html",
+      "chat_safe_text"
+    ],
+    "exclude": [
+      "approval_token",
+      "secret",
+      "staged_file_content"
+    ],
+    "reference_large_evidence_by_hash_or_id": true,
+    "do_not_duplicate_large_evidence_bodies": true
+  },
+  "measurement_law": {
+    "performance_claim_requires_measurement": true,
+    "compare_equivalent_inputs": true,
+    "record_target_device_or_runner": true,
+    "record_exact_source_sha": true,
+    "record_runtime_or_model_artifact_hash_when_applicable": true,
+    "record_startup_or_ttft_when_applicable": true,
+    "record_throughput_when_applicable": true,
+    "record_memory_and_thermal_note_when_applicable": true,
+    "unmeasured_optimization_state": "PROPOSED_NOT_PROVEN_FASTER"
+  },
+  "promotion": {
+    "candidate_branch_only": true,
+    "canonical_merge_requires_explicit_current_professor_authorization": true,
+    "source_of_truth_crown_requires_explicit_current_professor_authorization": true,
+    "release_promotion": false,
+    "apk_install": false,
+    "persistent_signing": false,
+    "public_publish": false,
+    "dns_mutation": false,
+    "billing_mutation": false
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "schema": "luhm-os.kai9000.project-hydra-fastpath-final-candidate.v1",
+  "manifest_id": "KAI9000_PROJECT_HYDRA_FASTPATH_FINAL_CANDIDATE_20260917",
+  "status": "FINAL_CANDIDATE_NOT_CROWNED",
+  "date_local": "2026-09-17",
+  "project": "LuHm OS / KAI 9000 / Project Hydra",
+  "repository": "eggie-admin/hydra-shell-android",
+  "canonical_branch": "luhmos-main",
+  "candidate_branch": "luhmos/perf-google-ai-edge-doctrine-20260917",
+  "human_authority": "Professor",
+  "source_law": "AI proposes. Policy authorizes. CI proves. The human promotes.",
+  "lineage_parent_head": "dcba0087a79be6283b5087e62adb5beff318850f",
+  "objective": "Freeze the hardened low-latency Project Hydra source configuration as a final promotion candidate without overstating unmeasured runtime speed.",
+  "final_form": {
+    "authority_resolution_once_per_exact_head": true,
+    "immutable_path_at_sha_reuse": true,
+    "batched_remote_reads": true,
+    "parallel_read_only_helpers": true,
+    "parallel_writes": false,
+    "single_parent_writer": true,
+    "default_helpers": 0,
+    "max_parallel_read_only_helpers": 2,
+    "max_delegation_depth": 1,
+    "max_ai_rounds": 3,
+    "deterministic_local_validation_first": true,
+    "ordinary_ai_route": "OPENAI_FAST_PARENT",
+    "deep_ai_route": "OPENAI_DEEP_ON_COMPLEXITY_TRIGGER",
+    "optional_on_device_route": "BOUNDED_LOCAL_HELPER_ONLY_AFTER_MEASUREMENT",
+    "structured_handoffs": "COMPACT_JSON",
+    "focused_tests_before_full_ci": true,
+    "one_proof_payload_many_views": true
+  },
+  "security_invariants": {
+    "ai_output_direct_to_shell": false,
+    "human_approval_required_for_reckoning": true,
+    "helper_consensus_grants_authority": false,
+    "public_publish": false,
+    "silent_install": false,
+    "persistent_signing": false,
+    "apk_install": false,
+    "dns_mutation": false,
+    "billing_mutation": false,
+    "historical_evidence_preserved": true
+  },
+  "google_ai_edge_gallery": {
+    "role": "LOCAL_TEST_AND_BENCHMARK_ONLY",
+    "source_of_truth_authority": false,
+    "mutation_authority": false,
+    "shell_authority": false,
+    "signing_authority": false,
+    "release_authority": false,
+    "production_dependency": false
+  },
+  "performance_claim": {
+    "source_ci_optimization": "GREEN_AT_PARENT_HEAD",
+    "runtime_speedup_proven": false,
+    "speed_claim_allowed": false,
+    "required_before_speed_claim": [
+      "exact target device or runner",
+      "exact source SHA",
+      "equivalent input/task class",
+      "startup latency or TTFT when applicable",
+      "throughput when applicable",
+      "memory and thermal note when applicable",
+      "comparison baseline"
+    ]
+  },
+  "promotion_gate": {
+    "exact_head_ci_required": true,
+    "explicit_current_professor_authorization_required_for_merge": true,
+    "explicit_current_professor_authorization_required_for_crown": true,
+    "runtime_benchmark_required_only_for_runtime_speed_claim": true,
+    "canonical_merge_authorized_by_this_manifest": false,
+    "crown_authorized_by_this_manifest": false
+  },
+  "result": "FINAL_FORM_SOURCE_CANDIDATE_STAGED"
+}
