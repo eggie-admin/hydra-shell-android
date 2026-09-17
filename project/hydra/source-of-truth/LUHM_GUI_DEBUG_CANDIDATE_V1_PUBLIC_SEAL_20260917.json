@@ -1,6 +1,6 @@
 {
   "schema": "luhm.gui-debug.public-candidate-seal.v1",
-  "status": "SEALED_CANDIDATE_SNAPSHOT",
+  "status": "SEALED_PUBLISHED_CANDIDATE_BROWSER_PENDING",
   "publication_authorization": "Professor: Yes, publish the candidate to GitHub.",
   "scope": "Public source candidate only; not a deployment or canonical release promotion",
   "candidate_path": "project/hydra/openai/gui-debug-candidate-v1",
@@ -18,8 +18,25 @@
     "method": "Node VM with minimal DOM test doubles",
     "browser_visuals": "UNVERIFIED",
     "live_pet_update": false,
-    "deployment": false
+    "deployment": false,
+    "repository_guard_checks": {
+      "project_hydra_structure_guard": "PASS_LOCAL",
+      "kai9000_ci_guard": "PASS_LOCAL",
+      "scope_note": "Executed legacy repository guards are recorded as-is; not evidence of live runtime or current CI."
+    },
+    "publication_readback": "7/7 exact text matches at candidate commit",
+    "browser_status": "BLOCKED: local Chromium unavailable; cloud browser local-file navigation denied",
+    "browser_ci_job": "NOT_CREATED_OR_RUN"
   },
   "private_recovery_references": "Omitted from public edition",
-  "signature": "SHA-256 integrity receipt; not a cryptographic identity signature"
+  "signature": "SHA-256 integrity receipt; not a cryptographic identity signature",
+  "revision": 2,
+  "source": {
+    "repository": "eggie-admin/hydra-shell-android",
+    "branch": "luhmos/gui-debug-candidate-v1-20260917",
+    "candidate_commit": "2e50795534e96ca9adf96850c070fffa2ccc9d96",
+    "canonical_branch": "luhmos-main",
+    "canonical_merge": false
+  },
+  "seal_update_authorization": "Professor: Seal update source of truth"
 }
