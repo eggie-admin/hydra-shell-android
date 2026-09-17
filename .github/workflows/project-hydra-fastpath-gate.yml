@@ -1,4 +1,4 @@
-name: Project Hydra Fastpath Gate
+name: LuHm OS Fastpath Gate
 
 on:
   pull_request:
@@ -20,7 +20,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: project-hydra-fastpath-${{ github.event.pull_request.number || github.ref }}
+  group: luhm-os-fastpath-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -47,7 +47,7 @@ jobs:
           python -m json.tool project/hydra/runtime/performance.policy.json >/dev/null
           python -m json.tool project/hydra/doctrine/proposed-source-of-truth/KAI9000_PROPOSED_GOOGLE_AI_EDGE_LOW_LATENCY_DOCTRINE_20260917.json >/dev/null
 
-      - name: Project Hydra fastpath guard
+      - name: LuHm OS fastpath guard
         shell: bash
         run: |
           set -euo pipefail
@@ -66,4 +66,4 @@ jobs:
           grep -q 'AI proposes. Policy authorizes. CI proves. The human promotes.' project/hydra/runtime/performance.policy.json
           grep -q 'performance_claim_requires_measurement' project/hydra/runtime/performance.policy.json
           grep -q 'repeat_same_path_same_sha_fetch' project/hydra/runtime/performance.policy.json
-          echo PROJECT_HYDRA_FASTPATH_POLICY_GREEN
+          echo LUHM_OS_FASTPATH_POLICY_GREEN

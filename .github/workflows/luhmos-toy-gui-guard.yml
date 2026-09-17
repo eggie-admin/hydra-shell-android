@@ -1,0 +1,29 @@
+name: LuHm Toy GUI Guard
+
+on:
+  pull_request:
+    branches:
+      - luhmos-main
+    paths:
+      - 'project/hydra/samsung/android/cathedral-game/final-form.css'
+      - 'project/hydra/samsung/android/cathedral-game/apk-install-gui.css'
+      - 'tools/toy_gui_guard.py'
+      - '.github/workflows/luhmos-toy-gui-guard.yml'
+      - 'project/hydra/doctrine/proposed-source-of-truth/KAI9000_PROPOSED_TOY_GUI_MUTATION_20260917.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Python compile gate
+        run: python3 -m py_compile tools/toy_gui_guard.py
+      - name: Deterministic toy GUI guard
+        run: python3 tools/toy_gui_guard.py

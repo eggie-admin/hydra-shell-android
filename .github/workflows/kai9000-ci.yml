@@ -8,7 +8,7 @@ on:
       - "ultima/ollama-ffmpeg-antenna-v3/**"
       - "backend/**"
       - "tools/**"
-      - "integrations/cloudflare/**"
+      - "integrations/**"
       - "docs/**"
       - "README.md"
       - "SUPPORT.md"
@@ -33,7 +33,7 @@ on:
       - "ultima/ollama-ffmpeg-antenna-v3/**"
       - "backend/**"
       - "tools/**"
-      - "integrations/cloudflare/**"
+      - "integrations/**"
       - "docs/**"
       - "README.md"
       - "SUPPORT.md"
@@ -56,20 +56,22 @@ permissions:
 
 jobs:
   kai9000-ci:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 12
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
 
       - name: Python 3.12
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: "3.12"
 
       - name: Node 24
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: "24"
 
@@ -84,11 +86,22 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e . pytest
 
-      - name: Project Hydra structure guard
+      - name: LuHm OS compatibility structure guard
         run: python tools/project_hydra_structure_guard.py
 
       - name: Architecture and secret guard
         run: python tools/kai9000_ci_guard.py
+
+      - name: LuHm OS remote assistance fastpath guard
+        run: |
+          python tools/remote_assistance_guard.py
+          python tools/remote_assistance_bench.py
+
+      - name: LuHm OS runtime entitlement guard
+        run: python tools/runtime_capability_guard.py
+
+      - name: Remote assistance unit contract
+        run: python -m pytest -q backend/tests/test_remote_ai_router.py backend/tests/test_remote_assistance.py backend/tests/test_google_assist.py
 
       - name: Retired lane purge guard
         run: python tools/retired_lane_guard.py
@@ -102,7 +115,7 @@ jobs:
       - name: Python compile gate
         run: |
           python -m compileall -q ultima/ollama-ffmpeg-antenna-v3
-          python -m py_compile tools/kai9000_ci_guard.py tools/project_hydra_structure_guard.py tools/retired_lane_guard.py tools/public_release_lock_guard.py tools/deploy_authority_guard.py tools/canonical_branch_governance_audit.py
+          python -m py_compile tools/kai9000_ci_guard.py tools/project_hydra_structure_guard.py tools/remote_assistance_guard.py tools/remote_assistance_bench.py tools/runtime_capability_guard.py tools/retired_lane_guard.py tools/public_release_lock_guard.py tools/deploy_authority_guard.py tools/canonical_branch_governance_audit.py
 
       - name: Lum Crown authority contract
         working-directory: ultima/ollama-ffmpeg-antenna-v3

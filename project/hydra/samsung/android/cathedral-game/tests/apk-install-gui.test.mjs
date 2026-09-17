@@ -17,6 +17,14 @@ test('exports deterministic install contract', () => {
   assert.equal(core.APP_HOST, 'appassets.androidplatform.net');
 });
 
+test('exports local source-of-truth Lum avatar contract', () => {
+  assert.equal(core.LUM_AVATAR_LOCAL, 'lum-avatar-actual-animated.mp4');
+  assert.equal(core.LUM_AVATAR_SOURCE_SEAL, 'KAI9000_LUM_AVATAR_ACTUAL_ANIMATED_GREEN_20260906');
+  assert.match(source, /LUHM_AVATAR_SOURCE_OF_TRUTH_V1/);
+  assert.match(styles, /\.luhm-avatar-video\s*\{/);
+  assert.doesNotMatch(source, /drive\.google|drive\.usercontent|googleusercontent/);
+});
+
 test('rejects empty malformed and non-HTTPS URLs', () => {
   assert.equal(core.normalizeUrl('').ok, false);
   assert.equal(core.normalizeUrl('not a url').ok, false);
