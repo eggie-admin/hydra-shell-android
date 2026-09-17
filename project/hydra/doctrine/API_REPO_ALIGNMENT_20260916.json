@@ -1,0 +1,134 @@
+{
+  "schema": "luhmos.api-repo-alignment-audit.v1",
+  "date": "2026-09-16",
+  "status": "YELLOW_ALIGNMENT_BRANCH_PENDING_CI_AND_MERGE",
+  "branch": "luhmos/api-repo-alignment-20260916",
+  "base": "luhmos-main",
+  "source_of_truth": {
+    "product": "LuHm OS",
+    "project": "Project Hydra",
+    "subsystem": "KAI 9000",
+    "canonical_project_root": "project/hydra",
+    "canonical_integration_branch": "luhmos-main",
+    "primary_lum_agent": "KAI9000-Lum",
+    "openai_api": "Responses API",
+    "openai_fast_model": "gpt-5.6-luna",
+    "openai_deep_default_model": "gpt-5.6-sol",
+    "final_human_authority": "Professor"
+  },
+  "canonical_directory_contract": {
+    "project_root": "project/hydra",
+    "project_openai_index": "project/hydra/openai",
+    "project_runtime_index": "project/hydra/runtime",
+    "project_doctrine": "project/hydra/doctrine",
+    "adapter_root": "integrations",
+    "provider_filesystem_slugs": [
+      "openai",
+      "huggingface",
+      "google-cloud",
+      "cloudflare"
+    ],
+    "provider_machine_ids": [
+      "openai",
+      "huggingface",
+      "google_cloud",
+      "cloudflare"
+    ],
+    "compatibility_roots": [
+      "lumh-os/kai9000",
+      "ultima/ollama-ffmpeg-antenna-v3",
+      "samsung-sm-x400"
+    ],
+    "migration_rule": "reference_not_copy; no destructive relocation until consumers and CI are proven"
+  },
+  "passes": [
+    {
+      "pass": 1,
+      "name": "Canonical branch authority",
+      "state": "FIXED_ON_ALIGNMENT_BRANCH",
+      "drift": "Repository default branch is main and legacy KAI manifest declared main as remote branch even though luhmos-main is canonical integration authority.",
+      "action": "Manifest now records luhmos-main as canonical integration branch and main only as repository default metadata."
+    },
+    {
+      "pass": 2,
+      "name": "Product and project naming",
+      "state": "FIXED_ON_ALIGNMENT_BRANCH",
+      "drift": "project/hydra/README.md used LumH OS and main; ARCHITECTURE.md still presented Video Forge as the architecture identity.",
+      "action": "Canonical spelling is LuHm OS; project is Project Hydra; subsystem is KAI 9000; architecture heading aligned."
+    },
+    {
+      "pass": 3,
+      "name": "Project namespace and directory authority",
+      "state": "GREEN_CONTRACT",
+      "drift": "Implementation and historical roots exist outside project/hydra, which can look like competing canonical roots.",
+      "action": "project/hydra remains the singular canonical index/namespace; old roots remain compatibility or implementation sources under reference_not_copy migration."
+    },
+    {
+      "pass": 4,
+      "name": "API adapter directory naming",
+      "state": "YELLOW_PHYSICAL_MIGRATION_DEFERRED",
+      "drift": "integrations currently mixes directory and flat-file layouts; Hugging Face has a flat responses template while OpenAI, Google Cloud and Cloudflare use directories.",
+      "action": "Canonical filesystem slugs are openai, huggingface, google-cloud, cloudflare. Do not move live files until reference/import consumers and CI are enumerated."
+    },
+    {
+      "pass": 5,
+      "name": "Provider ID normalization",
+      "state": "FIXED_ON_ALIGNMENT_BRANCH",
+      "drift": "Provider names appeared as hugging_face, huggingface, google_cloud and google-cloud depending on context without an explicit mapping.",
+      "action": "Machine IDs and filesystem slugs are now explicitly mapped in the vendor manifest and Project Hydra doctrine."
+    },
+    {
+      "pass": 6,
+      "name": "OpenAI API and model baseline",
+      "state": "FIXED_ON_ALIGNMENT_BRANCH",
+      "drift": "Legacy project.manifest.json still declared gpt-6-astra while current API doctrine and Responses template use gpt-5.6-luna/gpt-5.6-sol.",
+      "action": "Manifest aligned to Responses API with fast gpt-5.6-luna and deep/default gpt-5.6-sol. Model IDs remain runtime configuration rather than architectural constants."
+    },
+    {
+      "pass": 7,
+      "name": "Lum agent identity",
+      "state": "GREEN_WITH_HISTORICAL_ALIAS",
+      "drift": "Older sealed documents use KAI9000-Lum-InApp while the current custom-agent direction names KAI9000-Lum.",
+      "action": "KAI9000-Lum is canonical primary identity. KAI9000-Lum-InApp remains historical/compatibility nomenclature and historical seals are not rewritten."
+    },
+    {
+      "pass": 8,
+      "name": "Authority and agent-role doctrine",
+      "state": "FIXED_ON_ALIGNMENT_BRANCH",
+      "drift": "Vendor manifest labeled Lum operationally as SUPREME_WITCH, which is fun styling but ambiguous as machine authority.",
+      "action": "Operational role is crown_planner_typed_tool_orchestrator with self_authorizing=false; SUPREME_WITCH retained only as style_role; Professor remains final authority."
+    },
+    {
+      "pass": 9,
+      "name": "Android production versus development cockpit",
+      "state": "GREEN_CONTRACT",
+      "drift": "Historical Termux/AcodeX/VNC/Secure Folder cockpit milestones can be mistaken for production APK dependencies.",
+      "action": "Current LuHm OS production doctrine remains standalone APK first. Local cockpit history is development evidence only and cannot become a boot/runtime dependency without a new explicit architecture mutation."
+    },
+    {
+      "pass": 10,
+      "name": "Promotion, CI and source-of-truth integrity",
+      "state": "YELLOW_PENDING_EVIDENCE",
+      "drift": "Documentation alignment alone does not prove imports, tests, build, APK identity, signer continuity, or physical-device behavior.",
+      "action": "Keep this work on the bounded alignment branch until diff review and CI pass. Do not silently promote or claim release GREEN from doctrine edits."
+    }
+  ],
+  "files_mutated": [
+    "project/hydra/README.md",
+    "project/hydra/openai/README.md",
+    "lumh-os/kai9000/project.manifest.json",
+    "integrations/vendor-apis.manifest.json",
+    "ARCHITECTURE.md",
+    "project/hydra/doctrine/API_REPO_ALIGNMENT_20260916.json"
+  ],
+  "remaining_drift": [
+    "Physical integrations/huggingface directory migration is not performed because consumer references have not yet been proven safe.",
+    "Historical sealed documents retain their original names and model references as history; current doctrine supersedes them rather than rewriting evidence.",
+    "Repository default branch remains main; canonical integration authority is luhmos-main by doctrine. Changing repository default branch is an administrative action and is not performed by this audit.",
+    "CI has not yet executed against this alignment branch.",
+    "No merge to luhmos-main has occurred."
+  ],
+  "green_gate": "diff review + doctrine/path guard tests + relevant Python tests + CI green + explicit merge/promotion",
+  "release_effect": "NONE",
+  "secrets_touched": false
+}
