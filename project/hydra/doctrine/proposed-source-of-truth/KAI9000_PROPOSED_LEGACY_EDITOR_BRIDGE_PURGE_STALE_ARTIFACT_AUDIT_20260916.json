@@ -5,8 +5,8 @@
   "title": "KAI9000 Proposed Seal-of-Truth Legacy Editor Bridge Purge + Stale Artifact Audit",
   "state": "PROPOSED",
   "seal_status": "PROPOSED_NOT_CROWNED",
-  "generated_local": "2026-09-16T23:00:42.058828-04:00",
-  "generated_utc": "2026-09-17T03:00:42.058828Z",
+  "generated_local": "2026-09-16T23:01:57.194917-04:00",
+  "generated_utc": "2026-09-17T03:01:57.194966Z",
   "project": "LuHm OS / KAI 9000 / Project Hydra",
   "authority": {
     "human_final_authority": "Professor",
@@ -18,7 +18,7 @@
   "source_of_truth": {
     "repository": "eggie-admin/hydra-shell-android",
     "canonical_branch": "luhmos-main",
-    "observed_canonical_head": "0cba853e2b6493148666714b0726ffaddc09d3f6",
+    "observed_canonical_head": "93ef0af6ca1ed9b03dfe5ee28a17e51546fd1bbb",
     "proposal_branch": "luhmos/proposed-legacy-editor-bridge-purge-20260916",
     "proposal_guard_commit": "30e37a94bcfcd5a5e8347766d10623dad2c6a817",
     "active_doctrine_path": "project/hydra/doctrine/",
@@ -27,6 +27,14 @@
     "drive_proposed_lane": {
       "name": "PROPOSED_SOURCE_OF_TRUTH_MUTATION",
       "folder_id": "144bWMydQzPJCBIz2HtYuvJzaV6kFGElp"
+    },
+    "proposal_fork_head": "0cba853e2b6493148666714b0726ffaddc09d3f6",
+    "concurrency_resolution": {
+      "main_advanced_during_staging": true,
+      "new_main_commit_message": "doctrine: add proposed seal of truth stale artifact audit AI manifest v3",
+      "proposal_pr": 64,
+      "proposal_pr_mergeable_at_finalize": true,
+      "rule": "Record concurrent main movement explicitly; do not pretend the proposal fork was the final canonical head."
     }
   },
   "mutation": {
@@ -147,7 +155,8 @@
     "private_crown_text_patch_pending_promotion": true,
     "automatic_crown": false,
     "automatic_merge": false,
-    "current_result": "CROWN_REQUIRED_FOR_CANONICAL_PRIVATE_DOCTRINE_REWRITE"
+    "current_result": "CROWN_REQUIRED_FOR_CANONICAL_PRIVATE_DOCTRINE_REWRITE",
+    "canonical_head_refreshed_after_concurrent_main_move": true
   },
   "locks": {
     "merge_to_luhmos_main": false,
@@ -163,6 +172,6 @@
   "integrity": {
     "algorithm": "SHA-256",
     "scope": "canonical JSON payload excluding integrity object",
-    "payload_sha256": "3339030d55314334c48da2d2ba548ecbd3ce41c079b9a9d843d68e70289a5fbc"
+    "payload_sha256": "1e7e1230584b7eb5e7d1037906d7a3e0c72b5bda53443319fa1c5ef865083246"
   }
 }
