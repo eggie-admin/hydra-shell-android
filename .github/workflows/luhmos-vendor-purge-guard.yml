@@ -1,0 +1,23 @@
+name: LuHm Vendor Purge Guard
+
+on:
+  push:
+    branches:
+      - luhmos/proposed-toy-gui-mutation-20260917
+  pull_request:
+    branches:
+      - luhmos-main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Verify current tree has no retired vendor references
+        run: python3 tools/vendor_purge_guard.py
