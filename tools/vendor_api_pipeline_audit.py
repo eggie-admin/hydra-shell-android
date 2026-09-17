@@ -10,6 +10,7 @@ DOCTRINE = ROOT / "docs/API_TRINITY_DOCTRINE.md"
 CF_DEPLOY = ROOT / ".github/workflows/cloudflare-coming-soon.yml"
 CF_AUDIT = ROOT / ".github/workflows/cloudflare-ultima-audit.yml"
 GCP_PROVISION = ROOT / ".github/workflows/google-white-magic-strict-free-vm.yml"
+GCP_OIDC_SMOKE = ROOT / ".github/workflows/luhmos-gcp-oidc-smoke.yml"
 GCP_BOOTSTRAP = ROOT / "infra/gcp/bootstrap-github-wif.sh"
 REMOTE_AI_SMOKE = ROOT / ".github/workflows/kai9000-remote-ai-smoke.yml"
 
@@ -118,6 +119,13 @@ def main() -> None:
     require("google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db" in gcp, "Google setup-gcloud action must be SHA pinned")
     require("GCP_WIF_PROVIDER" in gcp and "GCP_WORKLOAD_IDENTITY_PROVIDER" not in gcp, "Google WIF provider variable drift")
     require("GCP_SERVICE_ACCOUNT" in gcp, "Google service-account variable missing")
+
+    gcp_smoke = GCP_OIDC_SMOKE.read_text(encoding="utf-8")
+    require("branches:\n      - luhmos/gcp-oidc-auth\n      - luhmos-main" in gcp_smoke, "Google OIDC smoke canonical branch drift")
+    for var in EXPECTED_GCP_VARS:
+        require(var in gcp_smoke, f"Google OIDC smoke missing {var}")
+    require("GCP_WORKLOAD_IDENTITY_PROVIDER" not in gcp_smoke, "Google OIDC smoke contains legacy provider variable")
+    require("google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093" in gcp_smoke, "Google OIDC smoke auth action must be SHA pinned")
 
     bootstrap = GCP_BOOTSTRAP.read_text(encoding="utf-8")
     for needle in (
