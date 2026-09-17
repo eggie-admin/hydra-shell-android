@@ -135,7 +135,7 @@
   },
   "enterprise_goal": {
     "policy": "project/hydra/runtime/enterprise.policy.json",
-    "status": "PROPOSED_ENTERPRISE_OPERATING_MODEL",
+    "status": "SEALED_ACTIVE_CANONICAL",
     "build_once_promote_by_digest": true,
     "exact_head_ci_required": true,
     "codeowners_required": true,
@@ -144,6 +144,8 @@
     "release_candidate_provenance_required": true,
     "backup_restore_drill_required": true,
     "runtime_benchmark_receipt_required": true,
-    "compliance_certification_claimed": false
+    "compliance_certification_claimed": false,
+    "crown_manifest": "project/hydra/source-of-truth/KAI9000_PROJECT_HYDRA_ENTERPRISE_CROWN_20260918.json",
+    "enterprise_full_green": false
   }
 }

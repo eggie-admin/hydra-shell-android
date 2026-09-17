@@ -1,6 +1,6 @@
 {
   "schema": "luhm-os.project-hydra.enterprise-policy.v1",
-  "status": "PROPOSED_ENTERPRISE_OPERATING_MODEL",
+  "status": "SEALED_ACTIVE_CANONICAL",
   "date_local": "2026-09-17",
   "project": "Project Hydra",
   "canonical_branch": "luhmos-main",
@@ -104,7 +104,12 @@
     "chat_safe_receipt": true
   },
   "data_classification": {
-    "classes": ["PUBLIC", "INTERNAL", "PRIVATE", "SECRET"],
+    "classes": [
+      "PUBLIC",
+      "INTERNAL",
+      "PRIVATE",
+      "SECRET"
+    ],
     "default_project_operational_data": "PRIVATE",
     "default_credentials": "SECRET",
     "public_source_must_not_contain_private_runtime_data": true,
@@ -146,5 +151,20 @@
     "backup restore drill is not yet evidenced",
     "persistent release signer remains a separately gated authority"
   ],
-  "result": "ENTERPRISE_SOURCE_CANDIDATE_STAGED_EXTERNAL_GOVERNANCE_AND_RUNTIME_PROOF_PENDING"
+  "result": "ENTERPRISE_SOURCE_GOVERNANCE_CROWNED_OPEN_RUNTIME_AND_EXTERNAL_GATES",
+  "canonical_state": {
+    "promoted": true,
+    "crown_manifest": "project/hydra/source-of-truth/KAI9000_PROJECT_HYDRA_ENTERPRISE_CROWN_20260918.json",
+    "source_merge_commit": "c533bebdbdaad06d8286337e6237c096caef4105",
+    "exact_head_candidate": "3e207a2ba21927a4a9276827bdeee51072469d87",
+    "exact_head_ci": "10/10_SUCCESS",
+    "enterprise_full_green": false,
+    "open_gates": [
+      "server_side_branch_protection_or_ruleset",
+      "runtime_benchmark_receipt",
+      "release_candidate_sbom_and_provenance_binding",
+      "backup_restore_drill_evidence",
+      "persistent_release_signer"
+    ]
+  }
 }
