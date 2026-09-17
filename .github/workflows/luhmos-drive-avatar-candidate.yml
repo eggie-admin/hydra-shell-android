@@ -42,6 +42,8 @@ env:
   GODOT_TEMPLATES_SHA256: f298490b8d44d934be425a5a65a51bf15f422428b229a06a6e11d9ffea248011
   ANDROID_GRADLE_VERSION: 8.11.1
   ANDROID_GRADLE_SHA256: f397b287023acdba1e9f6fc5ea72d22dd63669d59ed4a289a29b1a76eee151c6
+  PLUGIN_GRADLE_VERSION: '8.13'
+  PLUGIN_GRADLE_SHA256: 20f1b1176237254a6fc204d8434196fa11a4cfb387567519c61556e8710aed78
   GRADLE_OPTS: >-
     -Dorg.gradle.caching=true
     -Dorg.gradle.parallel=true
@@ -51,7 +53,7 @@ jobs:
   candidate:
     name: Drive source-of-truth avatar candidate
     runs-on: ubuntu-24.04
-    timeout-minutes: 35
+    timeout-minutes: 30
     steps:
       - name: Checkout proposal
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -75,18 +77,23 @@ jobs:
         with:
           node-version: '24'
 
-      - uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a
+      - name: Cache Gradle dependency and local build state
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
         with:
-          gradle-version: '8.13'
-          cache-cleanup: on-success
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/notifications
+          key: ${{ runner.os }}-${{ runner.arch }}-luhmos-gradle-${{ env.PLUGIN_GRADLE_VERSION }}-${{ env.DONOR_REF }}-${{ hashFiles('_forge/luhmos-android/godot/android-plugin/**/*.gradle*', '_forge/luhmos-android/godot/android-plugin/gradle.properties') }}-v1
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-luhmos-gradle-${{ env.PLUGIN_GRADLE_VERSION }}-${{ env.DONOR_REF }}-
 
-      - name: Cache verified Godot forge
+      - name: Cache verified Godot and Gradle forge
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
         with:
           path: |
             ~/.cache/luhmos/godot-4.7.2
             ~/.local/share/godot/export_templates/4.7.2.stable
-          key: ${{ runner.os }}-${{ runner.arch }}-luhmos-godot-${{ env.GODOT_EDITOR_SHA256 }}-${{ env.GODOT_TEMPLATES_SHA256 }}-gradle-${{ env.ANDROID_GRADLE_VERSION }}-${{ env.ANDROID_GRADLE_SHA256 }}-v2
+          key: ${{ runner.os }}-${{ runner.arch }}-luhmos-forge-${{ env.GODOT_EDITOR_SHA256 }}-${{ env.GODOT_TEMPLATES_SHA256 }}-android-gradle-${{ env.ANDROID_GRADLE_SHA256 }}-plugin-gradle-${{ env.PLUGIN_GRADLE_SHA256 }}-v3
 
       - name: Verify remote build iron and hosted kernel
         shell: bash
@@ -102,7 +109,6 @@ jobs:
           test "$ROOT_FREE_KIB" -ge 8388608
           java -version
           node --version
-          gradle --version | sed -n '1,12p'
           uname -srvm
           printf 'arch=%s\ncpus=%s\nmem_kib=%s\nroot_free_kib=%s\n' "$ARCH" "$CPU" "$MEM_KIB" "$ROOT_FREE_KIB"
           echo 'LUHM_REMOTE_BUILD_IRON_GREEN'
@@ -185,14 +191,14 @@ jobs:
           test -x "$ANDROID_HOME/build-tools/36.1.0/apksigner"
           test -f "$ANDROID_HOME/platforms/android-36/android.jar"
 
-      - name: Prepare verified cached Godot forge
+      - name: Prepare verified cached Godot and Gradle forge
         shell: bash
         run: |
           set -euo pipefail
           CACHE="$HOME/.cache/luhmos/godot-4.7.2"
-          WORK="$RUNNER_TEMP/luhmos-godot"
+          WORK="$RUNNER_TEMP/luhmos-forge"
           TEMPLATE_DIR="$HOME/.local/share/godot/export_templates/${GODOT_TEMPLATE_VERSION}"
-          SENTINEL="$TEMPLATE_DIR/.luhmos-fastpath-v2"
+          SENTINEL="$TEMPLATE_DIR/.luhmos-fastpath-v3"
           mkdir -p "$CACHE" "$WORK" "$TEMPLATE_DIR"
 
           if [ ! -s "$CACHE/godot.zip" ]; then
@@ -207,18 +213,30 @@ jobs:
           fi
           echo "${GODOT_TEMPLATES_SHA256}  $CACHE/export_templates.tpz" | sha256sum --check --strict
 
-          GRADLE_ZIP="$CACHE/gradle-${ANDROID_GRADLE_VERSION}-bin.zip"
-          if [ ! -s "$GRADLE_ZIP" ]; then
-            curl --fail --location --retry 5 --retry-all-errors -o "$GRADLE_ZIP" \
+          ANDROID_GRADLE_ZIP="$CACHE/gradle-${ANDROID_GRADLE_VERSION}-bin.zip"
+          if [ ! -s "$ANDROID_GRADLE_ZIP" ]; then
+            curl --fail --location --retry 5 --retry-all-errors -o "$ANDROID_GRADLE_ZIP" \
               "https://services.gradle.org/distributions/gradle-${ANDROID_GRADLE_VERSION}-bin.zip"
           fi
-          echo "${ANDROID_GRADLE_SHA256}  $GRADLE_ZIP" | sha256sum --check --strict
+          echo "${ANDROID_GRADLE_SHA256}  $ANDROID_GRADLE_ZIP" | sha256sum --check --strict
 
-          rm -rf "$WORK/editor"
-          mkdir -p "$WORK/editor"
+          PLUGIN_GRADLE_ZIP="$CACHE/gradle-${PLUGIN_GRADLE_VERSION}-bin.zip"
+          if [ ! -s "$PLUGIN_GRADLE_ZIP" ]; then
+            curl --fail --location --retry 5 --retry-all-errors -o "$PLUGIN_GRADLE_ZIP" \
+              "https://services.gradle.org/distributions/gradle-${PLUGIN_GRADLE_VERSION}-bin.zip"
+          fi
+          echo "${PLUGIN_GRADLE_SHA256}  $PLUGIN_GRADLE_ZIP" | sha256sum --check --strict
+
+          rm -rf "$WORK/editor" "$WORK/plugin-gradle"
+          mkdir -p "$WORK/editor" "$WORK/plugin-gradle"
           unzip -q -o "$CACHE/godot.zip" -d "$WORK/editor"
+          unzip -q -o "$PLUGIN_GRADLE_ZIP" -d "$WORK/plugin-gradle"
           chmod +x "$WORK/editor/Godot_v4.7.2-stable_linux.x86_64"
+          PLUGIN_GRADLE_BIN="$WORK/plugin-gradle/gradle-${PLUGIN_GRADLE_VERSION}/bin/gradle"
+          test -x "$PLUGIN_GRADLE_BIN"
+          "$PLUGIN_GRADLE_BIN" --version | grep -q "Gradle ${PLUGIN_GRADLE_VERSION}"
           echo "GODOT_BIN=$WORK/editor/Godot_v4.7.2-stable_linux.x86_64" >> "$GITHUB_ENV"
+          echo "PLUGIN_GRADLE_BIN=$PLUGIN_GRADLE_BIN" >> "$GITHUB_ENV"
 
           if [ ! -f "$SENTINEL" ] || [ ! -s "$TEMPLATE_DIR/android_source.zip" ]; then
             rm -rf "$WORK/templates" "$TEMPLATE_DIR"
@@ -231,7 +249,7 @@ jobs:
             unzip -q "$TEMPLATE_DIR/android_source.zip" -d "$PATCH_DIR"
             WRAPPER_PROPS="$(find "$PATCH_DIR" -type f -path '*/gradle/wrapper/gradle-wrapper.properties' -print -quit)"
             test -n "$WRAPPER_PROPS"
-            python3 - "$WRAPPER_PROPS" "$GRADLE_ZIP" "$ANDROID_GRADLE_SHA256" <<'PY'
+            python3 - "$WRAPPER_PROPS" "$ANDROID_GRADLE_ZIP" "$ANDROID_GRADLE_SHA256" <<'PY'
           from pathlib import Path
           import sys
           p=Path(sys.argv[1]); uri=Path(sys.argv[2]).resolve().as_uri(); digest=sys.argv[3]
@@ -249,7 +267,7 @@ jobs:
           PY
             (cd "$PATCH_DIR" && zip -q -r "$TEMPLATE_DIR/android_source.zip.new" .)
             mv "$TEMPLATE_DIR/android_source.zip.new" "$TEMPLATE_DIR/android_source.zip"
-            printf '%s\n%s\n%s\n' "$GODOT_EDITOR_SHA256" "$GODOT_TEMPLATES_SHA256" "$ANDROID_GRADLE_SHA256" > "$SENTINEL"
+            printf '%s\n%s\n%s\n%s\n' "$GODOT_EDITOR_SHA256" "$GODOT_TEMPLATES_SHA256" "$ANDROID_GRADLE_SHA256" "$PLUGIN_GRADLE_SHA256" > "$SENTINEL"
             echo 'LUHM_GODOT_TEMPLATE_CACHE_PREPARED'
           else
             echo 'LUHM_GODOT_TEMPLATE_CACHE_HIT'
@@ -315,7 +333,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gradle --build-cache --parallel -p _forge/luhmos-android/godot/android-plugin :plugin:assemble
+          "$PLUGIN_GRADLE_BIN" --build-cache --parallel -p _forge/luhmos-android/godot/android-plugin :plugin:assemble
           test -s _forge/luhmos-android/godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-debug.aar
           test -s _forge/luhmos-android/godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-release.aar
           rm -rf _forge/luhmos-android/godot/addons/CathedralAndroid
