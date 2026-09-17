@@ -98,7 +98,7 @@ jobs:
           python tools/remote_assistance_bench.py
 
       - name: Remote assistance unit contract
-        run: python -m pytest -q backend/tests/test_remote_ai_router.py backend/tests/test_remote_assistance.py
+        run: python -m pytest -q backend/tests/test_remote_ai_router.py backend/tests/test_remote_assistance.py backend/tests/test_google_assist.py
 
       - name: Retired lane purge guard
         run: python tools/retired_lane_guard.py
