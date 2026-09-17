@@ -1,10 +1,26 @@
 {
-  "schema": "kai9000.vendor-apis.v5",
-  "date": "2026-09-10",
+  "schema": "luhmos.vendor-apis.v6",
+  "date": "2026-09-16",
+  "project": "LuHm OS / Project Hydra / KAI 9000",
   "airship": "KAI9000",
   "warp": "git",
   "crown": "Professor",
-  "orchestrator": {"name": "Lum", "role": "SUPREME_WITCH"},
+  "orchestrator": {
+    "name": "Lum",
+    "agent_name": "KAI9000-Lum",
+    "role": "crown_planner_typed_tool_orchestrator",
+    "style_role": "SUPREME_WITCH",
+    "self_authorizing": false
+  },
+  "canonical_paths": {
+    "project_root": "project/hydra",
+    "openai_index": "project/hydra/openai",
+    "adapter_root": "integrations"
+  },
+  "provider_naming": {
+    "filesystem_slugs": ["openai", "huggingface", "google-cloud", "cloudflare"],
+    "provider_ids": ["openai", "huggingface", "google_cloud", "cloudflare"]
+  },
   "public_identity": {
     "domain": "eggiebagelface.art",
     "fdroid_host": "fdroid.eggiebagelface.art",
@@ -24,9 +40,13 @@
   },
   "providers": {
     "openai": {
+      "filesystem_slug": "openai",
       "role": "primary_remote_reasoning_agent_and_typed_tool_request_lane",
       "api": "responses",
       "endpoint": "https://api.openai.com/v1/responses",
+      "agent_name": "KAI9000-Lum",
+      "fast_model": "gpt-5.6-luna",
+      "deep_model": "gpt-5.6-sol",
       "default_model": "gpt-5.6-sol",
       "credential_env": "OPENAI_API_KEY",
       "allowed_models_env": "KAI_OPENAI_ALLOWED_MODELS",
@@ -36,7 +56,8 @@
       "unrestricted_shell": false,
       "credentials_visible_to_model": false
     },
-    "hugging_face": {
+    "huggingface": {
+      "filesystem_slug": "huggingface",
       "role": "open_model_forge_catalog_and_remote_inference_provider_lane",
       "api": "responses_beta",
       "endpoint": "https://router.huggingface.co/v1/responses",
@@ -54,11 +75,19 @@
       "credentials_visible_to_model": false
     },
     "google_cloud": {
+      "filesystem_slug": "google-cloud",
       "role": "approved_google_cloud_service_lane",
       "credential_strategy": "workload_identity_federation_for_github_actions",
       "github_auth": "oidc_to_workload_identity_pool_provider",
       "long_lived_service_account_json_in_repo": false,
       "iam_policy": "resource_specific_least_privilege",
+      "credentials_visible_to_model": false
+    },
+    "cloudflare": {
+      "filesystem_slug": "cloudflare",
+      "role": "public_dns_https_tunnel_and_distribution_gate_not_policy_authority",
+      "credential_strategy": "least_privilege_api_tokens",
+      "global_api_key_automation": false,
       "credentials_visible_to_model": false
     }
   },
