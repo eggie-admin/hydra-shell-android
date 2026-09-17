@@ -63,8 +63,8 @@ jobs:
           grep -q 'X-Robots-Tag: noindex' "$PUBLIC/_headers"
 
           ! grep -RniE '<script|<form|<iframe|<object|<embed|javascript:|href=|src=|https?://' "$PUBLIC"
-          ! grep -RniE '(localhost|127\.0\.0\.1|\.lan([/[:space:]]|$)|/admin([/[:space:]"'"']|$)|/dev([/[:space:]"'"']|$)|/api([/[:space:]"'"']|$))' "$PUBLIC"
-          ! grep -RniE '(OPENAI_API_KEY|HF_TOKEN|CLOUDFLARE_API_TOKEN|CF_API_TOKEN|BEGIN [A-Z ]*PRIVATE KEY|Authorization:[[:space:]]*Bearer|\$\{\{[[:space:]]*secrets\.)' "$PUBLIC"
+          ! grep -RniE 'localhost|127\.0\.0\.1|\.lan([/[:space:]]|$)|/admin|/dev|/api' "$PUBLIC"
+          ! grep -RniE 'OPENAI_API_KEY|HF_TOKEN|CLOUDFLARE_API_TOKEN|CF_API_TOKEN|BEGIN [A-Z ]*PRIVATE KEY|Authorization:[[:space:]]*Bearer|\$\{\{[[:space:]]*secrets\.' "$PUBLIC"
           ! find "$PUBLIC" -type f -name '*.map' -print -quit | grep -q .
 
           grep -q '"pattern": "eggiebagelface.art"' site/coming-soon/wrangler.production.jsonc
