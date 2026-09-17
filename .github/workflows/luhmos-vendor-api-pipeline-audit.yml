@@ -1,0 +1,51 @@
+name: LuHm Vendor API Pipeline Audit
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - luhmos-main
+    paths:
+      - 'integrations/vendor-apis.manifest.json'
+      - 'docs/API_TRINITY_DOCTRINE.md'
+      - 'tools/vendor_api_pipeline_audit.py'
+      - '.github/workflows/luhmos-vendor-api-pipeline-audit.yml'
+      - '.github/workflows/cloudflare-coming-soon.yml'
+      - '.github/workflows/cloudflare-ultima-audit.yml'
+      - '.github/workflows/google-white-magic-strict-free-vm.yml'
+  push:
+    branches:
+      - luhmos-main
+    paths:
+      - 'integrations/vendor-apis.manifest.json'
+      - 'docs/API_TRINITY_DOCTRINE.md'
+      - 'tools/vendor_api_pipeline_audit.py'
+      - '.github/workflows/luhmos-vendor-api-pipeline-audit.yml'
+      - '.github/workflows/cloudflare-coming-soon.yml'
+      - '.github/workflows/cloudflare-ultima-audit.yml'
+      - '.github/workflows/google-white-magic-strict-free-vm.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: luhm-vendor-api-pipeline-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    name: Five-vendor deterministic drift gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Validate JSON syntax
+        shell: bash
+        run: python3 -m json.tool integrations/vendor-apis.manifest.json >/dev/null
+
+      - name: Audit vendor API pipeline
+        shell: bash
+        run: python3 tools/vendor_api_pipeline_audit.py
