@@ -30,12 +30,48 @@ body[data-scene="date"] .sky{background:radial-gradient(circle at 50% 14%,#ef9bd
 .sheet{margin-top:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.card{background:#090711c9;border:1px solid #ffffff12;border-radius:16px;padding:10px}.card small{color:var(--muted);font-size:9px}.card b{display:block;font-size:11px;margin-top:3px}.card.locked{opacity:.4}.foot{text-align:center;color:#897d91;font-size:9px;margin-top:12px;letter-spacing:.08em}.pulse{animation:pulse .55s ease}@keyframes pulse{50%{transform:scale(1.018)}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.layer,.oni{transform:none!important}}
 </style>
+<link rel="stylesheet" href="crown-cathedral.css">
+<script defer src="crown-cathedral.js"></script>
 </head>
 <body data-scene="steel">
 <div class="scene" aria-hidden="true"><div class="layer sky"></div><div class="layer city"></div><div class="layer neon"></div><div class="layer fore"></div><div class="scan"></div></div>
 <div class="app" id="app">
   <header class="top"><div class="brand"><b>LUHM OS // CATHEDRAL</b><small>KAI9000_CATHEDRAL_GAME_V1 · local-first Samsung build</small></div><div class="badge" id="stageBadge">WI-FI DAHLING</div></header>
-  <div class="grid">
+  <section id="crownCathedral" class="crown-cathedral" aria-label="LuHm Crown Cathedral">
+  <div class="crown-spires" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="crown-vault">
+    <div class="crown-hero">
+      <div class="crown-sigil-wrap">
+        <img class="crown-sigil" src="godot-world/assets/lum_hud_icon.svg" alt="LuHm original horned sigil">
+        <span>CROWN CATHEDRAL</span>
+      </div>
+      <div class="crown-copy">
+        <small>PROJECT HYDRA // SOURCE-OF-TRUTH DEMO</small>
+        <h1>THE CATHEDRAL IS AWAKE</h1>
+        <p>Original LuHm game systems, Crown cockpit, Godot world art, local Lum avatar, and enterprise-safe install surface in one playable shell.</p>
+      </div>
+    </div>
+    <div class="crown-stage">
+      <div class="crown-glass" aria-hidden="true"></div>
+      <img class="crown-lum-world" src="godot-world/assets/lum_world_sprite.svg" alt="Lum original world sprite">
+      <video id="crownLumVideo" class="crown-lum-video" muted playsinline loop preload="metadata" poster="godot-world/assets/lum_world_sprite.svg">
+        <source src="lum-avatar-actual-animated.mp4" type="video/mp4">
+      </video>
+      <div class="crown-console">
+        <b id="crownState">CROWN GATE // LOCAL DEMO</b>
+        <span id="crownLine">Enter the nave. Pick a system. Nothing leaves the device without your gate.</span>
+      </div>
+    </div>
+    <div class="crown-actions">
+      <button type="button" data-crown-action="enter">ENTER CATHEDRAL</button>
+      <button type="button" data-crown-action="world">WORLD MODE</button>
+      <button type="button" data-crown-action="lum">SUMMON LUM</button>
+      <button type="button" data-crown-action="crown">OPEN CROWN</button>
+    </div>
+    <div class="crown-assets" id="crownAssets" aria-label="Source of truth asset status"></div>
+  </div>
+</section>
+<div class="grid">
     <section class="panel stage" id="stage">
       <div class="avatar">
         <svg id="oni" class="oni" viewBox="0 0 320 360" role="img" aria-label="Original red oni companion Lum">

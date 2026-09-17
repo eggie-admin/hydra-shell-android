@@ -7,7 +7,7 @@ on:
     paths:
       - 'project/hydra/samsung/android/cathedral-game/**'
       - 'project/hydra/doctrine/proposed-source-of-truth/LUHM_OS_PROPOSED_REMOTE_BUILD_FASTPATH_20260917.json'
-      - '.github/workflows/luhmos-working-demo.yml'
+      - '.github/workflows/luhmos-working-demo-candidate.yml'
       - '.github/workflows/luhmos-universal-forge-gate.yml'
   pull_request:
     branches:
@@ -15,7 +15,7 @@ on:
     paths:
       - 'project/hydra/samsung/android/cathedral-game/**'
       - 'project/hydra/doctrine/proposed-source-of-truth/LUHM_OS_PROPOSED_REMOTE_BUILD_FASTPATH_20260917.json'
-      - '.github/workflows/luhmos-working-demo.yml'
+      - '.github/workflows/luhmos-working-demo-candidate.yml'
       - '.github/workflows/luhmos-universal-forge-gate.yml'
   workflow_dispatch:
 
@@ -52,7 +52,7 @@ env:
 
 jobs:
   candidate:
-    name: Drive source-of-truth avatar candidate
+    name: Crown Cathedral working demo
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -163,6 +163,15 @@ jobs:
           assert d['android']['silent_uninstall'] is False
           print('LUHM_ENTERPRISE_DISTRIBUTION_SOURCE_GREEN')
           PY
+          test -s "$GAME/crown-cathedral.css"
+          test -s "$GAME/crown-cathedral.js"
+          test -s "$GAME/CROWN_CATHEDRAL_DEMO_MANIFEST.json"
+          grep -q 'LUHM_CROWN_CATHEDRAL_DEMO_V1' "$GAME/crown-cathedral.css"
+          grep -q 'LUHM_CROWN_CATHEDRAL_DEMO_V1' "$GAME/crown-cathedral.js"
+          grep -q 'godot-world/assets/lum_world_sprite.svg' "$GAME/index.html"
+          grep -q 'godot-world/assets/lum_hud_icon.svg' "$GAME/index.html"
+          node --check "$GAME/crown-cathedral.js"
+          echo 'LUHM_CROWN_CATHEDRAL_SOURCE_GREEN'
           echo 'LUHM_BRANDED_RUNTIME_CONTRACT_GREEN'
 
       - name: Fetch and verify authoritative Drive avatar
@@ -448,6 +457,13 @@ jobs:
           grep -q "assets/cms/${LUM_AVATAR_NAME}" build/android/contents.txt
           grep -q 'assets/cms/apk-install-gui.js' build/android/contents.txt
           grep -q 'assets/cms/enterprise-distribution.js' build/android/contents.txt
+          grep -q 'assets/cms/crown-cathedral.css' build/android/contents.txt
+          grep -q 'assets/cms/crown-cathedral.js' build/android/contents.txt
+          grep -q 'assets/cms/CROWN_CATHEDRAL_DEMO_MANIFEST.json' build/android/contents.txt
+          grep -q 'assets/cms/godot-world/assets/lum_world_sprite.svg' build/android/contents.txt
+          grep -q 'assets/cms/godot-world/assets/lum_hud_icon.svg' build/android/contents.txt
+          grep -q 'assets/cms/godot-world/WORLD_FIRST_MANIFEST.json' build/android/contents.txt
+          grep -q 'assets/cms/godot4-cleared/secondary-motion-profile.json' build/android/contents.txt
           grep -q 'assets/cms/distribution/enterprise-distribution.json' build/android/contents.txt
           grep -q 'android.permission.REQUEST_INSTALL_PACKAGES' build/android/permissions.txt
           ! grep -q 'com.termux.permission.RUN_COMMAND' build/android/permissions.txt
