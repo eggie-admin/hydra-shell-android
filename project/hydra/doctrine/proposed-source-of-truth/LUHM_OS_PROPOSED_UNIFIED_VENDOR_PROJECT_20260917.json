@@ -1,0 +1,66 @@
+{
+  "schema": "luhm-os.unified-vendor-project.v1",
+  "manifest_id": "LUHM_OS_PROPOSED_UNIFIED_VENDOR_PROJECT_20260917",
+  "status": "PROPOSED_NOT_CROWNED",
+  "date_local": "2026-09-17",
+  "canonical_project": {
+    "display_name": "LuHm OS",
+    "machine_id": "luhm_os",
+    "policy": "one_logical_project_many_vendor_transport_bindings"
+  },
+  "legacy_project_names": {
+    "Project Hydra": "history_or_component_alias_only",
+    "KAI 9000": "component_alias_only",
+    "Hydra": "legacy_source_architecture_alias_only"
+  },
+  "vendor_bindings": {
+    "openai": {
+      "project": "LuHm OS",
+      "legacy_project_observed": "Project Hydra",
+      "legacy_policy": "do_not_target_for_new_keys_or_new_work",
+      "archive_or_rename_api_available_in_connected_tool": false
+    },
+    "google": {
+      "project": "LuHm OS",
+      "drive_root": "LuHm OS",
+      "gcp_project_id": "external_transport_identifier_from_GCP_PROJECT_ID",
+      "gcp_display_name_live_state": "UNVERIFIED"
+    },
+    "github": {
+      "project": "LuHm OS",
+      "repository": "eggie-admin/hydra-shell-android",
+      "repository_slug": "transport_identifier",
+      "canonical_branch": "luhmos-main"
+    },
+    "cloudflare": {
+      "project": "LuHm OS",
+      "zone": "eggiebagelface.art",
+      "worker_service_name": "eggiebagelface-art-coming-soon",
+      "worker_service_name": "transport_identifier",
+      "live_account_mutation_surface": "UNAVAILABLE"
+    },
+    "hugging_face": {
+      "project": "LuHm OS",
+      "account": "eggiebagelface",
+      "organization": null,
+      "account": "transport_identity",
+      "connected_scope": "read_repos_and_jobs_no_project_metadata_mutation"
+    }
+  },
+  "source_mutation": {
+    "project_manifest": "lumh-os/kai9000/project.manifest.json",
+    "vendor_manifest": "integrations/vendor-apis.manifest.json",
+    "drift_guard": "tools/vendor_api_pipeline_audit.py",
+    "stale_main_branch_reference_removed": true,
+    "stale_gpt_6_astra_reference_removed": true,
+    "new_vendor_targets_must_be_named_luhm_os": true
+  },
+  "authority": {
+    "canonical_merge": "NOT_TRIGGERED",
+    "deploy": "NOT_TRIGGERED",
+    "public_release": "NOT_TRIGGERED",
+    "crown": "NOT_TRIGGERED",
+    "seal": "NOT_TRIGGERED",
+    "release_signing": "LOCKED"
+  }
+}
