@@ -160,8 +160,9 @@ gcloud iam service-accounts add-iam-policy-binding "$SA_EMAIL" \
 echo 'WIF_EXACT_SUBJECT_BINDING_GREEN'
 
 LEGACY_MUTABLE_MEMBER="principalSet://iam.googleapis.com/${POOL_NAME}/attribute.repository/${REPO}"
+export LEGACY_MUTABLE_MEMBER
 POLICY_JSON="$(gcloud iam service-accounts get-iam-policy "$SA_EMAIL" --project="$PROJECT_ID" --format=json)"
-if LEGACY_MUTABLE_MEMBER="$LEGACY_MUTABLE_MEMBER" printf '%s' "$POLICY_JSON" | python3 -c '
+if printf '%s' "$POLICY_JSON" | python3 -c '
 import json, os, sys
 d=json.load(sys.stdin)
 target=os.environ["LEGACY_MUTABLE_MEMBER"]
