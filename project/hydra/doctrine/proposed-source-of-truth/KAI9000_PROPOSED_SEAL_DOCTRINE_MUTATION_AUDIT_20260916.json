@@ -1,31 +1,32 @@
 {
-  "schema": "luhm-os.proposed-seal-doctrine-mutation-audit.v1",
+  "schema": "luhm-os.proposed-seal-doctrine-mutation-audit.v2",
   "proposal_id": "KAI9000_PROPOSED_SEAL_DOCTRINE_MUTATION_AUDIT_20260916",
+  "revision": 2,
   "status": "PROPOSED_NOT_CROWNED",
   "date_local": "2026-09-16",
-  "generated_utc": "2026-09-17T02:26:00Z",
+  "generated_utc": "2026-09-17T02:44:00Z",
   "project": "LuHm OS / KAI 9000 / Project Hydra",
   "human_authority": "Professor",
-  "purpose": "Audit current project artifacts and propose one reconciled doctrine mutation for later explicit seal-of-truth promotion.",
+  "purpose": "Audit stale artifacts and harden the kernel, hardware, build, and source-repository authority boundaries without promoting a release or deleting lineage.",
   "canonical_anchor": {
     "repository": "eggie-admin/hydra-shell-android",
-    "branch": "luhmos-main",
-    "head_commit_at_audit": "91f180f612c09ecc68f075d5ade77456b3b9e538",
-    "head_tree_at_audit": "26f7c1d7ed04303d67c8dad702ceeb358ecf67a9",
-    "head_message": "doctrine: seal M1 signed secure WebView socket contract",
-    "newest_crowned_contract": "project/hydra/source-of-truth/LUHM_M1_SIGNED_SECURE_WEBVIEW_SOCKET_20260916.json",
+    "canonical_branch": "luhmos-main",
+    "head_before_revision_2": "a94088363f6ab0b8fba468052145a75edcf80a90",
+    "head_message": "doctrine: stage proposed KAI 9000 seal mutation audit",
+    "latest_crowned_source_contract": "project/hydra/source-of-truth/LUHM_M1_SIGNED_SECURE_WEBVIEW_SOCKET_20260916.json",
     "directory_crown": "project/hydra/source-of-truth/LUHMOS_HYDRA_DIRECTORY_CROWN_20260916.json",
-    "canonical_root": "project/hydra"
+    "canonical_root": "project/hydra",
+    "proposal_path": "project/hydra/doctrine/proposed-source-of-truth/KAI9000_PROPOSED_SEAL_DOCTRINE_MUTATION_AUDIT_20260916.json"
   },
   "authority_precedence": [
     "explicit_current_professor_instruction",
+    "fresh_physical_runtime_proof_for_exact_target_state",
     "latest_crowned_source_of_truth_contract",
-    "project_hydra_directory_crown_and_directory_doctrine",
-    "current_luhmos_main_repository_state_and_ci_evidence",
-    "current_project_manifests",
-    "debug_build_and_device_evidence",
-    "source_candidates_and_staged_proposals",
-    "legacy_compatibility_manifests_and_historical_chat_artifacts"
+    "fresh_luhmos_main_repo_ci_and_exact_artifact_evidence",
+    "current_active_project_manifests_and_agent_instructions",
+    "proposed_doctrine_and_candidate_manifests",
+    "legacy_compatibility_and_historical_artifacts",
+    "memory_or_inference"
   ],
   "proposal_lane": {
     "github_path": "project/hydra/doctrine/proposed-source-of-truth/KAI9000_PROPOSED_SEAL_DOCTRINE_MUTATION_AUDIT_20260916.json",
@@ -34,223 +35,180 @@
     "promotion_is_automatic": false,
     "crown_requires_explicit_professor_authorization": true
   },
-  "artifact_audit": {
-    "crowned": [
-      {
-        "path": "project/hydra/source-of-truth/LUHM_M1_SIGNED_SECURE_WEBVIEW_SOCKET_20260916.json",
-        "classification": "CROWNED_CURRENT_PARENT_AUTHORITY",
-        "status": "GREEN_SOURCE_CONTRACT",
-        "notes": "Defines typed Kotlin bridge, headless socket broker, strict TLS/SSH/OpenVPN boundaries, outbound-only typed antenna proposals, release locks, and physical-device proof requirements."
-      },
-      {
-        "path": "project/hydra/source-of-truth/LUHMOS_HYDRA_DIRECTORY_CROWN_20260916.json",
-        "classification": "CROWNED_DIRECTORY_AUTHORITY",
-        "status": "GREEN",
-        "notes": "Defines Project Hydra hierarchy and GitHub versus owner-only Drive authority split."
-      }
-    ],
-    "canonical_active": [
-      {
-        "path": "project/hydra/project.manifest.json",
-        "classification": "CANONICAL_PROJECT_MANIFEST",
-        "status": "GREEN_WITH_COMPATIBILITY_CONTEXT",
-        "notes": "luhmos-main is branch authority; standalone Android base launch requires no Termux, Secure Folder, VNC, root, or external localhost daemon."
-      },
-      {
-        "path": "project/hydra/doctrine/directory-structure.json",
-        "classification": "CANONICAL_DIRECTORY_DOCTRINE",
-        "status": "GREEN",
-        "notes": "Reference-not-copy, no destructive reroll, capture first, crown last, no secrets, no duplicate runtime."
-      }
-    ],
-    "debug_evidence": [
-      {
-        "path": "project/hydra/KAI9000_DEBUG_SOURCE_OF_TRUTH_20260912.json",
-        "classification": "DEBUG_EVIDENCE_NOT_RELEASE_AUTHORITY",
-        "status": "GREEN_DEBUG_ARTIFACT",
-        "apk": "kai9000-final-widget-debug.apk",
-        "apk_sha256": "433a748619dd479f5ad15779b6fcfb9ed4f83f1918e625ae7dcfe3f391c9d886",
-        "notes": "Proves widget/APK debug build and one-tap Termux/Ollama handoff. It is non-promotable and used a transitional pinned Android build bridge."
-      }
-    ],
-    "source_candidates": [
-      {
-        "path": "project/hydra/doctrine/LUHM_MODULAR_SPRITE_COCKPIT_SOURCE_SEAL_CANDIDATE_20260916.json",
-        "classification": "SOURCE_CANDIDATE",
-        "status": "SOURCE_GREEN_NOT_CANONICAL",
-        "notes": "Modular Sprite Cockpit source gate passed, but candidate is not merged, built, signed, device-validated, or crowned."
-      }
-    ],
-    "local_ai_evidence": [
-      {
-        "name": "Mini Luna Direct Green lane",
-        "classification": "LOCAL_RUNTIME_EVIDENCE",
-        "status": "CONDITIONAL_GREEN",
-        "preferred_model": "qwen3:0.6b",
-        "notes": "Direct Ollama terminal is preferred when its warm-load smoke is GREEN; historical AMBER timeout must not be silently treated as execution proof."
-      },
-      {
-        "name": "Three Lane Source Pass",
-        "classification": "STAGED_AI_LOGIC_OLLAMA_DICTATION_EVIDENCE",
-        "status": "GREEN_REVIEW_BUNDLE",
-        "notes": "AI logic, Ollama, and dictation lanes were packaged with donor-ingestion and compile/push/publish locks false."
-      }
-    ],
-    "legacy_compatibility": [
-      {
-        "path": "lumh-os/kai9000/project.manifest.json",
-        "classification": "LEGACY_COMPATIBILITY_MANIFEST",
-        "status": "DRIFTED",
-        "notes": "Still names GitHub branch main and remote-first auto order openai -> huggingface -> deterministic_mock. It must not outrank current luhmos-main/local-first doctrine."
-      },
-      {
-        "path": "ultima/ollama-ffmpeg-antenna-v3",
-        "classification": "LEGACY_COMPATIBILITY_RUNTIME_SOURCE",
-        "status": "REFERENCE_AND_MIGRATION_SOURCE",
-        "notes": "Retained for compatibility until current Project Hydra runtime absorbs required behavior."
-      }
-    ],
-    "test_harness": [
-      {
-        "path": "luhmos/chrome-dev-canary-plugin",
-        "classification": "KAI_OWNED_TEST_HARNESS",
-        "status": "ALLOWED_HARNESS_ONLY",
-        "notes": "Chrome Dev and Chrome Canary may validate behavior and compatibility only. No Chrome donor code or Chrome runtime dependency may enter future release APKs."
-      }
+  "stale_artifact_policy": {
+    "classes": {
+      "CROWNED_CURRENT": "Current authority. May be changed only by an explicitly authorized superseding crown.",
+      "ACTIVE_CANONICAL": "Current code/config/instruction surface. Drift must be fixed or explicitly marked compatibility debt.",
+      "PROPOSED": "Reviewable candidate with zero automatic authority.",
+      "HISTORICAL_EVIDENCE": "Immutable lineage/evidence. Never silently rewritten to look current.",
+      "LEGACY_COMPATIBILITY": "May remain for compatibility but cannot outrank current authority.",
+      "TEST_HARNESS_ONLY": "May validate behavior but cannot become production donor/runtime dependency.",
+      "QUARANTINED": "Not promotable until provenance, license, security and relevance gates pass.",
+      "STALE_BLOCKER": "Conflicts with current authority in an active path and must be reconciled before promotion."
+    },
+    "rules": [
+      "Do not mass-delete historical or legacy artifacts.",
+      "Classify first, sever active dependencies second, prove replacement third, retire last.",
+      "Historical filenames may keep ULTIMA or other retired vocabulary for lineage.",
+      "Active agents and workflows must not interpret retired ritual names as authority.",
+      "A proposal cannot supersede a crown by location, filename, recency, or AI confidence.",
+      "No stale artifact cleanup may rewrite cryptographic build receipts or physical-device evidence."
     ]
   },
   "audit_findings": [
     {
       "id": "F01",
       "severity": "GREEN",
-      "title": "Current crown and branch authority are unambiguous",
-      "finding": "luhmos-main plus the M1 signed secure WebView/socket seal are the current software/source-contract parent authority."
+      "title": "Current source-contract crown is explicit",
+      "finding": "The M1 signed secure WebView/socket source contract and Project Hydra directory crown are present under the crowned source-of-truth lane."
     },
     {
       "id": "F02",
-      "severity": "AMBER_DRIFT",
-      "title": "Legacy branch metadata drift",
-      "finding": "lumh-os/kai9000/project.manifest.json still points its GitHub remote role at main instead of luhmos-main.",
-      "proposed_resolution": "Treat that field as superseded compatibility metadata and patch it in a later authorized cleanup."
+      "severity": "AMBER_ACTIVE_DRIFT",
+      "title": "Copilot instructions contain a stale release baseline",
+      "paths": [".github/copilot-instructions.md"],
+      "finding": "The active instructions still hard-code Crown Gate 1.0.5 as the last sealed build baseline and require a legacy lumh-os doctrine read.",
+      "resolution": "Resolve release/build truth dynamically from the latest crown and exact build receipts; move legacy lumh-os/ULTIMA material to compatibility-only context."
     },
     {
       "id": "F03",
-      "severity": "AMBER_DRIFT",
-      "title": "Legacy remote-first AI routing conflicts with local-first doctrine",
-      "finding": "Legacy auto routing begins with OpenAI/Hugging Face while newer doctrine and local runtime evidence prefer local Ollama first.",
-      "proposed_resolution": "Local deterministic policy and Ollama first; remote providers are explicit typed escalation only."
+      "severity": "AMBER_ACTIVE_DRIFT",
+      "title": "Project manifest contains historical distribution goals presented as current goals",
+      "paths": ["project/hydra/project.manifest.json"],
+      "finding": "IzzyOnDroid/public distribution fields, baseline version codes 100/101, and other older release targets remain in the active project manifest.",
+      "resolution": "Do not delete them in this pass. Mark them audit debt and require a separately reviewed manifest reconciliation before any publication decision."
     },
     {
       "id": "F04",
-      "severity": "AMBER_DRIFT",
-      "title": "Widget model target versus Mini-Luna model target",
-      "finding": "The compiled debug widget targets qwen2.5:3b, while the newer Mini-Luna lane keeps qwen3:0.6b.",
-      "proposed_resolution": "Do not rewrite historical build evidence. Make qwen3:0.6b the proposed local-chat default only after a GREEN warm-load smoke; otherwise retain the last tested working model until evidence changes."
+      "severity": "AMBER_HARDWARE_ROLE_DRIFT",
+      "title": "SM-X400 rooted goal conflicts with current private hardware role",
+      "paths": ["project/hydra/samsung/android/rooted/SMX400_ROOTED_DEV_GOAL_20260911.json"],
+      "finding": "The current private hardware doctrine treats SM-X400 as a stock/unrooted art cockpit and QA lane unless fresh device proof says otherwise.",
+      "resolution": "Classify the rooted goal as a noncanonical lab proposal requiring fresh physical proof and explicit mutation before use."
     },
     {
       "id": "F05",
-      "severity": "AMBER_ARCHITECTURE",
-      "title": "Direct Termux RUN_COMMAND is debug-only under M1",
-      "finding": "The older widget proves direct foreground Termux launch, but M1 requires future release authority to cross a typed allowlisted Kotlin bridge/socket broker and forbids arbitrary shell authority.",
-      "proposed_resolution": "Grandfather direct RUN_COMMAND as debug evidence only. Future release widget actions must use the typed bounded bridge/broker contract or open a user-visible app surface without arbitrary shell capability."
+      "severity": "AMBER_LEGACY",
+      "title": "ULTIMA-era artifacts remain widespread",
+      "patterns": ["ultima/**", "scripts/cast-ultima*", ".github/**/*ultima*", "docs/**/*ULTIMA*", "release/**/*ULTIMA*"],
+      "finding": "Retired ritual vocabulary remains in historical scripts, workflows, docs and manifests.",
+      "resolution": "Preserve lineage, but block active canonical instructions from depending on or emitting those names as execution authority."
     },
     {
       "id": "F06",
-      "severity": "GREEN_RECONCILED",
-      "title": "Standalone APK and local Ollama can coexist",
-      "finding": "The base LuHm OS APK must launch standalone without Termux or an external daemon; local Ollama/Termux remains an optional user-invoked companion and laboratory lane.",
-      "proposed_resolution": "Optional companion functionality must never become a base-launch dependency."
+      "severity": "AMBER_LEGACY",
+      "title": "Legacy lumh-os/kai9000 tree still carries incompatible routing metadata",
+      "paths": ["lumh-os/kai9000/**"],
+      "finding": "Legacy manifests may name a different branch or older provider-routing assumptions.",
+      "resolution": "Treat as compatibility/migration source only until each required behavior is intentionally absorbed into Project Hydra."
     },
     {
       "id": "F07",
-      "severity": "AMBER_TRANSITIONAL",
-      "title": "Historical debug APK used a transitional Android build bridge",
-      "finding": "The debug widget artifact used a pinned vue-headless-cms build-time bridge.",
-      "proposed_resolution": "Keep the artifact as evidence only. New canonical release APKs must be KAI-owned and donor-purged."
+      "severity": "GREEN_HARNESS",
+      "title": "Chrome Dev/Canary remains harness-only",
+      "paths": ["luhmos/chrome-dev-canary-plugin/**"],
+      "finding": "The harness may test behavior but must not provide donor code or runtime dependency to production APKs."
     },
     {
       "id": "F08",
-      "severity": "AMBER_GATE",
-      "title": "M1 runtime is not yet runtime-green",
-      "finding": "Typed Kotlin bridge, socket broker, rejection tests, persistent signer, signed APK, physical Samsung proof, and live WSS reconnect/reboot evidence remain required.",
-      "proposed_resolution": "Do not infer runtime/release GREEN from source-contract GREEN."
+      "severity": "AMBER_REPO_HARDENING",
+      "title": "Canonical branch protection/signing debt",
+      "finding": "The current luhmos-main branch is not protected and the observed head commit is unsigned.",
+      "resolution": "Track as repository hardening debt. Do not confuse Git commit signing with APK release signing, and do not silently change repository administration in this proposal."
     },
     {
       "id": "F09",
+      "severity": "AMBER_TOPOLOGY",
+      "title": "Repository default-branch activity must not override luhmos-main",
+      "finding": "Repository-wide searches can surface newer commits from another/default branch.",
+      "resolution": "All current-source reads and mutations must explicitly resolve luhmos-main unless a later crown changes branch authority."
+    },
+    {
+      "id": "F10",
+      "severity": "AMBER_PROVIDER_DOCTRINE",
+      "title": "Local-first inference must not silently replace OpenAI-primary agent doctrine",
+      "finding": "Local Ollama is valuable for eligible private/offline inference, but global assistant authority and project reasoning remain governed by the current OpenAI/Lum doctrine unless explicitly mutated.",
+      "resolution": "Use task-level routing: ChatGPT/OpenAI primary for project reasoning; deterministic local policy first for validation; Ollama optional for bounded local inference; no silent provider failover."
+    },
+    {
+      "id": "F11",
       "severity": "AMBER_GATE",
-      "title": "Modular Sprite Cockpit remains a source candidate",
-      "finding": "Its source gate is GREEN, but it is not merged/canonical and has no candidate APK/signing/device proof.",
-      "proposed_resolution": "Keep it in proposal/candidate status until separately authorized promotion."
+      "title": "M1 is source-contract green, not runtime/release/device green",
+      "finding": "Typed Kotlin bridge, headless broker, rejection tests, signed build, signer proof, physical Samsung proof and live reconnect/reboot evidence remain separate gates.",
+      "resolution": "Never promote a later proof state from an earlier one."
     }
   ],
-  "proposed_doctrine_mutation": {
-    "source_authority": {
-      "canonical_repository": "eggie-admin/hydra-shell-android",
-      "canonical_branch": "luhmos-main",
-      "crowned_source_of_truth_path": "project/hydra/source-of-truth",
-      "proposal_path": "project/hydra/doctrine/proposed-source-of-truth",
-      "github_role": "software_lineage_source_ci_provenance",
-      "google_drive_role": "owner_only_private_recovery_doctrine_and_staged_artifacts",
-      "chat_history_role": "context_and_evidence_not_executable_authority"
+  "kernel_hardware_build_source_repo": {
+    "kernel": {
+      "control_kernel": {
+        "role": "deterministic policy, typed routing, validation, evidence and bounded tool dispatch",
+        "arbitrary_model_authored_shell": false,
+        "typed_allowlists_required": true,
+        "fail_closed": true,
+        "secrets_in_source": false,
+        "proposal_cannot_self_authorize": true
+      },
+      "host_os_kernel": {
+        "current_version_assumption": "VERIFY_FROM_FRESH_RUNTIME",
+        "evidence": ["uname -srm", "installed kernel packages", "booted kernel", "driver/DKMS status when relevant"],
+        "rollback_required_before_experimental_kernel_change": true,
+        "experimental_kernel_may_not_become_build_requirement_without_crown": true,
+        "build_green_does_not_prove_kernel_runtime_green": true
+      }
     },
-    "android_base_contract": {
-      "device": "Samsung SM-S721U1",
-      "android": 16,
-      "application_id": "art.eggiebagelface.luhmos",
-      "root_required": false,
-      "standalone_base_launch": true,
-      "termux_required_for_base_launch": false,
-      "secure_folder_required_for_base_launch": false,
-      "external_localhost_daemon_required_for_base_launch": false
+    "hardware": {
+      "canonical_private_authority": "PRIVATE_CANONICAL_LUHM_OS_HARDWARE_SOURCE_OF_TRUTH_20260916",
+      "fresh_device_proof_outranks_document": true,
+      "public_repo_policy": "non-sensitive role/capability pointers only",
+      "forbidden_public_fields": ["serial", "IMEI", "MEID", "phone_number", "account_identifier", "private_key", "signing_secret", "api_key"],
+      "s24_fe_role": "canonical real-phone Android judge",
+      "sm_x400_role": "stock/unrooted art cockpit and QA unless fresh proof plus explicit mutation says otherwise",
+      "hardware_green_requires_physical_evidence": true
     },
-    "release_architecture": {
-      "webview": "bundled_assets_only",
-      "android_bridge": "typed_allowlisted_kotlin",
-      "socket_broker": "headless_fail_closed_typed_requests_only",
-      "arbitrary_shell_authority": false,
-      "remote_shell": false,
-      "transport": "strict_verified_tls_wss_or_allowlisted_local_loopback",
-      "game_admin_firewall": "absolute",
+    "build": {
+      "source_contract_is_not_build_proof": true,
+      "required_receipt_fields": ["source_commit", "workflow_name", "workflow_run_id", "artifact_id", "artifact_sha256", "apk_sha256_when_applicable", "signer_fingerprint_when_applicable"],
       "persistent_release_signer_required": true,
-      "physical_samsung_proof_required": true
+      "ci_green_is_not_release_authority": true,
+      "build_green_is_not_device_green": true,
+      "public_publish_default": false,
+      "silent_install": false
     },
-    "local_ai": {
-      "policy": "local_first_optional_companion",
-      "ollama_endpoint": "http://127.0.0.1:11434",
-      "proposed_default_model": "qwen3:0.6b",
-      "default_model_condition": "only_after_green_warm_load_smoke",
-      "historical_widget_model": "qwen2.5:3b",
-      "remote_ai": "explicit_typed_escalation_only",
-      "silent_cross_provider_failover": false,
-      "cloud_ai_required_for_base_launch": false
-    },
-    "widget_policy": {
-      "debug_one_tap_termux_run_command": "grandfathered_debug_evidence_only",
-      "future_release_widget": "typed_bounded_bridge_or_user_visible_app_action",
-      "no_arbitrary_command_string_from_untrusted_ui": true
-    },
-    "source_ownership": {
-      "future_release_apk_kai_owned": true,
-      "future_release_apk_donor_purged": true,
-      "chrome_dev": "behavior_test_harness_only",
-      "chrome_canary": "behavior_test_harness_only",
-      "chrome_source_ingest": false,
-      "chrome_runtime_dependency": false,
-      "third_party_code_requires_provenance_and_license_review": true
-    },
-    "agent_governance": {
-      "human_final_authority": "Professor",
-      "model_may_self_authorize": false,
-      "checkpoint_before_mutation": true,
-      "execution_evidence_required_for_green": true,
-      "source_green_does_not_equal_release_green": true,
-      "ci_green_does_not_equal_physical_device_green": true,
-      "stable_promotion_requires_explicit_professor_approval": true
+    "source_repo": {
+      "repository": "eggie-admin/hydra-shell-android",
+      "canonical_branch": "luhmos-main",
+      "explicit_ref_required_for_authoritative_reads": true,
+      "crowned_path": "project/hydra/source-of-truth",
+      "proposal_path": "project/hydra/doctrine/proposed-source-of-truth",
+      "legacy_paths_are_non_authoritative": true,
+      "historical_evidence_is_preserved": true,
+      "destructive_cleanup_allowed_by_this_proposal": false,
+      "default_branch_may_override_canonical_branch": false
     }
   },
+  "provider_routing": {
+    "project_reasoning_primary": "ChatGPT/OpenAI",
+    "deterministic_validation_primary": "local deterministic code and policy",
+    "local_inference_optional": "Ollama",
+    "local_inference_scope": "bounded privacy/offline/latency/cost tasks when adequate",
+    "remote_secondary_providers": "explicit bounded escalation only",
+    "silent_cross_provider_failover": false,
+    "provider_consensus_is_authority": false
+  },
+  "repo_hardening_actions_in_revision_2": [
+    "Update active Copilot instructions to resolve authority from crowned Project Hydra paths rather than legacy ULTIMA doctrine.",
+    "Remove the hard-coded 1.0.5 release-baseline claim from active agent instructions.",
+    "Add an explicit KERNEL/HARDWARE/BUILD/SOURCE boundary contract.",
+    "Add a stale-artifact registry that classifies legacy material without deleting it.",
+    "Add a report-only stale-artifact audit tool with strict mode for structural blockers.",
+    "Keep proposal material outside the crowned source-of-truth directory.",
+    "Upload this exact AI JSON proposal to the private proposed source-of-truth Drive lane."
+  ],
   "promotion_gates": {
     "proposal_json_valid": true,
-    "proposal_audit_complete": true,
+    "stale_artifact_registry_present": true,
+    "boundary_contract_present": true,
+    "audit_tool_present": true,
     "current_crown_unchanged": true,
     "automatic_merge": false,
     "automatic_crown": false,
@@ -258,25 +216,21 @@
     "automatic_install": false,
     "automatic_publish": false,
     "automatic_purge": false,
-    "requires_professor_seal_phrase": true,
-    "next_runtime_gate": "implement_and_test_typed_kotlin_bridge_plus_headless_socket_broker",
-    "next_local_ai_gate": "green_qwen3_0_6b_warm_load_smoke_before_retargeting_widget_chat",
-    "next_release_gate": "persistent_signer_plus_signed_apk_plus_physical_samsung_proof"
+    "requires_explicit_professor_promotion": true
   },
   "locks": {
     "compile": false,
     "install_apk": false,
-    "push_runtime_code": false,
+    "merge_candidate_release": false,
     "publish": false,
-    "promote": false,
-    "purge": false,
-    "public_admin": false,
-    "secret_print": false,
-    "crown": false
+    "promote_to_crown": false,
+    "purge_legacy": false,
+    "change_repo_admin_settings": false,
+    "secret_print": false
   },
-  "audit_verdict": "GREEN_PROPOSAL_WITH_AMBER_RUNTIME_AND_LEGACY_DRIFT",
-  "proposed_seal_name_if_approved": "KAI9000_M1_LOCAL_AI_WIDGET_DOCTRINE_RECONCILIATION_20260916",
-  "resume_phrase": "continue KAI 9000 from proposed M1 local AI widget doctrine reconciliation",
+  "audit_verdict": "PROPOSAL_GREEN_WITH_ACTIVE_DRIFT_AND_RUNTIME_GATES",
+  "proposed_seal_name_if_approved": "KAI9000_KERNEL_HARDWARE_BUILD_SOURCE_RECONCILIATION_20260916",
+  "resume_phrase": "continue KAI 9000 from proposed kernel hardware build source reconciliation",
   "signed_by": "Lum",
-  "signature_meaning": "AI-authored proposal and audit only; not Professor approval and not a crowned seal."
+  "signature_meaning": "AI-authored proposed doctrine and audit only; not Professor approval and not a crowned seal."
 }

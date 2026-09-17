@@ -1,0 +1,45 @@
+{
+  "schema": "luhm-os.kernel-hardware-build-source-boundary.v1",
+  "status": "PROPOSED_HARDENING_CONTRACT",
+  "date": "2026-09-16",
+  "human_authority": "Professor",
+  "canonical_branch": "luhmos-main",
+  "source_contract_parent": "project/hydra/source-of-truth/LUHM_M1_SIGNED_SECURE_WEBVIEW_SOCKET_20260916.json",
+  "boundaries": {
+    "SOURCE": {
+      "authority": "GitHub luhmos-main plus crowned Project Hydra source-of-truth contracts",
+      "owns": ["versioned source", "tests", "CI definitions", "provenance", "reviewable manifests"],
+      "does_not_own": ["physical hardware truth", "secret material", "automatic release authority"],
+      "requirements": ["explicit luhmos-main ref for authoritative reads", "preserve lineage", "proposal != crown"]
+    },
+    "KERNEL": {
+      "authority": "deterministic typed policy and fresh runtime evidence",
+      "control_kernel": ["schema validation", "allowlists", "policy", "state", "bounded tool dispatch", "proof"],
+      "host_kernel": ["fresh uname/package/driver evidence when relevant", "rollback before experiments"],
+      "forbidden": ["arbitrary model-authored shell authority", "silent privilege escalation", "secret storage in source", "experimental host kernel becoming an undeclared build dependency"]
+    },
+    "HARDWARE": {
+      "authority": "fresh physical evidence, then owner-only canonical hardware doctrine",
+      "repo_surface": "non-sensitive role/capability pointers only",
+      "forbidden_repo_data": ["serial", "IMEI", "MEID", "phone number", "account identifier", "private key", "API key", "signing secret"],
+      "rules": ["CI cannot close physical gates", "stock/unrooted is default unless exact device proof says otherwise"]
+    },
+    "BUILD": {
+      "authority": "exact reproducible build receipt bound to exact source commit",
+      "required_receipts": ["source commit", "workflow/run", "artifact id", "artifact hash", "APK hash if applicable", "signer fingerprint if applicable"],
+      "rules": ["source green != build green", "build green != release authority", "build green != device green", "persistent signer required for update continuity", "public publish explicit only"]
+    }
+  },
+  "cross_boundary_rules": [
+    "KERNEL may validate SOURCE but may not self-promote it.",
+    "SOURCE may describe HARDWARE roles but may not invent physical proof.",
+    "BUILD consumes SOURCE by exact commit and emits receipts; it does not rewrite SOURCE authority.",
+    "HARDWARE proof may close device gates only for the exact tested state.",
+    "No GAME/presentation state grants ADMIN authority."
+  ],
+  "repository_hardening_debt": {
+    "branch_protection": "DISABLED_AT_LAST_AUDIT",
+    "git_commit_signature": "UNSIGNED_AT_LAST_AUDIT",
+    "action": "TRACK_ONLY_IN_THIS_PROPOSAL; repository administration changes require separate explicit scope"
+  }
+}
