@@ -1,0 +1,82 @@
+name: LuHm FOR LOOP AI Gate
+
+on:
+  push:
+    branches:
+      - luhmos/for-loop-ai-toolchain-20260916
+    paths:
+      - 'ultima/ollama-ffmpeg-antenna-v3/lum_agent/for_loop.py'
+      - 'ultima/ollama-ffmpeg-antenna-v3/tests/test_for_loop.py'
+      - 'docs/LUHM_FOR_LOOP_AI_TOOLCHAIN_20260916.*'
+      - '.github/workflows/luhmos-for-loop-ai.yml'
+  pull_request:
+    branches:
+      - luhmos-main
+    paths:
+      - 'ultima/ollama-ffmpeg-antenna-v3/lum_agent/for_loop.py'
+      - 'ultima/ollama-ffmpeg-antenna-v3/tests/test_for_loop.py'
+      - 'docs/LUHM_FOR_LOOP_AI_TOOLCHAIN_20260916.*'
+      - '.github/workflows/luhmos-for-loop-ai.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  for-loop:
+    name: Deterministic FOR LOOP contract
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: ultima/ollama-ffmpeg-antenna-v3
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Python 3.12
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+
+      - name: Compile deterministic control plane
+        run: |
+          set -euo pipefail
+          python -m py_compile lum_agent/for_loop.py tests/test_for_loop.py
+
+      - name: Run dependency-free truth tests
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s tests -p 'test_for_loop.py' -v
+
+      - name: Verify hard limits and no provider dependency
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('lum_agent/for_loop.py').read_text(encoding='utf-8')
+          assert 'MAX_EVIDENCE_PASSES = 10' in text
+          assert 'MAX_AGENT_ROUNDS = 3' in text
+          assert 'CROWN_REQUIRED' in text
+          assert 'NEEDS_HUMAN' in text
+          assert 'openai' not in text.casefold()
+          assert 'httpx' not in text.casefold()
+          assert 'subprocess' not in text.casefold()
+          print('LUHM_FOR_LOOP_DETERMINISTIC_SOURCE_GREEN')
+          PY
+
+      - name: Candidate receipt
+        run: |
+          cat <<'EOF'
+          KAI9000_LUHM_FOR_LOOP_AI_TOOLCHAIN_CANDIDATE_GREEN
+          source_only=true
+          deterministic_loop=true
+          max_evidence_passes=10
+          max_agent_rounds=3
+          null_is_green=false
+          provider_authority=false
+          crown_gate=preserved
+          merge=NOT_PERFORMED
+          publish=OFF
+          EOF
