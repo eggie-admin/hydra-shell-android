@@ -1,0 +1,258 @@
+{
+  "schema": "luhm-os.proposed-seal-of-truth-stale-artifact-audit-doctrine-ai-manifest.v3",
+  "manifest_id": "KAI9000_PROPOSED_SEAL_OF_TRUTH_STALE_ARTIFACT_AUDIT_DOCTRINE_AI_MANIFEST_20260916_V3",
+  "revision": 3,
+  "status": "PROPOSED_NOT_CROWNED",
+  "date_local": "2026-09-16",
+  "generated_utc": "2026-09-17T02:58:20Z",
+  "project": "LuHm OS / KAI 9000 / Project Hydra",
+  "human_authority": "Professor",
+  "ai_author": "Lum",
+  "purpose": "Proposed Seal of Truth doctrine mutation plus stale-artifact audit. Reconcile current source authority, classify stale and historical artifacts, preserve lineage and rollback evidence, and define non-destructive retirement gates. No crown, compile, sign, install, publish, release merge, delete, purge, repository-admin, DNS, billing, or autonomous execution authority is granted.",
+  "authority_precedence": [
+    "explicit_current_professor_instruction",
+    "fresh_physical_runtime_proof_for_exact_target_state",
+    "latest_crowned_project_hydra_source_of_truth_contract",
+    "fresh_luhmos_main_repository_and_exact_ci_artifact_evidence",
+    "current_active_project_manifests_and_agent_instructions",
+    "proposed_doctrine_and_candidate_manifests",
+    "legacy_compatibility_and_historical_artifacts",
+    "memory_or_inference"
+  ],
+  "observed_state": {
+    "repository": "eggie-admin/hydra-shell-android",
+    "canonical_branch": {
+      "name": "luhmos-main",
+      "observed_head": "7bae9d515c4295bb8ab07f1003a95e1edcae2f33",
+      "head_message": "doctrine: harden proposed stale-artifact and source boundaries",
+      "protected": false,
+      "commit_signature_verified": false
+    },
+    "proposal_branch": {
+      "name": "luhmos/proposed",
+      "observed_head": "eafa8f5eebba25f94dc4c4f984bce18974d741d5"
+    },
+    "stale_artifact_audit_branch": {
+      "name": "luhmos/proposed-stale-artifact-doctrine-20260916",
+      "observed_head": "f2d03872a18dd7c7dde20febf2052dc19c6f36aa"
+    },
+    "prior_ai_manifest_branch": {
+      "name": "luhmos/proposed-sot-ai-manifest-20260916",
+      "observed_head": "3ca7e11ef08b9f83331c1328cb79f6e3f0aaea3b",
+      "classification": "HISTORICAL_PROPOSAL_SNAPSHOT"
+    },
+    "canonical_root": "project/hydra",
+    "crowned_path": "project/hydra/source-of-truth",
+    "proposal_path": "project/hydra/doctrine/proposed-source-of-truth",
+    "current_parent_proposal": {
+      "path": "project/hydra/doctrine/proposed-source-of-truth/KAI9000_PROPOSED_SEAL_DOCTRINE_MUTATION_AUDIT_20260916.json",
+      "blob_sha": "5b6830f4cb5c8f8916624c127c036d6b7e8ad615",
+      "status": "PROPOSED_NOT_CROWNED"
+    },
+    "latest_crowned_source_contract": "project/hydra/source-of-truth/LUHM_M1_SIGNED_SECURE_WEBVIEW_SOCKET_20260916.json",
+    "directory_crown": "project/hydra/source-of-truth/LUHMOS_HYDRA_DIRECTORY_CROWN_20260916.json"
+  },
+  "proposal_destination": {
+    "github_branch": "luhmos-main",
+    "github_path": "project/hydra/doctrine/proposed-source-of-truth/KAI9000_PROPOSED_SEAL_OF_TRUTH_STALE_ARTIFACT_AUDIT_DOCTRINE_AI_MANIFEST_20260916_V3.json",
+    "drive_folder_title": "PROPOSED_SOURCE_OF_TRUTH_MUTATION",
+    "drive_folder_id": "144bWMydQzPJCBIz2HtYuvJzaV6kFGElp",
+    "promotion_is_automatic": false,
+    "crown_requires_explicit_professor_authorization": true
+  },
+  "seal_of_truth_doctrine": {
+    "rules": [
+      "A crowned contract outranks a proposal.",
+      "Fresh exact runtime/device proof outranks stale documentation for the exact tested state.",
+      "Exact source commit plus workflow/run/artifact/hash receipts outrank filenames and theatrical status labels.",
+      "Proposal mirrors are recovery/review artifacts and never self-promote.",
+      "POWER_LEVEL_DOES_NOT_EQUAL_PERMISSION_LEVEL."
+    ],
+    "proposal_can_self_crown": false,
+    "ai_signature_is_crown": false,
+    "recency_alone_grants_authority": false,
+    "filename_alone_grants_authority": false,
+    "ci_green_equals_release_authority": false,
+    "build_green_equals_device_green": false,
+    "source_green_equals_build_green": false,
+    "historical_evidence_rewrite_allowed": false
+  },
+  "stale_artifact_doctrine": {
+    "definition": "Stale means an active operational claim, source coordinate, package identity, security boundary, runtime dependency, provider-routing rule, budget/promotion rule, or authority claim is superseded by fresher crowned/canonical evidence. Age alone is not staleness.",
+    "stale_does_not_equal_delete": true,
+    "historical_evidence_must_be_preserved": true,
+    "provenance_license_and_cryptographic_receipts_must_be_preserved": true,
+    "active_security_or_permission_drift_priority": "highest",
+    "active_executable_or_source_coordinate_drift_priority": "high",
+    "automatic_delete": false,
+    "automatic_purge": false,
+    "delete_requires_explicit_professor_authorization": true,
+    "retirement_sequence": [
+      "classify",
+      "identify_live_references",
+      "sever_or_patch_active_dependencies",
+      "prove_replacement",
+      "record_rollback_and_provenance",
+      "mark_retirement_candidate",
+      "retire_only_with_required_human_authority"
+    ],
+    "classes": {
+      "CROWNED_CURRENT": "Current authority; supersede only by explicit later crown.",
+      "ACTIVE_CANONICAL": "Current code/config/instruction surface; drift must be reconciled.",
+      "PROPOSED": "Review candidate with zero automatic authority.",
+      "HISTORICAL_EVIDENCE": "Immutable lineage and receipts; preserve read-only.",
+      "LEGACY_COMPATIBILITY": "May remain for compatibility but cannot outrank current doctrine.",
+      "TEST_HARNESS_ONLY": "Behavior validation only; no implicit production dependency.",
+      "QUARANTINED": "Not promotable until provenance/license/security/relevance gates pass.",
+      "STALE_BLOCKER": "Active conflict with current authority; blocks promotion until reconciled."
+    }
+  },
+  "stale_artifact_audit": [
+    {
+      "id": "S01",
+      "artifact": "KAI9000_PROPOSED_SOURCE_OF_TRUTH_AI_MANIFEST_20260916.json on luhmos/proposed-sot-ai-manifest-20260916",
+      "class": "HISTORICAL_PROPOSAL",
+      "severity": "AMBER_SUPERSEDED_SNAPSHOT",
+      "finding": "Its canonical luhmos-main anchor predates current head 7bae9d515c4295bb8ab07f1003a95e1edcae2f33.",
+      "action": "preserve_read_only_and_refresh_from_current_luhmos_main_before_using_observed_state"
+    },
+    {
+      "id": "S02",
+      "artifact": "luhmos/proposed-stale-artifact-doctrine-20260916",
+      "class": "HISTORICAL_PROPOSAL",
+      "severity": "GREEN_PRESERVE",
+      "finding": "Useful provenance for stale-artifact doctrine work but not canonical authority.",
+      "action": "preserve_with_supersession_pointer"
+    },
+    {
+      "id": "S03",
+      "artifact": "KAI9000_PROPOSED_SEAL_DOCTRINE_MUTATION_AUDIT_20260916.json",
+      "class": "PROPOSED",
+      "severity": "GREEN_PROPOSAL",
+      "finding": "Stored outside crowned source-of-truth and explicitly PROPOSED_NOT_CROWNED.",
+      "action": "retain_as_parent_proposal"
+    },
+    {
+      "id": "S04",
+      "artifact": "legacy ULTIMA and lumh-os/kai9000 trees",
+      "class": "LEGACY_COMPATIBILITY",
+      "severity": "AMBER_ACTIVE_REFERENCE_RISK",
+      "finding": "Historical names may remain for lineage, but active authority must resolve from current Project Hydra doctrine.",
+      "action": "preserve_lineage_and_remove_only_live_authority_dependencies_after_replacement_proof"
+    },
+    {
+      "id": "S05",
+      "artifact": ".github/copilot-instructions.md at luhmos-main@7bae9d5",
+      "class": "ACTIVE_CANONICAL",
+      "severity": "GREEN_AFTER_HARDENING",
+      "finding": "Current instructions resolve authority through crowned Project Hydra paths and treat ULTIMA/lumh-os legacy material as non-authoritative by existence alone.",
+      "action": "keep_under_drift_watch"
+    },
+    {
+      "id": "S06",
+      "artifact": "luhmos-main branch protection / commit signing",
+      "class": "ACTIVE_CANONICAL",
+      "severity": "AMBER_REPO_HARDENING",
+      "finding": "Observed canonical branch is unprotected and current observed head is unsigned.",
+      "action": "track_as_admin_hardening_debt_without_admin_mutation_in_this_proposal"
+    },
+    {
+      "id": "S07",
+      "artifact": "M1 signed secure WebView/socket contract",
+      "class": "CROWNED_CURRENT",
+      "severity": "GREEN_SOURCE_CONTRACT",
+      "finding": "Source/security authority only; runtime, signed-release, and physical-device proof remain independent gates.",
+      "action": "preserve_gate_separation"
+    },
+    {
+      "id": "S08",
+      "artifact": "Chrome Dev/Canary harness lane",
+      "class": "TEST_HARNESS_ONLY",
+      "severity": "GREEN_ISOLATED",
+      "finding": "Behavior testing is allowed; donor-code or production runtime dependency is not implied.",
+      "action": "keep_isolated"
+    },
+    {
+      "id": "S09",
+      "artifact": "PROPOSED_SOURCE_OF_TRUTH_MUTATION duplicate logical manifest names",
+      "class": "PROPOSED",
+      "severity": "AMBER_VERSION_COLLISION",
+      "finding": "Two same-name historical AI manifests and a V2 coexist in the proposal mirror.",
+      "action": "preserve_existing_files_and_publish_new_refresh_with_explicit_V3_revision"
+    }
+  ],
+  "ten_pass_audit": [
+    {"pass": 1, "name": "authority_precedence", "result": "GREEN"},
+    {"pass": 2, "name": "canonical_branch_freshness", "result": "GREEN", "evidence": "luhmos-main@7bae9d515c4295bb8ab07f1003a95e1edcae2f33"},
+    {"pass": 3, "name": "proposal_lane_isolation", "result": "GREEN"},
+    {"pass": 4, "name": "prior_proposal_and_drive_version_staleness", "result": "AMBER_PRESERVE_VERSION_AND_SUPERSEDE"},
+    {"pass": 5, "name": "legacy_authority_dependency", "result": "GREEN_AFTER_CURRENT_INSTRUCTION_HARDENING_WITH_WATCH"},
+    {"pass": 6, "name": "historical_evidence_preservation", "result": "GREEN"},
+    {"pass": 7, "name": "destructive_cleanup_lock", "result": "GREEN_LOCKED"},
+    {"pass": 8, "name": "repo_protection_and_commit_signing", "result": "AMBER_ADMIN_DEBT"},
+    {"pass": 9, "name": "source_build_release_device_gate_separation", "result": "GREEN_DOCTRINE_RUNTIME_PROOF_INDEPENDENT"},
+    {"pass": 10, "name": "no_auto_crown_no_auto_merge_no_auto_publish", "result": "GREEN"}
+  ],
+  "proposed_mutation_sequence": [
+    "preserve crowned source-of-truth contracts unchanged",
+    "record this manifest only in proposed doctrine lane and private proposal mirror",
+    "treat older proposal snapshots as lineage when observed heads are older than current luhmos-main",
+    "audit active references before marking retirement candidates",
+    "fix security and executable/source-coordinate drift before docs-only cleanup",
+    "require replacement proof before retirement",
+    "never delete cryptographic receipts, license provenance, build receipts, or physical-device evidence as stale cleanup",
+    "require explicit Professor authorization for crown, destructive purge, release promotion, compile/sign/install/publish, repository-admin mutation, DNS mutation, or billing mutation"
+  ],
+  "promotion_gates": {
+    "json_valid": true,
+    "proposal_only": true,
+    "current_crown_unchanged": true,
+    "automatic_merge": false,
+    "automatic_crown": false,
+    "automatic_compile": false,
+    "automatic_sign": false,
+    "automatic_install": false,
+    "automatic_publish": false,
+    "automatic_delete": false,
+    "automatic_purge": false,
+    "automatic_repo_admin_mutation": false,
+    "requires_explicit_professor_authorization_for_crown": true
+  },
+  "locks": {
+    "compile": false,
+    "sign": false,
+    "install_apk": false,
+    "merge_release_candidate": false,
+    "publish": false,
+    "promote_to_crown": false,
+    "delete": false,
+    "purge": false,
+    "repo_admin": false,
+    "dns_mutation": false,
+    "billing_mutation": false,
+    "secret_print": false
+  },
+  "audit_verdict": "PROPOSED_GREEN_STRUCTURE_WITH_AMBER_STALE_SNAPSHOT_DRIVE_VERSION_COLLISION_AND_REPO_HARDENING_DEBT",
+  "proposed_seal_name_if_later_approved": "KAI9000_SEAL_OF_TRUTH_STALE_ARTIFACT_RECONCILIATION_20260916",
+  "resume_phrase": "continue KAI 9000 from proposed seal of truth stale artifact audit doctrine AI manifest V3",
+  "signature": {
+    "signed_by": "Lum",
+    "meaning": "AI-authored proposal and audit only; not Professor crown approval.",
+    "human_crown_present": false
+  },
+  "drive_collision_audit": {
+    "folder_id": "144bWMydQzPJCBIz2HtYuvJzaV6kFGElp",
+    "finding": "Proposal mirror contains multiple older manifests with the same logical name plus a V2; filename collision must not be mistaken for authority or recency.",
+    "observed": [
+      {"file_id": "1aKNjRjXMBOZeOVxsOb0iyTSBUitSeJQD", "name": "KAI9000_PROPOSED_SEAL_OF_TRUTH_STALE_ARTIFACT_AUDIT_DOCTRINE_AI_MANIFEST_20260916.json", "size_bytes": 19008},
+      {"file_id": "1pjmlWrjlRo2sSXhz77aOcTJXBvPhuXJd", "name": "KAI9000_PROPOSED_SEAL_OF_TRUTH_STALE_ARTIFACT_AUDIT_DOCTRINE_AI_MANIFEST_20260916.json", "size_bytes": 19008},
+      {"file_id": "13LTnp3OKTZPxnAjIH04795oXk5cNwoBA", "name": "KAI9000_PROPOSED_SEAL_OF_TRUTH_STALE_ARTIFACT_AUDIT_DOCTRINE_AI_MANIFEST_20260916_V2.json", "size_bytes": 3923}
+    ],
+    "policy": "preserve all existing proposal artifacts; use explicit revisioned filenames; never treat duplicate name, Drive modified time, or upload order as crown authority"
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "scope": "canonical_json_without_integrity_field",
+    "payload_sha256": "2741d56875848a051caca9430944b8967276efe2e2491c7bf5f81affc1d45408"
+  }
+}
