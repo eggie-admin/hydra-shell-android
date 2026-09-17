@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - luhmos/proposed-toy-gui-mutation-20260917
-      - luhmos/remote-build-fastpath-20260917
     paths:
       - 'project/hydra/samsung/android/cathedral-game/**'
       - 'project/hydra/doctrine/proposed-source-of-truth/LUHM_OS_PROPOSED_REMOTE_BUILD_FASTPATH_20260917.json'
@@ -22,7 +21,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: luhmos-drive-avatar-candidate-${{ github.ref }}
+  group: luhmos-drive-avatar-candidate-${{ github.event.pull_request.head.ref || github.ref_name }}
   cancel-in-progress: true
 
 env:
