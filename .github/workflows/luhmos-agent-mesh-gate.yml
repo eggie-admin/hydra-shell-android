@@ -1,0 +1,65 @@
+name: LuHm Agent Mesh v1 Gate
+
+on:
+  push:
+    branches:
+      - luhmos/agent-mesh-v1-debug-candidate-20260917
+    paths:
+      - 'project/hydra/openai/lum-agent-mesh/**'
+      - 'project/hydra/source-of-truth/LUHM_AGENT_MESH_V1_20260917.json'
+      - '.github/workflows/luhmos-agent-mesh-gate.yml'
+  pull_request:
+    paths:
+      - 'project/hydra/openai/lum-agent-mesh/**'
+      - 'project/hydra/source-of-truth/LUHM_AGENT_MESH_V1_20260917.json'
+      - '.github/workflows/luhmos-agent-mesh-gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mesh-source-gate:
+    name: Boss Spine Razor Contract
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Python 3.12
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+
+      - name: Compile deterministic mesh
+        run: |
+          set -euo pipefail
+          python3 -m py_compile project/hydra/openai/lum-agent-mesh/mesh.py
+          python3 -m py_compile project/hydra/openai/lum-agent-mesh/test_mesh.py
+
+      - name: Run focused unit tests
+        run: |
+          set -euo pipefail
+          python3 project/hydra/openai/lum-agent-mesh/test_mesh.py
+
+      - name: Smoke machine receipt
+        run: |
+          set -euo pipefail
+          python3 project/hydra/openai/lum-agent-mesh/mesh.py --smoke | tee /tmp/luhm-agent-mesh-smoke.json
+          python3 -m json.tool /tmp/luhm-agent-mesh-smoke.json >/dev/null
+
+      - name: Contract and secret guard
+        run: |
+          set -euo pipefail
+          ROOT='project/hydra/openai/lum-agent-mesh'
+          grep -q 'class LumBoss' "$ROOT/mesh.py"
+          grep -q 'max_helpers_per_turn: int = 3' "$ROOT/mesh.py"
+          grep -q 'max_delegation_depth: int = 1' "$ROOT/mesh.py"
+          grep -q 'helper_history: str = "NONE"' "$ROOT/mesh.py"
+          grep -q 'CROWN_REQUIRED' "$ROOT/mesh.py"
+          grep -q 'NULL never becomes GREEN' "$ROOT/mesh.py"
+          ! grep -R -nE '(sk-[A-Za-z0-9_-]{20,}|BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY|AIza[0-9A-Za-z_-]{20,})' "$ROOT" project/hydra/source-of-truth/LUHM_AGENT_MESH_V1_20260917.json
+          ! grep -R -nE '\b(subprocess\.|os\.system|os\.popen|requests\.|urllib\.request|socket\.|httpx\.|OpenAI\()' "$ROOT"
+          echo 'LUHM_AGENT_MESH_V1_SOURCE_GREEN'
