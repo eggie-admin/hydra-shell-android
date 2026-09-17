@@ -79,7 +79,7 @@ jobs:
             exit 1
           fi
 
-          if grep -RniE 'repository:[[:space:]]*.*(vue-headless-cms|chrome)|DONOR_REPO|Checkout pinned KAI donor' .github/workflows/kai9000-ultima-apk.yml; then
+          if grep -nE '^[[:space:]]+repository:[[:space:]]+.*vue-headless-cms|^[[:space:]]+DONOR_REPO:' .github/workflows/kai9000-ultima-apk.yml; then
             echo 'Legacy donor checkout detected in active APK workflow' >&2
             exit 1
           fi
