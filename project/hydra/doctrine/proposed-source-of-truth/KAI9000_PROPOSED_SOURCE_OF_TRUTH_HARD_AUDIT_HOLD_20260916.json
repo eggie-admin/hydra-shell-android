@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schema_id": "luhm-os.proposed-source-of-truth-hard-audit-hold.v1",
+  "manifest_id": "KAI9000_PROPOSED_SOURCE_OF_TRUTH_HARD_AUDIT_HOLD_20260916",
+  "state": "PROPOSED",
+  "seal_status": "PROPOSED_NOT_CROWNED",
+  "project": "LuHm OS / Project Hydra / KAI 9000",
+  "authority": {
+    "human_final_authority": "Professor",
+    "proposal_may_not_self_approve": true,
+    "automatic_merge": false,
+    "automatic_publish": false,
+    "automatic_deploy": false,
+    "automatic_promote": false,
+    "automatic_seal": false
+  },
+  "source_of_truth": {
+    "repository": "eggie-admin/hydra-shell-android",
+    "canonical_branch": "luhmos-main",
+    "observed_canonical_head": "93ef0af6ca1ed9b03dfe5ee28a17e51546fd1bbb",
+    "proposal_branch": "luhmos/proposed-legacy-editor-bridge-purge-20260916",
+    "audited_proposal_head": "c96f7769621ce861f373c5fdbadd4b4238a229b5",
+    "proposal_pr": 64,
+    "proposal_path": "project/hydra/doctrine/proposed-source-of-truth/",
+    "topology_at_audit": {
+      "status": "DIVERGED",
+      "ahead_by": 3,
+      "behind_by": 1,
+      "merge_base": "0cba853e2b6493148666714b0726ffaddc09d3f6"
+    }
+  },
+  "hard_audit": {
+    "required_passes": 10,
+    "summary": "7_PASS_3_FAIL",
+    "promotion_result": "HOLD_CROWN_REPAIR_THEN_REROLL",
+    "passes": [
+      {"pass": 1, "gate": "canonical_hierarchy_and_naming", "result": "PASS"},
+      {"pass": 2, "gate": "branch_topology_and_enforcement", "result": "FAIL", "red": "canonical branch enforcement/required checks are not sufficient and proposal topology is diverged"},
+      {"pass": 3, "gate": "source_path_and_manifest_contracts", "result": "PASS"},
+      {"pass": 4, "gate": "secret_and_signing_material_leakage", "result": "PASS"},
+      {"pass": 5, "gate": "authority_boundaries_and_no_self_approval", "result": "PASS"},
+      {"pass": 6, "gate": "ci_behavior_and_failing_logs", "result": "FAIL", "red": "LuHm OS ULTIMA Debug Contract has a failing Crown/public-publish isolation assertion using stale literal contract vocabulary"},
+      {"pass": 7, "gate": "android_crown_release_isolation_and_manual_publish", "result": "PASS"},
+      {"pass": 8, "gate": "local_vs_cloud_lane_separation", "result": "PASS"},
+      {"pass": 9, "gate": "stale_artifact_and_doctrine_drift", "result": "FAIL", "red": "active executable/UI surfaces outside doctrine still encode retired loopback:8767 editor-bridge dependencies"},
+      {"pass": 10, "gate": "reproducibility_readback_and_human_crown", "result": "PASS"}
+    ]
+  },
+  "red_items": [
+    "PR #64 proposal branch is behind current luhmos-main by one commit and must be refreshed/re-audited before promotion.",
+    "CI is not all green because the ULTIMA Debug Contract Crown/public-publish isolation assertion is stale/failing.",
+    "README.md, backend/server.py, backend/web/index.html, tools/hydra-full-green.sh, tools/hydra_cockpit.py and related active surfaces require retirement or explicit compatibility gating for the legacy 8767 bridge before the purge can be represented as complete."
+  ],
+  "smallest_safe_repair_plan": [
+    "Keep PR #64 draft and proposal-only.",
+    "Repair the structural Crown/public-release CI assertion without importing unrelated work.",
+    "Remove or explicitly compatibility-gate active executable/UI dependencies on the retired 8767 editor bridge while preserving historical evidence.",
+    "Refresh the proposal against the latest luhmos-main without force-updating canonical authority.",
+    "Rerun the complete required CI/read-back audit and require all ten gates green before requesting human promotion."
+  ],
+  "locks": {
+    "merge": false,
+    "publish": false,
+    "deploy": false,
+    "promote": false,
+    "seal": false,
+    "crown": false,
+    "rewrite_history": false,
+    "delete_historical_evidence": false
+  }
+}

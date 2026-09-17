@@ -4,7 +4,7 @@ set -euo pipefail
 REPO_DIR="${HYDRA_REPO_DIR:-$HOME/hydra-shell-android}"
 LOG_DIR="${HYDRA_LOG_DIR:-$HOME/.hydra/logs}"
 PID_DIR="${HYDRA_PID_DIR:-$HOME/.hydra/run}"
-AXS_PORT="${HYDRA_AXS_PORT:-8767}"
+MUTATION_PORT="${HYDRA_MUTATION_PORT:-8790}"
 VNC_DISPLAY="${HYDRA_VNC_DISPLAY:-:1}"
 VNC_GEOMETRY="${HYDRA_VNC_GEOMETRY:-1080x1600}"
 VNC_DEPTH="${HYDRA_VNC_DEPTH:-24}"
@@ -42,38 +42,35 @@ raise SystemExit(0 if ok else 1)
 PY
 }
 
-printf '\n[1/4] AcodeX / AXS\n'
-if port_open "$AXS_PORT"; then
-  printf 'AXS GREEN on 127.0.0.1:%s (existing instance preserved)\n' "$AXS_PORT"
-elif command -v axs >/dev/null 2>&1; then
-  nohup axs >"$LOG_DIR/axs.log" 2>&1 &
-  echo $! >"$PID_DIR/axs.pid"
+printf '\n[1/4] Gated mutation gateway\n'
+if port_open "$MUTATION_PORT"; then
+  printf 'Mutation gateway GREEN on 127.0.0.1:%s (existing instance preserved)\n' "$MUTATION_PORT"
+elif [ -f "$REPO_DIR/backend/candidate_workflow.py" ]; then
+  nohup env \
+    PYTHONUNBUFFERED=1 \
+    LUHM_MUTATION_PORT="$MUTATION_PORT" \
+    LUHM_REPO_ROOT="$REPO_DIR" \
+    LUHM_MUTATION_STATE="$HOME/.local/state/luhm-mutation" \
+    python "$REPO_DIR/backend/candidate_workflow.py" \
+    >"$LOG_DIR/mutation-gateway.log" 2>&1 &
+  echo $! >"$PID_DIR/mutation-gateway.pid"
   for _ in $(seq 1 10); do
-    port_open "$AXS_PORT" && break
+    port_open "$MUTATION_PORT" && break
     sleep 1
   done
-  port_open "$AXS_PORT" || { printf 'AXS failed. See %s\n' "$LOG_DIR/axs.log"; exit 1; }
-  printf 'AXS GREEN on 127.0.0.1:%s\n' "$AXS_PORT"
-elif command -v acodeX-server >/dev/null 2>&1; then
-  nohup acodeX-server >"$LOG_DIR/axs.log" 2>&1 &
-  echo $! >"$PID_DIR/axs.pid"
-  for _ in $(seq 1 10); do
-    port_open "$AXS_PORT" && break
-    sleep 1
-  done
-  port_open "$AXS_PORT" || { printf 'AcodeX server failed. See %s\n' "$LOG_DIR/axs.log"; exit 1; }
-  printf 'AXS GREEN on 127.0.0.1:%s\n' "$AXS_PORT"
+  port_open "$MUTATION_PORT" || {
+    printf 'Mutation gateway failed. See %s\n' "$LOG_DIR/mutation-gateway.log"
+    exit 1
+  }
+  printf 'Mutation gateway GREEN on 127.0.0.1:%s\n' "$MUTATION_PORT"
 else
-  printf 'AXS YELLOW: no axs/acodeX-server command found. Existing AcodeX-managed server may still be used.\n'
+  printf 'Mutation gateway missing: %s\n' "$REPO_DIR/backend/candidate_workflow.py"
+  exit 1
 fi
 
 printf '\n[2/4] TigerVNC\n'
 export DISPLAY="$VNC_DISPLAY"
 
-# On Android/Termux, vncserver -list can occasionally miss a live Xvnc while
-# the display lock and TCP listener are still valid. The loopback VNC socket is
-# the authority here: preserve a live listener and only clean stale locks when
-# the expected port is actually closed.
 if port_open "$VNC_PORT"; then
   printf 'VNC GREEN on %s / 127.0.0.1:%s (live listener preserved)\n' "$VNC_DISPLAY" "$VNC_PORT"
 else
@@ -100,8 +97,6 @@ export HYDRA_FAST_MODEL="$FAST_MODEL"
 export HYDRA_DEEP_MODEL="$DEEP_MODEL"
 export HYDRA_OLLAMA_MODEL="$FAST_MODEL"
 
-# Force only the Hydra gateway to restart so code/persona/UI mutations become active.
-# Ollama, AXS and VNC are deliberately preserved.
 if [ -f "$PID_DIR/hydra-gateway.pid" ]; then
   old_pid="$(cat "$PID_DIR/hydra-gateway.pid" 2>/dev/null || true)"
   if [ -n "$old_pid" ] && kill -0 "$old_pid" 2>/dev/null; then
@@ -127,13 +122,14 @@ fi
 
 printf '\n[4/4] Full localhost audit\n'
 curl -fsS http://127.0.0.1:8787/v1/system/status | python -m json.tool
+curl -fsS "http://127.0.0.1:${MUTATION_PORT}/health" | python -m json.tool
 
 printf '\nHYDRA PROFESSOR GREEN FULL GREEN\n'
-printf 'AcodeX/AXS : 127.0.0.1:%s\n' "$AXS_PORT"
+printf 'Mutation   : 127.0.0.1:%s\n' "$MUTATION_PORT"
 printf 'VNC        : %s / 127.0.0.1:%s\n' "$VNC_DISPLAY" "$VNC_PORT"
 printf 'Hydra UI   : http://127.0.0.1:8787/ui/index.html\n'
 printf 'Hydra API  : http://127.0.0.1:8787\n'
 printf 'Ollama     : http://127.0.0.1:11434\n'
 printf 'FAST       : %s\n' "$FAST_MODEL"
 printf 'DEEP       : %s\n' "$DEEP_MODEL"
-printf '\nIn AcodeX terminal settings use host 127.0.0.1 and port %s.\n' "$AXS_PORT"
+printf '\nThe mutation gateway is the only active repo write surface and still requires explicit human approval.\n'

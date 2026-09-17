@@ -103,7 +103,7 @@ state · jobs · authorization
 
 Core laws:
 
-1. **Standalone first on Android.** The installed APK must launch without Termux, Acode/AcodeX, VNC, a WebSocket desktop bridge, or Secure Folder.
+1. **Standalone first on Android.** The installed APK must launch without Termux, an external development editor, VNC, a WebSocket desktop bridge, or Secure Folder.
 2. **One job per layer.** UI presents, AI proposes, policy authorizes, bounded workers execute.
 3. **Least privilege.** No automatic root and no model-generated arbitrary shell execution.
 4. **Explicit interfaces.** Cross-layer work uses typed requests, manifests, APIs, files, or bounded worker contracts.
@@ -148,7 +148,7 @@ target SDK:             API 36
 primary ABI:            arm64-v8a
 ```
 
-The production target is one normal installable APK that the user can **Install → Open**. The application must not require Termux, Acode, AcodeX, TigerVNC, websockify, Secure Folder, or another localhost daemon in order to start and perform its core functions.
+The production target is one normal installable APK that the user can **Install → Open**. The application must not require Termux, an external development editor, TigerVNC, websockify, Secure Folder, or another localhost daemon in order to start and perform its core functions.
 
 Production Android GREEN requires:
 
@@ -199,7 +199,7 @@ The goal is not to force identical platform shells. The portable asset is the po
 
 ### M1 · Local Cathedral
 - historical development baseline for local AI/control-plane experiments
-- Termux/AcodeX/VNC/WebSocket work is retained only as migration history and is not a production dependency
+- Termux/external-editor/VNC/WebSocket work is retained only as migration history and is not a production dependency
 - **state: historical GREEN baseline; superseded for Android runtime architecture**
 
 ### M2 · Samsung Android Forge
@@ -211,7 +211,7 @@ The goal is not to force identical platform shells. The portable asset is the po
 - **state: GREEN forge, standalone device-install gate still active**
 
 ### M3 · Standalone Install, Persistent Signing and Distribution
-- produce a self-contained APK requiring no Termux/Acode/AcodeX runtime
+- produce a self-contained APK requiring no Termux or external development-editor runtime
 - prove clean install and launcher start on SM-S721U1
 - prove persistent `luhmos-release` signer
 - produce install/update continuity evidence
