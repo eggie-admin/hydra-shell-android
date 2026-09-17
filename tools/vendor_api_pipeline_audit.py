@@ -39,6 +39,7 @@ def main() -> None:
     require(openai.get("credential_env") == "OPENAI_API_KEY", "OpenAI credential contract drift")
     require(openai.get("project_label") == "LuHm OS", "OpenAI project branding drift")
     require(openai.get("persist_project_identifier") is False, "OpenAI project identifiers must not be persisted")
+    require(openai.get("live_inference_state") == "NOT_VERIFIED_SECRET_ABSENT_IN_CI_SMOKE", "OpenAI live-inference debt must remain explicit until exercised")
 
     google = providers["google"]
     cloud = google.get("cloud", {})
@@ -49,6 +50,8 @@ def main() -> None:
     require(cloud.get("subject_policy") == "exact_immutable_github_sub_for_luhmos_main", "Google WIF subject policy drift")
     require(cloud.get("bootstrap") == "infra/gcp/bootstrap-github-wif.sh", "Google bootstrap path drift")
     require(cloud.get("canonical_repository_variables") == EXPECTED_GCP_VARS, "Google repository variable drift")
+    require(cloud.get("repository_variables_state") == "NOT_CONFIGURED_IN_CI_PREFLIGHT", "Google repository-variable debt must remain explicit until configured")
+    require(cloud.get("live_oidc_auth_state") == "NOT_VERIFIED_AUTH_JOB_SKIPPED", "Google live OIDC debt must remain explicit until exercised")
     require(cloud.get("long_lived_service_account_json_in_repo") is False, "Google service-account JSON must stay out of repo")
     require(cloud.get("deployment_confirmation") == "PROVISION", "Google deploy confirmation drift")
 
@@ -85,6 +88,7 @@ def main() -> None:
     require(hf.get("lower_latency_candidate") == "openai/gpt-oss-20b:fastest", "Hugging Face fast model drift")
     require(hf.get("credential_env") == "HF_TOKEN", "Hugging Face credential contract drift")
     require(hf.get("auto_execute_remote_code") is False, "Hugging Face remote code must stay disabled")
+    require(hf.get("live_inference_state") == "NOT_VERIFIED_SECRET_ABSENT_IN_CI_SMOKE", "Hugging Face live-inference debt must remain explicit until exercised")
 
     shared = data.get("shared_policy", {})
     for key in (
@@ -103,6 +107,9 @@ def main() -> None:
     for heading in ("## OpenAI lane", "## Google lane", "## GitHub lane", "## Cloudflare lane", "## Hugging Face lane"):
         require(heading in doctrine, f"missing doctrine heading: {heading}")
     require("before GitHub's 2026-07-15 automatic immutable-subject rollout" in doctrine, "GitHub OIDC rollout caveat missing")
+    require("OpenAI live inference is `NOT_VERIFIED`" in doctrine, "OpenAI live-inference debt missing from doctrine")
+    require("Google Cloud live OIDC authentication is `NOT_CONFIGURED`" in doctrine, "Google live-auth debt missing from doctrine")
+    require("Hugging Face live inference is `NOT_VERIFIED`" in doctrine, "Hugging Face live-inference debt missing from doctrine")
 
     cf_deploy = CF_DEPLOY.read_text(encoding="utf-8")
     require("wrangler@latest" not in cf_deploy, "Cloudflare deploy uses floating Wrangler")
@@ -147,14 +154,19 @@ def main() -> None:
     require("HF_TOKEN: ${{ secrets.HF_TOKEN }}" in smoke, "Hugging Face smoke credential wiring missing")
     require("OPENAI_MODEL: gpt-5.6-sol" in smoke, "OpenAI smoke model drift")
     require("HF_MODEL: openai/gpt-oss-120b:fastest" in smoke, "Hugging Face smoke model drift")
+    require("actions/checkout@11d5960a326750d5838078e36cf38b85af677262" in smoke, "remote AI checkout must be SHA pinned")
+    require("actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065" in smoke, "remote AI setup-python must be SHA pinned")
+    require("actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02" in smoke, "remote AI upload-artifact must be SHA pinned")
+    require("persist-credentials: false" in smoke, "remote AI checkout credentials must not persist")
 
     print("LUHM_VENDOR_API_PIPELINE=GREEN")
     print("VENDOR_SPINE=openai,google,github,cloudflare,hugging_face")
     print("GITHUB_EXTERNAL_GOVERNANCE=RED_EXTERNAL_RECORDED")
     print("GITHUB_IMMUTABLE_OIDC=UNVERIFIED_EXTERNAL_RECORDED")
     print("GOOGLE_WIF_LIVE_STATE=UNVERIFIED_RECORDED_FAIL_CLOSED_BOOTSTRAP")
+    print("OPENAI_LIVE_INFERENCE=NOT_VERIFIED_RECORDED")
     print("CLOUDFLARE_LIVE_ACCOUNT=UNVERIFIED_RECORDED")
-    print("HUGGING_FACE_LIVE_ACCOUNT=UNVERIFIED_RECORDED")
+    print("HUGGING_FACE_LIVE_INFERENCE=NOT_VERIFIED_RECORDED")
 
 
 if __name__ == "__main__":
