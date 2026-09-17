@@ -1,0 +1,25 @@
+{
+  "schema": "luhm.gui-debug.public-candidate-seal.v1",
+  "status": "SEALED_CANDIDATE_SNAPSHOT",
+  "publication_authorization": "Professor: Yes, publish the candidate to GitHub.",
+  "scope": "Public source candidate only; not a deployment or canonical release promotion",
+  "candidate_path": "project/hydra/openai/gui-debug-candidate-v1",
+  "archive_sha256": "34c437f9bac0783554a9389ce99ec050fb8232645330e41c145f852f08c227a8",
+  "files_sha256": {
+    "README.md": "3c572cb858c66244fa4ab6d0e93d96ccfd2603ffd01618461011e96c65c0d1f9",
+    "index.html": "4543f8d4fdabcdc388576fc7eaa032af101b1ca658bb6ee6c4366cea5dbe2ee6",
+    "milestone.json": "15795c9d5328f7e9656b09bfb8fb494946f510035bad79a63be2d585c7ca14ce",
+    "verification.json": "2b90e189c4441fd663b472b5ab8540ae6d5d3c4e0a88dc33fe57a06fc5845381",
+    "verify-logic.cjs": "41a3c1731112acca29dae2053a92c6295cf88ceb43e72ae474025fc2bdd6ae1b",
+    "verify.cjs": "107fe0e059aad6dd0e64c02774c1cb4a21f50fca846f6f023f959fe190328e0f"
+  },
+  "verification": {
+    "logic_checks_passed": 12,
+    "method": "Node VM with minimal DOM test doubles",
+    "browser_visuals": "UNVERIFIED",
+    "live_pet_update": false,
+    "deployment": false
+  },
+  "private_recovery_references": "Omitted from public edition",
+  "signature": "SHA-256 integrity receipt; not a cryptographic identity signature"
+}

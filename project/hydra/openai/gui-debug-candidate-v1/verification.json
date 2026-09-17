@@ -1,0 +1,60 @@
+{
+  "milestone": "LUHM_GUI_DEBUG_CANDIDATE",
+  "logic_status": "PASS",
+  "passed": 12,
+  "checks": [
+    {
+      "name": "default_preview_scale_150_percent",
+      "result": "PASS"
+    },
+    {
+      "name": "three_helper_cap",
+      "result": "PASS"
+    },
+    {
+      "name": "operation_budget_and_critic_slot",
+      "result": "PASS"
+    },
+    {
+      "name": "wall_time_budget",
+      "result": "PASS"
+    },
+    {
+      "name": "paused_toy_queue_cap",
+      "result": "PASS"
+    },
+    {
+      "name": "stop_clears_queue",
+      "result": "PASS"
+    },
+    {
+      "name": "toy_returns_to_idle",
+      "result": "PASS"
+    },
+    {
+      "name": "manual_selection",
+      "result": "PASS"
+    },
+    {
+      "name": "scale_change",
+      "result": "PASS"
+    },
+    {
+      "name": "invalid_image_rejected",
+      "result": "PASS"
+    },
+    {
+      "name": "receipt_scope",
+      "result": "PASS"
+    },
+    {
+      "name": "network_disabled_by_policy",
+      "result": "PASS"
+    }
+  ],
+  "method": "Node VM with minimal DOM test doubles; not a browser rendering test",
+  "browser_status": "BLOCKED: Chromium missing; download timed out",
+  "visual_layout": "UNVERIFIED",
+  "pet_artwork": "NOT_INCLUDED",
+  "deployment": "NOT_PERFORMED"
+}

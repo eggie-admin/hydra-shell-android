@@ -1,0 +1,15 @@
+{
+  "milestone": "LUHM_GUI_DEBUG_CANDIDATE_V1",
+  "status": "LOGIC_VERIFIED_BROWSER_PENDING",
+  "entrypoint": "index.html",
+  "preview_scale": 1.5,
+  "real_pet_updated": false,
+  "deployed": false,
+  "files": {
+    "README.md": "3c572cb858c66244fa4ab6d0e93d96ccfd2603ffd01618461011e96c65c0d1f9",
+    "index.html": "4543f8d4fdabcdc388576fc7eaa032af101b1ca658bb6ee6c4366cea5dbe2ee6",
+    "verification.json": "2b90e189c4441fd663b472b5ab8540ae6d5d3c4e0a88dc33fe57a06fc5845381",
+    "verify-logic.cjs": "41a3c1731112acca29dae2053a92c6295cf88ceb43e72ae474025fc2bdd6ae1b",
+    "verify.cjs": "107fe0e059aad6dd0e64c02774c1cb4a21f50fca846f6f023f959fe190328e0f"
+  }
+}
