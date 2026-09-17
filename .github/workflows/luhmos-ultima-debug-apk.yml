@@ -119,6 +119,8 @@ jobs:
           test -f "$PUBLIC"
           test -f "$CROWN"
 
+          # Public release workflow stays a manual, read-only guard and must not
+          # itself export or publish a production APK.
           grep -q 'workflow_dispatch:' "$PUBLIC"
           grep -q 'contents: read' "$PUBLIC"
           grep -q 'LUHMOS_PUBLIC_PUBLISH=OFF' "$PUBLIC"
@@ -127,13 +129,18 @@ jobs:
           ! grep -q -- '--export-release' "$PUBLIC"
           ! grep -q 'contents: write' "$PUBLIC"
 
+          # Crown may compile a signed candidate, but CI itself must neither
+          # silently install it on a device nor publish a GitHub release.
           grep -q 'LuHm Crown Gate APK' "$CROWN"
           grep -q -- '--export-release' "$CROWN"
           grep -q 'EXPECTED_SIGNER_SHA256' "$CROWN"
-          grep -q 'silent_install=false' "$CROWN"
-          grep -q 'public_publish=manual_only' "$CROWN"
           grep -q 'permissions:' "$CROWN"
           grep -q 'contents: read' "$CROWN"
+          ! grep -Eq '(^|[[:space:]])adb[[:space:]]+install([[:space:]]|$)|(^|[[:space:]])pm[[:space:]]+install([[:space:]]|$)' "$CROWN"
+          ! grep -q 'contents: write' "$CROWN"
+          ! grep -Eq 'gh[[:space:]]+release[[:space:]]+create|actions/create-release|softprops/action-gh-release' "$CROWN"
 
+          echo 'SILENT_INSTALL_DISABLED_BY_STRUCTURE'
+          echo 'PUBLIC_PUBLISH_REMAINS_MANUAL'
           echo 'DEBUG_CI_CANNOT_PUBLISH_RELEASE'
           echo 'CROWN_FORGE_ISOLATION_GREEN'

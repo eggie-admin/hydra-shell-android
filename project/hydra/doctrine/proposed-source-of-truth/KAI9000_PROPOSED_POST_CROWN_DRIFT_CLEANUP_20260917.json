@@ -1,0 +1,85 @@
+{
+  "schema": "luhm-os.kai9000.proposed-post-crown-drift-cleanup.v1",
+  "manifest_id": "KAI9000_PROPOSED_POST_CROWN_DRIFT_CLEANUP_20260917",
+  "status": "PROPOSED_CROSSING_REVIEW",
+  "date_local": "2026-09-17",
+  "project": "LuHm OS / KAI 9000 / Project Hydra",
+  "repository": "eggie-admin/hydra-shell-android",
+  "canonical_branch": "luhmos-main",
+  "canonical_base_sha": "e65210ccc189084acc88e692f4beec540ca21d8b",
+  "proposal_branch": "luhmos/proposed-doctrine-drift-cleanup-20260917",
+  "human_authority": "Professor",
+  "scope_authorization": "SAVE_SEAL_AND_BEGIN_SCOPED_DOCTRINE_AUDIT_MUTATION_WORKFLOW",
+  "physical_debug_candidate": {
+    "pr": 66,
+    "head_sha": "b8f90bef5789d2be35e72fe50b7d963681e37c9d",
+    "package": "art.eggiebagelface.luhmos",
+    "version_name": "1.0.8",
+    "version_code": 108,
+    "apk_sha256": "5b99bee92301ef1d836052e7a77e9f9c4a093b3add446c1a06396187930064f4",
+    "candidate_signer_sha256": "33ed8fb40a24dbb553d7b73e02c5744d6b115dae2e62e3c57ad735cc15770e85",
+    "physical_install": "GREEN",
+    "physical_launch": "GREEN",
+    "gui_render": "GREEN",
+    "drive_screenshot_id": "16h-Q3EMQW52RwTkJIbx2J7nDIDi6K2TB",
+    "drive_physical_seal_id": "11Rrc9AfIFO9KIYC2pg_iu0sTIWgSv0hc",
+    "canonical_merge": false,
+    "release_promotion": false,
+    "public_publish": false,
+    "persistent_release_signer_used": false
+  },
+  "drift_repairs": {
+    "agents_md": {
+      "state": "PATCHED_ON_PROPOSAL_BRANCH",
+      "commit": "8545f5e1999dd9ebe66292b44b8edef8cab617ce",
+      "changes": [
+        "crowned Project Hydra source-of-truth is read first",
+        "legacy lumh-os/kai9000 and ultima trees classified as compatibility/history",
+        "historical donor forge pin removed from global Android release authority",
+        "retired Acode/AcodeX/AXS/VNC/WebSocket/8767 bridge classified historical, not required",
+        "fast verification no longer routes new work through ultima paths",
+        "WHISPER/CROSSING/RECKONING and current Crown authority order made explicit"
+      ]
+    },
+    "private_drive_crown": {
+      "state": "SUPERSEDED_APPEND_ONLY",
+      "document_id": "18lvC_M8KB-FeiEAh7sNAKEs5xhg3RmDFKv_-mNL144I",
+      "new_revision_id": "ANLCKQn7Pi5tqNUVb9xVnuXp5LE05XSoZKz6R1wMaMW6w3y85AgclYMTqL_CYIgks5pYhTZcE3nPxeYz1v5ou69k50yTNo80E488F_vDYw",
+      "history_preserved": true,
+      "retired_editor_bridge_active_authority": false
+    },
+    "vercel_external_status": {
+      "state": "EXTERNAL_INTEGRATION_RESIDUE",
+      "canonical_head_status_context": "Vercel",
+      "canonical_head_status": "failure",
+      "observed_target": "Vercel build-rate-limit account surface",
+      "repo_vercel_json": "ABSENT_AT_CANONICAL_HEAD",
+      "repo_dot_vercel_project_json": "ABSENT_AT_CANONICAL_HEAD",
+      "repo_tree_path_named_vercel": "NONE_FOUND_AT_CANONICAL_HEAD",
+      "disposition": "NOT_A_SOURCE_OR_CROWN_FAILURE; ADMIN_SIDE_DISCONNECT_OR_RECONFIGURE_REQUIRED_IF_RETIRING_INTEGRATION"
+    }
+  },
+  "hardening_debt": {
+    "canonical_branch_protected": false,
+    "canonical_crown_commit_signature": "UNSIGNED",
+    "classification": "GOVERNANCE_HARDENING_DEBT_NOT_APK_SIGNING_FAILURE"
+  },
+  "historical_evidence": {
+    "preserve": true,
+    "mass_delete": false,
+    "mass_rename": false,
+    "history_rewrite": false
+  },
+  "authority_boundaries": {
+    "canonical_merge_authorized": false,
+    "public_publish_authorized": false,
+    "release_promotion_authorized": false,
+    "persistent_release_signing_authorized": false,
+    "apk_install_authorized": false,
+    "runtime_stop_authorized": false,
+    "dns_mutation_authorized": false,
+    "billing_mutation_authorized": false
+  },
+  "next_gate": "DRAFT_PR_PLUS_EXACT_HEAD_CI_REVIEW",
+  "result": "SCOPED_DRIFT_MUTATION_STAGED_NOT_PROMOTED"
+}

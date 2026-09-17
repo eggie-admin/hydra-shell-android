@@ -9,7 +9,7 @@ Include:
 - Samsung device/model and Android version when relevant;
 - exact failing workflow/job/step;
 - command output with secrets removed;
-- whether the problem is build, install, runtime, Secure Folder, Shizuku, Ollama, AcodeX/VNC, Godot, or media related.
+- whether the problem is build, install, runtime, Secure Folder, Shizuku, Ollama, legacy local GUI/VNC, Godot, or media related.
 
 ## Fast triage
 Run:

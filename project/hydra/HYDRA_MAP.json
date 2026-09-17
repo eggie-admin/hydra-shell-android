@@ -1,0 +1,31 @@
+{
+  "schema": "luhm-os.project-hydra.map.v1",
+  "status": "SEALED_NAVIGATION_MAP",
+  "human_authority": "Professor",
+  "root": "LuHm OS",
+  "main_branch": "luhmos-main",
+  "project": "Project Hydra",
+  "children": {
+    "Samsung Development": "project/hydra/samsung",
+    "Ubuntu + Debian": "project/hydra/ubuntu-debian",
+    "OpenAI": "project/hydra/openai",
+    "Source of Truth": "project/hydra/source-of-truth",
+    "INBOX / UNSORTED": "project/hydra/inbox-unsorted"
+  },
+  "support_lanes": {
+    "doctrine": "project/hydra/doctrine",
+    "runtime": "project/hydra/runtime",
+    "forge": "project/hydra/forge",
+    "games": "project/hydra/games",
+    "business": "project/hydra/business"
+  },
+  "rules": {
+    "reference_not_copy": true,
+    "capture_first_organize_later_crown_last": true,
+    "source_of_truth_reference_only": true,
+    "secrets_in_repo": false,
+    "public_repo_contains_no_serial_imei_account_or_signing_secret": true,
+    "existing_samsung_path_is_preserved": true
+  },
+  "resume_phrase": "continue KAI 9000 from Project Hydra map"
+}

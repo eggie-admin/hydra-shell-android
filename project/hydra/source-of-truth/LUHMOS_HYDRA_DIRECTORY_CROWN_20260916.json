@@ -1,0 +1,35 @@
+{
+  "schema": "luhm-os.hydra-directory-crown.v1",
+  "seal": "KAI9000_HYDRA_DIRECTORY_CROWN_20260916",
+  "status": "SEALED_SOURCE_OF_TRUTH",
+  "date": "2026-09-16",
+  "human_authority": "Professor",
+  "repository": "eggie-admin/hydra-shell-android",
+  "branch": "luhmos-main",
+  "parent_commit": "9f2cb67bd117c687765e5684eec9d10faee08cb3",
+  "scope": "Project Hydra navigation and source-of-truth layout only",
+  "display_hierarchy": {
+    "LuHm OS": {
+      "Project Hydra": {
+        "Samsung Development": "project/hydra/samsung",
+        "Ubuntu + Debian": "project/hydra/ubuntu-debian",
+        "OpenAI": "project/hydra/openai",
+        "Source of Truth": "project/hydra/source-of-truth",
+        "INBOX / UNSORTED": "project/hydra/inbox-unsorted"
+      }
+    }
+  },
+  "rules": [
+    "reference_not_copy",
+    "capture_first_organize_later_crown_last",
+    "no_destructive_reorganization",
+    "private_hardware_and_private_doctrine_stay_in_owner_only_drive",
+    "no_serial_imei_account_signing_or_api_secrets_in_git",
+    "this_seal_does_not_promote_an_apk_release_or_close_physical_device_gates"
+  ],
+  "remote_authority": {
+    "software_lineage": "GitHub luhmos-main",
+    "recovery_and_private_doctrine": "owner-only Google Drive source-of-truth"
+  },
+  "resume_phrase": "continue KAI 9000 from Project Hydra directory crown"
+}
