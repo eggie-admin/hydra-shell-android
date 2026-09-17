@@ -88,9 +88,19 @@ jobs:
           grep -q 'CROSSING / AMBER' lumh-os/kai9000/AI_MAGIC_DOCTRINE.md
           grep -q 'RECKONING / RED' lumh-os/kai9000/AI_MAGIC_DOCTRINE.md
           grep -q 'ULTIMA.*historical compatibility' lumh-os/kai9000/AI_MAGIC_DOCTRINE.md
-          grep -q 'Canonical integration branch: `luhmos-main`' .github/copilot-instructions.md
+          grep -q 'canonical integration branch is `luhmos-main`' .github/copilot-instructions.md
           grep -q 'SOURCE IMPLEMENTATION CANDIDATE' docs/LUHM_MODULAR_SPRITE_COCKPIT.md
           grep -q 'final source-of-truth promotion' docs/LUHM_CROWN_GATE.md
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('project/hydra/source-of-truth/KAI9000_SEAL_OF_TRUTH_CROWN_20260917.json')
+          d=json.loads(p.read_text(encoding='utf-8'))
+          assert d['status']=='SEALED_SOURCE_OF_TRUTH'
+          assert d['canonical_branch']=='luhmos-main'
+          assert d['human_authority']=='Professor'
+          assert d['result']=='CROWNED_AND_SEALED'
+          PY
 
       - name: Verify seal candidate when present
         shell: bash
