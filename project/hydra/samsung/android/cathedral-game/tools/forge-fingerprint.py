@@ -42,11 +42,19 @@ def os_release() -> dict[str, str]:
     return result
 
 
+def find_repo_root(start: Path) -> Path:
+    for candidate in [start, *start.parents]:
+        if (candidate / ".github/workflows").is_dir() and (candidate / "package.json").is_file():
+            return candidate
+    raise SystemExit("FORGE_FINGERPRINT_RED: repository root not found")
+
+
 def main() -> int:
     if len(sys.argv) != 3:
         raise SystemExit("usage: forge-fingerprint.py GAME_ROOT OUTPUT_JSON")
 
     game = Path(sys.argv[1]).resolve()
+    repo = find_repo_root(game)
     output = Path(sys.argv[2]).resolve()
     lock_path = game / "forge/forge-lock.json"
     lock = json.loads(lock_path.read_text(encoding="utf-8"))
@@ -58,6 +66,10 @@ def main() -> int:
         "vendor_catalog": game / "vendor/vendor-catalog.json",
         "python_manifest": game / "python/pyproject.toml",
         "java_manifest": game / "java/build.gradle.kts",
+        "npm_manifest": repo / "package.json",
+        "npm_lock": repo / "package-lock.json",
+        "npm_wizard": repo / "tools/luhm-compile-wizard.mjs",
+        "npm_wizard_test": repo / "tools/luhm-compile-wizard.test.mjs",
     }
     digests = {name: sha256(path) for name, path in bound_files.items()}
     contract_material = json.dumps({"lock": lock, "bound_file_sha256": digests}, sort_keys=True, separators=(",", ":")).encode()
@@ -84,6 +96,7 @@ def main() -> int:
             "java": command("java", "-version"),
             "javac": command("javac", "-version"),
             "node": command("node", "--version"),
+            "npm": command("npm", "--version"),
             "git": command("git", "--version"),
             "bash": command("bash", "--version"),
             "tar": command("tar", "--version"),
