@@ -4,7 +4,7 @@ applyTo: "project/hydra/**,tools/**,.github/workflows/**,.github/agents/**,.gith
 
 # Project Hydra enterprise operating instructions
 
-Treat `project/hydra/runtime/enterprise.policy.json` as a proposed control contract subordinate to Crowned source-of-truth until explicitly promoted.
+Treat `project/hydra/runtime/enterprise.policy.json` as the active canonical enterprise operating contract, subordinate to the newest applicable Crowned source-of-truth.
 
 For enterprise-directed work:
 

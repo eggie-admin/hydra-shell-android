@@ -1,6 +1,6 @@
 # Project Hydra Enterprise Operating Model
 
-Status: **PROPOSED / NOT CROWNED**
+Status: **CROWNED SOURCE GOVERNANCE / ENTERPRISE FULL-GREEN GATES STILL OPEN**
 
 This is an enterprise-style operating target for Project Hydra. It is not a compliance certification or regulatory attestation.
 
@@ -75,7 +75,7 @@ No helper, model consensus, workflow, or document grants promotion authority.
 
 ## Current known gaps
 
-At proposal creation, canonical `luhmos-main` is not protected by a GitHub branch protection rule/ruleset. Runtime benchmark proof, final-candidate SBOM/provenance binding, backup/restore drill evidence, and persistent release signing remain open gates.
+At Crown promotion, no repository ruleset was observed for canonical `luhmos-main`; branch-protection visibility remains limited by integration permissions. Runtime benchmark proof, final-candidate SBOM/provenance binding, backup/restore drill evidence, and persistent release signing remain open gates.
 
 ## Promotion boundary
 
