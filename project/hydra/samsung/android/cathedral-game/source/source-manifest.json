@@ -13,6 +13,7 @@
     "modular-cockpit.css",
     "apk-install-gui.css",
     "apk-install-gui.js",
+    "enterprise-distribution.js",
     "update-channel.json"
   ],
   "templates": [
@@ -38,7 +39,9 @@
       "modular-cockpit.css",
       "apk-install-gui.css",
       "apk-install-gui.js",
+      "enterprise-distribution.js",
       "update-channel.json",
+      "distribution",
       "tests",
       "source",
       "vendor",
@@ -69,6 +72,10 @@
     "secrets_may_be_committed": false,
     "forge_actions_must_be_immutable": true,
     "forge_contract_fingerprint_required": true,
-    "forge_cache_restore_exact_key_only": true
+    "forge_cache_restore_exact_key_only": true,
+    "runtime_updates_from_github_releases_only": true,
+    "runtime_update_manifest_sha256_required": true,
+    "local_backend_public_fallback": false,
+    "install_uninstall_require_android_user_confirmation": true
   }
 }
