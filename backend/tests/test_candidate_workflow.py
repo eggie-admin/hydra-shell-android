@@ -1,5 +1,4 @@
 import importlib
-import os
 import sys
 from pathlib import Path
 
@@ -38,7 +37,12 @@ def test_stage_then_explicit_approve_executes(monkeypatch, tmp_path):
     )
     assert staged.status_code == 200
     mutation = staged.get_json()["mutation"]
+    assert "approval_token" in mutation
     assert target.read_text(encoding="utf-8") == "before\n"
+
+    status = client.get(f"/v1/mutations/{mutation['stage_id']}")
+    assert status.status_code == 200
+    assert "approval_token" not in status.get_json()["mutation"]
 
     blocked = client.post(
         f"/v1/mutations/{mutation['stage_id']}/execute",
