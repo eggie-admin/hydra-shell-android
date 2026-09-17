@@ -1,6 +1,6 @@
 # LuHm OS / KAI 9000 Copilot Instructions
 
-Status: CURRENT ACTIVE INSTRUCTIONS · 2026-09-16
+Status: CURRENT ACTIVE INSTRUCTIONS · 2026-09-17
 
 ## Mission
 
@@ -118,6 +118,43 @@ Project reasoning and source-of-truth reconciliation remain **ChatGPT/OpenAI pri
 Use deterministic local code/policy first for validation. Ollama/local inference is optional for bounded privacy/offline/latency/cost tasks when adequate. Local inference does not silently replace the project-level OpenAI doctrine, and remote secondary providers do not silently replace OpenAI either.
 
 No provider consensus creates authority. No silent cross-provider failover.
+
+## Fast Lum agent mesh
+
+Use `project/hydra/doctrine/proposed-source-of-truth/KAI9000_PROPOSED_FAST_LUM_AGENT_MESH_20260917.json` as the proposal contract for agent routing. It is subordinate to crowned source-of-truth and is not itself authority until promoted.
+
+Latency doctrine:
+- resolve authority once, then pass compact source references instead of repeatedly re-reading the repository;
+- use the fast/front-door OpenAI model configured by the active AI stack for ordinary chat, classification, schema filling, diff review, test triage, and proof summaries;
+- escalate only difficult architecture, security, release, or multi-file debugging to the deep model;
+- prefer structured JSON outputs for helper handoffs so the parent agent does not have to reinterpret prose;
+- parallelize **read-only** helper work only; never parallelize competing writes to the same file or authority decision;
+- mini helpers are read/search/audit specialists. They may return evidence and proposals but cannot approve, mutate, merge, sign, install, publish, deploy, or crown;
+- one parent Lum owns the final plan and the single write sequence.
+
+Paid-product boundary:
+- ChatGPT/Codex paid-plan access is an operator productivity lane only. It does not become an APK credential or API entitlement.
+- Programmatic in-app OpenAI traffic uses separately configured OpenAI API billing and server-side credentials.
+- Never place a ChatGPT session token, OpenAI API key, GitHub token, or billing secret in Git, agent instructions, prompts, APK assets, HTML, or proof receipts.
+
+OpenAI agent-runtime boundary:
+- direct Responses API is preferred when LuHm owns the loop and only needs short structured turns;
+- OpenAI Agents SDK may be used when guardrails, handoffs, sessions, or human-in-the-loop orchestration materially reduce application complexity;
+- tool/agent guardrails supplement but never replace the Project Hydra human approval gate;
+- tracing must be explicitly configured and must not leak secrets, staged source content, or private user data into logs or proof artifacts.
+
+GitHub/Copilot integration:
+- `.github/copilot-instructions.md` carries repo-wide law;
+- `.github/instructions/*.instructions.md` carries path-specific fast-workflow rules;
+- `.github/agents/*.md` defines bounded Copilot specialists;
+- `AGENTS.md` carries cross-agent standing rules;
+- `skills/**/SKILL.md` carries task workflows;
+- Copilot model selection is not treated as Project Hydra authority and must not be hard-coded to an unsupported provider/model identifier.
+
+Mutation proof rule:
+- any successful bounded file mutation must be able to emit one SHA-256-bound proof payload rendered consistently as JSON, scriptless HTML, and a chat-safe proof block;
+- proof artifacts must exclude approval tokens, secrets, and staged file contents;
+- a helper-agent summary is never a substitute for executed CI or device evidence.
 
 ## Chrome harness rule
 
