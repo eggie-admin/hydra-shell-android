@@ -1,10 +1,14 @@
 /* LUHMOS_APK_INSTALL_GUI_V1
+ * LUHM_AVATAR_SOURCE_OF_TRUTH_V1
  * Explicit-user Android APK install/update bridge for the packaged LuHm OS WebView.
+ * The authoritative LuHm avatar is packaged locally as lum-avatar-actual-animated.mp4.
  * No background checks. No silent install. No shell. No self-approval.
  */
 (()=>{'use strict';
 const APP_HOST='appassets.androidplatform.net';
 const EVENT='app.update.install';
+const LUM_AVATAR_LOCAL='lum-avatar-actual-animated.mp4';
+const LUM_AVATAR_SOURCE_SEAL='KAI9000_LUM_AVATAR_ACTUAL_ANIMATED_GREEN_20260906';
 const TERMINAL=new Set(['app.update.success','app.update.error','app.update.permission.required']);
 function normalizeUrl(value){
   const raw=String(value||'').trim();
@@ -38,9 +42,39 @@ function parseNativeEvent(data){
     return {type:msg.type,message:String(msg.payload?.message||msg.type),terminal:TERMINAL.has(msg.type)};
   }catch{return null}
 }
-const core=Object.freeze({APP_HOST,EVENT,normalizeUrl,makeInstallMessage,nativeAvailable,postInstall,parseNativeEvent});
+const core=Object.freeze({APP_HOST,EVENT,LUM_AVATAR_LOCAL,LUM_AVATAR_SOURCE_SEAL,normalizeUrl,makeInstallMessage,nativeAvailable,postInstall,parseNativeEvent});
 globalThis.LuHmApkInstallGuiCore=core;
 if(globalThis.__LUHM_TEST__)return;
+
+function mountLumAvatar(){
+  const host=document.querySelector('.avatar');
+  const fallback=document.getElementById('oni');
+  if(!host || host.querySelector('.luhm-avatar-video'))return;
+  const video=document.createElement('video');
+  video.className='luhm-avatar-video';
+  video.src=LUM_AVATAR_LOCAL;
+  video.muted=true;
+  video.loop=true;
+  video.autoplay=true;
+  video.playsInline=true;
+  video.preload='auto';
+  video.disablePictureInPicture=true;
+  video.setAttribute('aria-label','LuHm animated avatar');
+  video.setAttribute('data-source-seal',LUM_AVATAR_SOURCE_SEAL);
+  const reduced=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches===true;
+  video.addEventListener('canplay',()=>{
+    fallback?.classList.add('luhm-avatar-fallback-hidden');
+    host.classList.add('luhm-avatar-ready');
+    if(reduced){video.loop=false;video.currentTime=Math.min(.125,video.duration||.125);video.pause();return}
+    video.play().catch(()=>{});
+  },{once:true});
+  video.addEventListener('error',()=>{
+    host.classList.remove('luhm-avatar-ready');
+    fallback?.classList.remove('luhm-avatar-fallback-hidden');
+    video.remove();
+  },{once:true});
+  host.append(video);
+}
 
 function mount(){
   if(document.getElementById('luhmApkInstallDock'))return;
@@ -88,5 +122,6 @@ function mount(){
     setBusy(!msg.terminal && msg.type!=='app.update.confirmation');
   });
 }
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
+function boot(){mountLumAvatar();mount()}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
