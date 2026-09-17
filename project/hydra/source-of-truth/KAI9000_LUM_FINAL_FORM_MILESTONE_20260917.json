@@ -103,7 +103,7 @@
     "deployment": false,
     "dns_mutation": false,
     "billing_mutation": false,
-    "vercel_rate_limit_residue": "NONBLOCKING_EXTERNAL_INTEGRATION_DEBT"
+    "retired_external_host_rate_limit_residue": "NONBLOCKING_EXTERNAL_INTEGRATION_DEBT"
   },
   "historical_evidence": {
     "candidate_manifest_preserved_in_proposed_source_of_truth": true,
