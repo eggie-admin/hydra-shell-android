@@ -5,6 +5,7 @@
   "entrypoint": "index.html",
   "default_vendor_profile": "minimal",
   "toolchain_manifest": "source/toolchain-manifest.yaml",
+  "forge_lock": "forge/forge-lock.json",
   "runtime_assets": [
     "index.html",
     "final-form.css",
@@ -26,15 +27,8 @@
   "vendor_catalog": "vendor/vendor-catalog.json",
   "vendor_profiles": {
     "minimal": [],
-    "cockpit": [
-      "jquery",
-      "jquery-ui"
-    ],
-    "3d": [
-      "jquery",
-      "jquery-ui",
-      "babylonjs-core"
-    ]
+    "cockpit": ["jquery", "jquery-ui"],
+    "3d": ["jquery", "jquery-ui", "babylonjs-core"]
   },
   "bundle": {
     "include": [
@@ -51,7 +45,8 @@
       "tools",
       "config",
       "python",
-      "java"
+      "java",
+      "forge"
     ],
     "exclude_globs": [
       "**/__pycache__/**",
@@ -71,6 +66,9 @@
     "generated_build_output_is_source": false,
     "ai_provider_calls_are_advisory_by_default": true,
     "ai_output_may_execute_shell_directly": false,
-    "secrets_may_be_committed": false
+    "secrets_may_be_committed": false,
+    "forge_actions_must_be_immutable": true,
+    "forge_contract_fingerprint_required": true,
+    "forge_cache_restore_exact_key_only": true
   }
 }
