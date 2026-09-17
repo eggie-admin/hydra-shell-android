@@ -1,6 +1,7 @@
 /* LUHM_OS_ENTERPRISE_DISTRIBUTION_V1
  * Branded install/update/uninstall + local-first frontend/backend harness.
  * Published GitHub Releases are the only remote update authority.
+ * Optional LAN origins belong in protected local operator config, never public source.
  */
 (()=>{'use strict';
 const REPO='eggie-admin/hydra-shell-android';
@@ -13,7 +14,6 @@ const PROD_PACKAGE='art.eggiebagelface.luhmos';
 const UPDATE_EVENT='app.update.install';
 const UNINSTALL_EVENT='app.uninstall.open';
 const LOCAL_BACKENDS=Object.freeze([
-  'https://lum.eggiebagelface.lan',
   'http://127.0.0.1',
   'http://localhost'
 ]);
@@ -124,7 +124,7 @@ function mount(){
   document.getElementById('luhmOpenReleases').onclick=()=>globalThis.open(RELEASES_PAGE,'_blank','noopener,noreferrer');
   document.getElementById('luhmCheckRelease').onclick=async()=>{try{status.textContent='Checking published GitHub Releases…';plan=await resolveInstallPlan(document.getElementById('luhmReleaseChannel').value);apply.disabled=false;status.textContent=`${plan.tag} ready · ${plan.packageId} · SHA ${plan.apkSha256.slice(0,12)}…`;}catch(e){plan=null;apply.disabled=true;status.textContent=e.message}};
   apply.onclick=()=>{const r=postUpdate(window,plan);status.textContent=r.ok?'Release handed to native verifier. Android confirmation remains required.':r.error};
-  document.getElementById('luhmProbeLocal').onclick=async()=>{status.textContent='Probing approved local backends…';const r=await probeLocalHarness();status.textContent=r.ok?`LOCAL GREEN · ${r.origin}`:'LOCAL OFFLINE · packaged frontend remains available.'};
+  document.getElementById('luhmProbeLocal').onclick=async()=>{status.textContent='Probing local loopback harness…';const r=await probeLocalHarness();status.textContent=r.ok?`LOCAL GREEN · ${r.origin}`:'LOCAL OFFLINE · packaged frontend remains available.'};
   document.getElementById('luhmUninstall').onclick=()=>{const r=postUninstall(window);status.textContent=r.ok?'Opening Android removal confirmation…':r.error};
 }
 const core=Object.freeze({REPO,RELEASES_PAGE,RELEASES_API,ASSET_PREFIX,MANIFEST_ASSET,CANDIDATE_PACKAGE,PROD_PACKAGE,LOCAL_BACKENDS,CHANNELS,tagMatchesChannel,trustedReleaseAssetUrl,validSha256,validPackage,pickManifestAsset,pickApkAsset,resolveRelease,resolveInstallPlan,bridgeAvailable,postUpdate,postUninstall,probeLocalHarness,retireLegacyInstallDock});
