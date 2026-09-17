@@ -1,0 +1,73 @@
+name: LuHm Source Vendor Gate
+
+on:
+  pull_request:
+    branches:
+      - luhmos/public-private-boundary-20260917
+    paths:
+      - 'project/hydra/samsung/android/cathedral-game/**'
+      - '.github/workflows/luhmos-source-vendor-gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: luhmos-source-vendor-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  GAME: project/hydra/samsung/android/cathedral-game
+  SOURCE_BUNDLE: luhmos-cathedral-source-1.0.10.tar.gz
+
+jobs:
+  source-vendor:
+    name: Validate source and vendor boundary
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout proposal
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Validate reproducible source contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$GAME/tools/validate-source.py" "$GAME"
+
+      - name: Build deterministic source bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/source
+          python3 "$GAME/tools/package-source.py" "$GAME" "build/source/$SOURCE_BUNDLE"
+          tar -tzf "build/source/$SOURCE_BUNDLE" > build/source/source-contents.txt
+          sha256sum "build/source/$SOURCE_BUNDLE" | tee build/source/source-sha256.txt
+          grep -q 'luhmos-cathedral-source/source/source-manifest.json' build/source/source-contents.txt
+          grep -q 'luhmos-cathedral-source/vendor/vendor-catalog.json' build/source/source-contents.txt
+          grep -q 'luhmos-cathedral-source/tools/validate-source.py' build/source/source-contents.txt
+          cat > build/source/SOURCE_VENDOR_RECEIPT.txt <<EOF
+          LuHm OS Cathedral source/vendor candidate
+          Commit: ${GITHUB_SHA}
+          Runtime vendor CDN: FORBIDDEN
+          Default vendor profile: minimal
+          Optional catalog: jQuery 4.0.0; jQuery UI 1.14.2; Babylon.js ES6 Core 9.26.1
+          Vendor bytes: NOT ENABLED / NOT PACKAGED unless hash-locked in vendor-catalog.json
+          Source bundle: ${SOURCE_BUNDLE}
+          Authority: candidate only; no merge, deploy, Crown or seal implied.
+          EOF
+          echo 'LUHM_SOURCE_BUNDLE_GATE_GREEN'
+
+      - name: Upload source bundle and proof
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: luhmos-source-${{ github.run_number }}
+          path: |
+            build/source/${{ env.SOURCE_BUNDLE }}
+            build/source/source-sha256.txt
+            build/source/source-contents.txt
+            build/source/SOURCE_VENDOR_RECEIPT.txt
+          if-no-files-found: error
+          retention-days: 14
