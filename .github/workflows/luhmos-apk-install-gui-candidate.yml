@@ -92,7 +92,37 @@ jobs:
           grep -q 'signing certificate does not match installed LuHm OS' "$PLUGIN"
           grep -q 'Rejected downgrade' "$PLUGIN"
           grep -q 'android.permission.REQUEST_INSTALL_PACKAGES' "$MANIFEST"
+          ! grep -q 'com.termux' "$PLUGIN"
           echo 'LUHMOS_APK_INSTALL_GUI_SOURCE_GREEN'
+
+      - name: Strip retired Termux capability from candidate forge
+        shell: bash
+        run: |
+          set -euo pipefail
+          MANIFEST='_forge/luhmos-android/godot/android-plugin/plugin/src/main/AndroidManifest.xml'
+          python3 - "$MANIFEST" <<'PY'
+          from pathlib import Path
+          import sys
+          import xml.etree.ElementTree as ET
+
+          path = Path(sys.argv[1])
+          tree = ET.parse(path)
+          root = tree.getroot()
+          android_name = '{http://schemas.android.com/apk/res/android}name'
+
+          for parent in root.iter():
+              for child in list(parent):
+                  name = child.attrib.get(android_name, '')
+                  if name in {'com.termux.permission.RUN_COMMAND', 'com.termux'}:
+                      parent.remove(child)
+
+          ET.register_namespace('android', 'http://schemas.android.com/apk/res/android')
+          tree.write(path, encoding='utf-8', xml_declaration=True)
+          PY
+          grep -q 'android.permission.REQUEST_INSTALL_PACKAGES' "$MANIFEST"
+          ! grep -q 'com.termux.permission.RUN_COMMAND' "$MANIFEST"
+          ! grep -q 'package android:name="com.termux"' "$MANIFEST"
+          echo 'LUHMOS_RETIRED_TERMUX_CAPABILITY_STRIPPED'
 
       - name: Install Android SDK 36
         shell: bash
@@ -246,6 +276,7 @@ jobs:
           "$BT/apksigner" verify --verbose --print-certs "$APK" | tee build/android/signature.txt
           "$BT/zipalign" -c -P 16 -v 4 "$APK" | tee build/android/zipalign.txt
           "$BT/aapt" dump badging "$APK" | tee build/android/badging.txt
+          "$BT/aapt" dump permissions "$APK" | tee build/android/permissions.txt
           "$BT/aapt" dump xmltree "$APK" AndroidManifest.xml | tee build/android/manifest.txt
           unzip -l "$APK" | tee build/android/contents.txt
           sha256sum "$APK" | tee build/android/sha256.txt
@@ -254,7 +285,9 @@ jobs:
           grep -q "versionName='${VERSION_NAME}'" build/android/badging.txt
           grep -q "targetSdkVersion:'36'" build/android/badging.txt
           grep -q "native-code: 'arm64-v8a'" build/android/badging.txt
-          grep -q 'android.permission.REQUEST_INSTALL_PACKAGES' build/android/manifest.txt
+          grep -q 'android.permission.REQUEST_INSTALL_PACKAGES' build/android/permissions.txt
+          ! grep -q 'com.termux' build/android/permissions.txt
+          ! grep -q 'com.termux' build/android/manifest.txt
           grep -q 'assets/cms/apk-install-gui.js' build/android/contents.txt
           grep -q 'assets/cms/apk-install-gui.css' build/android/contents.txt
           grep -Eq 'Verified using v(2|3|4) scheme .*: true' build/android/signature.txt
@@ -264,6 +297,7 @@ jobs:
           - GUI/native bridge: compiled and verified
           - native verifier: package + signer + downgrade checks present
           - Android user confirmation: mandatory
+          - retired Termux RUN_COMMAND capability: ABSENT
           - signer: ephemeral CI candidate signer
           - persistent release signing: NOT_TRIGGERED
           - physical install/update: NOT_TRIGGERED
@@ -282,6 +316,7 @@ jobs:
             build/android/signature.txt
             build/android/zipalign.txt
             build/android/badging.txt
+            build/android/permissions.txt
             build/android/manifest.txt
             build/android/contents.txt
             build/android/INSTALL_AUTHORITY_GATE.txt
