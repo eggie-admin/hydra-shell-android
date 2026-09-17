@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 
 const source = fs.readFileSync(new URL('../enterprise-distribution.js', import.meta.url), 'utf8');
-const sandbox = { URL, console, setTimeout, clearTimeout, globalThis: null, __LUHM_TEST__: true, fetch: async()=>{ throw new Error('unexpected network'); } };
+const sandbox = { URL, console, setTimeout, clearTimeout, AbortController, globalThis: null, __LUHM_TEST__: true, fetch: async()=>{ throw new Error('unexpected network'); } };
 sandbox.globalThis = sandbox;
 vm.createContext(sandbox);
 vm.runInContext(source, sandbox, { filename: 'enterprise-distribution.js' });
