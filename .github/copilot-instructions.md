@@ -119,6 +119,55 @@ Use deterministic local code/policy first for validation. Ollama/local inference
 
 No provider consensus creates authority. No silent cross-provider failover.
 
+## System-wide latency law
+
+Optimize wall-clock time without weakening correctness, provenance, or human approval:
+
+- resolve branch/head/crowned authority once per task;
+- reuse exact `path@sha` references and do not re-fetch unchanged evidence;
+- batch independent remote reads when tooling supports it;
+- parallelize read/search/audit work only;
+- serialize writes, approval decisions, and proof generation;
+- prefer deterministic local parsing, hashing, schema checks, and allowlist checks over model calls;
+- run focused changed-file tests before broad CI;
+- keep helper packets compact and structured;
+- use the fast parent route for ordinary reasoning/coding/triage;
+- escalate to the deep route only on explicit complexity triggers;
+- use on-device helpers only for bounded tasks that do not need fresh external data and only after target-device benchmarking shows they are useful.
+
+Preferred latency ladder:
+
+```text
+DETERMINISTIC_LOCAL
+→ ON_DEVICE_BOUNDED_HELPER_IF_PROVEN
+→ OPENAI_FAST_PARENT
+→ OPENAI_DEEP_ON_COMPLEXITY_TRIGGER
+```
+
+Complexity triggers include difficult security/release audits, architecture redesign, conflicting source-of-truth evidence, subtle multi-file debugging, and a failed fast-route attempt with fresh evidence.
+
+Do not call a path faster because it is local, smaller, or newer. Runtime speed claims require comparable target-device measurements.
+
+## Google AI Edge Gallery evaluation lane
+
+Google AI Edge Gallery is an experimental external on-device AI sandbox and benchmark harness. It may be used to evaluate approved local models and helper skills, but it is not LuHm OS source authority, a production dependency, a public deployment channel, or a mutation authority.
+
+Use it for:
+- local/offline model evaluation;
+- TTFT/startup latency, decode throughput, memory, and thermal measurements;
+- read-only helper-skill prototypes;
+- determining whether a narrow task can move from a remote round trip to a local helper.
+
+Hard boundaries:
+- no automatic shell or privileged Android actions;
+- no silent install or public publish;
+- no API keys, signing material, private account tokens, or sensitive user data in Gallery skills, model assets, logs, or benchmark receipts;
+- no direct canonical writes, self-approval, release, billing, DNS, signing, or crown authority;
+- do not vendor upstream Gallery application code into the LuHm OS APK merely because the upstream project is open source;
+- any direct LiteRT or other on-device runtime integration into LuHm OS requires a separate implementation proposal, CI, licensing review, and physical-device proof.
+
+Path-specific rules live in `.github/instructions/google-ai-edge-gallery.instructions.md`, workflow guidance in `skills/google-ai-edge-gallery/SKILL.md`, and the current proposal in `project/hydra/doctrine/proposed-source-of-truth/KAI9000_PROPOSED_GOOGLE_AI_EDGE_LOW_LATENCY_DOCTRINE_20260917.json`.
+
 ## Fast Lum agent mesh
 
 Use `project/hydra/doctrine/proposed-source-of-truth/KAI9000_PROPOSED_FAST_LUM_AGENT_MESH_20260917.json` as the proposal contract for agent routing. It is subordinate to crowned source-of-truth and is not itself authority until promoted.
