@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schema_id": "luhm-os.proposed-retired-editor-bridge-purge-stale-artifact-audit.v1",
+  "manifest_id": "KAI9000_PROPOSED_LEGACY_EDITOR_BRIDGE_PURGE_STALE_ARTIFACT_AUDIT_20260916",
+  "title": "KAI9000 Proposed Seal-of-Truth Legacy Editor Bridge Purge + Stale Artifact Audit",
+  "state": "PROPOSED",
+  "seal_status": "PROPOSED_NOT_CROWNED",
+  "generated_local": "2026-09-16T23:00:42.058828-04:00",
+  "generated_utc": "2026-09-17T03:00:42.058828Z",
+  "project": "LuHm OS / KAI 9000 / Project Hydra",
+  "authority": {
+    "human_final_authority": "Professor",
+    "automatic_crown": false,
+    "automatic_merge": false,
+    "automatic_publish": false,
+    "proposal_may_not_self_promote": true
+  },
+  "source_of_truth": {
+    "repository": "eggie-admin/hydra-shell-android",
+    "canonical_branch": "luhmos-main",
+    "observed_canonical_head": "0cba853e2b6493148666714b0726ffaddc09d3f6",
+    "proposal_branch": "luhmos/proposed-legacy-editor-bridge-purge-20260916",
+    "proposal_guard_commit": "30e37a94bcfcd5a5e8347766d10623dad2c6a817",
+    "active_doctrine_path": "project/hydra/doctrine/",
+    "proposal_path": "project/hydra/doctrine/proposed-source-of-truth/",
+    "private_crown_document_id": "18lvC_M8KB-FeiEAh7sNAKEs5xhg3RmDFKv_-mNL144I",
+    "drive_proposed_lane": {
+      "name": "PROPOSED_SOURCE_OF_TRUTH_MUTATION",
+      "folder_id": "144bWMydQzPJCBIz2HtYuvJzaV6kFGElp"
+    }
+  },
+  "mutation": {
+    "kind": "SEAL_OF_TRUTH_DOCTRINE_ACTIVE_DEPENDENCY_PURGE",
+    "mode": "STAGE_ONLY",
+    "target_component_id": "legacy_editor_bridge_8767",
+    "intent": "Remove the retired external editor bridge from active doctrine authority and prevent reintroduction as a required runtime, cockpit, editing, admin, or source-of-truth dependency.",
+    "active_doctrine_only": true,
+    "preserve_historical_evidence": true,
+    "rewrite_historical_seals": false,
+    "delete_historical_artifacts": false,
+    "stop_runtime_processes": false,
+    "compile": false,
+    "sign": false,
+    "install": false,
+    "publish": false,
+    "crown": false
+  },
+  "observed_state": {
+    "repo_doctrine_scan": {
+      "result": "GREEN_NO_LIVE_IDENTIFIER_IN_PROJECT_HYDRA_DOCTRINE",
+      "files_checked": [
+        "project/hydra/doctrine/KERNEL_HARDWARE_BUILD_SOURCE_BOUNDARY_20260916.json",
+        "project/hydra/doctrine/LUHM_MODULAR_SPRITE_COCKPIT_SOURCE_SEAL_CANDIDATE_20260916.json",
+        "project/hydra/doctrine/STALE_ARTIFACT_AUDIT_REGISTRY_20260916.json",
+        "project/hydra/doctrine/directory-structure.json",
+        "project/hydra/doctrine/proposed-source-of-truth/KAI9000_PROPOSED_SEAL_DOCTRINE_MUTATION_AUDIT_20260916.json",
+        "project/hydra/doctrine/proposed-source-of-truth/KAI9000_PROPOSED_SEAL_OF_TRUTH_DOCTRINE_MUTATION_STALE_ARTIFACT_AUDIT_20260916.json"
+      ]
+    },
+    "runtime_note": {
+      "result": "OBSERVED_RUNNING_BUT_NOT_GRANTED_DOCTRINE_AUTHORITY",
+      "component": "legacy editor bridge process",
+      "endpoint": "loopback:8767",
+      "rule": "A running process is runtime evidence only. It does not become canonical doctrine merely because it is alive."
+    },
+    "current_private_crown_drift": {
+      "result": "ACTIVE_TEXT_DRIFT_FOUND",
+      "document_id": "18lvC_M8KB-FeiEAh7sNAKEs5xhg3RmDFKv_-mNL144I",
+      "proposed_replacements": [
+        "Secure Folder remains a protected cockpit/client boundary without a required external editor-bridge dependency.",
+        "Use a generic protected editor surface for long source editing and Termux for command/status/smoke-test work.",
+        "ADMIN realm wording must not name or require the retired editor bridge.",
+        "Any active 8767 bridge claim is stale unless reintroduced by fresh proof plus an explicit superseding mutation."
+      ]
+    }
+  },
+  "stale_artifact_audit": {
+    "required_passes": 10,
+    "doctrine": [
+      "Stale does not equal delete.",
+      "Current operational claims are separable from historical evidence.",
+      "A running legacy process does not grant doctrine authority.",
+      "Historical seals, hashes, signatures, provenance, CI receipts, and rollback coordinates are preserved.",
+      "No current doctrine may depend on the retired editor bridge.",
+      "Reintroduction requires fresh evidence and explicit human-approved mutation."
+    ],
+    "repo_surfaces_outside_active_doctrine_requiring_cleanup_or_reclassification": [
+      {"path": "README.md", "classification": "ACTIVE_DRIFTED"},
+      {"path": "SUPPORT.md", "classification": "DOC_DRIFT"},
+      {"path": "tools/hydra-full-green.sh", "classification": "ACTIVE_EXECUTABLE_DRIFT"},
+      {"path": "backend/server.py", "classification": "ACTIVE_EXECUTABLE_DRIFT"},
+      {"path": "backend/web/index.html", "classification": "ACTIVE_UI_DRIFT"},
+      {"path": "docs/HYDRA_PROFESSOR_GREEN_FULL_GREEN.md", "classification": "HISTORICAL_OR_DOC_DRIFT"},
+      {"path": "docs/LUHM_OS_KAI9000_OVERVIEW.md", "classification": "HISTORICAL_OR_DOC_DRIFT"},
+      {"path": "docs/KAI9000_APK_ARCHITECTURE_HARDENING_10PASS_20260907.md", "classification": "HISTORICAL_EVIDENCE"},
+      {"path": "docs/KAI9000_ANDROID_10PASS_AUDIT_20260906.md", "classification": "HISTORICAL_EVIDENCE"},
+      {"path": "integrations/cloudflare/ultima-crown.manifest.json", "classification": "HISTORICAL_OR_COMPATIBILITY"}
+    ],
+    "historical_drive_evidence_preserve_by_id": [
+      "1MzVj1-sSIhRFl_Ansgs0uiIDaV4Mvid4_g6esgbHyUo",
+      "14zcBSKMBODlINAH8vlUqUEqUjWiWp-imNCuAP9q__ME",
+      "1Tm5CscRLtSoKPN_51NLJbsi9A4b518M_oxCyNl4joMM",
+      "17l5VTsM6VGkf4jG3dLy2gDWCbmFR2d1p8tMMAeswpVo",
+      "14FzZojl-ZpbSDVb_EzWBwdgXzMdewHjy5kf0ZKTLePA",
+      "1YbqPrPAup_bzma0zkZrRijQ4qkvRJOeJbMpZr8l7e-8"
+    ],
+    "classification": [
+      "CURRENT_CANONICAL",
+      "PROPOSED",
+      "ACTIVE_DRIFTED",
+      "ACTIVE_EXECUTABLE_DRIFT",
+      "DOC_DRIFT",
+      "LEGACY_COMPATIBILITY",
+      "HISTORICAL_EVIDENCE",
+      "QUARANTINE_REVIEW",
+      "STALE_BLOCKER",
+      "UNKNOWN"
+    ]
+  },
+  "ten_pass_audit": [
+    {"pass": 1, "gate": "authority_precedence", "result": "GREEN"},
+    {"pass": 2, "gate": "active_doctrine_identifier_scan", "result": "GREEN"},
+    {"pass": 3, "gate": "private_crown_active_text_scan", "result": "AMBER_ACTIVE_DRIFT"},
+    {"pass": 4, "gate": "repo_runtime_and_ui_reference_scan", "result": "AMBER_ACTIVE_DRIFT"},
+    {"pass": 5, "gate": "historical_evidence_preservation", "result": "GREEN"},
+    {"pass": 6, "gate": "live_process_vs_doctrine_authority_separation", "result": "GREEN"},
+    {"pass": 7, "gate": "destructive_cleanup_lock", "result": "GREEN"},
+    {"pass": 8, "gate": "proposal_isolation", "result": "GREEN"},
+    {"pass": 9, "gate": "fresh_reintroduction_gate", "result": "GREEN"},
+    {"pass": 10, "gate": "human_crown_required", "result": "GREEN"}
+  ],
+  "proposed_mutation_sequence": [
+    "Keep project/hydra/doctrine free of active dependency claims for the retired editor bridge.",
+    "Apply the D05 stale-blocker guard in the stale-artifact registry.",
+    "Stage this manifest in the proposed source-of-truth Git path and private Drive proposal lane.",
+    "On explicit crown/promotion, remove current private Crown prose that grants the retired bridge cockpit/editor/admin authority.",
+    "Audit active repo runtime, UI, status, and helper surfaces outside doctrine before deleting or disabling anything.",
+    "Preserve historical seals and provenance without allowing them to outrank current doctrine.",
+    "Do not stop the observed loopback bridge process as part of this doctrine-only mutation."
+  ],
+  "promotion_gate": {
+    "json_valid": true,
+    "proposal_only": true,
+    "active_doctrine_clean": true,
+    "historical_evidence_preserved": true,
+    "runtime_retirement_not_implied": true,
+    "private_crown_text_patch_pending_promotion": true,
+    "automatic_crown": false,
+    "automatic_merge": false,
+    "current_result": "CROWN_REQUIRED_FOR_CANONICAL_PRIVATE_DOCTRINE_REWRITE"
+  },
+  "locks": {
+    "merge_to_luhmos_main": false,
+    "rewrite_historical_seals": false,
+    "delete_historical_artifacts": false,
+    "stop_runtime_service": false,
+    "compile": false,
+    "sign": false,
+    "install": false,
+    "publish": false,
+    "secret_print": false
+  },
+  "integrity": {
+    "algorithm": "SHA-256",
+    "scope": "canonical JSON payload excluding integrity object",
+    "payload_sha256": "3339030d55314334c48da2d2ba548ecbd3ce41c079b9a9d843d68e70289a5fbc"
+  }
+}
