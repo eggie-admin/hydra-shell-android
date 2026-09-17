@@ -48,14 +48,14 @@
       "history_preserved": true,
       "retired_editor_bridge_active_authority": false
     },
-    "vercel_external_status": {
+    "external_integration_status": {
       "state": "EXTERNAL_INTEGRATION_RESIDUE",
-      "canonical_head_status_context": "Vercel",
+      "canonical_head_status_context": "retired external host",
       "canonical_head_status": "failure",
-      "observed_target": "Vercel build-rate-limit account surface",
-      "repo_vercel_json": "ABSENT_AT_CANONICAL_HEAD",
-      "repo_dot_vercel_project_json": "ABSENT_AT_CANONICAL_HEAD",
-      "repo_tree_path_named_vercel": "NONE_FOUND_AT_CANONICAL_HEAD",
+      "observed_target": "retired build-rate-limit account surface",
+      "repo_host_config": "ABSENT_AT_CANONICAL_HEAD",
+      "repo_hidden_host_project_config": "ABSENT_AT_CANONICAL_HEAD",
+      "repo_tree_path_named_for_retired_host": "NONE_FOUND_AT_CANONICAL_HEAD",
       "disposition": "NOT_A_SOURCE_OR_CROWN_FAILURE; ADMIN_SIDE_DISCONNECT_OR_RECONFIGURE_REQUIRED_IF_RETIRING_INTEGRATION"
     }
   },
