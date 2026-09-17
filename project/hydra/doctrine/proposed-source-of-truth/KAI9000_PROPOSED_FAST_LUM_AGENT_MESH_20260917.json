@@ -161,6 +161,14 @@
     "html_external_network_dependencies": false,
     "html_script_execution": false
   },
+  "ci_alignment": {
+    "stale_legacy_doctrine_gate_detected": true,
+    "repaired_workflow": ".github/workflows/luhmos-modular-cockpit-source-gate.yml",
+    "legacy_ai_magic_doctrine_removed_from_active_gate": true,
+    "current_crown_checked_instead": true,
+    "repaired_run_id": 35195817293,
+    "repaired_run_conclusion": "success"
+  },
   "authority_boundaries": {
     "read_and_reason": true,
     "parallel_read_helpers": true,
