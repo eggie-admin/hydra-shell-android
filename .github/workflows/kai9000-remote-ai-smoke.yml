@@ -1,4 +1,4 @@
-name: KAI9000 Remote AI Media Smoke
+name: LuHm OS Remote Assistance Smoke
 
 on:
   workflow_dispatch:
@@ -6,8 +6,12 @@ on:
     paths:
       - "tools/kai9000_remote_smoke.py"
       - "tools/remote_ai_smoke.py"
+      - "tools/remote_assistance_guard.py"
+      - "tools/remote_assistance_bench.py"
       - ".github/workflows/kai9000-remote-ai-smoke.yml"
       - "ultima/ollama-ffmpeg-antenna-v3/**"
+      - "backend/tests/test_remote_ai_router.py"
+      - "backend/tests/test_remote_assistance.py"
       - "docs/API_TRINITY_DOCTRINE.md"
       - "docs/LUHMOS_REMOTE_AI_10PASS_HARDENING.md"
       - "integrations/vendor-apis.manifest.json"
@@ -17,8 +21,12 @@ on:
     paths:
       - "tools/kai9000_remote_smoke.py"
       - "tools/remote_ai_smoke.py"
+      - "tools/remote_assistance_guard.py"
+      - "tools/remote_assistance_bench.py"
       - ".github/workflows/kai9000-remote-ai-smoke.yml"
       - "ultima/ollama-ffmpeg-antenna-v3/**"
+      - "backend/tests/test_remote_ai_router.py"
+      - "backend/tests/test_remote_assistance.py"
       - "docs/API_TRINITY_DOCTRINE.md"
       - "docs/LUHMOS_REMOTE_AI_10PASS_HARDENING.md"
       - "integrations/vendor-apis.manifest.json"
@@ -28,18 +36,20 @@ permissions:
   contents: read
 
 jobs:
-  remote-ai-media-smoke:
-    runs-on: ubuntu-latest
+  remote-assistance-smoke:
+    runs-on: ubuntu-24.04
     timeout-minutes: 12
 
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      OPENAI_FAST_MODEL: gpt-5.6-luna
       OPENAI_MODEL: gpt-5.6-sol
       HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      HF_FAST_MODEL: openai/gpt-oss-20b:fastest
       HF_MODEL: openai/gpt-oss-120b:fastest
 
     steps:
-      - name: Checkout
+      - name: Checkout exact source
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
@@ -54,23 +64,29 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ffmpeg
 
-      - name: Install KAI9000 runtime
+      - name: Install LuHm OS remote runtime
         working-directory: ultima/ollama-ffmpeg-antenna-v3
         run: |
           python -m pip install --upgrade pip
           python -m pip install -e .
 
-      - name: Credential-safe OpenAI plus Hugging Face smoke
+      - name: Remote assistance deterministic fastpath
+        run: |
+          python tools/remote_assistance_guard.py
+          python tools/remote_assistance_bench.py
+
+      - name: Credential-safe OpenAI plus Hugging Face parallel smoke
         run: |
           python tools/remote_ai_smoke.py | tee luhmos-remote-provider-smoke.json
 
-      - name: Remote GitHub plus AI plus Edge Gallery plus MP4 pipeline smoke
+      - name: GitHub evidence plus OpenAI plus media pipeline smoke
         run: |
           python tools/kai9000_remote_smoke.py --report kai9000-remote-smoke-report.json
 
       - name: Show smoke report
         if: always()
         run: |
+          test -f luhmos-remote-assistance-bench.json && cat luhmos-remote-assistance-bench.json || true
           test -f luhmos-remote-provider-smoke.json && cat luhmos-remote-provider-smoke.json || true
           test -f kai9000-remote-smoke-report.json && cat kai9000-remote-smoke-report.json || true
 
@@ -78,8 +94,9 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: kai9000-remote-ai-media-smoke
+          name: luhmos-remote-assistance-smoke
           path: |
+            luhmos-remote-assistance-bench.json
             luhmos-remote-provider-smoke.json
             kai9000-remote-smoke-report.json
           if-no-files-found: ignore
