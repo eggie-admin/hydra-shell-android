@@ -1,0 +1,109 @@
+{
+  "schema": "luhm_os.remote_build_fastpath.v1",
+  "date": "2026-09-17",
+  "project": {
+    "display_name": "LuHm OS",
+    "machine_name": "luhm_os",
+    "repository": "eggie-admin/hydra-shell-android",
+    "canonical_branch": "luhmos-main"
+  },
+  "proposal": {
+    "branch": "luhmos/remote-build-fastpath-20260917",
+    "parent_head": "b7125bbdad33e0959da9898dd2b40759cc40bbaa",
+    "status": "PROPOSED_NOT_CROWNED",
+    "canonical_merge": "NOT_TRIGGERED",
+    "deploy": "NOT_TRIGGERED",
+    "public_release": "NOT_TRIGGERED",
+    "release_signing": "NOT_TRIGGERED",
+    "crown": "NOT_TRIGGERED",
+    "seal": "NOT_TRIGGERED"
+  },
+  "build_iron": {
+    "role": "android_compile_forge",
+    "provider": "github_actions_hosted",
+    "runner_label": "ubuntu-24.04",
+    "architecture": "x86_64",
+    "minimum_cpu_threads": 4,
+    "minimum_memory_kib": 14680064,
+    "minimum_root_free_kib": 8388608,
+    "kernel_policy": "provider_kernel_capability_probe_not_version_pin",
+    "kernel_probe": [
+      "uname -m",
+      "uname -srvm",
+      "nproc",
+      "/proc/meminfo",
+      "df -Pk /"
+    ],
+    "arm_hosted_runner_for_android_forge": false,
+    "reason": "The x64 hosted image is the Android forge lane. Target ABI is independent of host ISA, and the forge requires the Android SDK/tooling contract."
+  },
+  "android_contract": {
+    "target_abi": "arm64-v8a",
+    "min_sdk": 24,
+    "target_sdk": 36,
+    "build_tools": "36.1.0",
+    "sdk_strategy": "verify_preinstalled_then_fallback_install",
+    "sdk_hot_path_network_install": false,
+    "package_id_candidate": "art.eggiebagelface.luhmos.candidate"
+  },
+  "toolchain": {
+    "java": "17",
+    "node": "24",
+    "godot": "4.7.2-stable",
+    "github_gradle": "8.13",
+    "godot_android_wrapper_gradle": "8.11.1",
+    "godot_editor_sha256": "cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4",
+    "godot_templates_sha256": "f298490b8d44d934be425a5a65a51bf15f422428b229a06a6e11d9ffea248011",
+    "android_gradle_zip_sha256": "f397b287023acdba1e9f6fc5ea72d22dd63669d59ed4a289a29b1a76eee151c6"
+  },
+  "cache_contract": {
+    "gradle_user_home": "gradle_actions_setup_gradle_managed",
+    "godot_editor_archive": "actions_cache_sha_keyed",
+    "godot_export_templates": "actions_cache_sha_keyed",
+    "godot_prepared_android_template": "actions_cache_sha_keyed",
+    "android_gradle_distribution": "actions_cache_sha_keyed",
+    "hash_validation_after_restore": true,
+    "cache_miss_downloads_only": true,
+    "cache_key_contains_tool_hashes": true
+  },
+  "parallelism": {
+    "max_gradle_workers": 4,
+    "gradle_parallel": true,
+    "gradle_build_cache": true,
+    "cancel_stale_in_progress_builds": true,
+    "configuration_cache": false,
+    "configuration_cache_reason": "Not enabled until the Godot Android plugin path is explicitly proven compatible."
+  },
+  "remote_control_plane": {
+    "provider": "google_cloud",
+    "machine_type": "e2-micro",
+    "role": "control_and_smoke_only",
+    "android_compile_workloads": false,
+    "artifact_compile_workloads": false,
+    "external_ipv4": false,
+    "authentication": "workload_identity_federation",
+    "long_lived_service_account_json": false,
+    "reason": "Preserve the strict-free remote lane for orchestration and health checks; compilation stays on the higher-throughput hosted build iron."
+  },
+  "security_and_authority": {
+    "pinned_action_revisions": true,
+    "pinned_tool_hashes": true,
+    "ephemeral_candidate_signer": true,
+    "production_signing_authority": false,
+    "automatic_public_publish": false,
+    "automatic_deploy": false,
+    "human_authority": "Professor",
+    "consequential_actions": "CROWN_GATED"
+  },
+  "expected_receipts": [
+    "LUHM_REMOTE_BUILD_IRON_GREEN",
+    "LUHM_ANDROID_SDK_PRELOADED_FASTPATH_or_LUHM_ANDROID_SDK_FALLBACK_INSTALL",
+    "LUHM_GODOT_TEMPLATE_CACHE_PREPARED_or_LUHM_GODOT_TEMPLATE_CACHE_HIT",
+    "LUHM_DRIVE_AVATAR_CANDIDATE_GREEN"
+  ],
+  "performance_goal": {
+    "cold_build": "download only immutable Godot and Gradle assets not already cached; avoid redundant Android SDK installation when hosted image satisfies contract",
+    "hot_build": "restore Godot archives, prepared Android template, Android Gradle distribution and Gradle user-home caches; perform compile/export/verification only",
+    "artifact_semantics_changed": false
+  }
+}
