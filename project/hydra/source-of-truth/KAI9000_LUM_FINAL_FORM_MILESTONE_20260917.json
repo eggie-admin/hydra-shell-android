@@ -1,0 +1,110 @@
+{
+  "schema": "luhm-os.kai9000.lum-final-form-milestone.v1",
+  "manifest_id": "KAI9000_LUM_FINAL_FORM_MILESTONE_20260917",
+  "status": "SEALED_LUM_FINAL_FORM_GREEN",
+  "date_local": "2026-09-17",
+  "project": "LuHm OS / KAI 9000 / Project Hydra",
+  "repository": "eggie-admin/hydra-shell-android",
+  "canonical_branch": "luhmos-main",
+  "human_authority": "Professor",
+  "promotion_authorization": "EXPLICIT_CURRENT_USER_FINAL_MUTATION_MILESTONE_AND_LUM_FINAL_FORM",
+  "source_law": "AI proposes. Policy authorizes. CI proves. The human promotes.",
+  "lineage": {
+    "prior_canonical_head": "407db388462013bf67aa44c1512adbf604819b4a",
+    "proposal_pr": 70,
+    "audited_candidate_head": "e771b48f1b5883fb3d049d95f52779c637034708",
+    "merge_commit": "fe4d9b06e0f71a12619d536e758a8b7ae929e538",
+    "merge_commit_signature_verified": true,
+    "merge_commit_signature_reason": "valid"
+  },
+  "exact_head_ci": {
+    "head": "e771b48f1b5883fb3d049d95f52779c637034708",
+    "result": "10/10_SUCCESS",
+    "runs": [
+      {"name": "LuHm Modular Cockpit Source Gate", "run_number": 36, "conclusion": "success"},
+      {"name": "Cathedral Android Gate", "run_number": 312, "conclusion": "success"},
+      {"name": "PR guardrails", "run_number": 315, "conclusion": "success"},
+      {"name": "Google AI Edge Doctrine Gate", "run_number": 8, "conclusion": "success"},
+      {"name": "LuHm OS Android Release Contract", "run_number": 134, "conclusion": "success"},
+      {"name": "Project Hydra Fastpath Gate", "run_number": 4, "conclusion": "success"},
+      {"name": "LuHm OS ULTIMA Debug Contract", "run_number": 144, "conclusion": "success"},
+      {"name": "LuHm OS lane gates", "run_number": 235, "conclusion": "success"},
+      {"name": "Hydra Local CI", "run_number": 163, "conclusion": "success"},
+      {"name": "KAI9000 Cathedral CI", "run_number": 253, "conclusion": "success"}
+    ]
+  },
+  "lum_final_form": {
+    "authority_resolution_once_per_exact_head": true,
+    "immutable_path_at_sha_reuse": true,
+    "batched_remote_reads": true,
+    "parallel_read_only_helpers": true,
+    "parallel_writes": false,
+    "single_parent_writer": true,
+    "default_helpers": 0,
+    "max_parallel_read_only_helpers": 2,
+    "max_delegation_depth": 1,
+    "max_ai_rounds": 3,
+    "deterministic_local_validation_first": true,
+    "ordinary_ai_route": "OPENAI_FAST_PARENT",
+    "deep_ai_route": "OPENAI_DEEP_ON_COMPLEXITY_TRIGGER",
+    "optional_on_device_route": "BOUNDED_LOCAL_HELPER_ONLY_AFTER_MEASUREMENT",
+    "structured_handoffs": "COMPACT_JSON",
+    "focused_tests_before_full_ci": true,
+    "one_proof_payload_many_views": true
+  },
+  "security_invariants": {
+    "ai_output_direct_to_shell": false,
+    "human_approval_required_for_reckoning": true,
+    "helper_consensus_grants_authority": false,
+    "mutation_gateway": "backend/candidate_workflow.py",
+    "mutation_bind": "127.0.0.1",
+    "mutation_default_port": 8790,
+    "checkpoint_before_write": true,
+    "preimage_sha_recheck": true,
+    "atomic_replace": true,
+    "postwrite_sha_verify": true
+  },
+  "proof_contract": {
+    "one_payload_many_views": true,
+    "shared_digest": "sha256",
+    "views": ["json", "scriptless_html", "chat_safe_text"],
+    "proof_after_postwrite_verify": true,
+    "exclude": ["approval_token", "secret", "staged_file_content"]
+  },
+  "google_ai_edge_gallery": {
+    "role": "LOCAL_TEST_AND_BENCHMARK_ONLY",
+    "source_of_truth_authority": false,
+    "mutation_authority": false,
+    "shell_authority": false,
+    "signing_authority": false,
+    "release_authority": false,
+    "production_dependency": false
+  },
+  "performance_claim": {
+    "source_ci_optimization": "GREEN",
+    "runtime_speedup_proven": false,
+    "speed_claim_allowed": false,
+    "benchmark_required_before_speed_claim": true
+  },
+  "release_and_external_boundaries": {
+    "public_publish": false,
+    "apk_install_by_this_seal": false,
+    "persistent_apk_signing": false,
+    "release_promotion": false,
+    "deployment": false,
+    "dns_mutation": false,
+    "billing_mutation": false,
+    "vercel_rate_limit_residue": "NONBLOCKING_EXTERNAL_INTEGRATION_DEBT"
+  },
+  "historical_evidence": {
+    "candidate_manifest_preserved_in_proposed_source_of_truth": true,
+    "prior_full_doctrine_seal_preserved": true,
+    "mass_delete": false,
+    "mass_rename": false,
+    "history_rewrite": false
+  },
+  "governance_debt": {
+    "canonical_branch_protected": false
+  },
+  "result": "LUM_FINAL_FORM_MILESTONE_SEALED_GREEN"
+}
