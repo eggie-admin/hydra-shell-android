@@ -9,7 +9,7 @@
   "canonical_parent_at_lane_creation": "e65210ccc189084acc88e692f4beec540ca21d8b",
   "proposal_branch": "luhmos/proposed-apk-install-gui-20260917",
   "human_final_authority": "Professor",
-  "purpose": "Advance the sealed LuHm OS source of truth into an APK/install GUI candidate lane without granting signing, physical install, deployment, publication, or release authority.",
+  "purpose": "Advance the sealed LuHm OS source of truth into an APK/install GUI candidate lane without granting signing, physical install, deployment, publication, release, shell, or retired Termux bridge authority.",
   "candidate": {
     "package_id": "art.eggiebagelface.luhmos",
     "version_name": "1.0.8",
@@ -25,7 +25,9 @@
     "crowned_source_receipt": "project/hydra/source-of-truth/KAI9000_SEAL_OF_TRUTH_CROWN_20260917.json",
     "requires_sealed_source_of_truth": true,
     "modular_cockpit_source_gate_repaired_for_current_crown": true,
-    "pre_crown_wording_may_not_override_current_seal": true
+    "pre_crown_wording_may_not_override_current_seal": true,
+    "retired_termux_run_command_capability_allowed": false,
+    "retired_termux_package_query_allowed": false
   },
   "install_contract": {
     "explicit_user_gesture_required": true,
@@ -34,6 +36,9 @@
     "signer_must_match_installed_app": true,
     "downgrade_rejected": true,
     "android_packageinstaller_user_action_required": true,
+    "request_install_packages_permission_required": true,
+    "termux_run_command_permission": false,
+    "termux_package_query": false,
     "background_update_check": false,
     "silent_install": false,
     "shell_execution": false,
@@ -49,6 +54,7 @@
     "gui_install_bridge_candidate_authorized": true,
     "persistent_release_signing_authorized": false,
     "physical_device_install_authorized": false,
+    "termux_command_bridge_authorized": false,
     "canonical_merge_authorized": false,
     "deploy_authorized": false,
     "public_publish_authorized": false,
@@ -63,6 +69,7 @@
     "requires_apk_package_and_version_readback": true,
     "requires_apk_signature_and_zipalign_readback": true,
     "requires_embedded_gui_payload_readback": true,
+    "requires_no_termux_permission_or_package_query": true,
     "requires_professor_install_authorization_for_physical_install": true,
     "requires_separate_signing_authorization_for_release_signer": true
   },
