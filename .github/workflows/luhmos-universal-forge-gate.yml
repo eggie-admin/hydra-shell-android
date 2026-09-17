@@ -5,7 +5,12 @@ on:
     branches:
       - luhmos/public-private-boundary-20260917
     paths:
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tools/luhm-compile-wizard.mjs'
+      - 'tools/luhm-compile-wizard.test.mjs'
       - 'project/hydra/samsung/android/cathedral-game/**'
+      - 'project/hydra/doctrine/proposed-source-of-truth/LUHM_OS_FINAL_UNIVERSAL_FORGE_SEAL_20260917.json'
       - '.github/workflows/luhmos-drive-avatar-candidate.yml'
       - '.github/workflows/luhmos-source-vendor-gate.yml'
       - '.github/workflows/luhmos-universal-forge-gate.yml'
@@ -25,7 +30,7 @@ jobs:
   universal-forge:
     name: Validate immutable universal remote forge
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - name: Checkout proposal
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -49,6 +54,16 @@ jobs:
           node-version: '24'
           package-manager-cache: false
 
+      - name: Validate npm compile wizard offline
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/forge
+          npm ci --ignore-scripts --offline --no-audit --no-fund
+          npm test | tee build/forge/npm-wizard-test.txt
+          npm run dryrun | tee build/forge/npm-wizard-dryrun.txt
+          echo 'LUHM_NPM_COMPILE_WIZARD_GREEN'
+
       - name: Validate immutable forge contract
         shell: bash
         run: |
@@ -67,6 +82,8 @@ jobs:
           mkdir -p build/forge
           python "$GAME/tools/forge-fingerprint.py" "$GAME" build/forge/FORGE_FINGERPRINT.json
           sha256sum "$GAME/forge/forge-lock.json" | tee build/forge/forge-lock-sha256.txt
+          sha256sum package-lock.json | tee build/forge/npm-lock-sha256.txt
+          sha256sum tools/luhm-compile-wizard.mjs | tee build/forge/npm-wizard-sha256.txt
           sha256sum build/forge/FORGE_FINGERPRINT.json | tee build/forge/forge-fingerprint-sha256.txt
           python - "$GAME" build/forge/FORGE_FINGERPRINT.json build/forge/FORGE_STATE.txt <<'PY'
           from pathlib import Path
@@ -81,6 +98,10 @@ jobs:
             f"cpu_threads={fp['runner']['cpu_threads']}",
             f"memory_kib={fp['runner']['memory_kib']}",
             f"kernel_policy={lock['runner']['kernel_policy']}",
+            'npm_wizard=GREEN',
+            'npm_dependencies=ZERO',
+            'npm_install_lifecycle_device_mutation=FORBIDDEN',
+            'candidate_install_requires_explicit_apply=true',
             'cache_restore=exact_key_only',
             'workflow_permissions=contents_read_only',
             'merge=NOT_TRIGGERED',
@@ -99,7 +120,11 @@ jobs:
           path: |
             build/forge/FORGE_FINGERPRINT.json
             build/forge/forge-lock-sha256.txt
+            build/forge/npm-lock-sha256.txt
+            build/forge/npm-wizard-sha256.txt
             build/forge/forge-fingerprint-sha256.txt
+            build/forge/npm-wizard-test.txt
+            build/forge/npm-wizard-dryrun.txt
             build/forge/FORGE_STATE.txt
           if-no-files-found: error
           retention-days: 14
