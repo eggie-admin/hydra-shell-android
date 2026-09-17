@@ -1,0 +1,65 @@
+{
+  "schema": "luhm-os.kai9000.apk-install-gui-proposal.v1",
+  "manifest_id": "KAI9000_PROPOSED_APK_INSTALL_GUI_20260917",
+  "state": "PROPOSED",
+  "seal_status": "PROPOSED_NOT_CROWNED",
+  "date_local": "2026-09-17",
+  "repository": "eggie-admin/hydra-shell-android",
+  "canonical_branch": "luhmos-main",
+  "canonical_parent_at_lane_creation": "e65210ccc189084acc88e692f4beec540ca21d8b",
+  "proposal_branch": "luhmos/proposed-apk-install-gui-20260917",
+  "human_final_authority": "Professor",
+  "purpose": "Advance the sealed LuHm OS source of truth into an APK/install GUI candidate lane without granting signing, physical install, deployment, publication, or release authority.",
+  "candidate": {
+    "package_id": "art.eggiebagelface.luhmos",
+    "version_name": "1.0.8",
+    "version_code": 108,
+    "ui_script": "project/hydra/samsung/android/cathedral-game/apk-install-gui.js",
+    "ui_style": "project/hydra/samsung/android/cathedral-game/apk-install-gui.css",
+    "contract_test": "project/hydra/samsung/android/cathedral-game/tests/apk-install-gui.test.mjs",
+    "workflow": ".github/workflows/luhmos-apk-install-gui-candidate.yml",
+    "native_updater_donor": "eggie-admin/vue-headless-cms",
+    "native_updater_ref": "dd9b3e68e14ce7a559b7b13aebfe10c630fa171b"
+  },
+  "install_contract": {
+    "explicit_user_gesture_required": true,
+    "https_only": true,
+    "package_must_match_installed_app": true,
+    "signer_must_match_installed_app": true,
+    "downgrade_rejected": true,
+    "android_packageinstaller_user_action_required": true,
+    "background_update_check": false,
+    "silent_install": false,
+    "shell_execution": false,
+    "ai_self_approval": false
+  },
+  "ci_candidate_signing": {
+    "mode": "EPHEMERAL_DEBUG_CANDIDATE",
+    "persistent_release_signing_used": false,
+    "can_replace_differently_signed_installed_build": false
+  },
+  "authority_boundaries": {
+    "apk_build_candidate_authorized": true,
+    "gui_install_bridge_candidate_authorized": true,
+    "persistent_release_signing_authorized": false,
+    "physical_device_install_authorized": false,
+    "canonical_merge_authorized": false,
+    "deploy_authorized": false,
+    "public_publish_authorized": false,
+    "release_promotion_authorized": false,
+    "crown_authorized": false,
+    "seal_authorized": false
+  },
+  "promotion_gate": {
+    "candidate_only": true,
+    "requires_exact_head_ci_green": true,
+    "requires_gui_contract_tests_green": true,
+    "requires_apk_package_and_version_readback": true,
+    "requires_apk_signature_and_zipalign_readback": true,
+    "requires_embedded_gui_payload_readback": true,
+    "requires_professor_install_authorization_for_physical_install": true,
+    "requires_separate_signing_authorization_for_release_signer": true
+  },
+  "source_law": "AI proposes. Policy authorizes. CI proves. Android confirms installation. The human promotes.",
+  "result": "APK_INSTALL_GUI_CANDIDATE_STAGED"
+}
