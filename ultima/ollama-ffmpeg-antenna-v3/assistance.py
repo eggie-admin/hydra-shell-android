@@ -3,12 +3,12 @@ from __future__ import annotations
 import os
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Any, Callable
+from typing import Any
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
-import gateway
+import google_assist
 import remote_ai
 
 ROUTER = APIRouter(prefix="/api/assist", tags=["luhm-remote-assistance"])
@@ -52,7 +52,7 @@ def _github_context(refs: list[str]) -> dict[str, Any]:
 def _configured() -> dict[str, bool]:
     return {
         "openai": bool(os.environ.get("OPENAI_API_KEY")),
-        "google": bool(gateway.google_status()["configured"]),
+        "google": bool(google_assist.status()["configured"]),
         "huggingface": bool(os.environ.get("HF_TOKEN")),
         "github": True,
     }
@@ -75,7 +75,7 @@ def _single_primary(task: str, ready: dict[str, bool]) -> tuple[str | None, str]
         order = ("openai", "google", "huggingface")
     for provider in order:
         if ready.get(provider):
-            profile = "deep" if task in {"build", "audit"} and provider != "google" else "fast"
+            profile = "deep" if task in {"build", "audit"} else "fast"
             return provider, profile
     return None, "fast"
 
@@ -100,7 +100,7 @@ def _plan(task: str, mode: str, critic: bool) -> dict[str, Any]:
         if ready["openai"]:
             calls.append({"blade": "build", "provider": "openai", "profile": "deep" if task in {"build", "audit"} else "fast"})
         if ready["google"]:
-            calls.append({"blade": "research", "provider": "google", "profile": "fast"})
+            calls.append({"blade": "research", "provider": "google", "profile": "deep" if task == "audit" else "fast"})
         if critic and ready["huggingface"]:
             calls.append({"blade": "critic", "provider": "huggingface", "profile": "fast"})
 
@@ -156,15 +156,11 @@ def _call_huggingface(message: str, profile: str, blade: str) -> dict[str, Any]:
     )
 
 
-def _call_google(message: str, blade: str) -> dict[str, Any]:
-    started = time.perf_counter()
-    result = gateway._google_generate(
+def _call_google(message: str, profile: str, blade: str) -> dict[str, Any]:
+    return google_assist.generate(
         f"{_helper_instructions(blade)}\n\nTask:\n{message}",
-        None,
+        profile=profile,
     )
-    result["latency_ms"] = round((time.perf_counter() - started) * 1000, 1)
-    result["profile"] = "fast"
-    return result
 
 
 def _execute_call(call: dict[str, str], message: str, previous_response_id: str | None) -> dict[str, Any]:
@@ -175,7 +171,7 @@ def _execute_call(call: dict[str, str], message: str, previous_response_id: str 
         if provider == "openai":
             payload = _call_openai(message, profile, blade, previous_response_id)
         elif provider == "google":
-            payload = _call_google(message, blade)
+            payload = _call_google(message, profile, blade)
         elif provider == "huggingface":
             payload = _call_huggingface(message, profile, blade)
         else:  # pragma: no cover - guarded by the deterministic planner
@@ -205,6 +201,7 @@ def _execute_call(call: dict[str, str], message: str, previous_response_id: str 
 @ROUTER.get("/status")
 def assistance_status() -> dict[str, Any]:
     ready = _configured()
+    google = google_assist.status()
     return {
         "ok": True,
         "service": "LuHm OS Remote Assistance",
@@ -216,6 +213,15 @@ def assistance_status() -> dict[str, Any]:
             "build": "openai",
             "research": "google",
             "critic": "huggingface_conditional",
+        },
+        "models": {
+            "openai_fast": remote_ai.OPENAI_FAST_MODEL,
+            "openai_deep": remote_ai.OPENAI_MODEL,
+            "google_fast": google["fast_model"],
+            "google_deep": google["deep_model"],
+            "google_api_live": google["api_key_live_model"],
+            "huggingface_fast": remote_ai.HF_FAST_MODEL,
+            "huggingface_deep": remote_ai.HF_MODEL,
         },
         "configured": ready,
         "direct_questions_bypass_mesh": True,
