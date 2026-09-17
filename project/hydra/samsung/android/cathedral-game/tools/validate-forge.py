@@ -95,6 +95,9 @@ def main() -> int:
         die("source manifest does not bind the forge lock")
     if "forge" not in manifest.get("bundle", {}).get("include", []):
         die("source bundle does not include forge state")
+    for required in ["enterprise-distribution.js", "distribution"]:
+        if required not in manifest.get("bundle", {}).get("include", []):
+            die(f"source bundle missing enterprise distribution input {required}")
 
     pyproject = (game / "python/pyproject.toml").read_text(encoding="utf-8")
     if 'requires = ["hatchling==1.32.3"]' not in pyproject:
@@ -115,6 +118,31 @@ def main() -> int:
         die("candidate package drift")
     if wizard.get("production_package") != "art.eggiebagelface.luhmos":
         die("production package drift")
+
+    distribution = lock.get("distribution", {})
+    if distribution.get("schema") != "luhm_os.enterprise_distribution.v1":
+        die("enterprise distribution schema drift")
+    if distribution.get("release_provider") != "github_releases":
+        die("release provider must be GitHub Releases")
+    if distribution.get("release_repository") != "eggie-admin/hydra-shell-android":
+        die("release repository drift")
+    for key in ["arbitrary_apk_url", "downgrade_allowed", "silent_install", "silent_uninstall", "public_backend_fallback"]:
+        if distribution.get(key) is not False:
+            die(f"enterprise distribution must keep {key}=false")
+    for key in ["release_asset_sha256_required", "same_android_signer_required"]:
+        if distribution.get(key) is not True:
+            die(f"enterprise distribution must keep {key}=true")
+
+    dist_contract = load_json(game / distribution["contract"])
+    if dist_contract.get("schema") != distribution["schema"]:
+        die("distribution contract schema mismatch")
+    release = dist_contract.get("release", {})
+    if release.get("provider") != "github_releases" or release.get("repository") != "eggie-admin/hydra-shell-android":
+        die("distribution release authority drift")
+    if release.get("manifest_asset") != "luhmos-release.json":
+        die("release manifest asset drift")
+    if dist_contract.get("local_harness", {}).get("public_backend_fallback") is not False:
+        die("local harness may not fall back to a public backend")
 
     package = load_json(repo / wizard["package_manifest"])
     package_lock = load_json(repo / wizard["package_lock"])
@@ -147,6 +175,35 @@ def main() -> int:
         "ordinary npm install lifecycle cannot mutate a device",
         "device mutation requires explicit apply flag",
         "wizard accepts only the collision-free candidate package",
+    ])
+    require_text(game / distribution["runtime_client"], [
+        "LUHM_OS_ENTERPRISE_DISTRIBUTION_V1",
+        "api.github.com/repos/",
+        "/releases/download/",
+        "luhmos-release.json",
+        "app.uninstall.open",
+        "lum.eggiebagelface.lan",
+    ])
+    require_text(game / distribution["runtime_test"], [
+        "pins updates to the LuHm GitHub Releases lane",
+        "branded uninstall is explicit and delegates to native Android",
+        "local harness probes only approved local origins",
+    ])
+    require_text(game / distribution["native_patch"], [
+        "LUHM_ENTERPRISE_DISTRIBUTION_NATIVE_V1",
+        "RELEASE_HOST",
+        "expectedSha256",
+        "Intent.ACTION_DELETE",
+    ])
+    require_text(game / distribution["release_manifest_builder"], [
+        "luhm_os.release.v1",
+        "apk_sha256",
+        "release_page",
+    ])
+    require_text(game / distribution["local_backend_harness"], [
+        '"local_first"',
+        '"public_backend_fallback": False',
+        '"https://appassets.androidplatform.net"',
     ])
 
     workflows = [
@@ -207,9 +264,22 @@ def main() -> int:
         die("avatar digest drift")
     if "sha256sum --check --strict" not in drive:
         die("verified download digest checks missing")
+    for marker in [
+        "patch-enterprise-android.py",
+        "enterprise-distribution.js",
+        "enterprise-distribution.test.mjs",
+        "LUHM_ENTERPRISE_ANDROID_PATCH_GREEN",
+        "luhmos-release.json",
+    ]:
+        if marker not in drive:
+            die(f"Android candidate workflow missing enterprise marker: {marker}")
 
     if lock["network"].get("cache_restore_policy") != "exact_key_only":
         die("cache restore policy is not exact-key-only")
+    if lock["network"].get("runtime_update_remote_authority") != "github_releases_only":
+        die("runtime update authority is not GitHub Releases only")
+    if lock["network"].get("local_backend_public_fallback") is not False:
+        die("runtime local backend public fallback must stay disabled")
     if lock["reproducibility"].get("source_archive_mtime") != 0:
         die("source archive mtime is not normalized")
 
@@ -217,6 +287,7 @@ def main() -> int:
     print(f"locked_actions={len(actions)}")
     print(f"locked_workflows={len(workflows)}")
     print(f"wizard_commands={','.join(wizard['commands'])}")
+    print("enterprise_distribution=GREEN")
     return 0
 
 
