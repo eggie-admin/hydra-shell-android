@@ -2,7 +2,7 @@ extends Node3D
 
 # LuHm OS world-first Godot HUD controller.
 # Presentation state only. No shell, no network, no privilege bridge.
-# 1.0.8 candidate adds a local-only physical proof harness.
+# 1.0.9 candidate proves virgin first-install behavior with no prior package state.
 
 const SAVE_PATH := "user://luhmos_physical_proof.cfg"
 
@@ -23,6 +23,7 @@ var ui_mode := "SPRITE_BUBBLE"
 var realm := "GAME"
 var proof_counter := 0
 var last_saved_session := "NONE"
+var install_state := "VIRGIN_FIRST_RUN"
 
 func _ready() -> void:
     session_id = "%s-%s" % [Time.get_unix_time_from_system(), randi_range(1000, 9999)]
@@ -61,14 +62,23 @@ func _sync_hud() -> void:
     if not quest_label.text.begins_with("◇"):
         quest_label.text = "◇ CORKTOWN"
     status_label.text = "♡  ◈  %s" % realm
-    proof_label.text = "PHYSICAL PROOF HARNESS\nMODE: %s\nREALM: %s\nSESSION: %s\nSAVEPOINT: %d\nRESTORED SESSION: %s" % [ui_mode, realm, session_id, proof_counter, last_saved_session]
+    proof_label.text = "PHYSICAL PROOF HARNESS\nINSTALL: %s\nMODE: %s\nREALM: %s\nSESSION: %s\nSAVEPOINT: %d\nRESTORED SESSION: %s" % [install_state, ui_mode, realm, session_id, proof_counter, last_saved_session]
 
 func _load_proof_state() -> void:
     var cfg := ConfigFile.new()
     var err := cfg.load(SAVE_PATH)
     if err == OK:
+        install_state = "RESTORED_LOCAL_STATE"
         proof_counter = int(cfg.get_value("proof", "counter", 0))
         last_saved_session = str(cfg.get_value("proof", "session_id", "NONE"))
+    elif err == ERR_FILE_NOT_FOUND:
+        install_state = "VIRGIN_FIRST_RUN"
+        proof_counter = 0
+        last_saved_session = "NONE"
+    else:
+        install_state = "LOCAL_STATE_READ_ERROR_%d" % err
+        proof_counter = 0
+        last_saved_session = "NONE"
 
 func _save_proof_state() -> void:
     proof_counter += 1
@@ -80,6 +90,7 @@ func _save_proof_state() -> void:
     var err := cfg.save(SAVE_PATH)
     if err == OK:
         last_saved_session = session_id
+        install_state = "LOCAL_STATE_SEALED"
         quest_label.text = "◇ SAVEPOINT %d SEALED" % proof_counter
     else:
         quest_label.text = "◇ SAVEPOINT WRITE ERROR %d" % err
