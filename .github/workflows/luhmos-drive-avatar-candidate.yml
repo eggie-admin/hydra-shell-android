@@ -8,6 +8,7 @@ on:
       - 'project/hydra/samsung/android/cathedral-game/**'
       - 'project/hydra/doctrine/proposed-source-of-truth/LUHM_OS_PROPOSED_REMOTE_BUILD_FASTPATH_20260917.json'
       - '.github/workflows/luhmos-drive-avatar-candidate.yml'
+      - '.github/workflows/luhmos-universal-forge-gate.yml'
   pull_request:
     branches:
       - luhmos/public-private-boundary-20260917
@@ -15,6 +16,7 @@ on:
       - 'project/hydra/samsung/android/cathedral-game/**'
       - 'project/hydra/doctrine/proposed-source-of-truth/LUHM_OS_PROPOSED_REMOTE_BUILD_FASTPATH_20260917.json'
       - '.github/workflows/luhmos-drive-avatar-candidate.yml'
+      - '.github/workflows/luhmos-universal-forge-gate.yml'
   workflow_dispatch:
 
 permissions:
@@ -55,40 +57,41 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout proposal
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
 
       - name: Checkout pinned Android updater forge
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: ${{ env.DONOR_REPO }}
           ref: ${{ env.DONOR_REF }}
           path: _forge/luhmos-android
           persist-credentials: false
 
-      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+      - name: Java 17 Android lane
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6
         with:
           distribution: temurin
           java-version: '17'
 
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+      - name: Node 24 validation lane
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:
           node-version: '24'
+          package-manager-cache: false
 
       - name: Cache Gradle dependency and local build state
         id: gradle-cache
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8
         with:
           path: |
             ~/.gradle/caches
             ~/.gradle/notifications
           key: ${{ runner.os }}-${{ runner.arch }}-luhmos-gradle-${{ env.PLUGIN_GRADLE_VERSION }}-${{ env.DONOR_REF }}-${{ hashFiles('_forge/luhmos-android/godot/android-plugin/**/*.gradle*', '_forge/luhmos-android/godot/android-plugin/gradle.properties') }}-v1
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-luhmos-gradle-${{ env.PLUGIN_GRADLE_VERSION }}-${{ env.DONOR_REF }}-
 
       - name: Cache verified Godot and Gradle forge
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8
         with:
           path: |
             ~/.cache/luhmos/godot-4.7.2
@@ -422,8 +425,37 @@ jobs:
           EOF
           echo 'LUHM_DRIVE_AVATAR_CANDIDATE_GREEN'
 
+      - name: Bind artifact to universal forge state
+        shell: bash
+        env:
+          LUHM_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          GAME="$GITHUB_WORKSPACE/project/hydra/samsung/android/cathedral-game"
+          APK="build/android/$APK_NAME"
+          python3 "$GAME/tools/forge-fingerprint.py" "$GAME" build/android/FORGE_FINGERPRINT.json
+          sha256sum "$GAME/forge/forge-lock.json" | tee build/android/forge-lock-sha256.txt
+          sha256sum build/android/FORGE_FINGERPRINT.json | tee build/android/forge-fingerprint-sha256.txt
+          python3 - "$APK" "$GAME/forge/forge-lock.json" build/android/FORGE_FINGERPRINT.json build/android/ARTIFACT_MANIFEST.json <<'PY'
+          from pathlib import Path
+          import hashlib,json,os,sys
+          apk,lock_path,fingerprint_path,out=map(Path,sys.argv[1:])
+          fingerprint=json.loads(fingerprint_path.read_text())
+          payload={
+            'schema':'luhm_os.artifact_manifest.v1',
+            'source_sha':os.environ['LUHM_SOURCE_SHA'],
+            'artifact':{'name':apk.name,'sha256':hashlib.sha256(apk.read_bytes()).hexdigest()},
+            'forge_lock_sha256':hashlib.sha256(lock_path.read_bytes()).hexdigest(),
+            'forge_contract_sha256':fingerprint['contract_sha256'],
+            'authority':{'merge':'NOT_TRIGGERED','deploy':'NOT_TRIGGERED','release_signing':'NOT_TRIGGERED','crown':'NOT_TRIGGERED'},
+          }
+          out.write_text(json.dumps(payload,indent=2,sort_keys=True)+'\n')
+          print('LUHM_ARTIFACT_FORGE_BINDING_GREEN')
+          PY
+          grep -q '"release_signing": "NOT_TRIGGERED"' build/android/ARTIFACT_MANIFEST.json
+
       - name: Upload candidate and proof
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: luhmos-drive-avatar-${{ env.VERSION_NAME }}-${{ github.run_number }}
           path: |
@@ -436,5 +468,9 @@ jobs:
             build/android/contents.txt
             build/android/AVATAR_SOURCE_RECEIPT.txt
             build/android/CANDIDATE_AUTHORITY.txt
+            build/android/FORGE_FINGERPRINT.json
+            build/android/forge-lock-sha256.txt
+            build/android/forge-fingerprint-sha256.txt
+            build/android/ARTIFACT_MANIFEST.json
           if-no-files-found: error
           retention-days: 14
