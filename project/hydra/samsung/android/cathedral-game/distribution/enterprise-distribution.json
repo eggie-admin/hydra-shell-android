@@ -37,7 +37,9 @@
   "local_harness": {
     "mode": "local_first",
     "frontend": "packaged_appassets",
-    "backend_hosts": ["127.0.0.1", "localhost", "lum.eggiebagelface.lan"],
+    "backend_hosts": ["127.0.0.1", "localhost"],
+    "operator_lan_origin_source": "protected_local_config_only",
+    "committed_private_hostnames": false,
     "public_backend_fallback": false,
     "browser_secrets": false,
     "health_path": "/health",
