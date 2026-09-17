@@ -2,12 +2,26 @@
   "schema_version": 1,
   "project_id": "luhmos-paid-pro-samsung-android",
   "budget": {
-    "monthly_cap_usd": 80.0,
+    "monthly_cap_usd": 180.0,
     "currency": "USD",
     "unknown_cost_policy": "block",
     "over_cap_policy": "block_and_require_explicit_approval"
   },
   "services": [
+    {
+      "service_id": "chatgpt-pro",
+      "provider": "OpenAI",
+      "service_class": "ai-subscription",
+      "enabled": true,
+      "billing_mode": "fixed_subscription_external_to_repo",
+      "monthly_budget_usd": 100.0,
+      "plan": "Pro $100",
+      "credential_ref": "chatgpt-account-entitlement",
+      "allowed_layers": ["personal", "development"],
+      "capabilities": ["pro-models", "codex", "deep-research", "image-creation", "advanced-chatgpt-tools"],
+      "authority": "none",
+      "notes": "Budgeted at the currently available $100/month Pro tier. The $200 Pro tier is not budgeted."
+    },
     {
       "service_id": "openai-boss-lum",
       "provider": "OpenAI",
