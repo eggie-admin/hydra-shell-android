@@ -7,6 +7,7 @@ python:
   version: 3.14.7
   role: automation_services_and_ai_adapters
   package_manager: pip
+  build_backend: hatchling==1.32.3
   manifest: python/pyproject.toml
   packages:
     pyyaml: 6.0.3
@@ -46,6 +47,10 @@ ai:
       key_environment: GOOGLE_API_KEY
 
 build:
+  forge_lock: forge/forge-lock.json
   android_lane_includes_ai_sdks: false
   service_lanes_are_separate: true
   generated_dependencies_are_source: false
+  immutable_action_refs: true
+  exact_cache_restore_keys: true
+  fingerprint_receipt_required: true
