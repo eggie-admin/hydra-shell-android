@@ -137,7 +137,9 @@ jobs:
           grep -q 'LUHM_OS_ENTERPRISE_DISTRIBUTION_V1' "$ENTERPRISE_JS"
           grep -q 'luhmos-release.json' "$ENTERPRISE_JS"
           grep -q 'app.uninstall.open' "$ENTERPRISE_JS"
-          grep -q 'lum.eggiebagelface.lan' "$ENTERPRISE_JS"
+          grep -q 'http://127.0.0.1' "$ENTERPRISE_JS"
+          grep -q 'http://localhost' "$ENTERPRISE_JS"
+          ! grep -n '\.lan' "$ENTERPRISE_JS" "$ENTERPRISE_TEST" "$DIST" "$HARNESS"
           grep -q 'luhm-avatar-video' "$CSS"
           ! grep -nE 'drive\.google|drive\.usercontent|googleusercontent' "$JS"
           ! grep -nE '\beval\s*\(|new Function|child_process|OS\.execute' "$JS" "$ENTERPRISE_JS"
@@ -153,6 +155,9 @@ jobs:
           assert d['release']['repository']=='eggie-admin/hydra-shell-android'
           assert d['release']['provider']=='github_releases'
           assert d['release']['manifest_asset']=='luhmos-release.json'
+          assert d['local_harness']['backend_hosts']==['127.0.0.1','localhost']
+          assert d['local_harness']['operator_lan_origin_source']=='protected_local_config_only'
+          assert d['local_harness']['committed_private_hostnames'] is False
           assert d['local_harness']['public_backend_fallback'] is False
           assert d['android']['silent_install'] is False
           assert d['android']['silent_uninstall'] is False
@@ -457,11 +462,14 @@ jobs:
           grep -q 'LUHM_OS_ENTERPRISE_DISTRIBUTION_V1' build/android/embedded-enterprise-distribution.js
           grep -q 'eggie-admin/hydra-shell-android/releases/download/' build/android/embedded-enterprise-distribution.js
           grep -q 'app.uninstall.open' build/android/embedded-enterprise-distribution.js
+          ! grep -q '\.lan' build/android/embedded-enterprise-distribution.js
           python3 - build/android/embedded-enterprise-distribution.json <<'PY'
           import json,sys
           d=json.load(open(sys.argv[1],encoding='utf-8'))
           assert d['release']['repository']=='eggie-admin/hydra-shell-android'
           assert d['release']['manifest_asset']=='luhmos-release.json'
+          assert d['local_harness']['backend_hosts']==['127.0.0.1','localhost']
+          assert d['local_harness']['committed_private_hostnames'] is False
           assert d['local_harness']['public_backend_fallback'] is False
           assert d['android']['silent_install'] is False
           assert d['android']['silent_uninstall'] is False
@@ -481,7 +489,7 @@ jobs:
           Ephemeral signer. No release signing authority.
           Updates are eligible only from the LuHm GitHub Releases lane and require a release-manifest SHA-256.
           Android user confirmation remains mandatory for install/update and uninstall.
-          Local backend posture has no public fallback.
+          Local backend default is loopback-only; optional LAN origin belongs in protected local config.
           No deployment, release publication, canonical merge, Crown, or seal is implied by this artifact.
           EOF
           echo 'LUHM_BRANDED_ENTERPRISE_CANDIDATE_GREEN'
