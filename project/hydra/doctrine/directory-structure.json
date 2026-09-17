@@ -1,15 +1,50 @@
 {
-  "schema": "lumh-os.project-hydra.directory-doctrine.v1",
+  "schema": "luhm-os.project-hydra.directory-doctrine.v2",
   "branch_is_os": "luhmos-main",
   "os_name": "LuHm OS",
   "project_namespace": "project",
   "project_slug": "hydra",
   "canonical_root": "project/hydra",
+  "display_hierarchy": {
+    "root": "LuHm OS",
+    "project": "Project Hydra",
+    "children": [
+      {
+        "label": "Samsung Development",
+        "path": "project/hydra/samsung",
+        "status": "CANONICAL_EXISTING"
+      },
+      {
+        "label": "Ubuntu + Debian",
+        "path": "project/hydra/ubuntu-debian",
+        "status": "CANONICAL"
+      },
+      {
+        "label": "OpenAI",
+        "path": "project/hydra/openai",
+        "status": "CANONICAL"
+      },
+      {
+        "label": "Source of Truth",
+        "path": "project/hydra/source-of-truth",
+        "status": "CANONICAL_INDEX_ONLY"
+      },
+      {
+        "label": "INBOX / UNSORTED",
+        "path": "project/hydra/inbox-unsorted",
+        "status": "CANONICAL_CAPTURE_LANE"
+      }
+    ]
+  },
   "required_paths": [
     "project/hydra/doctrine",
     "project/hydra/runtime",
     "project/hydra/forge",
-    "project/hydra/samsung/android/apk"
+    "project/hydra/samsung/android/apk",
+    "project/hydra/ubuntu-debian",
+    "project/hydra/openai",
+    "project/hydra/source-of-truth",
+    "project/hydra/inbox-unsorted"
   ],
   "rules": {
     "singular_project_namespace": true,
@@ -17,7 +52,10 @@
     "duplicate_runtime_forbidden": true,
     "destructive_relocation_during_reroll": false,
     "green_ci_required_before_legacy_prune": true,
-    "secrets_in_repo": false
+    "secrets_in_repo": false,
+    "capture_first_organize_later_crown_last": true,
+    "source_of_truth_index_is_reference_only": true,
+    "hardware_unique_identifiers_in_repo": false
   },
   "legacy_compatibility_sources": [
     "lumh-os/kai9000",
