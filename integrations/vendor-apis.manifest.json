@@ -45,7 +45,10 @@
         "auth": "github_oidc_to_workload_identity_federation",
         "issuer": "https://token.actions.githubusercontent.com",
         "attribute_condition_required": true,
-        "subject_policy": "immutable_owner_and_repository_ids_when_issued_by_github",
+        "immutable_github_subject_required": true,
+        "subject_policy": "exact_immutable_github_sub_for_luhmos_main",
+        "bootstrap": "infra/gcp/bootstrap-github-wif.sh",
+        "canonical_repository_variables": ["GCP_PROJECT_ID", "GCP_WIF_PROVIDER", "GCP_SERVICE_ACCOUNT"],
         "long_lived_service_account_json_in_repo": false,
         "iam_policy": "resource_specific_least_privilege",
         "deployment_confirmation": "PROVISION"
@@ -63,6 +66,9 @@
       "repository": "eggie-admin/hydra-shell-android",
       "canonical_branch": "luhmos-main",
       "actions_oidc_issuer": "https://token.actions.githubusercontent.com",
+      "repository_created_before_2026_07_15_immutable_default_rollout": true,
+      "immutable_oidc_subject_required": true,
+      "immutable_oidc_subject_live_state": "UNVERIFIED_CONNECTOR_ENDPOINT_UNAVAILABLE",
       "pull_request_before_canonical_mutation_required": true,
       "direct_push_should_be_blocked": true,
       "force_push_should_be_blocked": true,
@@ -127,7 +133,8 @@
     "verified_date": "2026-09-17",
     "external_debt": [
       "github canonical branch has no active protection or ruleset",
-      "google cloud WIF server-side trust condition not readable from available connectors",
+      "github immutable OIDC subject live setting could not be read through the connected GitHub action",
+      "google cloud WIF live trust state is unverified; bootstrap now refuses mutation until immutable GitHub subject mode is confirmed",
       "cloudflare live account token scopes and tunnel state not readable from available connectors",
       "hugging face live account state not readable through the available connector actions"
     ]
