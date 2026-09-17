@@ -154,7 +154,13 @@ GitHub/Copilot integration:
 Mutation proof rule:
 - any successful bounded file mutation must be able to emit one SHA-256-bound proof payload rendered consistently as JSON, scriptless HTML, and a chat-safe proof block;
 - proof artifacts must exclude approval tokens, secrets, and staged file contents;
+- the in-app proof source is `backend/candidate_workflow.py` + `backend/web/mutation-candidate.html`;
 - a helper-agent summary is never a substitute for executed CI or device evidence.
+
+CI drift rule:
+- workflows must validate crowned/current authority, not legacy doctrine merely because a historical path still exists;
+- if a workflow gate depends on `lumh-os/kai9000/**` or `ultima/**` as active authority, classify it as drift and repair the gate before calling exact-head CI green;
+- preserve legacy files as evidence, but remove them from current authority assertions unless a later crown explicitly re-promotes them.
 
 ## Chrome harness rule
 
