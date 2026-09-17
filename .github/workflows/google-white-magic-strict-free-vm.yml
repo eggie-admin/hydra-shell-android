@@ -2,6 +2,12 @@ name: Google White Magic - Strict Free VM
 
 on:
   workflow_dispatch:
+    inputs:
+      confirm_provision:
+        description: Type PROVISION only after explicit Professor deployment authority
+        required: true
+        default: NO
+        type: string
 
 permissions:
   contents: read
@@ -14,11 +20,21 @@ concurrency:
 jobs:
   provision:
     name: Provision and verify strict-free VM
+    if: inputs.confirm_provision == 'PROVISION'
     runs-on: ubuntu-24.04
     environment: testing
     steps:
       - name: Checkout Warp coordinates
         uses: actions/checkout@v7
+
+      - name: Confirm explicit provision authority
+        shell: bash
+        env:
+          CONFIRM_PROVISION: ${{ inputs.confirm_provision }}
+        run: |
+          set -euo pipefail
+          test "$CONFIRM_PROVISION" = PROVISION
+          echo 'GCP_PROVISION_AUTHORITY_CONFIRMED'
 
       - name: Validate strict-free manifest
         shell: bash
