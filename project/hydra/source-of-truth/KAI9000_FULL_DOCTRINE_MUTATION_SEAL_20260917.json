@@ -1,0 +1,118 @@
+{
+  "schema": "luhm-os.kai9000.full-doctrine-mutation-seal.v1",
+  "manifest_id": "KAI9000_FULL_DOCTRINE_MUTATION_SEAL_20260917",
+  "status": "SEALED_FULL_DOCTRINE_MUTATION_GREEN",
+  "date_local": "2026-09-17",
+  "project": "LuHm OS / KAI 9000 / Project Hydra",
+  "repository": "eggie-admin/hydra-shell-android",
+  "canonical_branch": "luhmos-main",
+  "human_authority": "Professor",
+  "promotion_authorization": "EXPLICIT_CURRENT_USER_FULL_DOCTRINE_MUTATION_SEAL",
+  "source_law": "AI proposes. Policy authorizes. CI proves. The human promotes.",
+  "lineage": {
+    "prior_crown_head": "e65210ccc189084acc88e692f4beec540ca21d8b",
+    "proposal_pr": 67,
+    "audited_proposal_head": "8392e2fb905d397474273598085498855522a12f",
+    "proposal_ahead_by": 18,
+    "proposal_behind_by": 0,
+    "merge_commit": "df8be929415ab0af9724b5c497b46a440f10ce71",
+    "merge_commit_signature_verified": true
+  },
+  "doctrine_audit": {
+    "result": "10/10_GREEN",
+    "passes": {
+      "01_human_authority_and_scope": "GREEN",
+      "02_canonical_lineage_and_topology": "GREEN",
+      "03_authority_order_and_legacy_quarantine": "GREEN",
+      "04_tier_vocabulary_and_crown_law": "GREEN",
+      "05_mutation_gateway_and_proof_security": "GREEN",
+      "06_fast_lum_agent_mesh_and_paid_api_boundary": "GREEN",
+      "07_exact_head_ci_and_workflow_alignment": "GREEN",
+      "08_private_drive_sot_sync_and_history_preservation": "GREEN",
+      "09_release_device_and_signing_boundary_separation": "GREEN",
+      "10_recovery_promotion_and_seal_readiness": "GREEN"
+    }
+  },
+  "exact_head_ci": {
+    "head": "8392e2fb905d397474273598085498855522a12f",
+    "result": "8/8_SUCCESS",
+    "runs": [
+      {"name": "LuHm Modular Cockpit Source Gate", "run_id": 35196088822, "conclusion": "success"},
+      {"name": "PR guardrails", "run_id": 35196088755, "conclusion": "success"},
+      {"name": "LuHm OS Android Release Contract", "run_id": 35196088798, "conclusion": "success"},
+      {"name": "Hydra Local CI", "run_id": 35196088874, "conclusion": "success"},
+      {"name": "LuHm OS lane gates", "run_id": 35196088773, "conclusion": "success"},
+      {"name": "LuHm OS ULTIMA Debug Contract", "run_id": 35196088825, "conclusion": "success"},
+      {"name": "Cathedral Android Gate", "run_id": 35196088766, "conclusion": "success"},
+      {"name": "KAI9000 Cathedral CI", "run_id": 35196088807, "conclusion": "success"}
+    ]
+  },
+  "promoted_doctrine": {
+    "crowned_source_of_truth_first": true,
+    "legacy_lumh_os_and_ultima_active_authority": false,
+    "retired_editor_bridge_active_authority": false,
+    "agents_md_authority_drift_resolved": true,
+    "copilot_repo_law_hardened": true,
+    "workflow_legacy_authority_drift_resolved": true,
+    "fast_lum_parent_agent": "BOUNDed_SINGLE_WRITER_PARENT",
+    "mini_helpers": "READ_SEARCH_ONLY",
+    "parallelism": "READ_ONLY_ONLY",
+    "helper_consensus_grants_authority": false,
+    "chatgpt_codex_paid_plan": "HUMAN_OPERATOR_PRODUCTIVITY_LANE_ONLY",
+    "openai_api_billing": "SEPARATE_SERVER_SIDE_PROGRAMMATIC_LANE",
+    "pytorch_lightning": "OPTIONAL_COMPUTE_TRAINING_EVAL_ONLY_NO_AUTHORITY"
+  },
+  "mutation_contract": {
+    "gateway": "backend/candidate_workflow.py",
+    "bind": "127.0.0.1",
+    "default_port": 8790,
+    "shell_execution": false,
+    "ai_output_direct_to_shell": false,
+    "human_approval_required": true,
+    "checkpoint_before_write": true,
+    "preimage_sha_recheck": true,
+    "atomic_replace": true,
+    "postwrite_sha_verify": true,
+    "single_writer": true
+  },
+  "proof_contract": {
+    "one_payload_many_views": true,
+    "shared_digest": "sha256",
+    "views": ["json", "scriptless_html", "chat_safe_text"],
+    "proof_after_postwrite_verify": true,
+    "exclude": ["approval_token", "secret", "staged_file_content"],
+    "html_external_network_dependencies": false,
+    "html_script_execution": false
+  },
+  "private_drive_source_of_truth": {
+    "document_id": "18lvC_M8KB-FeiEAh7sNAKEs5xhg3RmDFKv_-mNL144I",
+    "observed_revision_before_final_seal_append": "ANLCKQn7Pi5tqNUVb9xVnuXp5LE05XSoZKz6R1wMaMW6w3y85AgclYMTqL_CYIgks5pYhTZcE3nPxeYz1v5ou69k50yTNo80E488F_vDYw",
+    "shared": false,
+    "history_preserved": true,
+    "september_17_supersession_present": true,
+    "final_seal_append_required": true
+  },
+  "release_and_device_boundary": {
+    "canonical_release_promotion_by_this_seal": false,
+    "public_publish": false,
+    "persistent_apk_signing": false,
+    "apk_install": false,
+    "deployment": false,
+    "dns_mutation": false,
+    "billing_mutation": false,
+    "debug_candidate_physical_proof_preserved_separately": true
+  },
+  "nonblocking_governance_and_external_debt": {
+    "canonical_branch_protected": false,
+    "prior_crown_commit_e65210_signature": "UNSIGNED",
+    "current_doctrine_merge_commit_signature": "VERIFIED",
+    "vercel_status_residue": "EXTERNAL_INTEGRATION_FAILURE_NOT_SOURCE_OR_DOCTRINE_FAILURE"
+  },
+  "historical_evidence": {
+    "preserved": true,
+    "mass_delete": false,
+    "mass_rename": false,
+    "history_rewrite": false
+  },
+  "result": "FULL_DOCTRINE_MUTATION_SEALED_GREEN"
+}
