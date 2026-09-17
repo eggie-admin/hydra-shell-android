@@ -18,6 +18,8 @@ on:
         type: string
   pull_request:
     branches:
+      - luhmos-main
+      - 'luhmos/**'
       - testing/luhm-os-android
     paths:
       - 'site/coming-soon/**'
@@ -38,21 +40,39 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - name: Static-site invariants
+      - name: Public/private boundary invariants
         shell: bash
         run: |
           set -euo pipefail
-          test -s site/coming-soon/public/index.html
-          test -s site/coming-soon/public/robots.txt
+
+          PUBLIC=site/coming-soon/public
+          test -s "$PUBLIC/index.html"
+          test -s "$PUBLIC/robots.txt"
+          test -s "$PUBLIC/_headers"
           test -s site/coming-soon/wrangler.preview.jsonc
           test -s site/coming-soon/wrangler.production.jsonc
-          grep -q 'eggiebagelface.art' site/coming-soon/public/index.html
-          grep -q 'noindex,nofollow,noarchive' site/coming-soon/public/index.html
-          ! grep -RniE '<script|javascript:|https?://[^ ]+' site/coming-soon/public/index.html
-          ! grep -RniE 'OPENAI_API_KEY|HF_TOKEN|CLOUDFLARE_API_TOKEN|CF_API_TOKEN|BEGIN .*PRIVATE KEY' site/coming-soon
+
+          unexpected="$(find "$PUBLIC" -maxdepth 1 -type f -printf '%f\n' | sort | grep -vE '^(index\.html|robots\.txt|_headers)$' || true)"
+          test -z "$unexpected" || { echo "Unexpected public asset(s):"; printf '%s\n' "$unexpected"; exit 1; }
+
+          grep -q 'LuHm OS' "$PUBLIC/index.html"
+          grep -q 'eggiebagelface.art' "$PUBLIC/index.html"
+          grep -q 'noindex,nofollow,noarchive,nosnippet,noimageindex' "$PUBLIC/index.html"
+          grep -q 'Content-Security-Policy:' "$PUBLIC/_headers"
+          grep -q 'X-Frame-Options: DENY' "$PUBLIC/_headers"
+          grep -q 'Permissions-Policy:' "$PUBLIC/_headers"
+          grep -q 'X-Robots-Tag: noindex' "$PUBLIC/_headers"
+
+          ! grep -RniE '<script|<form|<iframe|<object|<embed|javascript:|href=|src=|https?://' "$PUBLIC"
+          ! grep -RniE 'localhost|127\.0\.0\.1|\.lan([/[:space:]]|$)|/admin|/dev|/api' "$PUBLIC"
+          ! grep -RniE 'OPENAI_API_KEY|HF_TOKEN|CLOUDFLARE_API_TOKEN|CF_API_TOKEN|BEGIN [A-Z ]*PRIVATE KEY|Authorization:[[:space:]]*Bearer|\$\{\{[[:space:]]*secrets\.' "$PUBLIC"
+          ! find "$PUBLIC" -type f -name '*.map' -print -quit | grep -q .
+
           grep -q '"pattern": "eggiebagelface.art"' site/coming-soon/wrangler.production.jsonc
+          grep -q '"pattern": "www.eggiebagelface.art"' site/coming-soon/wrangler.production.jsonc
           ! grep -q 'fdroid.eggiebagelface.art' site/coming-soon/wrangler.production.jsonc
-          echo 'COMING_SOON_STATIC_GREEN'
+
+          echo 'LUHM_PUBLIC_PRIVATE_BOUNDARY_GREEN'
 
   deploy:
     name: Deploy Cloudflare static site

@@ -1,0 +1,125 @@
+{
+  "schema": "luhm_os.final_enterprise_distribution_seal.v1",
+  "seal_date": "2026-09-17",
+  "project": {
+    "name": "LuHm OS",
+    "machine_id": "luhm_os"
+  },
+  "repository": "eggie-admin/hydra-shell-android",
+  "branch": "luhmos/remote-build-fastpath-20260917",
+  "status": "SEALED_ENTERPRISE_DISTRIBUTION_CANDIDATE_GREEN_NOT_CROWNED",
+  "scope": "branded_install_use_local_harness_uninstall_build_release_update_contract",
+  "parent_universal_forge_seal_commit": "81fcca1098abb505431652717d3f1cb28990322e",
+  "evidence_head_sha": "4f14b003d9a867f37d088e39183338ff5b6025a0",
+  "checks": {
+    "triggered": 8,
+    "completed": 8,
+    "successful": 8,
+    "all_green": true,
+    "runs": [
+      {"name": "LuHm OS Fastpath Gate", "run_number": 154, "run_id": 35285008560, "conclusion": "success"},
+      {"name": "KAI9000 Cathedral CI", "run_number": 414, "run_id": 35285008576, "conclusion": "success"},
+      {"name": "LuHm Source Vendor Gate", "run_number": 44, "run_id": 35285008545, "conclusion": "success"},
+      {"name": "LuHm Universal Forge Gate", "run_number": 31, "run_id": 35285008556, "conclusion": "success"},
+      {"name": "LuHm OS Local CI", "run_number": 278, "run_id": 35285008490, "conclusion": "success"},
+      {"name": "Cathedral Android Gate", "run_number": 464, "run_id": 35285008531, "conclusion": "success"},
+      {"name": "PR guardrails", "run_number": 467, "run_id": 35285008568, "conclusion": "success"},
+      {"name": "LuHm Drive Avatar Candidate", "run_number": 59, "run_id": 35285008507, "conclusion": "success"}
+    ]
+  },
+  "enterprise_distribution": {
+    "schema": "luhm_os.enterprise_distribution.v1",
+    "brand": "LuHm OS",
+    "control_surface": "LuHm OS Control Center",
+    "install_authority": "android_user_confirmation",
+    "uninstall_authority": "android_user_confirmation",
+    "silent_install": false,
+    "silent_uninstall": false,
+    "legacy_manual_apk_url_ui_retired": true,
+    "native_uninstall_action": "Intent.ACTION_DELETE",
+    "production_package": "art.eggiebagelface.luhmos",
+    "candidate_package": "art.eggiebagelface.luhmos.candidate"
+  },
+  "update_trust_chain": {
+    "provider": "github_releases",
+    "repository": "eggie-admin/hydra-shell-android",
+    "release_page": "https://github.com/eggie-admin/hydra-shell-android/releases",
+    "trusted_asset_host": "github.com",
+    "trusted_asset_path_prefix": "/eggie-admin/hydra-shell-android/releases/download/",
+    "manifest_asset": "luhmos-release.json",
+    "arbitrary_apk_url_allowed": false,
+    "manifest_apk_sha256_required": true,
+    "package_match_required": true,
+    "same_android_signer_required": true,
+    "downgrade_allowed": false,
+    "published_release_required_before_runtime_install": true
+  },
+  "local_system_harness": {
+    "frontend": "packaged_appassets",
+    "backend": "local_system",
+    "public_source_default_hosts": ["127.0.0.1", "localhost"],
+    "optional_lan_origin_source": "protected_local_config_only",
+    "committed_private_hostnames": false,
+    "public_backend_fallback": false,
+    "browser_secrets": false,
+    "health_path": "/health",
+    "offline_failure_mode": "packaged_frontend_remains_available_with_explicit_local_backend_status"
+  },
+  "artifact": {
+    "workflow_run_id": 35285008507,
+    "artifact_id": 10523868101,
+    "artifact_name": "luhmos-drive-avatar-1.0.10-59",
+    "artifact_zip_sha256": "a7683667f09f51c3586d4601a2a78ef031c37e2e749406c0ff06efefdd1b0be3",
+    "apk_name": "luhmos-lum-avatar-candidate-1.0.10.apk",
+    "apk_sha256": "44fed8a0d612ea947a283fbc31ea11b0c49c8368f23085f0f8158974ff3f9c1c",
+    "version_name": "1.0.10",
+    "version_code": 110,
+    "min_sdk": 24,
+    "target_sdk": 36,
+    "abi": "arm64-v8a",
+    "signature_scheme_v2_or_newer_verified": true,
+    "zip_alignment_verified": true,
+    "embedded_enterprise_distribution_verified": true,
+    "embedded_avatar_sha256_verified": true,
+    "forbidden_termux_run_command_absent": true
+  },
+  "forge_binding": {
+    "forge_contract_sha256": "396a4ea9b220d313ce35387dde11e36429eead7f67d402401c5bf5cf23473e3e",
+    "forge_lock_sha256": "a774031f0c6eb6f425924fc6d6e21aecd8f69845d49835769b02654be3a89353",
+    "forge_fingerprint_sha256": "dea9d2330bb371213a77c5e2cfd66f0b817656318d0177880eb00d32af556e39",
+    "artifact_manifest_schema": "luhm_os.artifact_manifest.v1",
+    "artifact_forge_binding_green": true
+  },
+  "staged_release_payload": {
+    "schema": "luhm_os.release.v1",
+    "tag": "v1.0.10-proposed.59",
+    "channel": "proposed",
+    "package_id": "art.eggiebagelface.luhmos.candidate",
+    "apk_asset": "luhmos-lum-avatar-candidate-1.0.10.apk",
+    "apk_sha256": "44fed8a0d612ea947a283fbc31ea11b0c49c8368f23085f0f8158974ff3f9c1c",
+    "source_sha": "4f14b003d9a867f37d088e39183338ff5b6025a0",
+    "forge_contract_sha256": "396a4ea9b220d313ce35387dde11e36429eead7f67d402401c5bf5cf23473e3e",
+    "release_publish": "NOT_TRIGGERED"
+  },
+  "current_release_state": {
+    "versioned_enterprise_release_published": false,
+    "observed_channel_releases": "draft_pointer_only_no_installable_assets",
+    "staged_tag_published": false
+  },
+  "privacy_boundary": {
+    "public_enterprise_sources_contain_private_lan_hostname": false,
+    "private_lan_names_rejected_by_forge_validator": true,
+    "protected_local_config_required_for_optional_lan_origin": true
+  },
+  "authority": {
+    "canonical_merge": "NOT_TRIGGERED",
+    "production_deploy": "NOT_TRIGGERED",
+    "production_signing": "NOT_TRIGGERED",
+    "release_publish": "NOT_TRIGGERED",
+    "public_release": "NOT_TRIGGERED",
+    "production_install": "NOT_TRIGGERED",
+    "auto_merge": "NOT_TRIGGERED",
+    "crown": "NOT_TRIGGERED"
+  },
+  "meaning": "This seal records a green enterprise distribution candidate: branded Android install/update/uninstall authority, packaged frontend, loopback-first local backend harness, GitHub Releases-only update trust, deterministic release metadata, and artifact provenance are verified. It does not publish a GitHub Release, sign a production release, install a production package, merge canonically, deploy, or Crown."
+}
