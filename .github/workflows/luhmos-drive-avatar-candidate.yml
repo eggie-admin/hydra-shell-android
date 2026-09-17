@@ -4,8 +4,17 @@ on:
   push:
     branches:
       - luhmos/proposed-toy-gui-mutation-20260917
+      - luhmos/remote-build-fastpath-20260917
     paths:
       - 'project/hydra/samsung/android/cathedral-game/**'
+      - 'project/hydra/doctrine/proposed-source-of-truth/LUHM_OS_PROPOSED_REMOTE_BUILD_FASTPATH_20260917.json'
+      - '.github/workflows/luhmos-drive-avatar-candidate.yml'
+  pull_request:
+    branches:
+      - luhmos/public-private-boundary-20260917
+    paths:
+      - 'project/hydra/samsung/android/cathedral-game/**'
+      - 'project/hydra/doctrine/proposed-source-of-truth/LUHM_OS_PROPOSED_REMOTE_BUILD_FASTPATH_20260917.json'
       - '.github/workflows/luhmos-drive-avatar-candidate.yml'
   workflow_dispatch:
 
@@ -33,12 +42,16 @@ env:
   GODOT_TEMPLATES_SHA256: f298490b8d44d934be425a5a65a51bf15f422428b229a06a6e11d9ffea248011
   ANDROID_GRADLE_VERSION: 8.11.1
   ANDROID_GRADLE_SHA256: f397b287023acdba1e9f6fc5ea72d22dd63669d59ed4a289a29b1a76eee151c6
+  GRADLE_OPTS: >-
+    -Dorg.gradle.caching=true
+    -Dorg.gradle.parallel=true
+    -Dorg.gradle.workers.max=4
 
 jobs:
   candidate:
     name: Drive source-of-truth avatar candidate
     runs-on: ubuntu-24.04
-    timeout-minutes: 50
+    timeout-minutes: 35
     steps:
       - name: Checkout proposal
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -66,6 +79,33 @@ jobs:
         with:
           gradle-version: '8.13'
           cache-cleanup: on-success
+
+      - name: Cache verified Godot forge
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: |
+            ~/.cache/luhmos/godot-4.7.2
+            ~/.local/share/godot/export_templates/4.7.2.stable
+          key: ${{ runner.os }}-${{ runner.arch }}-luhmos-godot-${{ env.GODOT_EDITOR_SHA256 }}-${{ env.GODOT_TEMPLATES_SHA256 }}-gradle-${{ env.ANDROID_GRADLE_VERSION }}-${{ env.ANDROID_GRADLE_SHA256 }}-v2
+
+      - name: Verify remote build iron and hosted kernel
+        shell: bash
+        run: |
+          set -euo pipefail
+          ARCH="$(uname -m)"
+          CPU="$(nproc)"
+          MEM_KIB="$(awk '/MemTotal:/ {print $2}' /proc/meminfo)"
+          ROOT_FREE_KIB="$(df -Pk / | awk 'NR==2 {print $4}')"
+          test "$ARCH" = x86_64
+          test "$CPU" -ge 4
+          test "$MEM_KIB" -ge 14680064
+          test "$ROOT_FREE_KIB" -ge 8388608
+          java -version
+          node --version
+          gradle --version | sed -n '1,12p'
+          uname -srvm
+          printf 'arch=%s\ncpus=%s\nmem_kib=%s\nroot_free_kib=%s\n' "$ARCH" "$CPU" "$MEM_KIB" "$ROOT_FREE_KIB"
+          echo 'LUHM_REMOTE_BUILD_IRON_GREEN'
 
       - name: Verify local avatar runtime contract
         shell: bash
@@ -125,45 +165,73 @@ jobs:
           grep -q 'android.permission.REQUEST_INSTALL_PACKAGES' "$MANIFEST"
           ! grep -q 'com.termux.permission.RUN_COMMAND' "$MANIFEST"
 
-      - name: Install Android SDK 36
+      - name: Verify preloaded Android SDK 36 or install fallback
         shell: bash
         run: |
           set -euo pipefail
-          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
-          yes | "$SDKMANAGER" --licenses >/dev/null || true
-          "$SDKMANAGER" 'platform-tools' 'build-tools;36.1.0' 'platforms;android-36'
+          NEED_SDK=0
+          test -x "$ANDROID_HOME/build-tools/36.1.0/apksigner" || NEED_SDK=1
+          test -x "$ANDROID_HOME/build-tools/36.1.0/aapt" || NEED_SDK=1
+          test -f "$ANDROID_HOME/platforms/android-36/android.jar" || NEED_SDK=1
+          test -x "$ANDROID_HOME/platform-tools/adb" || NEED_SDK=1
+          if [ "$NEED_SDK" -eq 1 ]; then
+            SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+            yes | "$SDKMANAGER" --licenses >/dev/null || true
+            "$SDKMANAGER" 'platform-tools' 'build-tools;36.1.0' 'platforms;android-36'
+            echo 'LUHM_ANDROID_SDK_FALLBACK_INSTALL'
+          else
+            echo 'LUHM_ANDROID_SDK_PRELOADED_FASTPATH'
+          fi
+          test -x "$ANDROID_HOME/build-tools/36.1.0/apksigner"
+          test -f "$ANDROID_HOME/platforms/android-36/android.jar"
 
-      - name: Install verified Godot and templates
+      - name: Prepare verified cached Godot forge
         shell: bash
         run: |
           set -euo pipefail
           CACHE="$HOME/.cache/luhmos/godot-4.7.2"
           WORK="$RUNNER_TEMP/luhmos-godot"
-          mkdir -p "$CACHE" "$WORK"
-          curl --fail --location --retry 5 --retry-all-errors -o "$CACHE/godot.zip" \
-            "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v4.7.2-stable_linux.x86_64.zip"
-          echo "${GODOT_EDITOR_SHA256}  $CACHE/godot.zip" | sha256sum --check --strict
-          curl --fail --location --retry 5 --retry-all-errors -o "$CACHE/export_templates.tpz" \
-            "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v4.7.2-stable_export_templates.tpz"
-          echo "${GODOT_TEMPLATES_SHA256}  $CACHE/export_templates.tpz" | sha256sum --check --strict
-          GRADLE_ZIP="$CACHE/gradle-${ANDROID_GRADLE_VERSION}-bin.zip"
-          curl --fail --location --retry 5 --retry-all-errors -o "$GRADLE_ZIP" \
-            "https://services.gradle.org/distributions/gradle-${ANDROID_GRADLE_VERSION}-bin.zip"
-          echo "${ANDROID_GRADLE_SHA256}  $GRADLE_ZIP" | sha256sum --check --strict
-          unzip -q -o "$CACHE/godot.zip" -d "$WORK"
-          chmod +x "$WORK/Godot_v4.7.2-stable_linux.x86_64"
-          echo "GODOT_BIN=$WORK/Godot_v4.7.2-stable_linux.x86_64" >> "$GITHUB_ENV"
-          rm -rf "$WORK/templates" && mkdir -p "$WORK/templates"
-          unzip -q -o "$CACHE/export_templates.tpz" -d "$WORK/templates"
           TEMPLATE_DIR="$HOME/.local/share/godot/export_templates/${GODOT_TEMPLATE_VERSION}"
-          mkdir -p "$TEMPLATE_DIR"
-          cp -a "$WORK/templates/templates/." "$TEMPLATE_DIR/"
-          PATCH_DIR="$WORK/android-source-patched"
-          rm -rf "$PATCH_DIR" && mkdir -p "$PATCH_DIR"
-          unzip -q "$TEMPLATE_DIR/android_source.zip" -d "$PATCH_DIR"
-          WRAPPER_PROPS="$(find "$PATCH_DIR" -type f -path '*/gradle/wrapper/gradle-wrapper.properties' -print -quit)"
-          test -n "$WRAPPER_PROPS"
-          python3 - "$WRAPPER_PROPS" "$GRADLE_ZIP" "$ANDROID_GRADLE_SHA256" <<'PY'
+          SENTINEL="$TEMPLATE_DIR/.luhmos-fastpath-v2"
+          mkdir -p "$CACHE" "$WORK" "$TEMPLATE_DIR"
+
+          if [ ! -s "$CACHE/godot.zip" ]; then
+            curl --fail --location --retry 5 --retry-all-errors -o "$CACHE/godot.zip" \
+              "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v4.7.2-stable_linux.x86_64.zip"
+          fi
+          echo "${GODOT_EDITOR_SHA256}  $CACHE/godot.zip" | sha256sum --check --strict
+
+          if [ ! -s "$CACHE/export_templates.tpz" ]; then
+            curl --fail --location --retry 5 --retry-all-errors -o "$CACHE/export_templates.tpz" \
+              "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v4.7.2-stable_export_templates.tpz"
+          fi
+          echo "${GODOT_TEMPLATES_SHA256}  $CACHE/export_templates.tpz" | sha256sum --check --strict
+
+          GRADLE_ZIP="$CACHE/gradle-${ANDROID_GRADLE_VERSION}-bin.zip"
+          if [ ! -s "$GRADLE_ZIP" ]; then
+            curl --fail --location --retry 5 --retry-all-errors -o "$GRADLE_ZIP" \
+              "https://services.gradle.org/distributions/gradle-${ANDROID_GRADLE_VERSION}-bin.zip"
+          fi
+          echo "${ANDROID_GRADLE_SHA256}  $GRADLE_ZIP" | sha256sum --check --strict
+
+          rm -rf "$WORK/editor"
+          mkdir -p "$WORK/editor"
+          unzip -q -o "$CACHE/godot.zip" -d "$WORK/editor"
+          chmod +x "$WORK/editor/Godot_v4.7.2-stable_linux.x86_64"
+          echo "GODOT_BIN=$WORK/editor/Godot_v4.7.2-stable_linux.x86_64" >> "$GITHUB_ENV"
+
+          if [ ! -f "$SENTINEL" ] || [ ! -s "$TEMPLATE_DIR/android_source.zip" ]; then
+            rm -rf "$WORK/templates" "$TEMPLATE_DIR"
+            mkdir -p "$WORK/templates" "$TEMPLATE_DIR"
+            unzip -q -o "$CACHE/export_templates.tpz" -d "$WORK/templates"
+            cp -a "$WORK/templates/templates/." "$TEMPLATE_DIR/"
+
+            PATCH_DIR="$WORK/android-source-patched"
+            rm -rf "$PATCH_DIR" && mkdir -p "$PATCH_DIR"
+            unzip -q "$TEMPLATE_DIR/android_source.zip" -d "$PATCH_DIR"
+            WRAPPER_PROPS="$(find "$PATCH_DIR" -type f -path '*/gradle/wrapper/gradle-wrapper.properties' -print -quit)"
+            test -n "$WRAPPER_PROPS"
+            python3 - "$WRAPPER_PROPS" "$GRADLE_ZIP" "$ANDROID_GRADLE_SHA256" <<'PY'
           from pathlib import Path
           import sys
           p=Path(sys.argv[1]); uri=Path(sys.argv[2]).resolve().as_uri(); digest=sys.argv[3]
@@ -179,8 +247,15 @@ jobs:
           if not saw_sha: out.append('distributionSha256Sum='+digest)
           p.write_text('\n'.join(out)+'\n')
           PY
-          (cd "$PATCH_DIR" && zip -q -r "$TEMPLATE_DIR/android_source.zip.new" .)
-          mv "$TEMPLATE_DIR/android_source.zip.new" "$TEMPLATE_DIR/android_source.zip"
+            (cd "$PATCH_DIR" && zip -q -r "$TEMPLATE_DIR/android_source.zip.new" .)
+            mv "$TEMPLATE_DIR/android_source.zip.new" "$TEMPLATE_DIR/android_source.zip"
+            printf '%s\n%s\n%s\n' "$GODOT_EDITOR_SHA256" "$GODOT_TEMPLATES_SHA256" "$ANDROID_GRADLE_SHA256" > "$SENTINEL"
+            echo 'LUHM_GODOT_TEMPLATE_CACHE_PREPARED'
+          else
+            echo 'LUHM_GODOT_TEMPLATE_CACHE_HIT'
+          fi
+          test -s "$TEMPLATE_DIR/android_debug.apk"
+          test -s "$TEMPLATE_DIR/android_source.zip"
 
       - name: Compose Cathedral with authoritative local Lum avatar
         shell: bash
@@ -240,7 +315,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gradle -p _forge/luhmos-android/godot/android-plugin :plugin:assemble
+          gradle --build-cache --parallel -p _forge/luhmos-android/godot/android-plugin :plugin:assemble
           test -s _forge/luhmos-android/godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-debug.aar
           test -s _forge/luhmos-android/godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-release.aar
           rm -rf _forge/luhmos-android/godot/addons/CathedralAndroid
