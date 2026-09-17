@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 from pathlib import Path
+import sys
 import unittest
 
 
@@ -9,6 +10,7 @@ MODULE_PATH = Path(__file__).resolve().parents[1] / "lum_agent" / "for_loop.py"
 SPEC = importlib.util.spec_from_file_location("kai_for_loop", MODULE_PATH)
 assert SPEC and SPEC.loader
 for_loop = importlib.util.module_from_spec(SPEC)
+sys.modules[SPEC.name] = for_loop
 SPEC.loader.exec_module(for_loop)
 
 
