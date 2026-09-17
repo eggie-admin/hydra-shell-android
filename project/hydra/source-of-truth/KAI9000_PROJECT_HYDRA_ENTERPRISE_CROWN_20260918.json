@@ -101,5 +101,16 @@
     "dns_mutation": false,
     "billing_mutation": false
   },
-  "result": "SOURCE_GOVERNANCE_CROWNED_RUNTIME_AND_EXTERNAL_ENTERPRISE_GATES_OPEN"
+  "result": "SOURCE_GOVERNANCE_CROWNED_RUNTIME_AND_EXTERNAL_ENTERPRISE_GATES_OPEN",
+  "private_drive": {
+    "document_id": "18lvC_M8KB-FeiEAh7sNAKEs5xhg3RmDFKv_-mNL144I",
+    "title": "PRIVATE_CANONICAL_LUHM_OS_CROWN_DOCTRINE_20260916",
+    "final_append_revision": "ANLCKQlhoGsISYPFe5kcT0WybTyAMHfUDD-52wFZ5T_XQKoY3zqJVjm-bT6pcB11lmTPfZPMYAnHKGvyzeoZvbYEK3YyKGc4YFzY7J41Lg",
+    "final_heading": "FINAL ENTERPRISE SOURCE-GOVERNANCE CROWN · KAI9000_PROJECT_HYDRA_ENTERPRISE_CROWN_20260918",
+    "append_only": true,
+    "shared": false,
+    "owner_only_observed": true,
+    "history_preserved": true
+  },
+  "drive_sync_state": "GREEN_APPEND_ONLY_OWNER_ONLY"
 }
