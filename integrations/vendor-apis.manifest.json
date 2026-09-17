@@ -20,7 +20,39 @@
     "fdroid_host": "fdroid.eggiebagelface.art",
     "fdroid_repo_url": "https://fdroid.eggiebagelface.art/fdroid/repo/"
   },
+  "remote_assistance": {
+    "contract": "luhm-os.remote-assistance.v1",
+    "status_endpoint": "/api/assist/status",
+    "route_endpoint": "/api/assist/route",
+    "query_endpoint": "/api/assist/query",
+    "boss": "Lum",
+    "human_authority": "Professor",
+    "direct_questions_bypass_mesh": true,
+    "helpers_may_recursively_recruit": false,
+    "parallelism_max": 3,
+    "default_blades": {
+      "context": {"provider": "github", "policy": "evidence_by_reference_not_full_history_copy"},
+      "build": {"provider": "openai", "fast_model": "gpt-5.6-luna", "deep_model": "gpt-5.6-sol"},
+      "research": {"provider": "google", "text_model": "gemini-3.5-flash", "realtime": "gemini_live"},
+      "critic": {"provider": "hugging_face", "conditional": true, "fast_model": "openai/gpt-oss-20b:fastest"}
+    },
+    "latency_policy": {
+      "openai_http_keepalive": true,
+      "openai_previous_response_id_reuse": true,
+      "short_direct_turns_use_fast_profile": true,
+      "complex_build_and_audit_use_deep_profile": true,
+      "complex_helpers_run_in_parallel": true,
+      "provider_network_latency_is_measured_not_assumed": true
+    },
+    "authority": {
+      "provider_outputs_are_advisory": true,
+      "remote_execution_authority": false,
+      "consequential_actions_are_crown_gated": true,
+      "silent_cross_provider_failover": false
+    }
+  },
   "remote_ai_router": {
+    "role": "compatibility_single_provider_lane",
     "endpoint": "/api/remote-ai/chat",
     "status_endpoint": "/api/remote-ai/status",
     "provider_mode": "auto|openai|huggingface",
@@ -37,6 +69,7 @@
       "project_label": "LuHm OS",
       "logical_project_id": "luhm_os",
       "role": "primary_remote_reasoning_and_typed_tool_lane",
+      "assistance_role": "build_and_reasoning_primary",
       "api": "responses",
       "endpoint": "https://api.openai.com/v1/responses",
       "fast_model": "gpt-5.6-luna",
@@ -59,6 +92,7 @@
       "project_label": "LuHm OS",
       "logical_project_id": "luhm_os",
       "role": "cloud_service_and_recovery_content_lane",
+      "assistance_role": "research_realtime_multimodal_advisory",
       "cloud": {
         "auth": "github_oidc_to_workload_identity_federation",
         "issuer": "https://token.actions.githubusercontent.com",
@@ -87,6 +121,7 @@
       "project_label": "LuHm OS",
       "logical_project_id": "luhm_os",
       "role": "canonical_versioned_source_ci_and_oidc_issuer",
+      "assistance_role": "context_evidence_ci_by_reference",
       "repository": "eggie-admin/hydra-shell-android",
       "repository_slug_is_transport_identifier": true,
       "canonical_branch": "luhmos-main",
@@ -108,6 +143,7 @@
       "project_label": "LuHm OS",
       "logical_project_id": "luhm_os",
       "role": "public_edge_dns_tunnel_and_static_distribution_lane",
+      "assistance_role": "edge_transport_not_reasoning",
       "api_base": "https://api.cloudflare.com/client/v4",
       "zone": "eggiebagelface.art",
       "worker_service_name": "eggiebagelface-art-coming-soon",
@@ -124,6 +160,7 @@
       "project_label": "LuHm OS",
       "logical_project_id": "luhm_os",
       "role": "open_model_catalog_and_alternate_remote_inference_lane",
+      "assistance_role": "conditional_critic_and_alternate_inference",
       "account": "eggiebagelface",
       "organization": null,
       "account_is_transport_identity": true,
