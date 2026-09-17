@@ -1,0 +1,255 @@
+{
+  "schema": "luhm-os.proposed-seal-of-truth-doctrine-mutation.stale-artifact-audit.v4",
+  "proposal_id": "KAI9000_PROPOSED_SEAL_OF_TRUTH_DOCTRINE_MUTATION_STALE_ARTIFACT_AUDIT_20260916_V4",
+  "status": "PROPOSED_NOT_CROWNED",
+  "project": "LuHm OS / KAI 9000 / Project Hydra",
+  "date_local": "2026-09-16",
+  "generated_utc": "2026-09-17T03:18:00Z",
+  "human_authority": "Professor",
+  "purpose": "Stage an additive seal-of-truth doctrine mutation and stale-artifact audit that reconciles current Git coordinates, testing-lane drift, proposal semantics, retirement rules, and Crown authority without deleting, purging, promoting, installing, publishing, or silently rewriting historical evidence.",
+  "proposal_lane": {
+    "repository": "eggie-admin/hydra-shell-android",
+    "branch": "luhmos/proposed-sot-doctrine-audit-20260916-v4",
+    "path": "project/hydra/doctrine/proposed-source-of-truth/KAI9000_PROPOSED_SEAL_OF_TRUTH_DOCTRINE_MUTATION_STALE_ARTIFACT_AUDIT_20260916_V4.json",
+    "promotion_is_automatic": false,
+    "crown_is_automatic": false,
+    "requires_explicit_professor_authorization": true
+  },
+  "canonical_anchor": {
+    "canonical_product_branch": "luhmos-main",
+    "head_commit_at_audit": "93ef0af6ca1ed9b03dfe5ee28a17e51546fd1bbb",
+    "head_commit_message": "doctrine: add proposed seal of truth stale artifact audit AI manifest v3",
+    "canonical_root": "project/hydra",
+    "source_of_truth_directory": "project/hydra/source-of-truth",
+    "proposed_source_of_truth_directory": "project/hydra/doctrine/proposed-source-of-truth"
+  },
+  "release_channel_doctrine": {
+    "development_branch": "luhmos/dev/samsung-android-paid-pro",
+    "promotion_order": [
+      "luhmos/testing",
+      "luhmos/proposed",
+      "luhmos/preview",
+      "luhmos/beta",
+      "luhmos/stable",
+      "reviewed_promotion_to_luhmos-main"
+    ],
+    "forward_only": true,
+    "ci_success_grants_release_authority": false,
+    "paid_service_status_grants_release_authority": false,
+    "stable_publish_requires_human_approval": true,
+    "physical_samsung_proof_required_for_stable": true
+  },
+  "current_lane_audit": {
+    "testing": {
+      "head": "6460bf79b20fb6f036ab0876da45a4e37f5889bd",
+      "contains_boss_mesh_candidate": true,
+      "relative_to_current_main": "DIVERGED",
+      "ahead_by": 10,
+      "behind_by": 8,
+      "merge_base": "c00ab4fe2f270de741a26be9f57f95d81425c0ea",
+      "verdict": "AMBER_RECONCILE_BEFORE_PROMOTION"
+    },
+    "proposed_channel": {
+      "head": "eafa8f5eebba25f94dc4c4f984bce18974d741d5",
+      "relative_to_current_main": "DIVERGED",
+      "verdict": "AMBER_CHANNEL_HEAD_IS_NOT_CURRENT_CANONICAL_BASE",
+      "force_move_forbidden_without_explicit_reconciliation": true
+    },
+    "branch_protection": {
+      "luhmos_main_protected_at_audit": false,
+      "luhmos_testing_protected_at_audit": false,
+      "verdict": "AMBER_GOVERNANCE_DEBT"
+    }
+  },
+  "seal_of_truth_doctrine": {
+    "truth_requires_current_coordinates_and_evidence": true,
+    "proposal_is_not_crown": true,
+    "candidate_is_not_stable": true,
+    "source_green_is_not_release_green": true,
+    "ci_green_is_not_physical_device_green": true,
+    "git_history_is_not_a_substitute_for_explicit_receipts": true,
+    "historical_evidence_must_not_be_rewritten_to_look_current": true,
+    "human_authority_remains_external_to_ai_and_ci": true,
+    "ai_may_inspect_build_test_and_propose": true,
+    "ai_may_not_self_approve_promote_publish_or_crown": true,
+    "exact_commit_sha_required_for_mutation_receipts": true,
+    "artifact_sha256_required_when_build_artifacts_are_promoted": true,
+    "signer_fingerprint_required_when_android_release_artifacts_are_promoted": true,
+    "secret_material_forbidden_in_git_apk_webview_prompts_logs_and_manifests": true,
+    "webview_is_presentation_not_authority": true,
+    "direct_privileged_webview_shell_is_forbidden": true,
+    "typed_native_bridge_required_for_privileged_operations": true,
+    "loopback_or_private_binding_is_default_for_local_services": true
+  },
+  "stale_artifact_doctrine": {
+    "definition": "An artifact is stale when one or more operational claims, active references, source coordinates, branch identities, package identities, signer assumptions, runtime dependencies, security boundaries, or promotion semantics are superseded by newer canonical evidence. Age alone does not make an artifact stale.",
+    "age_based_deletion_allowed": false,
+    "stale_does_not_mean_delete": true,
+    "historical_does_not_mean_stale": true,
+    "proposal_does_not_mean_stale": true,
+    "unmerged_candidate_does_not_mean_stale": true,
+    "active_executable_drift_has_higher_priority_than_documentation_drift": true,
+    "security_and_permission_drift_has_highest_priority": true,
+    "license_notice_and_provenance_history_must_be_preserved": true,
+    "rollback_coordinates_must_be_recorded_before_retirement": true,
+    "no_destructive_cleanup_without_human_gate": true
+  },
+  "artifact_classes": {
+    "ACTIVE_CANONICAL": "Current authority or required live reference. Never purge as stale.",
+    "ACTIVE_CANONICAL_TRANSITIONAL": "Current live reference with a transitional dependency. Migrate before retirement.",
+    "ACTIVE_DRIFTED_GUIDANCE": "Documentation or agent guidance that can steer work toward superseded architecture.",
+    "ACTIVE_DRIFTED_EXECUTABLE": "Workflow, script, test, guard, or runtime code that can enforce superseded architecture.",
+    "COMPATIBILITY_PINNED": "Legacy implementation still required by an active compatibility pointer.",
+    "HISTORICAL_EVIDENCE": "Past receipts, hashes, signatures, source snapshots, or device proof. Preserve read-only.",
+    "HISTORICAL_GUIDANCE": "Old instructions useful for archaeology but not current operation.",
+    "SOURCE_CANDIDATE": "Current candidate awaiting promotion gates. Not stale merely because it is unmerged.",
+    "PROPOSED_MUTATION": "Proposal awaiting explicit human decision.",
+    "TEST_HARNESS_ONLY": "Compatibility or behavioral harness isolated from release authority.",
+    "QUARANTINE": "Unknown provenance, conflicting payload, unresolved license, or unresolved security state.",
+    "RETIREMENT_CANDIDATE": "No live references remain, replacement is green, evidence retained, and retirement gates pass.",
+    "DELETE_CANDIDATE": "Retirement candidate with explicit Professor authorization for deletion. Never auto-assigned."
+  },
+  "staleness_tests": [
+    "Does this artifact contradict a newer crowned or canonical contract?",
+    "Does it point to an obsolete branch, package ID, signer model, runtime path, donor source, or release path?",
+    "Can an agent, workflow, script, guard, or human following it still mutate the project incorrectly?",
+    "Is it still referenced by canonical code, manifests, workflows, tests, docs, release gates, or rollback procedures?",
+    "Is it historical evidence, licensing provenance, or a reproducibility receipt that must remain available?",
+    "Has a replacement passed schema, syntax, unit, contract, CI, signing, and physical-device gates where applicable?",
+    "Would removal damage rollback, reproducibility, forensic auditability, licensing attribution, or signer continuity?"
+  ],
+  "retirement_gate": {
+    "required_before_retirement_candidate": [
+      "replacement_identified",
+      "all_active_references_migrated_or_removed",
+      "syntax_and_schema_validation_green",
+      "affected_unit_and_contract_tests_green",
+      "affected_ci_green",
+      "security_boundary_not_widened",
+      "provenance_and_license_receipts_preserved",
+      "rollback_coordinate_recorded",
+      "source_of_truth_or_doctrine_pointer_updated"
+    ],
+    "additional_android_release_requirements": [
+      "package_identity_verified",
+      "persistent_signer_continuity_verified_when_applicable",
+      "artifact_sha256_recorded",
+      "apk_or_aab_build_green_when_applicable",
+      "physical_samsung_validation_when_release_behavior_changes"
+    ],
+    "required_before_delete_candidate": [
+      "retirement_candidate_status_green",
+      "explicit_professor_delete_or_purge_authorization",
+      "no_live_reference_detected",
+      "evidence_snapshot_retained"
+    ],
+    "automatic_delete": false,
+    "automatic_purge": false
+  },
+  "audit_findings": [
+    {
+      "target": "luhmos/testing",
+      "class": "ACTIVE_CANONICAL_TRANSITIONAL",
+      "verdict": "RECONCILE_NOT_PROMOTE",
+      "reason": "Testing contains the Boss mesh candidate but is diverged from current luhmos-main by ten candidate commits and eight canonical-main commits."
+    },
+    {
+      "target": "luhmos/proposed",
+      "class": "ACTIVE_CANONICAL_TRANSITIONAL",
+      "verdict": "DO_NOT_FORCE_ADVANCE",
+      "reason": "The channel head is older and diverged. Proposed promotion must consume a valid testing receipt, not bypass current lineage."
+    },
+    {
+      "target": "project/hydra/doctrine/proposed-source-of-truth/KAI9000_PROPOSED_SEAL_OF_TRUTH_STALE_ARTIFACT_AUDIT_DOCTRINE_AI_MANIFEST_20260916_V3.json",
+      "class": "PROPOSED_MUTATION",
+      "verdict": "PRESERVE_AS_PROPOSAL_EVIDENCE",
+      "reason": "It is proposal material even though it exists on luhmos-main. Presence on the canonical source branch does not by itself crown the proposal."
+    },
+    {
+      "target": "luhmos/proposed-stale-artifact-doctrine-20260916",
+      "class": "HISTORICAL_GUIDANCE",
+      "verdict": "PRESERVE_AND_SUPERSEDE",
+      "reason": "Earlier proposal lane remains useful provenance but is anchored before the current main head."
+    },
+    {
+      "target": "luhmos/proposed-sot-ai-manifest-20260916",
+      "class": "HISTORICAL_GUIDANCE",
+      "verdict": "PRESERVE_AND_SUPERSEDE",
+      "reason": "Earlier proposed AI manifest lane remains valid evidence but is not the freshest current-source proposal."
+    }
+  ],
+  "priority_order": [
+    {
+      "priority": 1,
+      "target": "security_and_execution_drift",
+      "action": "patch_or_quarantine_before_documentation_cleanup"
+    },
+    {
+      "priority": 2,
+      "target": "testing_and_proposed_branch_lineage",
+      "action": "reconcile_on_current_source_then_generate_testing_receipt"
+    },
+    {
+      "priority": 3,
+      "target": "canonical_and_agent_guidance",
+      "action": "patch_active_docs_and_instructions_to_current_coordinates"
+    },
+    {
+      "priority": 4,
+      "target": "templates_and_legacy_proposals",
+      "action": "mark_historical_after_replacements_exist"
+    },
+    {
+      "priority": 5,
+      "target": "historical_evidence",
+      "action": "preserve_read_only"
+    }
+  ],
+  "proposed_mutation_sequence": [
+    "Freeze and record current luhmos-main SHA 93ef0af6ca1ed9b03dfe5ee28a17e51546fd1bbb as rollback anchor.",
+    "Reconcile the Boss mesh candidate onto the current governed source base through the paid-Pro development lane or an explicitly reviewed equivalent reconciliation branch.",
+    "Run source gate, secret scan, deterministic no-key tests, and affected Android/source contract gates.",
+    "Generate a testing receipt with exact source SHA, workflow run, test summary, known blockers, and artifact hashes when artifacts exist.",
+    "Advance luhmos/testing by fast-forward or reviewed merge only after reconciliation evidence exists.",
+    "Advance luhmos/proposed only from an accepted testing receipt. Do not force-move the channel to hide divergence.",
+    "Build a machine-readable reference graph before marking any active executable or runtime artifact for retirement.",
+    "Patch active executable/security drift before cosmetic documentation cleanup.",
+    "Preserve historical evidence, signer receipts, build hashes, license notices, and rollback coordinates.",
+    "Require explicit Professor authorization before any delete, purge, publish, stable promotion, install, or Crown mutation."
+  ],
+  "anti_drift_rules": {
+    "new_active_docs_reference_current_canonical_coordinates": true,
+    "proposal_files_must_state_proposed_not_crowned": true,
+    "proposal_presence_on_luhmos_main_does_not_equal_crown": true,
+    "new_release_templates_use_package_art_eggiebagelface_luhmos": true,
+    "retired_package_ids_forbidden_in_active_release_guidance": true,
+    "testing_must_not_silently_skip_paid_pro_or_current_source_reconciliation": true,
+    "proposed_must_not_skip_testing_receipt": true,
+    "force_branch_moves_are_not_a_substitute_for_reconciliation": true,
+    "historical_evidence_is_immutable_except_metadata_labeling": true,
+    "webview_cannot_gain_arbitrary_shell_authority": true,
+    "headless_socket_broker_must_use_typed_allowlisted_operations": true,
+    "source_green_does_not_equal_release_green": true,
+    "physical_device_green_is_a_separate_gate": true
+  },
+  "locks": {
+    "delete": false,
+    "purge": false,
+    "archive_move": false,
+    "runtime_mutation": false,
+    "compile": false,
+    "install_apk": false,
+    "publish": false,
+    "promote": false,
+    "crown": false,
+    "secret_print": false
+  },
+  "audit_verdict": "GREEN_PROPOSAL_WITH_AMBER_LINEAGE_AND_GOVERNANCE_DRIFT",
+  "proposed_seal_name_if_approved": "KAI9000_SEAL_OF_TRUTH_AND_STALE_ARTIFACT_AUDIT_DOCTRINE_20260916",
+  "next_gate": "Reconcile testing lineage onto current canonical source, generate a testing receipt, then review whether this proposal should be promoted into crowned doctrine.",
+  "resume_phrase": "continue KAI 9000 from proposed seal of truth stale artifact audit doctrine v4",
+  "signature": {
+    "signed_by": "Lum",
+    "meaning": "AI-authored proposal receipt only. This signature does not grant Crown authority, release authority, or permission to delete, publish, install, promote, or mutate stable state."
+  }
+}
