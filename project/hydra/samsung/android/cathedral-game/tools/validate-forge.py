@@ -38,6 +38,15 @@ def require_text(path: Path, needles: list[str]) -> None:
         die(f"{path}: missing contract markers {missing}")
 
 
+def forbid_text(path: Path, needles: list[str]) -> None:
+    if not path.is_file():
+        die(f"missing required file: {path}")
+    text = path.read_text(encoding="utf-8")
+    found = [needle for needle in needles if needle in text]
+    if found:
+        die(f"{path}: forbidden public-source markers {found}")
+
+
 def main() -> int:
     game = Path(sys.argv[1] if len(sys.argv) > 1 else ".").resolve()
     repo = find_repo_root(game)
@@ -133,7 +142,11 @@ def main() -> int:
         if distribution.get(key) is not True:
             die(f"enterprise distribution must keep {key}=true")
 
-    dist_contract = load_json(game / distribution["contract"])
+    dist_path = game / distribution["contract"]
+    runtime_path = game / distribution["runtime_client"]
+    runtime_test_path = game / distribution["runtime_test"]
+    harness_path = game / distribution["local_backend_harness"]
+    dist_contract = load_json(dist_path)
     if dist_contract.get("schema") != distribution["schema"]:
         die("distribution contract schema mismatch")
     release = dist_contract.get("release", {})
@@ -141,8 +154,18 @@ def main() -> int:
         die("distribution release authority drift")
     if release.get("manifest_asset") != "luhmos-release.json":
         die("release manifest asset drift")
-    if dist_contract.get("local_harness", {}).get("public_backend_fallback") is not False:
+    local_harness = dist_contract.get("local_harness", {})
+    if local_harness.get("public_backend_fallback") is not False:
         die("local harness may not fall back to a public backend")
+    if local_harness.get("committed_private_hostnames") is not False:
+        die("enterprise source must not commit private hostnames")
+    if local_harness.get("backend_hosts") != ["127.0.0.1", "localhost"]:
+        die("public enterprise harness defaults must remain loopback-only")
+    if local_harness.get("operator_lan_origin_source") != "protected_local_config_only":
+        die("optional LAN origin must come from protected local config")
+
+    for privacy_path in [dist_path, runtime_path, runtime_test_path, harness_path]:
+        forbid_text(privacy_path, [".lan"])
 
     package = load_json(repo / wizard["package_manifest"])
     package_lock = load_json(repo / wizard["package_lock"])
@@ -176,18 +199,19 @@ def main() -> int:
         "device mutation requires explicit apply flag",
         "wizard accepts only the collision-free candidate package",
     ])
-    require_text(game / distribution["runtime_client"], [
+    require_text(runtime_path, [
         "LUHM_OS_ENTERPRISE_DISTRIBUTION_V1",
         "api.github.com/repos/",
         "/releases/download/",
         "luhmos-release.json",
         "app.uninstall.open",
-        "lum.eggiebagelface.lan",
+        "http://127.0.0.1",
+        "http://localhost",
     ])
-    require_text(game / distribution["runtime_test"], [
+    require_text(runtime_test_path, [
         "pins updates to the LuHm GitHub Releases lane",
         "branded uninstall is explicit and delegates to native Android",
-        "local harness probes only approved local origins",
+        "local harness probes only committed loopback origins",
     ])
     require_text(game / distribution["native_patch"], [
         "LUHM_ENTERPRISE_DISTRIBUTION_NATIVE_V1",
@@ -200,10 +224,11 @@ def main() -> int:
         "apk_sha256",
         "release_page",
     ])
-    require_text(game / distribution["local_backend_harness"], [
+    require_text(harness_path, [
         '"local_first"',
         '"public_backend_fallback": False',
         '"https://appassets.androidplatform.net"',
+        '"committed_private_hostnames": False',
     ])
 
     workflows = [
@@ -270,6 +295,7 @@ def main() -> int:
         "enterprise-distribution.test.mjs",
         "LUHM_ENTERPRISE_ANDROID_PATCH_GREEN",
         "luhmos-release.json",
+        "127.0.0.1",
     ]:
         if marker not in drive:
             die(f"Android candidate workflow missing enterprise marker: {marker}")
@@ -288,6 +314,7 @@ def main() -> int:
     print(f"locked_workflows={len(workflows)}")
     print(f"wizard_commands={','.join(wizard['commands'])}")
     print("enterprise_distribution=GREEN")
+    print("enterprise_private_hostname_boundary=GREEN")
     return 0
 
 
