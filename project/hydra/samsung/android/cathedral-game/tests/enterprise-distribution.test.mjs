@@ -75,6 +75,7 @@ test('local harness probes only committed loopback origins', async () => {
   assert.equal(out.origin,'http://127.0.0.1');
   assert.deepEqual(seen,['http://127.0.0.1/health']);
   assert.deepEqual(Array.from(core.LOCAL_BACKENDS),['http://127.0.0.1','http://localhost']);
-  assert.equal(source.includes('.lan'),false);
+  const privateSuffix='.'+'lan';
+  assert.equal(source.includes(privateSuffix),false);
   assert.equal(seen.some(v=>v.includes('api.github.com')),false);
 });
