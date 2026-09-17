@@ -1,0 +1,289 @@
+name: LuHm APK Install GUI Candidate
+
+on:
+  push:
+    branches:
+      - luhmos/proposed-apk-install-gui-20260917
+    paths:
+      - 'project/hydra/samsung/android/cathedral-game/**'
+      - 'project/hydra/doctrine/proposed-source-of-truth/KAI9000_PROPOSED_APK_INSTALL_GUI_20260917.json'
+      - '.github/workflows/luhmos-apk-install-gui-candidate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: luhmos-apk-install-gui-candidate-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DONOR_REPO: eggie-admin/vue-headless-cms
+  DONOR_REF: dd9b3e68e14ce7a559b7b13aebfe10c630fa171b
+  PACKAGE_ID: art.eggiebagelface.luhmos
+  VERSION_NAME: '1.0.8'
+  VERSION_CODE: '108'
+  APK_NAME: luhmos-apk-install-gui-candidate-1.0.8.apk
+  GODOT_RELEASE: 4.7.2-stable
+  GODOT_TEMPLATE_VERSION: 4.7.2.stable
+  GODOT_EDITOR_SHA256: cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4
+  GODOT_TEMPLATES_SHA256: f298490b8d44d934be425a5a65a51bf15f422428b229a06a6e11d9ffea248011
+  ANDROID_GRADLE_VERSION: 8.11.1
+  ANDROID_GRADLE_SHA256: f397b287023acdba1e9f6fc5ea72d22dd63669d59ed4a289a29b1a76eee151c6
+
+jobs:
+  candidate:
+    name: Headless GUI + APK install candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout crowned-source proposal
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Checkout exact native updater forge
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: ${{ env.DONOR_REPO }}
+          ref: ${{ env.DONOR_REF }}
+          path: _forge/luhmos-android
+          persist-credentials: false
+
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+
+      - uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a
+        with:
+          gradle-version: '8.13'
+          cache-cleanup: on-success
+
+      - name: Verify GUI and native install contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          GAME='project/hydra/samsung/android/cathedral-game'
+          JS="$GAME/apk-install-gui.js"
+          CSS="$GAME/apk-install-gui.css"
+          TEST="$GAME/tests/apk-install-gui.test.mjs"
+          PLUGIN='_forge/luhmos-android/godot/android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralAndroidPlugin.kt'
+          MANIFEST='_forge/luhmos-android/godot/android-plugin/plugin/src/main/AndroidManifest.xml'
+
+          test -s "$JS" && test -s "$CSS" && test -s "$TEST"
+          grep -q 'LUHMOS_APK_INSTALL_GUI_V1' "$JS"
+          grep -q "EVENT='app.update.install'" "$JS"
+          grep -q 'CathedralBridge.postMessage' "$JS"
+          grep -q 'VERIFY + OPEN ANDROID INSTALLER' "$JS"
+          grep -q 'No background checks. No silent install. No shell. No self-approval.' "$JS"
+          ! grep -nE '\beval\s*\(|new Function|child_process|OS\.execute' "$JS"
+          node --test "$TEST"
+
+          grep -q 'app.update.install' "$PLUGIN"
+          grep -q 'ACTION_MANAGE_UNKNOWN_APP_SOURCES' "$PLUGIN"
+          grep -q 'PackageInstaller.SessionParams' "$PLUGIN"
+          grep -q 'USER_ACTION_REQUIRED' "$PLUGIN"
+          grep -q 'archive.packageName != context.packageName' "$PLUGIN"
+          grep -q 'signing certificate does not match installed LuHm OS' "$PLUGIN"
+          grep -q 'Rejected downgrade' "$PLUGIN"
+          grep -q 'android.permission.REQUEST_INSTALL_PACKAGES' "$MANIFEST"
+          echo 'LUHMOS_APK_INSTALL_GUI_SOURCE_GREEN'
+
+      - name: Install Android SDK 36
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" 'platform-tools' 'build-tools;36.1.0' 'platforms;android-36'
+
+      - name: Install verified Godot and templates
+        shell: bash
+        run: |
+          set -euo pipefail
+          CACHE="$HOME/.cache/luhmos/godot-4.7.2"
+          WORK="$RUNNER_TEMP/luhmos-godot"
+          mkdir -p "$CACHE" "$WORK"
+          curl --fail --location --retry 5 --retry-all-errors -o "$CACHE/godot.zip" \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v4.7.2-stable_linux.x86_64.zip"
+          echo "${GODOT_EDITOR_SHA256}  $CACHE/godot.zip" | sha256sum --check --strict
+          curl --fail --location --retry 5 --retry-all-errors -o "$CACHE/export_templates.tpz" \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v4.7.2-stable_export_templates.tpz"
+          echo "${GODOT_TEMPLATES_SHA256}  $CACHE/export_templates.tpz" | sha256sum --check --strict
+          GRADLE_ZIP="$CACHE/gradle-${ANDROID_GRADLE_VERSION}-bin.zip"
+          curl --fail --location --retry 5 --retry-all-errors -o "$GRADLE_ZIP" \
+            "https://services.gradle.org/distributions/gradle-${ANDROID_GRADLE_VERSION}-bin.zip"
+          echo "${ANDROID_GRADLE_SHA256}  $GRADLE_ZIP" | sha256sum --check --strict
+          unzip -q -o "$CACHE/godot.zip" -d "$WORK"
+          chmod +x "$WORK/Godot_v4.7.2-stable_linux.x86_64"
+          echo "GODOT_BIN=$WORK/Godot_v4.7.2-stable_linux.x86_64" >> "$GITHUB_ENV"
+          rm -rf "$WORK/templates" && mkdir -p "$WORK/templates"
+          unzip -q -o "$CACHE/export_templates.tpz" -d "$WORK/templates"
+          TEMPLATE_DIR="$HOME/.local/share/godot/export_templates/${GODOT_TEMPLATE_VERSION}"
+          mkdir -p "$TEMPLATE_DIR"
+          cp -a "$WORK/templates/templates/." "$TEMPLATE_DIR/"
+          PATCH_DIR="$WORK/android-source-patched"
+          rm -rf "$PATCH_DIR" && mkdir -p "$PATCH_DIR"
+          unzip -q "$TEMPLATE_DIR/android_source.zip" -d "$PATCH_DIR"
+          WRAPPER_PROPS="$(find "$PATCH_DIR" -type f -path '*/gradle/wrapper/gradle-wrapper.properties' -print -quit)"
+          test -n "$WRAPPER_PROPS"
+          python3 - "$WRAPPER_PROPS" "$GRADLE_ZIP" "$ANDROID_GRADLE_SHA256" <<'PY'
+          from pathlib import Path
+          import sys
+          p=Path(sys.argv[1]); uri=Path(sys.argv[2]).resolve().as_uri(); digest=sys.argv[3]
+          lines=p.read_text().splitlines(); out=[]; saw=False
+          for line in lines:
+              if line.startswith('distributionUrl='):
+                  out.append('distributionUrl='+uri); saw=True
+              elif line.startswith('distributionSha256Sum='):
+                  out.append('distributionSha256Sum='+digest)
+              else:
+                  out.append(line)
+          if not saw: raise SystemExit('missing Gradle distributionUrl')
+          if not any(x.startswith('distributionSha256Sum=') for x in out): out.append('distributionSha256Sum='+digest)
+          p.write_text('\n'.join(out)+'\n')
+          PY
+          (cd "$PATCH_DIR" && zip -q -r "$TEMPLATE_DIR/android_source.zip.new" .)
+          mv "$TEMPLATE_DIR/android_source.zip.new" "$TEMPLATE_DIR/android_source.zip"
+
+      - name: Compose current Cathedral GUI into updater forge
+        shell: bash
+        run: |
+          set -euo pipefail
+          GAME="$GITHUB_WORKSPACE/project/hydra/samsung/android/cathedral-game"
+          CMS='_forge/luhmos-android/godot/android-plugin/plugin/src/main/assets/cms'
+          PRESET='_forge/luhmos-android/godot/export_presets.cfg'
+          rm -rf "$CMS" && mkdir -p "$CMS"
+          cp -a "$GAME"/. "$CMS"/
+
+          python3 - "$CMS/index.html" <<'PY'
+          from pathlib import Path
+          import sys
+          p=Path(sys.argv[1]); text=p.read_text(encoding='utf-8')
+          links=[
+              '<link rel="stylesheet" href="final-form.css">',
+              '<link rel="stylesheet" href="apk-install-gui.css">',
+              '<script defer src="final-form.js"></script>',
+              '<script defer src="apk-install-gui.js"></script>',
+          ]
+          missing=[x for x in links if x not in text]
+          if missing:
+              text=text.replace('</head>', '\n'.join(missing)+'\n</head>', 1)
+          p.write_text(text, encoding='utf-8')
+          PY
+          grep -q 'apk-install-gui.css' "$CMS/index.html"
+          grep -q 'apk-install-gui.js' "$CMS/index.html"
+
+          python3 - "$PRESET" "$VERSION_CODE" "$VERSION_NAME" <<'PY'
+          from pathlib import Path
+          import re,sys
+          p=Path(sys.argv[1]); code,name=sys.argv[2],sys.argv[3]; text=p.read_text()
+          text=re.sub(r'(?m)^version/code=\d+$',f'version/code={code}',text)
+          text=re.sub(r'(?m)^version/name="[^"]*"$',f'version/name="{name}"',text)
+          text=re.sub(r'(?m)^export_path="[^"]*"$',f'export_path="../build/android/luhmos-{name}.apk"',text,count=1)
+          text=re.sub(r'(?m)^gradle_build/min_sdk="[^"]*"$','gradle_build/min_sdk="24"',text)
+          text=re.sub(r'(?m)^gradle_build/target_sdk="[^"]*"$','gradle_build/target_sdk="36"',text)
+          p.write_text(text)
+          PY
+          grep -q 'version/code=108' "$PRESET"
+          grep -q 'version/name="1.0.8"' "$PRESET"
+
+      - name: Compile native updater plugin
+        shell: bash
+        run: |
+          set -euo pipefail
+          gradle -p _forge/luhmos-android/godot/android-plugin :plugin:assemble
+          test -s _forge/luhmos-android/godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-debug.aar
+          test -s _forge/luhmos-android/godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-release.aar
+          rm -rf _forge/luhmos-android/godot/addons/CathedralAndroid
+          mkdir -p _forge/luhmos-android/godot/addons/CathedralAndroid/bin/debug _forge/luhmos-android/godot/addons/CathedralAndroid/bin/release
+          cp -a _forge/luhmos-android/godot/android-plugin/plugin/export_scripts_template/. _forge/luhmos-android/godot/addons/CathedralAndroid/
+          cp _forge/luhmos-android/godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-debug.aar _forge/luhmos-android/godot/addons/CathedralAndroid/bin/debug/
+          cp _forge/luhmos-android/godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-release.aar _forge/luhmos-android/godot/addons/CathedralAndroid/bin/release/
+
+      - name: Configure ephemeral candidate signer
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.config/godot" build/android
+          cat > "$HOME/.config/godot/editor_settings-4.tres" <<EOF
+          [gd_resource type="EditorSettings" format=3]
+
+          [resource]
+          export/android/android_sdk_path = "$ANDROID_HOME"
+          export/android/java_sdk_path = "$JAVA_HOME"
+          EOF
+          KEYSTORE="$RUNNER_TEMP/luhmos-candidate.keystore"
+          keytool -genkeypair -keystore "$KEYSTORE" -storepass android \
+            -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 \
+            -validity 10000 -dname 'CN=LuHm OS APK Candidate,O=Eggie Bagelface Art,C=US'
+          echo "GODOT_ANDROID_KEYSTORE_DEBUG_PATH=$KEYSTORE" >> "$GITHUB_ENV"
+          echo 'GODOT_ANDROID_KEYSTORE_DEBUG_USER=androiddebugkey' >> "$GITHUB_ENV"
+          echo 'GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD=android' >> "$GITHUB_ENV"
+
+      - name: Headless parse and export candidate APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$GODOT_BIN" --headless --editor --path _forge/luhmos-android/godot --quit
+          "$GODOT_BIN" --headless --path _forge/luhmos-android/godot \
+            --install-android-build-template \
+            --export-debug 'Android Release' \
+            "$GITHUB_WORKSPACE/build/android/$APK_NAME"
+          test -s "build/android/$APK_NAME"
+
+      - name: Hard verify APK and GUI payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="build/android/$APK_NAME"
+          BT="$ANDROID_HOME/build-tools/36.1.0"
+          "$BT/apksigner" verify --verbose --print-certs "$APK" | tee build/android/signature.txt
+          "$BT/zipalign" -c -P 16 -v 4 "$APK" | tee build/android/zipalign.txt
+          "$BT/aapt" dump badging "$APK" | tee build/android/badging.txt
+          "$BT/aapt" dump xmltree "$APK" AndroidManifest.xml | tee build/android/manifest.txt
+          unzip -l "$APK" | tee build/android/contents.txt
+          sha256sum "$APK" | tee build/android/sha256.txt
+          grep -q "package: name='${PACKAGE_ID}'" build/android/badging.txt
+          grep -q "versionCode='${VERSION_CODE}'" build/android/badging.txt
+          grep -q "versionName='${VERSION_NAME}'" build/android/badging.txt
+          grep -q "targetSdkVersion:'36'" build/android/badging.txt
+          grep -q "native-code: 'arm64-v8a'" build/android/badging.txt
+          grep -q 'android.permission.REQUEST_INSTALL_PACKAGES' build/android/manifest.txt
+          grep -q 'assets/cms/apk-install-gui.js' build/android/contents.txt
+          grep -q 'assets/cms/apk-install-gui.css' build/android/contents.txt
+          grep -Eq 'Verified using v(2|3|4) scheme .*: true' build/android/signature.txt
+          cat > build/android/INSTALL_AUTHORITY_GATE.txt <<'EOF'
+          LUHM APK INSTALL GUI CANDIDATE
+          - package: art.eggiebagelface.luhmos
+          - GUI/native bridge: compiled and verified
+          - native verifier: package + signer + downgrade checks present
+          - Android user confirmation: mandatory
+          - signer: ephemeral CI candidate signer
+          - persistent release signing: NOT_TRIGGERED
+          - physical install/update: NOT_TRIGGERED
+          - public release/publish: NOT_TRIGGERED
+          A candidate signed by this ephemeral signer cannot replace a differently signed installed LuHm OS build.
+          EOF
+          echo 'LUHMOS_APK_INSTALL_GUI_CANDIDATE_GREEN'
+
+      - name: Upload candidate APK and proof
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: luhmos-apk-install-gui-candidate-${{ env.VERSION_NAME }}
+          path: |
+            build/android/${{ env.APK_NAME }}
+            build/android/sha256.txt
+            build/android/signature.txt
+            build/android/zipalign.txt
+            build/android/badging.txt
+            build/android/manifest.txt
+            build/android/contents.txt
+            build/android/INSTALL_AUTHORITY_GATE.txt
+          if-no-files-found: error
+          retention-days: 30
