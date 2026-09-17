@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "KAI 9000 Firefox Android Companion Shell",
+  "version": "0.1.0",
+  "description": "Generic localhost-only bridge shell for ChatGPT companion controls on Firefox Android.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "kai9000-firefox-companion@eggiebagelface.art",
+      "strict_min_version": "121.0"
+    }
+  },
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "http://127.0.0.1/*",
+    "https://chatgpt.com/*",
+    "https://chat.openai.com/*"
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "action": {
+    "default_title": "KAI Companion"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*"
+      ],
+      "js": [
+        "content-script.js"
+      ],
+      "css": [
+        "styles.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}
