@@ -99,7 +99,9 @@ async function probeLocalHarness(fetchImpl=fetch){
   }
   return {ok:false,origin:null,checks};
 }
+function retireLegacyInstallDock(){document.getElementById('luhmApkInstallDock')?.remove()}
 function mount(){
+  retireLegacyInstallDock();
   if(document.getElementById('luhmEnterpriseDock'))return;
   const dock=document.createElement('section');
   dock.id='luhmEnterpriseDock'; dock.className='luhm-apk-dock';
@@ -125,7 +127,7 @@ function mount(){
   document.getElementById('luhmProbeLocal').onclick=async()=>{status.textContent='Probing approved local backends…';const r=await probeLocalHarness();status.textContent=r.ok?`LOCAL GREEN · ${r.origin}`:'LOCAL OFFLINE · packaged frontend remains available.'};
   document.getElementById('luhmUninstall').onclick=()=>{const r=postUninstall(window);status.textContent=r.ok?'Opening Android removal confirmation…':r.error};
 }
-const core=Object.freeze({REPO,RELEASES_PAGE,RELEASES_API,ASSET_PREFIX,MANIFEST_ASSET,CANDIDATE_PACKAGE,PROD_PACKAGE,LOCAL_BACKENDS,CHANNELS,tagMatchesChannel,trustedReleaseAssetUrl,validSha256,validPackage,pickManifestAsset,pickApkAsset,resolveRelease,resolveInstallPlan,bridgeAvailable,postUpdate,postUninstall,probeLocalHarness});
+const core=Object.freeze({REPO,RELEASES_PAGE,RELEASES_API,ASSET_PREFIX,MANIFEST_ASSET,CANDIDATE_PACKAGE,PROD_PACKAGE,LOCAL_BACKENDS,CHANNELS,tagMatchesChannel,trustedReleaseAssetUrl,validSha256,validPackage,pickManifestAsset,pickApkAsset,resolveRelease,resolveInstallPlan,bridgeAvailable,postUpdate,postUninstall,probeLocalHarness,retireLegacyInstallDock});
 globalThis.LuHmEnterpriseDistribution=core;
 if(globalThis.__LUHM_TEST__)return;
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
