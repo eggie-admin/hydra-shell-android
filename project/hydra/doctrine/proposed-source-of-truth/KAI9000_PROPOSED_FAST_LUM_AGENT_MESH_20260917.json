@@ -54,30 +54,10 @@
     "parallelism": "READ_ONLY_ONLY",
     "write_parallelism": false,
     "helpers": [
-      {
-        "id": "mini-source",
-        "role": "resolve_exact_source_refs_and_authority",
-        "tools": ["read", "search"],
-        "mutation_authority": false
-      },
-      {
-        "id": "mini-diff",
-        "role": "summarize_smallest_safe_delta",
-        "tools": ["read", "search"],
-        "mutation_authority": false
-      },
-      {
-        "id": "mini-test",
-        "role": "map_changed_files_to_existing_validation_gates",
-        "tools": ["read", "search"],
-        "mutation_authority": false
-      },
-      {
-        "id": "mini-proof",
-        "role": "normalize_executed_evidence_into_json_html_chat_receipts",
-        "tools": ["read", "search"],
-        "mutation_authority": false
-      }
+      {"id": "mini-source", "role": "resolve_exact_source_refs_and_authority", "tools": ["read", "search"], "mutation_authority": false},
+      {"id": "mini-diff", "role": "summarize_smallest_safe_delta", "tools": ["read", "search"], "mutation_authority": false},
+      {"id": "mini-test", "role": "map_changed_files_to_existing_validation_gates", "tools": ["read", "search"], "mutation_authority": false},
+      {"id": "mini-proof", "role": "normalize_executed_evidence_into_json_html_chat_receipts", "tools": ["read", "search"], "mutation_authority": false}
     ],
     "parent_agent": "LUM_FAST",
     "parent_owns_final_plan": true,
@@ -86,17 +66,7 @@
   },
   "turn_schema": {
     "schema": "luhm.agent-turn.v1",
-    "required_fields": [
-      "request_id",
-      "lane",
-      "authority",
-      "source_refs",
-      "intent",
-      "proposed_actions",
-      "validation",
-      "proof_required",
-      "stop_reason"
-    ],
+    "required_fields": ["request_id", "lane", "authority", "source_refs", "intent", "proposed_actions", "validation", "proof_required", "stop_reason"],
     "lane_values": ["FAST", "DEEP", "MINI"],
     "authority_values": ["READ_ONLY", "PROPOSE_ONLY", "HUMAN_GATE_REQUIRED"],
     "freeform_shell_field": false,
@@ -104,23 +74,12 @@
   },
   "openai_agent_runtime": {
     "direct_responses_api_preferred_when": "short_structured_turns_and_project_owned_loop",
-    "agents_sdk_allowed_when": [
-      "guardrails_reduce_risk",
-      "handoffs_reduce_parent_context",
-      "sessions_are_deliberately_required",
-      "human_in_the_loop_orchestration_is_material"
-    ],
+    "agents_sdk_allowed_when": ["guardrails_reduce_risk", "handoffs_reduce_parent_context", "sessions_are_deliberately_required", "human_in_the_loop_orchestration_is_material"],
     "guardrails_do_not_replace_project_policy": true,
     "human_approval_remains_external_authority_gate": true,
     "tracing": {
       "default_project_posture": "explicit_opt_in",
-      "must_exclude": [
-        "approval_tokens",
-        "api_keys",
-        "signing_material",
-        "staged_source_contents",
-        "private_user_data"
-      ]
+      "must_exclude": ["approval_tokens", "api_keys", "signing_material", "staged_source_contents", "private_user_data"]
     }
   },
   "paid_product_boundary": {
@@ -137,8 +96,7 @@
     "parent_custom_agent": ".github/agents/lum-fast.md",
     "mini_custom_agent": ".github/agents/lum-mini-readonly.md",
     "task_skill": "skills/luhm-fast-agent-mesh/SKILL.md",
-    "hardcode_openai_runtime_model_into_copilot_profile": false,
-    "reason": "Copilot model availability is a GitHub product setting and does not grant Project Hydra authority"
+    "hardcode_openai_runtime_model_into_copilot_profile": false
   },
   "mutation_contract": {
     "gateway": "backend/candidate_workflow.py",
@@ -189,6 +147,6 @@
     "exact_head_ci_required": true,
     "human_review_required": true,
     "explicit_professor_promotion_required": true,
-    "current_result": "STAGED_FOR_CI_NOT_CROWNED"
+    "current_result": "STAGED_FOR_EXACT_HEAD_CI_NOT_CROWNED"
   }
 }
