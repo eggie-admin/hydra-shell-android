@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 
 const source = fs.readFileSync(new URL('../apk-install-gui.js', import.meta.url), 'utf8');
+const styles = fs.readFileSync(new URL('../apk-install-gui.css', import.meta.url), 'utf8');
 const sandbox = { URL, console, globalThis: null, __LUHM_TEST__: true };
 sandbox.globalThis = sandbox;
 vm.createContext(sandbox);
@@ -56,4 +57,11 @@ test('native update events map to status only', () => {
   assert.equal(verified.terminal, false);
   assert.equal(success.terminal, true);
   assert.equal(core.parseNativeEvent(JSON.stringify({ type: 'other.event' })), null);
+});
+
+test('mobile install dock stays in document flow and preserves touch target', () => {
+  assert.match(styles, /@media\s*\(max-width:\s*560px\)/);
+  assert.match(styles, /\.luhm-apk-dock\s*\{[\s\S]*?position:\s*relative;/);
+  assert.match(styles, /\.luhm-apk-toggle\s*\{[\s\S]*?width:\s*100%;[\s\S]*?min-height:\s*52px;/);
+  assert.match(styles, /\.luhm-apk-panel\s*\{[\s\S]*?max-height:\s*min\(68vh,\s*620px\);/);
 });
