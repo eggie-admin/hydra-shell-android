@@ -1,0 +1,100 @@
+{
+  "schema": "luhm-os.proposed-source-of-truth-ai-manifest.v2",
+  "manifest_id": "KAI9000_PROPOSED_SOURCE_OF_TRUTH_AI_MANIFEST_20260916",
+  "status": "PROPOSED_NOT_CROWNED",
+  "date_local": "2026-09-16",
+  "generated_utc": "2026-09-17T02:43:15.229273+00:00",
+  "project": "LuHm OS / KAI 9000 / Project Hydra",
+  "human_authority": "Professor",
+  "purpose": "Machine-readable proposed seal-of-truth doctrine mutation reconciling the M1 WebView/socket crown, TITAN AI routing, paid-Pro Samsung Android lane, release channels, and stale-artifact retirement rules without compile/install/publish/delete/purge/billing/crown actions.",
+  "authority_precedence": [
+    "explicit_current_professor_instruction",
+    "latest_crowned_source_of_truth_contract",
+    "private_canonical_drive_doctrine",
+    "current_luhmos_main_repository_state_and_ci_evidence",
+    "current_project_manifests_and_paid_pro_registry",
+    "proposed_mutations_and_source_candidates",
+    "historical_evidence_and_compatibility_artifacts"
+  ],
+  "observed_state": {
+    "repository": "eggie-admin/hydra-shell-android",
+    "canonical_product_branch": {"name":"luhmos-main","observed_head":"a94088363f6ab0b8fba468052145a75edcf80a90","protected":false},
+    "proposal_branch": {"name":"luhmos/proposed","observed_head":"eafa8f5eebba25f94dc4c4f984bce18974d741d5","protected":false},
+    "stale_artifact_audit_branch": {"name":"luhmos/proposed-stale-artifact-doctrine-20260916","observed_head":"f2d03872a18dd7c7dde20febf2052dc19c6f36aa","protected":false},
+    "paid_pro_working_branch": {"name":"luhmos/dev/samsung-android-paid-pro","observed_head":"21ee0a0777d87542f0cc81e0143f677170033d7a","protected":false},
+    "crowned_contract": "project/hydra/source-of-truth/LUHM_M1_SIGNED_SECURE_WEBVIEW_SOCKET_20260916.json",
+    "crowned_contract_status": "SEALED_SOURCE_CONTRACT_GREEN",
+    "canonical_root": "project/hydra",
+    "application_id": "art.eggiebagelface.luhmos",
+    "target": {"platform":"Samsung Android","device":"SM-S721U1","android":16}
+  },
+  "drive_authority": {
+    "hardened_sot": {"folder_id":"1Q2Mg166lwz7J65TNI9x_vfgmzN3NrrWL","title":"01_REMOTE_SOT_HARDENED_20260916","observed_shared":false,"role":"owner_only_private_canonical_recovery_doctrine"},
+    "proposal_mutation": {"folder_id":"144bWMydQzPJCBIz2HtYuvJzaV6kFGElp","title":"PROPOSED_SOURCE_OF_TRUTH_MUTATION","observed_shared":false,"role":"owner_only_proposal_and_audit_lane"},
+    "unsafe_legacy_root": {"folder_id":"1RwDVR8_nPcdCKyw76K1Jaxtd5I_rjBGC","title":"KAI9000_SAMSUNG_ANDROID_DEV_ZERO_TRUST","observed_shared":true,"observed_permission":"anyone_writer","classification":"QUARANTINE_RED_SECURITY_BLOCKER"}
+  },
+  "canonical_doctrine_mutation": {
+    "runtime": {"base_launch":"standalone_android","webview":"bundled_assets_only","android_bridge":"typed_allowlisted_kotlin","socket_broker":"headless_fail_closed_typed_requests_only","arbitrary_shell_authority":false,"remote_shell":false,"root_required":false,"external_localhost_daemon_required_for_base_launch":false,"optional_local_companion":"ordinary Termux + Ollama when explicitly invoked and healthy"},
+    "titan_ai": {"workflow":"TITAN","local_dispatcher":"final_machine_side_policy_gate","local_ollama_role":"concierge_classifier_compressor_offline_fallback","remote_primary_complex_reasoning":"OpenAI Boss Lum","helpers_default":"dormant","max_active_helpers":1,"tool_side_effects":"local_deterministic_validator_only","text_voice_txt":"one_typed_authority_path","power_level_not_permission_level":true,"provider_status_grants_authority":false},
+    "authority_tiers": {"canonical":[{"tier":"WHISPER","risk":"GREEN"},{"tier":"CROSSING","risk":"AMBER"},{"tier":"RECKONING","risk":"RED"}],"legacy_aliases":{"INVOCATION":"WHISPER","FUSION":"CROSSING","MANIFESTATION":"RECKONING"},"legacy_aliases_are_execution_authority":false},
+    "paid_pro": {"scope":"Samsung Android only","working_branch":"luhmos/dev/samsung-android-paid-pro","budget_cycle_day":6,"budget_timezone":"America/Detroit","monthly_ceiling_usd":180,"fixed_commitment_target_usd":166,"planned_service_spend_target_usd":174,"google_cloud_api_metered_cap_usd":8,"reserve_usd":6,"chatgpt_pro_budget_entry_usd":100,"auto_spend":false,"auto_upgrade":false,"auto_billing_change":false,"professor_approval_gate":true},
+    "release_channels": {"development":"luhmos/dev/samsung-android-paid-pro","testing":"luhmos/testing","proposed":"luhmos/proposed","preview":"luhmos/preview","beta":"luhmos/beta","stable":"luhmos/stable","canonical_product_anchor":"luhmos-main","forward_only_promotion":true,"stable_requires_physical_samsung_proof":true}
+  },
+  "stale_artifact_doctrine": {
+    "definition": "Stale means active operational claims, branch/source coordinates, package identity, security boundary, runtime dependency, provider routing, budget math, or promotion semantics are superseded by newer crowned/canonical doctrine. Age alone is not staleness.",
+    "stale_does_not_equal_delete": true,
+    "historical_evidence_must_be_preserved": true,
+    "provenance_and_license_receipts_must_be_preserved": true,
+    "active_drifted_executable_priority": "high",
+    "active_security_or_permission_drift_priority": "highest",
+    "automatic_delete": false,
+    "automatic_purge": false,
+    "delete_requires_explicit_professor_authorization": true
+  },
+  "stale_and_drift_audit": [
+    {"id":"S01","artifact":"KAI9000_SAMSUNG_ANDROID_DEV_ZERO_TRUST Drive folder","class":"QUARANTINE","severity":"RED_SECURITY","finding":"Folder remains anyone-writer and cannot be trusted as canonical or secret-bearing source.","action":"revoke_anyone_writer_or_retire_root_before_canonical_use"},
+    {"id":"S02","artifact":"KAI9000_TITAN_PRO_180_MONTHLY_SERVICE_BUDGET_20260916","class":"ACTIVE_DRIFTED_GUIDANCE","severity":"HIGH_AMBER","finding":"Drive title says 180 while body still contains earlier 80/66/74 budget doctrine before later 180 state.","action":"reconcile_body_to_one_current_180_contract"},
+    {"id":"S03","artifact":"docs/doctrine/kai9000-lum-in-app-ai-coding-chat-doctrine.md on luhmos/proposed","class":"ACTIVE_DRIFTED_GUIDANCE","severity":"HIGH_AMBER","finding":"Uses INVOCATION/FUSION/MANIFESTATION as active tiers while private canonical roleplay doctrine uses WHISPER/CROSSING/RECKONING and treats old names as aliases.","action":"patch_active_tier_names_keep_aliases_only"},
+    {"id":"S04","artifact":"PROPOSED_LUHM_OS_AI_HEARTBEAT_MESH_20260916","class":"HISTORICAL_PARENT_PROPOSAL","severity":"AMBER_SUPERSEDED_ROUTING","finding":"Original provider order predates TITAN and must not override TITAN where conflicting.","action":"preserve_with_titan_supersession_pointer"},
+    {"id":"S05","artifact":"luhmos_proposed_sot_mutation_001.json","class":"HISTORICAL_PROPOSAL","severity":"AMBER_SUPERSEDED","finding":"Predates M1 typed WebView/socket crown, TITAN paid-Pro routing, 180 budget and current release ladder.","action":"preserve_read_only_mark_superseded"},
+    {"id":"S06","artifact":"project/hydra/samsung/android/apk/app.reference.json","class":"ACTIVE_CANONICAL_TRANSITIONAL","severity":"HIGH_AMBER","finding":"Still carries pinned donor-era Android source semantics.","action":"migrate_reference_before_retirement"},
+    {"id":"S07","artifact":"tools/project_hydra_structure_guard.py","class":"ACTIVE_DRIFTED_EXECUTABLE","severity":"HIGH_AMBER","finding":"Guard still asserts donor-era repo/branch coordinates.","action":"patch_with_app_reference_migration_then_test"},
+    {"id":"S08","artifact":".github/workflows/luhmos-inapp-updater-v2.yml","class":"ACTIVE_DRIFTED_EXECUTABLE","severity":"HIGH_AMBER","finding":"Donor-backed debug build workflow remains reproducible but is not future canonical release authority.","action":"freeze_debug_only_then_retire_after_kai_owned_replacement_green"},
+    {"id":"S09","artifact":"AGENTS.md / docs/BUILD_FAST.md / docs/FDROID_FINAL_FORM.md / docs/LUHM_OS_KAI9000_OVERVIEW.md","class":"ACTIVE_DRIFTED_GUIDANCE","severity":"AMBER","finding":"Contains donor-era, retired package, legacy branch, or mandatory-daemon assumptions.","action":"patch_after_executable_and_reference_migration"},
+    {"id":"S10","artifact":"release/TESTING_APK_DEBUG_TEMPLATE.md and release/testing-debug.manifest.template.json","class":"HISTORICAL_GUIDANCE","severity":"AMBER","finding":"Templates contain stale testing branch and donor coordinates.","action":"replace_template_then_archive_old_versions"},
+    {"id":"S11","artifact":"project/hydra/KAI9000_DEBUG_SOURCE_OF_TRUTH_20260912.json","class":"HISTORICAL_EVIDENCE","severity":"GREEN_PRESERVE","finding":"Historical hashes/signatures/behavior evidence remain valuable.","action":"preserve_read_only"},
+    {"id":"S12","artifact":"Chrome Dev / Canary harness lane","class":"TEST_HARNESS_ONLY","severity":"GREEN_ISOLATED","finding":"Behavior/compatibility testing only; no donor code/runtime dependency in release APK.","action":"keep_isolated"}
+  ],
+  "ten_pass_audit": [
+    {"pass":1,"name":"authority_precedence","result":"GREEN"},
+    {"pass":2,"name":"m1_webview_socket_crown_alignment","result":"GREEN_SOURCE_CONTRACT"},
+    {"pass":3,"name":"titan_ai_routing_alignment","result":"GREEN_WITH_SUPERSESSION_NOTES"},
+    {"pass":4,"name":"roleplay_tier_naming_alignment","result":"AMBER_DRIFT"},
+    {"pass":5,"name":"paid_pro_budget_single_truth","result":"AMBER_DRIFT"},
+    {"pass":6,"name":"drive_permission_boundary","result":"RED_BLOCKER"},
+    {"pass":7,"name":"branch_protection_and_enforceable_lock","result":"AMBER_UNPROTECTED"},
+    {"pass":8,"name":"donor_and_legacy_executable_drift","result":"HIGH_AMBER"},
+    {"pass":9,"name":"historical_evidence_preservation","result":"GREEN"},
+    {"pass":10,"name":"proposal_lane_isolation_and_no_auto_crown","result":"GREEN"}
+  ],
+  "proposed_mutation_sequence": [
+    "freeze proposal and rollback SHAs",
+    "resolve anyone-writer Drive root before crown",
+    "reconcile 180 budget body",
+    "patch proposed roleplay tiers to WHISPER/CROSSING/RECKONING",
+    "patch donor-era executable drift before docs-only cleanup",
+    "migrate app.reference.json to KAI-owned source semantics",
+    "prove replacement build/update workflows before retirement",
+    "patch agent/operator docs and release templates",
+    "generate live reference graph before RETIREMENT_CANDIDATE",
+    "require explicit Professor authorization for delete/purge/crown/stable/compile/sign/install/publish"
+  ],
+  "promotion_gates": {"json_valid":true,"proposal_only":true,"current_crown_unchanged":true,"automatic_crown":false,"automatic_merge":false,"automatic_compile":false,"automatic_sign":false,"automatic_install":false,"automatic_publish":false,"automatic_delete":false,"automatic_purge":false,"requires_professor_authorization_for_crown":true},
+  "locks": {"compile":false,"sign":false,"install_apk":false,"merge":false,"publish":false,"dns_mutation":false,"billing_mutation":false,"delete":false,"purge":false,"crown":false,"secret_print":false},
+  "audit_verdict": "PROPOSED_GREEN_STRUCTURE_WITH_RED_PERMISSION_BLOCKER_AND_HIGH_AMBER_DRIFT",
+  "proposed_seal_name_if_later_approved": "KAI9000_PROPOSED_SOURCE_OF_TRUTH_RECONCILIATION_20260916",
+  "resume_phrase": "continue KAI 9000 from proposed source-of-truth AI manifest and stale artifact audit",
+  "signed_by": "Lum",
+  "signature_meaning": "AI-authored proposal/audit manifest only; not Professor crown approval.",
+  "integrity": {"algorithm":"sha256","scope":"canonical_json_without_integrity_field","payload_sha256":"14ac68b37192f5e7e2a048bbe725c07c14f044f1d2835e5f5c7f03751d499832"}
+}
