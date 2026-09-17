@@ -37,7 +37,8 @@
       "store_default": false,
       "tool_policy": "typed_allowlist_only",
       "unrestricted_shell": false,
-      "credentials_visible_to_model": false
+      "credentials_visible_to_model": false,
+      "live_inference_state": "NOT_VERIFIED_SECRET_ABSENT_IN_CI_SMOKE"
     },
     "google": {
       "role": "cloud_service_and_recovery_content_lane",
@@ -49,6 +50,8 @@
         "subject_policy": "exact_immutable_github_sub_for_luhmos_main",
         "bootstrap": "infra/gcp/bootstrap-github-wif.sh",
         "canonical_repository_variables": ["GCP_PROJECT_ID", "GCP_WIF_PROVIDER", "GCP_SERVICE_ACCOUNT"],
+        "repository_variables_state": "NOT_CONFIGURED_IN_CI_PREFLIGHT",
+        "live_oidc_auth_state": "NOT_VERIFIED_AUTH_JOB_SKIPPED",
         "long_lived_service_account_json_in_repo": false,
         "iam_policy": "resource_specific_least_privilege",
         "deployment_confirmation": "PROVISION"
@@ -107,6 +110,7 @@
       "revision_pin_required_for_downloaded_artifacts": true,
       "unrestricted_shell": false,
       "credentials_visible_to_model": false,
+      "live_inference_state": "NOT_VERIFIED_SECRET_ABSENT_IN_CI_SMOKE",
       "live_account_state": "UNVERIFIED_CONNECTOR_READ_ACTION_UNAVAILABLE"
     }
   },
@@ -134,9 +138,11 @@
     "external_debt": [
       "github canonical branch has no active protection or ruleset",
       "github immutable OIDC subject live setting could not be read through the connected GitHub action",
-      "google cloud WIF live trust state is unverified; bootstrap now refuses mutation until immutable GitHub subject mode is confirmed",
+      "google cloud WIF repository variables are not configured and live OIDC authentication was skipped",
+      "google cloud WIF live trust state is unverified; bootstrap refuses mutation until immutable GitHub subject mode is confirmed",
       "cloudflare live account token scopes and tunnel state not readable from available connectors",
-      "hugging face live account state not readable through the available connector actions"
+      "openai live inference was skipped because the CI smoke secret is absent",
+      "hugging face live inference was skipped because the CI smoke secret is absent and account state is unavailable through the connector"
     ]
   }
 }
