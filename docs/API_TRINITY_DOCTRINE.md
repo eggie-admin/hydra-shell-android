@@ -67,7 +67,17 @@ GitHub Actions authenticates to Google Cloud with OIDC and Workload Identity Fed
 https://token.actions.githubusercontent.com
 ```
 
-The Google-side provider must have an attribute condition. For GitHub repositories using immutable OIDC subject claims, trust policy should bind the immutable owner and repository identities and the intended workflow/ref scope rather than relying only on mutable repository names.
+The repository was created on 2026-07-12, before GitHub's 2026-07-15 automatic immutable-subject rollout. Therefore the LuHm contract does not assume immutable OIDC is active. `infra/gcp/bootstrap-github-wif.sh` reads the GitHub OIDC configuration and fails closed unless immutable subject mode is explicitly confirmed.
+
+When immutable mode is confirmed, Google WIF binds `google.subject=assertion.sub`, restricts the provider to the exact immutable `sub` for `luhmos-main`, grants `roles/iam.workloadIdentityUser` to that exact subject principal, and removes the legacy mutable repository-name binding if it exists. The exact numeric owner/repository identifiers are resolved at bootstrap time and are not committed as doctrine constants.
+
+Canonical public repository variables are:
+
+```text
+GCP_PROJECT_ID
+GCP_WIF_PROVIDER
+GCP_SERVICE_ACCOUNT
+```
 
 Provisioning remains manual and requires the typed confirmation `PROVISION`. Resource IAM stays least-privilege. The live Google Cloud trust policy is external state and must not be claimed GREEN unless it is read back from Google Cloud.
 
@@ -97,6 +107,8 @@ required status-check selection chosen explicitly by Professor
 ```
 
 Observed on 2026-09-17: `luhmos-main` reports `protected=false` and the repository rulesets endpoint returns an empty list. This is tracked as `RED_EXTERNAL`; workflow-level locks remain useful but are not a substitute for server-side branch governance.
+
+The connected GitHub action could not read the repository OIDC customization endpoint. Because this repository predates the automatic immutable-subject rollout, immutable OIDC remains `UNVERIFIED_EXTERNAL` until read back through a suitable GitHub Actions/admin path. Google WIF bootstrap refuses to mutate cloud trust while that state is unconfirmed.
 
 GitHub Actions workflows that request OIDC tokens use `id-token: write`; this permits token minting, not arbitrary repository writes. Workflow permissions stay minimal and credentials remain outside repository content.
 
@@ -140,6 +152,8 @@ provider = auto | openai | huggingface
 
 Google, GitHub, and Cloudflare are infrastructure/content/control adapters and are not silently treated as replacement LLM processors. `auto` chooses only among explicitly configured AI adapters. A failed provider request is not silently resent to another provider because that changes the external data processor receiving the prompt.
 
+The credential-safe provider smoke is wired to both `OPENAI_API_KEY` and `HF_TOKEN` when those secrets are configured, and its canonical push trigger is `luhmos-main`.
+
 ## Normalized provider event
 
 ```json
@@ -160,14 +174,15 @@ Google, GitHub, and Cloudflare are infrastructure/content/control adapters and a
 
 ## Drift policy
 
-A vendor lane is GREEN only for what was actually verified. Static source checks may prove the repository contract, but they do not prove live Cloudflare token scopes, Google IAM/WIF conditions, Hugging Face account state, or GitHub server protection unless those external surfaces are read back.
+A vendor lane is GREEN only for what was actually verified. Static source checks may prove the repository contract, but they do not prove live Cloudflare token scopes, Google IAM/WIF conditions, Hugging Face account state, GitHub server protection, or GitHub OIDC subject mode unless those external surfaces are read back.
 
 Current known external debt is carried explicitly rather than painted green:
 
-- GitHub server-side canonical branch governance is RED_EXTERNAL until protection/rulesets are active and read back.
-- Google Cloud WIF trust conditions are UNVERIFIED until read back from Google Cloud.
-- Cloudflare live token/tunnel state is UNVERIFIED without an authorized account connector.
-- Hugging Face live account state is UNVERIFIED when account-level read actions are unavailable.
+- GitHub server-side canonical branch governance is `RED_EXTERNAL` until protection/rulesets are active and read back.
+- GitHub immutable OIDC subject mode is `UNVERIFIED_EXTERNAL` for this pre-rollout repository until read back through a suitable admin/Actions surface.
+- Google Cloud WIF trust conditions are `UNVERIFIED_EXTERNAL` until read back from Google Cloud; bootstrap now refuses to mutate them without confirmed immutable GitHub OIDC.
+- Cloudflare live token/tunnel state is `UNVERIFIED_EXTERNAL` without an authorized account connector.
+- Hugging Face live account state is `UNVERIFIED_EXTERNAL` when account-level read actions are unavailable.
 
 ## Final authority
 
