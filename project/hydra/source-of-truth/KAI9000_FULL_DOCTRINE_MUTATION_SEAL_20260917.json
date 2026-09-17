@@ -54,7 +54,7 @@
     "agents_md_authority_drift_resolved": true,
     "copilot_repo_law_hardened": true,
     "workflow_legacy_authority_drift_resolved": true,
-    "fast_lum_parent_agent": "BOUNDed_SINGLE_WRITER_PARENT",
+    "fast_lum_parent_agent": "BOUNDED_SINGLE_WRITER_PARENT",
     "mini_helpers": "READ_SEARCH_ONLY",
     "parallelism": "READ_ONLY_ONLY",
     "helper_consensus_grants_authority": false,
@@ -86,11 +86,13 @@
   },
   "private_drive_source_of_truth": {
     "document_id": "18lvC_M8KB-FeiEAh7sNAKEs5xhg3RmDFKv_-mNL144I",
-    "observed_revision_before_final_seal_append": "ANLCKQn7Pi5tqNUVb9xVnuXp5LE05XSoZKz6R1wMaMW6w3y85AgclYMTqL_CYIgks5pYhTZcE3nPxeYz1v5ou69k50yTNo80E488F_vDYw",
+    "observed_revision_before_final_seal_append": "ANLCKQknvF1jVnXCwIoSdIc1BDxEo5rZ4pdM5_gN47E8vOl9Tww8C4Oy0s2HNDGVG2x9R1JU6xQDh7P-YkwFgYJ0jgk72RowpE3fBSgvww",
+    "final_seal_revision": "ANLCKQn-N3xU4rmUuhn744GZanaeVQn6UlzRowsO3skxrWuDKCSHIRtcioai_SXZYIw8OBfSzyMsH1TCqc55wi_5AxFhW4Es_i6r9pRQkg",
     "shared": false,
     "history_preserved": true,
     "september_17_supersession_present": true,
-    "final_seal_append_required": true
+    "final_seal_append_state": "SEALED_APPEND_ONLY",
+    "final_seal_append_required": false
   },
   "release_and_device_boundary": {
     "canonical_release_promotion_by_this_seal": false,
