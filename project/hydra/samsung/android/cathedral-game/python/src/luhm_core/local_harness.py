@@ -7,7 +7,8 @@ APP_NAME = "LuHm OS Local Harness"
 APP_VERSION = "1.0.10"
 ALLOWED_ORIGINS = [
     "https://appassets.androidplatform.net",
-    "https://lum.eggiebagelface.lan",
+    "http://127.0.0.1",
+    "http://localhost",
 ]
 
 app = FastAPI(title=APP_NAME, version=APP_VERSION, docs_url=None, redoc_url=None, openapi_url=None)
@@ -28,6 +29,7 @@ def health() -> dict[str, object]:
         "version": APP_VERSION,
         "network_posture": "local_first",
         "public_backend_fallback": False,
+        "private_lan_origin_source": "protected_local_config_only",
     }
 
 
@@ -39,4 +41,5 @@ def runtime() -> dict[str, object]:
         "release_authority": "github_releases",
         "browser_secrets": False,
         "direct_shell_execution": False,
+        "committed_private_hostnames": False,
     }
