@@ -27,10 +27,11 @@ concurrency:
 env:
   DONOR_REPO: eggie-admin/vue-headless-cms
   DONOR_REF: dd9b3e68e14ce7a559b7b13aebfe10c630fa171b
-  PACKAGE_ID: art.eggiebagelface.luhmos
-  VERSION_NAME: '1.0.8'
-  VERSION_CODE: '108'
-  APK_NAME: luhmos-apk-install-gui-candidate-1.0.8.apk
+  RELEASE_PACKAGE_ID: art.eggiebagelface.luhmos
+  PACKAGE_ID: art.eggiebagelface.luhmos.candidate
+  VERSION_NAME: '1.0.9'
+  VERSION_CODE: '109'
+  APK_NAME: luhmos-apk-install-probe-1.0.9.apk
   GODOT_RELEASE: 4.7.2-stable
   GODOT_TEMPLATE_VERSION: 4.7.2.stable
   GODOT_EDITOR_SHA256: cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4
@@ -40,7 +41,7 @@ env:
 
 jobs:
   candidate:
-    name: GUI install candidate
+    name: Collision-free GUI install candidate
     runs-on: ubuntu-24.04
     timeout-minutes: 50
     steps:
@@ -182,7 +183,7 @@ jobs:
           (cd "$PATCH_DIR" && zip -q -r "$TEMPLATE_DIR/android_source.zip.new" .)
           mv "$TEMPLATE_DIR/android_source.zip.new" "$TEMPLATE_DIR/android_source.zip"
 
-      - name: Compose crowned GUI plus install dock
+      - name: Compose crowned GUI plus collision-free install dock
         shell: bash
         run: |
           set -euo pipefail
@@ -209,19 +210,34 @@ jobs:
           grep -q 'apk-install-gui.css' "$CMS/index.html"
           grep -q 'apk-install-gui.js' "$CMS/index.html"
 
-          python3 - "$PRESET" "$VERSION_CODE" "$VERSION_NAME" <<'PY'
+          python3 - "$CMS/apk-install-gui.js" "$RELEASE_PACKAGE_ID" "$PACKAGE_ID" <<'PY'
+          from pathlib import Path
+          import sys
+          p=Path(sys.argv[1]); release_id=sys.argv[2]; candidate_id=sys.argv[3]
+          text=p.read_text(encoding='utf-8')
+          text=text.replace(release_id,candidate_id)
+          p.write_text(text,encoding='utf-8')
+          PY
+          grep -q "$PACKAGE_ID" "$CMS/apk-install-gui.js"
+          ! grep -q "$RELEASE_PACKAGE_ID" "$CMS/apk-install-gui.js"
+
+          python3 - "$PRESET" "$VERSION_CODE" "$VERSION_NAME" "$PACKAGE_ID" <<'PY'
           from pathlib import Path
           import re,sys
-          p=Path(sys.argv[1]); code,name=sys.argv[2],sys.argv[3]; t=p.read_text()
+          p=Path(sys.argv[1]); code,name,package_id=sys.argv[2],sys.argv[3],sys.argv[4]; t=p.read_text()
           t=re.sub(r'(?m)^version/code=\d+$',f'version/code={code}',t)
           t=re.sub(r'(?m)^version/name="[^"]*"$',f'version/name="{name}"',t)
-          t=re.sub(r'(?m)^export_path="[^"]*"$',f'export_path="../build/android/luhmos-{name}.apk"',t,count=1)
+          t=re.sub(r'(?m)^package/unique_name="[^"]*"$',f'package/unique_name="{package_id}"',t)
+          t=re.sub(r'(?m)^package/name="[^"]*"$', 'package/name="LuHm OS Candidate"', t)
+          t=re.sub(r'(?m)^export_path="[^"]*"$',f'export_path="../build/android/luhmos-candidate-{name}.apk"',t,count=1)
           t=re.sub(r'(?m)^gradle_build/min_sdk="[^"]*"$','gradle_build/min_sdk="24"',t)
           t=re.sub(r'(?m)^gradle_build/target_sdk="[^"]*"$','gradle_build/target_sdk="36"',t)
           p.write_text(t)
           PY
-          grep -q 'version/code=108' "$PRESET"
-          grep -q 'version/name="1.0.8"' "$PRESET"
+          grep -q 'version/code=109' "$PRESET"
+          grep -q 'version/name="1.0.9"' "$PRESET"
+          grep -q 'package/unique_name="art.eggiebagelface.luhmos.candidate"' "$PRESET"
+          ! grep -q 'package/unique_name="art.eggiebagelface.luhmos"' "$PRESET"
 
       - name: Compile native updater plugin
         shell: bash
@@ -236,7 +252,7 @@ jobs:
           cp _forge/luhmos-android/godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-debug.aar _forge/luhmos-android/godot/addons/CathedralAndroid/bin/debug/
           cp _forge/luhmos-android/godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-release.aar _forge/luhmos-android/godot/addons/CathedralAndroid/bin/release/
 
-      - name: Configure ephemeral candidate signer
+      - name: Configure ephemeral probe signer
         shell: bash
         run: |
           set -euo pipefail
@@ -251,12 +267,12 @@ jobs:
           KEYSTORE="$RUNNER_TEMP/luhmos-candidate.keystore"
           keytool -genkeypair -keystore "$KEYSTORE" -storepass android \
             -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 \
-            -validity 10000 -dname 'CN=LuHm OS APK Candidate,O=Eggie Bagelface Art,C=US'
+            -validity 10000 -dname 'CN=LuHm OS Collision-Free Candidate,O=Eggie Bagelface Art,C=US'
           echo "GODOT_ANDROID_KEYSTORE_DEBUG_PATH=$KEYSTORE" >> "$GITHUB_ENV"
           echo 'GODOT_ANDROID_KEYSTORE_DEBUG_USER=androiddebugkey' >> "$GITHUB_ENV"
           echo 'GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD=android' >> "$GITHUB_ENV"
 
-      - name: Export candidate APK
+      - name: Export collision-free candidate APK
         shell: bash
         run: |
           set -euo pipefail
@@ -267,7 +283,7 @@ jobs:
             "$GITHUB_WORKSPACE/build/android/$APK_NAME"
           test -s "build/android/$APK_NAME"
 
-      - name: Hard verify APK and embedded GUI
+      - name: Hard verify collision-free APK and embedded GUI
         shell: bash
         run: |
           set -euo pipefail
@@ -280,6 +296,7 @@ jobs:
           unzip -l "$APK" | tee build/android/contents.txt
           sha256sum "$APK" | tee build/android/sha256.txt
           grep -q "package: name='${PACKAGE_ID}'" build/android/badging.txt
+          ! grep -q "package: name='${RELEASE_PACKAGE_ID}'" build/android/badging.txt
           grep -q "versionCode='${VERSION_CODE}'" build/android/badging.txt
           grep -q "versionName='${VERSION_NAME}'" build/android/badging.txt
           grep -q "targetSdkVersion:'36'" build/android/badging.txt
@@ -288,18 +305,20 @@ jobs:
           grep -q 'android.permission.REQUEST_INSTALL_PACKAGES' build/android/permissions.txt
           ! grep -q 'com.termux.permission.RUN_COMMAND' build/android/permissions.txt
           grep -Eq 'Verified using v(2|3|4) scheme .*: true' build/android/signature.txt
-          cat > build/android/CANDIDATE_AUTHORITY.txt <<'EOF'
-          TEST CANDIDATE ONLY.
+          cat > build/android/CANDIDATE_AUTHORITY.txt <<EOF
+          COLLISION-FREE TEST CANDIDATE ONLY.
+          Package: ${PACKAGE_ID}
+          Production package remains: ${RELEASE_PACKAGE_ID}
           Ephemeral signer. No release signing authority.
           No silent install. Android user confirmation remains mandatory.
           No deployment, publication, canonical merge, Crown, or seal is implied by this artifact.
           EOF
-          echo 'LUHMOS_APK_INSTALL_GUI_CANDIDATE_GREEN'
+          echo 'LUHMOS_COLLISION_FREE_INSTALL_PROBE_GREEN'
 
-      - name: Upload candidate and proof
+      - name: Upload collision-free candidate and proof
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: luhmos-apk-install-gui-candidate-${{ env.VERSION_NAME }}-${{ github.run_number }}
+          name: luhmos-apk-install-probe-${{ env.VERSION_NAME }}-${{ github.run_number }}
           path: |
             build/android/${{ env.APK_NAME }}
             build/android/sha256.txt
