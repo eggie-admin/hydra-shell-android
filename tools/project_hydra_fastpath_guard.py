@@ -102,7 +102,22 @@ def main() -> int:
             "proof payload fan-out contract weakened")
 
     promotion = policy.get("promotion", {})
-    require(promotion.get("candidate_branch_only") is True, "candidate policy unexpectedly canonical")
+    status = policy.get("status")
+    if status == "PROPOSED_ACTIVE_ON_CANDIDATE_BRANCH":
+        require(promotion.get("candidate_branch_only") is True,
+                "candidate policy must remain candidate-only")
+    elif status == "SEALED_ACTIVE_CANONICAL":
+        require(promotion.get("candidate_branch_only") is False,
+                "canonical policy still marked candidate-only")
+        canonical = policy.get("canonical_state", {})
+        require(canonical.get("promoted") is True, "canonical policy missing promotion receipt")
+        require(canonical.get("runtime_speedup_proven") is False,
+                "canonical metadata cannot claim unmeasured runtime speedup")
+        require(canonical.get("benchmark_receipt_pending") is True,
+                "benchmark pending state unexpectedly closed")
+    else:
+        require(False, f"unsupported performance policy status: {status!r}")
+
     require(promotion.get("canonical_merge_requires_explicit_current_professor_authorization") is True,
             "canonical merge authorization weakened")
     require(promotion.get("source_of_truth_crown_requires_explicit_current_professor_authorization") is True,
@@ -111,6 +126,7 @@ def main() -> int:
         require(promotion.get(forbidden) is False, f"{forbidden} unexpectedly authorized")
 
     print("PROJECT_HYDRA_FASTPATH_GUARD_GREEN")
+    print(f"policy_status={status}")
     print("authority=Professor")
     print("branch=luhmos-main")
     print("helpers=0_default/2_parallel_readonly_max")
