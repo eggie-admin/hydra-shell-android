@@ -1,12 +1,18 @@
 {
   "schema": "luhm-os.project-hydra.performance-policy.v1",
-  "status": "PROPOSED_ACTIVE_ON_CANDIDATE_BRANCH",
+  "status": "SEALED_ACTIVE_CANONICAL",
   "date_local": "2026-09-17",
   "project": "Project Hydra",
   "canonical_branch": "luhmos-main",
   "human_authority": "Professor",
   "source_law": "AI proposes. Policy authorizes. CI proves. The human promotes.",
   "objective": "Minimize wall-clock latency and repeated work without weakening source-of-truth, approval, provenance, release, security, or physical-device proof gates.",
+  "canonical_state": {
+    "promoted": true,
+    "final_form_milestone": "project/hydra/source-of-truth/KAI9000_LUM_FINAL_FORM_MILESTONE_20260917.json",
+    "runtime_speedup_proven": false,
+    "benchmark_receipt_pending": true
+  },
   "invariants": {
     "power_level_equals_permission_level": false,
     "human_approval_required_for_reckoning": true,
@@ -128,7 +134,7 @@
     "unmeasured_optimization_state": "PROPOSED_NOT_PROVEN_FASTER"
   },
   "promotion": {
-    "candidate_branch_only": true,
+    "candidate_branch_only": false,
     "canonical_merge_requires_explicit_current_professor_authorization": true,
     "source_of_truth_crown_requires_explicit_current_professor_authorization": true,
     "release_promotion": false,
