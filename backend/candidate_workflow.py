@@ -39,6 +39,7 @@ class MutationStage:
     def public(self) -> dict[str, Any]:
         data = asdict(self)
         data.pop("content", None)
+        data.pop("approval_token", None)
         return data
 
 
