@@ -1,0 +1,31 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "luhm-core"
+version = "0.1.0"
+description = "Local-first LuHm OS configuration and advisory AI adapter lane"
+requires-python = ">=3.14,<3.15"
+dependencies = [
+  "PyYAML==6.0.3",
+  "pydantic==2.13.5",
+  "fastapi==0.141.1",
+  "httpx==0.28.1",
+]
+
+[project.optional-dependencies]
+openai = ["openai==3.14.1"]
+google = ["google-genai==2.24.0"]
+ai = ["openai==3.14.1", "google-genai==2.24.0"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/luhm_core"]
+
+[tool.ruff]
+target-version = "py314"
+line-length = 100
+
+[tool.pyright]
+pythonVersion = "3.14"
+typeCheckingMode = "strict"

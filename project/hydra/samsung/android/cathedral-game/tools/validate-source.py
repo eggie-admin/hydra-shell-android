@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the LuHm Cathedral source/vendor contract without network access."""
+"""Validate the LuHm Cathedral source/vendor/toolchain contract without network access."""
 
 from __future__ import annotations
 
@@ -19,6 +19,15 @@ def load_json(path: Path) -> dict:
         return json.loads(path.read_text(encoding="utf-8"))
     except Exception as exc:
         die(f"{path}: {exc}")
+
+
+def require_text(path: Path, needles: list[str]) -> None:
+    if not path.is_file():
+        die(f"missing source file: {path.name}")
+    text = path.read_text(encoding="utf-8")
+    missing = [needle for needle in needles if needle not in text]
+    if missing:
+        die(f"{path}: missing contract markers {missing}")
 
 
 def main() -> int:
@@ -46,6 +55,39 @@ def main() -> int:
         if not (root / rel).is_file():
             die(f"missing template: {rel}")
 
+    for lane, rel in manifest.get("language_lanes", {}).items():
+        if not (root / rel).is_file():
+            die(f"missing {lane} lane manifest: {rel}")
+
+    require_text(root / manifest["toolchain_manifest"], [
+        "version: 3.14.7",
+        "pyyaml: 6.0.3",
+        "openai: 3.14.1",
+        "google-genai: 2.24.0",
+        "version: 17",
+        "com.openai:openai-java: 4.63.3",
+        "com.google.genai:google-genai: 1.72.0",
+        "org.snakeyaml:snakeyaml-engine: 2.10",
+        "direct_shell_execution: false",
+    ])
+    require_text(root / "config/luhm.example.yaml", [
+        "execution_posture: advisory_only",
+        "direct_shell_execution: false",
+        "secrets_from_environment_only: true",
+    ])
+    require_text(root / "python/pyproject.toml", [
+        'requires-python = ">=3.14,<3.15"',
+        '"PyYAML==6.0.3"',
+        'openai = ["openai==3.14.1"]',
+        'google = ["google-genai==2.24.0"]',
+    ])
+    require_text(root / "java/build.gradle.kts", [
+        'JavaLanguageVersion.of(17)',
+        'implementation("com.openai:openai-java:4.63.3")',
+        'implementation("com.google.genai:google-genai:1.72.0")',
+        'implementation("org.snakeyaml:snakeyaml-engine:2.10")',
+    ])
+
     vendors = {item["id"]: item for item in catalog.get("vendors", [])}
     if len(vendors) != len(catalog.get("vendors", [])):
         die("duplicate vendor id")
@@ -59,7 +101,6 @@ def main() -> int:
         for dependency in item.get("depends_on", []):
             if dependency not in vendors:
                 die(f"{vendor_id} depends on unknown vendor {dependency}")
-
         if item.get("enabled"):
             digest = item.get("sha256")
             local_target = item.get("local_target")
@@ -75,20 +116,20 @@ def main() -> int:
                 die(f"enabled vendor {vendor_id} sha256 mismatch")
 
     html = entrypoint.read_text(encoding="utf-8")
-    external_script = re.search(r'<script\b[^>]*\bsrc=["\']https?://', html, re.I)
-    external_style = re.search(r'<link\b[^>]*\bhref=["\']https?://', html, re.I)
-    if external_script or external_style:
-        die("runtime entrypoint contains external script/style dependency")
+    if re.search(r'<script\b[^>]*\bsrc=["\']https?://', html, re.I):
+        die("runtime entrypoint contains external script dependency")
+    if re.search(r'<link\b[^>]*\bhref=["\']https?://', html, re.I):
+        die("runtime entrypoint contains external stylesheet dependency")
 
     for rel in manifest.get("templates", []):
         text = (root / rel).read_text(encoding="utf-8")
         if "LUHM_TEMPLATE_V1" not in text:
             die(f"template lacks LUHM_TEMPLATE_V1 marker: {rel}")
 
-    print("LUHM_SOURCE_VENDOR_CONTRACT_GREEN")
+    print("LUHM_SOURCE_VENDOR_TOOLCHAIN_CONTRACT_GREEN")
     print(f"runtime_assets={len(manifest.get('runtime_assets', []))}")
     print(f"vendor_catalog_entries={len(vendors)}")
-    print(f"default_vendor_profile={manifest.get('default_vendor_profile')}")
+    print(f"language_lanes={','.join(sorted(manifest.get('language_lanes', {})))}")
     return 0
 
 

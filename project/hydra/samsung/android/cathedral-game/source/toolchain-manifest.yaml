@@ -1,0 +1,51 @@
+schema: luhm_os.toolchain.v1
+project: LuHm OS // Cathedral
+stability: stable-only
+
+python:
+  implementation: CPython
+  version: 3.14.7
+  role: automation_services_and_ai_adapters
+  package_manager: pip
+  manifest: python/pyproject.toml
+  packages:
+    pyyaml: 6.0.3
+    pydantic: 2.13.5
+    fastapi: 0.141.1
+    httpx: 0.28.1
+    openai: 3.14.1
+    google-genai: 2.24.0
+
+java:
+  version: 17
+  role: android_and_optional_ai_adapter_lane
+  build_system: gradle
+  manifest: java/build.gradle.kts
+  packages:
+    com.openai:openai-java: 4.63.3
+    com.google.genai:google-genai: 1.72.0
+    org.snakeyaml:snakeyaml-engine: 2.10
+
+yaml:
+  spec_target: '1.2'
+  example_config: config/luhm.example.yaml
+  python_parser: PyYAML
+  java_parser: SnakeYAML Engine
+
+ai:
+  default_posture: advisory_only
+  direct_shell_execution: false
+  secrets_source: environment_only
+  browser_secrets: forbidden
+  providers:
+    openai:
+      enabled_by_default: false
+      key_environment: OPENAI_API_KEY
+    google:
+      enabled_by_default: false
+      key_environment: GOOGLE_API_KEY
+
+build:
+  android_lane_includes_ai_sdks: false
+  service_lanes_are_separate: true
+  generated_dependencies_are_source: false
