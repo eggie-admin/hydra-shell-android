@@ -29,21 +29,21 @@
     "github": {
       "project": "LuHm OS",
       "repository": "eggie-admin/hydra-shell-android",
-      "repository_slug": "transport_identifier",
+      "repository_slug_role": "transport_identifier",
       "canonical_branch": "luhmos-main"
     },
     "cloudflare": {
       "project": "LuHm OS",
       "zone": "eggiebagelface.art",
       "worker_service_name": "eggiebagelface-art-coming-soon",
-      "worker_service_name": "transport_identifier",
+      "worker_service_name_role": "transport_identifier",
       "live_account_mutation_surface": "UNAVAILABLE"
     },
     "hugging_face": {
       "project": "LuHm OS",
       "account": "eggiebagelface",
+      "account_role": "transport_identity",
       "organization": null,
-      "account": "transport_identity",
       "connected_scope": "read_repos_and_jobs_no_project_metadata_mutation"
     }
   },
