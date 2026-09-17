@@ -39,11 +39,14 @@
   },
   "android_contract": {
     "target_abi": "arm64-v8a",
+    "candidate_plugin_variant": "debug_only",
+    "candidate_export_mode": "debug",
     "min_sdk": 24,
     "target_sdk": 36,
     "build_tools": "36.1.0",
     "sdk_strategy": "verify_preinstalled_then_fallback_install",
     "sdk_hot_path_network_install": false,
+    "explicit_ndk_install": false,
     "package_id_candidate": "art.eggiebagelface.luhmos.candidate"
   },
   "toolchain": {
@@ -66,6 +69,7 @@
     "godot_export_templates": "actions_cache_sha_keyed",
     "godot_prepared_android_template": "actions_cache_sha_keyed",
     "android_gradle_distribution": "actions_cache_sha_keyed",
+    "plugin_compile_offline_on_exact_gradle_cache_hit": true,
     "hash_validation_after_restore": true,
     "cache_miss_downloads_only": true,
     "cache_key_contains_tool_hashes": true,
@@ -76,6 +80,7 @@
     "gradle_parallel": true,
     "gradle_build_cache": true,
     "cancel_stale_in_progress_builds": true,
+    "duplicate_push_and_pr_candidate_runs": false,
     "configuration_cache": false,
     "configuration_cache_reason": "Not enabled until the Godot Android plugin path is explicitly proven compatible."
   },
@@ -105,11 +110,12 @@
     "LUHM_REMOTE_BUILD_IRON_GREEN",
     "LUHM_ANDROID_SDK_PRELOADED_FASTPATH_or_LUHM_ANDROID_SDK_FALLBACK_INSTALL",
     "LUHM_GODOT_TEMPLATE_CACHE_PREPARED_or_LUHM_GODOT_TEMPLATE_CACHE_HIT",
+    "LUHM_PLUGIN_GRADLE_OFFLINE_HOTPATH_on_exact_cache_hit",
     "LUHM_DRIVE_AVATAR_CANDIDATE_GREEN"
   ],
   "performance_goal": {
     "cold_build": "download only immutable Godot and pinned Gradle archives not already cached; avoid redundant Android SDK installation and redundant Gradle action distribution bootstrap",
-    "hot_build": "restore Godot archives, prepared Android template, both pinned Gradle distributions and Gradle dependency/build-state caches; perform compile/export/verification only",
+    "hot_build": "restore Godot archives, prepared Android template, both pinned Gradle distributions and Gradle dependency/build-state caches; compile only the debug plugin variant; use offline plugin compilation on an exact dependency cache hit; then export and verify",
     "artifact_semantics_changed": false
   }
 }
