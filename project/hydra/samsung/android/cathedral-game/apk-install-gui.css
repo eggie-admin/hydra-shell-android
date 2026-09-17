@@ -1,6 +1,41 @@
 /* LUHMOS_APK_INSTALL_GUI_STYLE_V2
    KAI9000_TOY_GUI_MUTATION_V1
+   LUHM_AVATAR_SOURCE_OF_TRUTH_STYLE_V1
    Visual-only mutation. Installer authority and human confirmation are unchanged. */
+
+.avatar{position:relative;overflow:hidden;isolation:isolate}
+.luhm-avatar-video{
+  display:block;
+  width:min(88vw,420px);
+  max-width:100%;
+  aspect-ratio:4/5;
+  max-height:520px;
+  object-fit:cover;
+  object-position:center center;
+  border-radius:30px;
+  border:1px solid rgba(197,108,255,.34);
+  background:#080710;
+  box-shadow:0 28px 70px rgba(0,0,0,.58),0 0 44px rgba(170,63,255,.15),inset 0 1px rgba(255,255,255,.08);
+  filter:saturate(1.06) contrast(1.03);
+}
+.luhm-avatar-ready:after{
+  content:"LUHM // SOURCE AVATAR";
+  position:absolute;
+  left:50%;
+  bottom:12px;
+  transform:translateX(-50%);
+  z-index:3;
+  padding:5px 9px;
+  border-radius:999px;
+  border:1px solid rgba(105,229,255,.22);
+  background:rgba(4,5,13,.72);
+  color:#9cefff;
+  font:750 8px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.12em;
+  white-space:nowrap;
+  pointer-events:none;
+}
+.luhm-avatar-fallback-hidden{display:none!important}
 
 .luhm-apk-dock{
   position:fixed;
@@ -71,6 +106,7 @@
 
 /* Mobile: document flow, never cover game cards or the draggable LuHm toy. */
 @media(max-width:560px){
+  .luhm-avatar-video{width:min(92vw,430px);max-height:540px;border-radius:26px}
   .luhm-apk-dock{position:relative;inset:auto;z-index:20;box-sizing:border-box;width:auto;margin:14px max(14px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left))}
   .luhm-apk-toggle{float:none;width:100%;min-height:52px;min-block-size:70px;padding:14px 86px 12px 18px;text-align:center;border-radius:20px;font-size:15px;background:linear-gradient(110deg,#06364c,#0c172c 54%,#35145e);border-color:rgba(107,231,255,.56);box-shadow:inset 0 1px rgba(255,255,255,.10),0 12px 34px rgba(0,0,0,.42),0 0 28px rgba(96,111,255,.08)}
   .luhm-apk-toggle:before{width:28px;height:28px;font-size:18px}.luhm-apk-toggle:after{font-size:8px;margin-top:6px;color:#9aa8bc}
@@ -78,5 +114,5 @@
   .luhm-apk-actions{grid-template-columns:1fr}
 }
 
-@media(max-width:380px){.luhm-apk-toggle{padding-right:74px;font-size:14px}}
-@media(prefers-reduced-motion:reduce){.luhm-apk-dock *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+@media(max-width:380px){.luhm-apk-toggle{padding-right:74px;font-size:14px}.luhm-avatar-video{width:94vw;border-radius:22px}}
+@media(prefers-reduced-motion:reduce){.luhm-apk-dock *{scroll-behavior:auto!important;transition:none!important;animation:none!important}.luhm-avatar-video{filter:none}}
