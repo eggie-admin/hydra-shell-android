@@ -1,0 +1,60 @@
+name: LuHm Public Release Lock Guard
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - luhmos-main
+    paths:
+      - '.github/workflows/luhmos-main-release-launch.yml'
+      - '.github/workflows/luhmos-fdroid-public-release.yml'
+      - '.github/workflows/luhmos-github-release.yml'
+      - '.github/workflows/luhmos-izzy-github-release.yml'
+      - '.github/workflows/luhmos-public-release-lock-guard.yml'
+      - 'project/hydra/doctrine/proposed-source-of-truth/KAI9000_PROPOSED_PUBLIC_RELEASE_LOCK_20260917.json'
+
+permissions:
+  contents: read
+
+jobs:
+  public-release-lock:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Assert public release remains manual and read-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILES=(
+            .github/workflows/luhmos-main-release-launch.yml
+            .github/workflows/luhmos-fdroid-public-release.yml
+            .github/workflows/luhmos-github-release.yml
+            .github/workflows/luhmos-izzy-github-release.yml
+          )
+
+          for f in "${FILES[@]}"; do
+            test -f "$f"
+            grep -q 'workflow_dispatch:' "$f"
+            grep -q 'contents: read' "$f"
+            ! grep -q '^  push:' "$f"
+            ! grep -q '^  workflow_run:' "$f"
+            ! grep -q 'contents: write' "$f"
+            ! grep -q 'actions: write' "$f"
+            ! grep -q '\${{ secrets\.' "$f"
+            ! grep -Eq 'gh[[:space:]]+release[[:space:]]+(create|upload)' "$f"
+            ! grep -Eq 'gh[[:space:]]+workflow[[:space:]]+run' "$f"
+            ! grep -q 'publish_public_mirror=true' "$f"
+          done
+
+          grep -q 'LUHMOS_PUBLIC_PUBLISH=OFF' .github/workflows/luhmos-fdroid-public-release.yml
+          grep -q 'LUHMOS_PUBLIC_RELEASE_LAUNCH=OFF' .github/workflows/luhmos-main-release-launch.yml
+          grep -q 'LUHMOS_GITHUB_RELEASE_PUBLISH=OFF' .github/workflows/luhmos-github-release.yml
+          grep -q 'LUHMOS_IZZY_PUBLICATION=OFF' .github/workflows/luhmos-izzy-github-release.yml
+
+          echo 'LUHMOS_PUBLIC_RELEASE_LOCK_GREEN'
+          echo 'AUTO_PUBLIC_RELEASE_DISPATCH=ABSENT'
+          echo 'GITHUB_RELEASE_PUBLISHER=LOCKED'
+          echo 'IZZY_PUBLICATION=LOCKED'
