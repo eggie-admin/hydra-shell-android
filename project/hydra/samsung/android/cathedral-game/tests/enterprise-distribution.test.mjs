@@ -67,12 +67,14 @@ test('branded uninstall is explicit and delegates to native Android', () => {
   assert.equal(sent[0].type,'app.uninstall.open');
 });
 
-test('local harness probes only approved local origins', async () => {
+test('local harness probes only committed loopback origins', async () => {
   const seen=[];
-  const fetchImpl=async url=>{seen.push(String(url)); return {ok:String(url).startsWith('https://lum.eggiebagelface.lan/'),status:200};};
+  const fetchImpl=async url=>{seen.push(String(url)); return {ok:String(url).startsWith('http://127.0.0.1/'),status:200};};
   const out=await core.probeLocalHarness(fetchImpl);
   assert.equal(out.ok,true);
-  assert.equal(out.origin,'https://lum.eggiebagelface.lan');
-  assert.deepEqual(seen,['https://lum.eggiebagelface.lan/health']);
+  assert.equal(out.origin,'http://127.0.0.1');
+  assert.deepEqual(seen,['http://127.0.0.1/health']);
+  assert.deepEqual(Array.from(core.LOCAL_BACKENDS),['http://127.0.0.1','http://localhost']);
+  assert.equal(source.includes('.lan'),false);
   assert.equal(seen.some(v=>v.includes('api.github.com')),false);
 });
