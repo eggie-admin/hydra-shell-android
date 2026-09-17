@@ -108,7 +108,7 @@
     "canonical_branch_protected": false,
     "prior_crown_commit_e65210_signature": "UNSIGNED",
     "current_doctrine_merge_commit_signature": "VERIFIED",
-    "vercel_status_residue": "EXTERNAL_INTEGRATION_FAILURE_NOT_SOURCE_OR_DOCTRINE_FAILURE"
+    "retired_external_host_status_residue": "EXTERNAL_INTEGRATION_FAILURE_NOT_SOURCE_OR_DOCTRINE_FAILURE"
   },
   "historical_evidence": {
     "preserved": true,
