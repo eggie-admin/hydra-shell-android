@@ -1,0 +1,29 @@
+{
+  "id": "KAI9000_PROPOSED_DEPLOY_AUTHORITY_LOCK_20260917",
+  "status": "PROPOSED_NOT_CANONICAL",
+  "canonical_base": "906f631edf5e6624fecd8ea116a0723a29905763",
+  "intent": "Keep consequential cloud deployment manual, explicit, and human-gated without triggering deployment.",
+  "cloudflare": {
+    "workflow": ".github/workflows/cloudflare-coming-soon.yml",
+    "production_confirmation": "YES",
+    "automatic_deploy": false,
+    "changed_by_proposal": false
+  },
+  "gcp": {
+    "workflow": ".github/workflows/google-white-magic-strict-free-vm.yml",
+    "required_confirmation": "PROVISION",
+    "automatic_trigger": false,
+    "environment": "testing"
+  },
+  "guards": [
+    "tools/deploy_authority_guard.py",
+    ".github/workflows/luhmos-deploy-authority-lock-guard.yml",
+    ".github/workflows/kai9000-ci.yml"
+  ],
+  "authority": {
+    "deploy": "NOT_TRIGGERED",
+    "public_release": "NOT_TRIGGERED",
+    "crown": "NOT_TRIGGERED",
+    "canonical_merge": "NOT_AUTHORIZED"
+  }
+}
