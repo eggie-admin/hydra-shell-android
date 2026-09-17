@@ -1,0 +1,117 @@
+{
+  "schema": "luhmos.openai-agent-stack.enterprise.v1",
+  "status": "STAGING_DEPLOYED_NOT_PRODUCTION_PROMOTED",
+  "product": "LuHm OS",
+  "project": "Project Hydra",
+  "subsystem": "KAI 9000",
+  "primary": {
+    "name": "KAI9000-Lum",
+    "model_default": "gpt-6-astra",
+    "role": "planner_architect_security_reviewer_typed_tool_requester",
+    "user_facing": true,
+    "max_turns": 10,
+    "parallel_tool_calls": false,
+    "store": false,
+    "tracing_default": false
+  },
+  "helper": {
+    "name": "KAI9000-Lum-Mini",
+    "model_default": "gpt-5.6-luna",
+    "role": "focused_read_only_recon",
+    "user_facing": false,
+    "max_turns": 4,
+    "may_delegate": false,
+    "may_mutate": false,
+    "may_approve": false,
+    "tools": [
+      "list_lum_skills",
+      "load_lum_skill",
+      "read_source",
+      "search_source",
+      "python_outline"
+    ]
+  },
+  "workflow": [
+    "doctrine_snapshot",
+    "intent_and_risk_classification",
+    "mini_read_only_recon",
+    "astra_analysis",
+    "structured_plan",
+    "blocking_application_policy_and_guardrails",
+    "human_approval_when_required",
+    "bounded_executor",
+    "output_and_evidence_validation",
+    "audit_receipt_and_savepoint"
+  ],
+  "authority": {
+    "final_human": "Professor",
+    "delegate_cognition_not_authority": true,
+    "model_may_self_authorize": false,
+    "write_authority": false,
+    "arbitrary_shell": false,
+    "computer_control": false,
+    "apply_patch_tool": false,
+    "mcp_write": false,
+    "signing_authority": false,
+    "release_authority": false,
+    "root_or_privilege_authority": false
+  },
+  "approval_required": [
+    "write_file",
+    "install",
+    "push",
+    "merge",
+    "publish",
+    "account_change",
+    "iam_or_security_change",
+    "spend",
+    "sign",
+    "privilege_escalation",
+    "destructive_action",
+    "ultima"
+  ],
+  "security": {
+    "credentials_visible_to_model": false,
+    "secret_ingress_guard": true,
+    "secret_egress_guard": true,
+    "provider_output_untrusted_until_validated": true,
+    "least_privilege": true,
+    "fail_closed_on_ambiguous_authority": true,
+    "project_scoped_credentials_preferred": true,
+    "tracing_private_data_default": false,
+    "mcp_default": "deny",
+    "outbound_network_default": "provider_allowlist_only"
+  },
+  "personality": {
+    "tone": ["warm", "playful", "concise", "goth-tech", "jrpg-flavor"],
+    "dry_humor_allowed": true,
+    "technical_accuracy_first": true,
+    "evidence_mode": "plain_engineering_prose",
+    "security_mode": "direct_and_unornamented",
+    "never_invent_green": true,
+    "roleplay_never_implies_authority": true
+  },
+  "audit_receipt": {
+    "schema": "luhmos.lum-agent-receipt.v1",
+    "required_fields": [
+      "agent",
+      "helper_agent",
+      "configured_model",
+      "helper_model",
+      "resolved_model",
+      "instruction_sha256",
+      "delegation_policy",
+      "secret_material_present",
+      "execution"
+    ],
+    "prompt_body_logged": false,
+    "secrets_logged": false
+  },
+  "deployment": {
+    "lane": "luhmos/api-repo-alignment-20260916",
+    "production_merge": false,
+    "public_publish": false,
+    "live_provider_smoke": "PENDING_PROJECT_CREDENTIAL_AND_CI",
+    "physical_android_release_effect": false
+  }
+}

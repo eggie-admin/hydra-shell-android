@@ -1,0 +1,93 @@
+{
+  "schema": "luhmos.api-repo-alignment-audit.v2",
+  "date": "2026-09-16",
+  "status": "STAGING_DEPLOYED_CI_PENDING",
+  "branch": "luhmos/api-repo-alignment-20260916",
+  "base": "luhmos-main",
+  "source_of_truth": {
+    "product": "LuHm OS",
+    "project": "Project Hydra",
+    "subsystem": "KAI 9000",
+    "canonical_project_root": "project/hydra",
+    "canonical_integration_branch": "luhmos-main",
+    "primary_lum_agent": "KAI9000-Lum",
+    "helper_lum_agent": "KAI9000-Lum-Mini",
+    "openai_api": "Agents SDK over Responses API",
+    "openai_primary_agent_model_candidate": "gpt-6-astra",
+    "openai_helper_model": "gpt-5.6-luna",
+    "openai_fast_provider_reference": "gpt-5.6-luna",
+    "openai_deep_provider_reference": "gpt-5.6-sol",
+    "final_human_authority": "Professor"
+  },
+  "canonical_directory_contract": {
+    "project_root": "project/hydra",
+    "project_openai_index": "project/hydra/openai",
+    "project_runtime_index": "project/hydra/runtime",
+    "project_doctrine": "project/hydra/doctrine",
+    "adapter_root": "integrations",
+    "provider_filesystem_slugs": ["openai", "huggingface", "google-cloud", "cloudflare"],
+    "provider_machine_ids": ["openai", "huggingface", "google_cloud", "cloudflare"],
+    "compatibility_roots": ["lumh-os/kai9000", "ultima/ollama-ffmpeg-antenna-v3", "samsung-sm-x400"],
+    "migration_rule": "reference_not_copy; no destructive relocation until consumers and CI are proven"
+  },
+  "agent_stack": {
+    "manifest": "project/hydra/openai/agent-stack.enterprise.json",
+    "primary": {
+      "name": "KAI9000-Lum",
+      "model_candidate": "gpt-6-astra",
+      "role": "planner_architect_security_reviewer_typed_tool_requester",
+      "self_authorizing": false
+    },
+    "helper": {
+      "name": "KAI9000-Lum-Mini",
+      "model": "gpt-5.6-luna",
+      "role": "focused_read_only_recon",
+      "may_delegate": false,
+      "may_mutate": false,
+      "may_approve": false
+    },
+    "law": "delegate_cognition_not_authority",
+    "tracing_default": false,
+    "arbitrary_shell": false,
+    "mcp_write": false,
+    "production_merge": false,
+    "public_publish": false,
+    "live_astra_smoke": "PENDING"
+  },
+  "passes": [
+    {"pass": 1, "name": "Canonical branch authority", "state": "GREEN_CONTRACT", "result": "luhmos-main is integration authority; main is repository-default metadata only"},
+    {"pass": 2, "name": "Product and project naming", "state": "GREEN_CONTRACT", "result": "LuHm OS -> Project Hydra -> KAI 9000"},
+    {"pass": 3, "name": "Project namespace and directory authority", "state": "GREEN_CONTRACT", "result": "project/hydra is the singular canonical project namespace"},
+    {"pass": 4, "name": "API adapter directory naming", "state": "YELLOW_PHYSICAL_MIGRATION_DEFERRED", "result": "canonical provider slugs defined; destructive Hugging Face relocation deferred"},
+    {"pass": 5, "name": "Provider ID normalization", "state": "GREEN_CONTRACT", "result": "filesystem slugs and machine identifiers are explicitly mapped"},
+    {"pass": 6, "name": "OpenAI API, models and agent identities", "state": "STAGING_DEPLOYED", "result": "KAI9000-Lum stages Astra; KAI9000-Lum-Mini stages Luna; Luna/Sol remain provider routing references"},
+    {"pass": 7, "name": "Lum delegation and authority", "state": "GREEN_CONTRACT", "result": "Professor final authority; Lum may delegate cognition, never authority; Mini has no delegation or write authority"},
+    {"pass": 8, "name": "Enterprise security", "state": "STAGING_DEPLOYED", "result": "no arbitrary shell, computer control, write MCP, signing, root, self-approval, or default private tracing"},
+    {"pass": 9, "name": "Android production versus development cockpit", "state": "GREEN_CONTRACT", "result": "production APK remains standalone and independent of Termux/AcodeX/VNC/Secure Folder at boot"},
+    {"pass": 10, "name": "Promotion, CI and source-of-truth integrity", "state": "YELLOW_PENDING_EVIDENCE", "result": "feature branch is deployed; CI and bounded live Astra smoke remain required before canonical promotion"}
+  ],
+  "deployment": {
+    "repo_stage": true,
+    "runtime_code_stage": true,
+    "agent_skills_stage": true,
+    "personality_contract_stage": true,
+    "enterprise_policy_stage": true,
+    "production_merge": false,
+    "public_publish": false,
+    "android_release_effect": false
+  },
+  "known_ci_repairs": {
+    "hydra_source_path": "restored to ultima/ollama-ffmpeg-antenna-v3",
+    "prior_crown_contract_failure": "pre-existing literal contract assertion mismatch remains to be reconciled without weakening release isolation"
+  },
+  "remaining_drift": [
+    "Physical integrations/huggingface directory migration remains deferred until consumers/imports and CI are proven.",
+    "Historical sealed documents retain original names/model references as evidence history.",
+    "Repository default branch remains main while doctrine integration authority remains luhmos-main.",
+    "Live credentialed Astra request has not yet been proven.",
+    "No merge to luhmos-main or public release has occurred."
+  ],
+  "green_gate": "diff review + agent unit tests + structure/secret guards + relevant CI green + bounded credentialed Astra smoke + explicit merge/promotion",
+  "release_effect": "NONE",
+  "secrets_touched": false
+}

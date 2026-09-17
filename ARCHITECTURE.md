@@ -1,4 +1,4 @@
-# Video Forge Cathedral Android/F-Droid Architecture
+# LuHm OS · Project Hydra Android/F-Droid Architecture
 
 ## Rule zero
 

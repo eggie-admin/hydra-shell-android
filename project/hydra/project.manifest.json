@@ -1,7 +1,8 @@
 {
-  "schema": "luhm-os.project-hydra.v6",
+  "schema": "luhm-os.project-hydra.v7",
   "name": "Project Hydra",
   "canonical_root": "project/hydra",
+  "source_path": "ultima/ollama-ffmpeg-antenna-v3",
   "parent_os": "LuHm OS",
   "branch_authority": "luhmos-main",
   "directory_doctrine": "project/hydra/doctrine/directory-structure.json",
@@ -92,12 +93,20 @@
   "ai_provider_goal": {
     "cloud_ai_required_for_base_launch": false,
     "static_vendor_secrets_in_apk": false,
-    "openai_api_surface": "Responses API",
+    "openai_api_surface": "Agents SDK over Responses API",
+    "openai_agent_stack": "project/hydra/openai/agent-stack.enterprise.json",
+    "openai_primary_agent": "KAI9000-Lum",
+    "openai_primary_reference": "gpt-6-astra",
+    "openai_helper_agent": "KAI9000-Lum-Mini",
+    "openai_helper_reference": "gpt-5.6-luna",
     "openai_fast_reference": "gpt-5.6-luna",
     "openai_deep_reference": "gpt-5.6-sol",
     "huggingface_responses": "https://router.huggingface.co/v1/responses",
     "huggingface_reference_model": "openai/gpt-oss-120b:fastest",
-    "model_ids_are_runtime_configurable": true
+    "model_ids_are_runtime_configurable": true,
+    "delegate_cognition_not_authority": true,
+    "arbitrary_model_shell": false,
+    "model_self_authorization": false
   },
   "migration": {
     "strategy": "reference_not_copy",
