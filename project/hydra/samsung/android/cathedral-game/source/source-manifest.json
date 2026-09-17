@@ -1,0 +1,61 @@
+{
+  "schema": "luhm_os.cathedral_source.v1",
+  "project": "LuHm OS // Cathedral",
+  "runtime_root": ".",
+  "entrypoint": "index.html",
+  "default_vendor_profile": "minimal",
+  "runtime_assets": [
+    "index.html",
+    "final-form.css",
+    "final-form.js",
+    "modular-cockpit.css",
+    "apk-install-gui.css",
+    "apk-install-gui.js",
+    "update-channel.json"
+  ],
+  "templates": [
+    "source/templates/cathedral-shell.html",
+    "source/templates/plugin-panel.html"
+  ],
+  "vendor_catalog": "vendor/vendor-catalog.json",
+  "vendor_profiles": {
+    "minimal": [],
+    "cockpit": [
+      "jquery",
+      "jquery-ui"
+    ],
+    "3d": [
+      "jquery",
+      "jquery-ui",
+      "babylonjs-core"
+    ]
+  },
+  "bundle": {
+    "include": [
+      "index.html",
+      "final-form.css",
+      "final-form.js",
+      "modular-cockpit.css",
+      "apk-install-gui.css",
+      "apk-install-gui.js",
+      "update-channel.json",
+      "tests",
+      "source",
+      "vendor",
+      "tools"
+    ],
+    "exclude_globs": [
+      "**/__pycache__/**",
+      "**/*.pyc",
+      "vendor/dist/**",
+      "vendor/cache/**"
+    ]
+  },
+  "policy": {
+    "runtime_vendor_cdn": false,
+    "runtime_vendor_bytes_local_only": true,
+    "vendor_integrity_required_when_enabled": true,
+    "unresolved_optional_vendor_may_remain_catalog_only": true,
+    "generated_build_output_is_source": false
+  }
+}
