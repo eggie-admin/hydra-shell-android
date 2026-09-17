@@ -30,7 +30,7 @@
     "drive_source_sha_verified_before_packaging": true,
     "avatar_extracted_from_apk_matches_drive_source_exactly": true,
     "runtime_remote_drive_url_absent": true,
-    "candidate_signature_v2_or_newer_verified": true,
+    "candidate_signature_scheme_verification": "GREEN",
     "inherited_pr_matrix": "11/11_SUCCESS_ON_VALIDATED_APPLICATION_HEAD"
   },
   "authority": {
