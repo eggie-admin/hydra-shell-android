@@ -24,6 +24,7 @@ on:
       - ".github/workflows/cloudflare-coming-soon.yml"
       - ".github/workflows/google-white-magic-strict-free-vm.yml"
       - ".github/workflows/luhmos-deploy-authority-lock-guard.yml"
+      - ".github/workflows/luhmos-canonical-branch-governance-audit.yml"
   push:
     branches: [luhmos-main]
     paths:
@@ -48,6 +49,7 @@ on:
       - ".github/workflows/cloudflare-coming-soon.yml"
       - ".github/workflows/google-white-magic-strict-free-vm.yml"
       - ".github/workflows/luhmos-deploy-authority-lock-guard.yml"
+      - ".github/workflows/luhmos-canonical-branch-governance-audit.yml"
 
 permissions:
   contents: read
@@ -100,7 +102,7 @@ jobs:
       - name: Python compile gate
         run: |
           python -m compileall -q ultima/ollama-ffmpeg-antenna-v3
-          python -m py_compile tools/kai9000_ci_guard.py tools/project_hydra_structure_guard.py tools/retired_lane_guard.py tools/public_release_lock_guard.py tools/deploy_authority_guard.py
+          python -m py_compile tools/kai9000_ci_guard.py tools/project_hydra_structure_guard.py tools/retired_lane_guard.py tools/public_release_lock_guard.py tools/deploy_authority_guard.py tools/canonical_branch_governance_audit.py
 
       - name: Lum Crown authority contract
         working-directory: ultima/ollama-ffmpeg-antenna-v3
