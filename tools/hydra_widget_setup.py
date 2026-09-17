@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install and run safe Termux:Widget controls for Project Hydra services."""
+"""Install and run safe Termux:Widget controls for current Project Hydra services."""
 
 from __future__ import annotations
 
@@ -11,7 +11,6 @@ import shutil
 import signal
 import socket
 import subprocess
-import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -27,7 +26,7 @@ INSTALLED_SCRIPT = BIN_DIR / "hydra-services"
 STATE_FILE = STATE_DIR / "state.json"
 LOCK_FILE = STATE_DIR / "control.lock"
 DISPLAY = ":1"
-PORTS = {"axs": 8767, "vnc": 5901, "websocket": 6080, "cockpit": 8787}
+PORTS = {"vnc": 5901, "websocket": 6080, "cockpit": 8787, "mutation": 8790}
 
 
 def now() -> str:
@@ -165,23 +164,24 @@ def start_vnc() -> dict[str, object]:
     }
 
 
+def mutation_status() -> dict[str, object]:
+    return {
+        "service": "mutation",
+        "state": "listening" if port_open(PORTS["mutation"]) else "offline",
+        "port": PORTS["mutation"],
+        "authority": "human_approval_required",
+    }
+
+
 def start_all() -> dict[str, object]:
     with lock_control():
         state = load_state()
-        results: list[dict[str, object]] = [acquire_wake_lock()]
-
-        axs = which_any("axs")
-        if axs:
-            results.append(start_background("axs", [axs, "-p", str(PORTS["axs"])], PORTS["axs"], state))
-        else:
-            results.append({"service": "axs", "state": "missing_command"})
+        results: list[dict[str, object]] = [acquire_wake_lock(), mutation_status()]
 
         installed_cockpit = BIN_DIR / "hydra-cockpit"
         cockpit = str(installed_cockpit) if installed_cockpit.is_file() else which_any("hydra-cockpit")
         if cockpit:
-            results.append(
-                start_background("cockpit", [cockpit], PORTS["cockpit"], state)
-            )
+            results.append(start_background("cockpit", [cockpit], PORTS["cockpit"], state))
         else:
             results.append({"service": "cockpit", "state": "missing_command"})
 
@@ -193,7 +193,6 @@ def start_all() -> dict[str, object]:
                 results.append(
                     start_background(
                         "websocket",
-                        # websockify-rs expects LISTEN first, then UPSTREAM.
                         [proxy, "127.0.0.1:6080", "127.0.0.1:5901"],
                         PORTS["websocket"],
                         state,
@@ -239,7 +238,7 @@ def stop_all() -> dict[str, object]:
         results = [
             stop_owned("websocket", state),
             stop_owned("cockpit", state),
-            stop_owned("axs", state),
+            {"service": "mutation", "state": "not_owned_by_widget", "port": PORTS["mutation"]},
         ]
 
         vncserver = which_any("vncserver")

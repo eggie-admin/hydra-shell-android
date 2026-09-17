@@ -19,7 +19,7 @@
   },
   "inactive_architecture": {
     "historical_external_deployment_providers": "OUTSIDE_ACTIVE_ARCHITECTURE",
-    "public_local_vnc_websocket_acodex": "FORBIDDEN_PUBLICATION_PATH"
+    "retired_local_development_bridges": "FORBIDDEN_PUBLICATION_PATH"
   },
   "tls": {
     "edge_certificates": "cloudflare_managed",

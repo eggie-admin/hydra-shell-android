@@ -6,10 +6,15 @@ on:
       - "project/hydra/**"
       - "lumh-os/kai9000/**"
       - "ultima/ollama-ffmpeg-antenna-v3/**"
-      - "docs/LUHM_CROWN_GATE.md"
+      - "backend/**"
+      - "tools/**"
+      - "integrations/cloudflare/**"
+      - "docs/**"
+      - "README.md"
+      - "SUPPORT.md"
+      - "ARCHITECTURE.md"
       - "AGENTS.md"
-      - "tools/kai9000_ci_guard.py"
-      - "tools/project_hydra_structure_guard.py"
+      - ".github/copilot-instructions.md"
       - ".github/workflows/kai9000-ci.yml"
   push:
     branches: [luhmos-main]
@@ -17,10 +22,15 @@ on:
       - "project/hydra/**"
       - "lumh-os/kai9000/**"
       - "ultima/ollama-ffmpeg-antenna-v3/**"
-      - "docs/LUHM_CROWN_GATE.md"
+      - "backend/**"
+      - "tools/**"
+      - "integrations/cloudflare/**"
+      - "docs/**"
+      - "README.md"
+      - "SUPPORT.md"
+      - "ARCHITECTURE.md"
       - "AGENTS.md"
-      - "tools/kai9000_ci_guard.py"
-      - "tools/project_hydra_structure_guard.py"
+      - ".github/copilot-instructions.md"
       - ".github/workflows/kai9000-ci.yml"
 
 permissions:
@@ -62,10 +72,13 @@ jobs:
       - name: Architecture and secret guard
         run: python tools/kai9000_ci_guard.py
 
+      - name: Retired lane purge guard
+        run: python tools/retired_lane_guard.py
+
       - name: Python compile gate
         run: |
           python -m compileall -q ultima/ollama-ffmpeg-antenna-v3
-          python -m py_compile tools/kai9000_ci_guard.py tools/project_hydra_structure_guard.py
+          python -m py_compile tools/kai9000_ci_guard.py tools/project_hydra_structure_guard.py tools/retired_lane_guard.py
 
       - name: Lum Crown authority contract
         working-directory: ultima/ollama-ffmpeg-antenna-v3
