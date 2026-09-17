@@ -116,7 +116,7 @@ jobs:
           printf 'arch=%s\ncpus=%s\nmem_kib=%s\nroot_free_kib=%s\n' "$ARCH" "$CPU" "$MEM_KIB" "$ROOT_FREE_KIB"
           echo 'LUHM_REMOTE_BUILD_IRON_GREEN'
 
-      - name: Verify local avatar runtime contract
+      - name: Verify branded runtime and local harness contract
         shell: bash
         run: |
           set -euo pipefail
@@ -124,15 +124,41 @@ jobs:
           JS="$GAME/apk-install-gui.js"
           CSS="$GAME/apk-install-gui.css"
           TEST="$GAME/tests/apk-install-gui.test.mjs"
+          ENTERPRISE_JS="$GAME/enterprise-distribution.js"
+          ENTERPRISE_TEST="$GAME/tests/enterprise-distribution.test.mjs"
+          DIST="$GAME/distribution/enterprise-distribution.json"
+          PATCH="$GAME/tools/patch-enterprise-android.py"
+          RELEASE_BUILDER="$GAME/tools/make-release-manifest.py"
+          HARNESS="$GAME/python/src/luhm_core/local_harness.py"
           test -s "$JS" && test -s "$CSS" && test -s "$TEST"
+          test -s "$ENTERPRISE_JS" && test -s "$ENTERPRISE_TEST" && test -s "$DIST"
+          test -s "$PATCH" && test -s "$RELEASE_BUILDER" && test -s "$HARNESS"
           grep -q 'LUHM_AVATAR_SOURCE_OF_TRUTH_V1' "$JS"
-          grep -q "lum-avatar-actual-animated.mp4" "$JS"
+          grep -q 'LUHM_OS_ENTERPRISE_DISTRIBUTION_V1' "$ENTERPRISE_JS"
+          grep -q 'luhmos-release.json' "$ENTERPRISE_JS"
+          grep -q 'app.uninstall.open' "$ENTERPRISE_JS"
+          grep -q 'lum.eggiebagelface.lan' "$ENTERPRISE_JS"
           grep -q 'luhm-avatar-video' "$CSS"
           ! grep -nE 'drive\.google|drive\.usercontent|googleusercontent' "$JS"
-          ! grep -nE '\beval\s*\(|new Function|child_process|OS\.execute' "$JS"
+          ! grep -nE '\beval\s*\(|new Function|child_process|OS\.execute' "$JS" "$ENTERPRISE_JS"
           node --check "$JS"
+          node --check "$ENTERPRISE_JS"
           node --test "$TEST"
-          echo 'LUHM_AVATAR_RUNTIME_CONTRACT_GREEN'
+          node --test "$ENTERPRISE_TEST"
+          python3 -m py_compile "$PATCH" "$RELEASE_BUILDER" "$HARNESS"
+          python3 - "$DIST" <<'PY'
+          import json,sys
+          d=json.load(open(sys.argv[1],encoding='utf-8'))
+          assert d['schema']=='luhm_os.enterprise_distribution.v1'
+          assert d['release']['repository']=='eggie-admin/hydra-shell-android'
+          assert d['release']['provider']=='github_releases'
+          assert d['release']['manifest_asset']=='luhmos-release.json'
+          assert d['local_harness']['public_backend_fallback'] is False
+          assert d['android']['silent_install'] is False
+          assert d['android']['silent_uninstall'] is False
+          print('LUHM_ENTERPRISE_DISTRIBUTION_SOURCE_GREEN')
+          PY
+          echo 'LUHM_BRANDED_RUNTIME_CONTRACT_GREEN'
 
       - name: Fetch and verify authoritative Drive avatar
         shell: bash
@@ -173,6 +199,20 @@ jobs:
           PY
           grep -q 'android.permission.REQUEST_INSTALL_PACKAGES' "$MANIFEST"
           ! grep -q 'com.termux.permission.RUN_COMMAND' "$MANIFEST"
+
+      - name: Apply enterprise Android distribution hardening
+        shell: bash
+        run: |
+          set -euo pipefail
+          GAME="$GITHUB_WORKSPACE/project/hydra/samsung/android/cathedral-game"
+          PLUGIN='_forge/luhmos-android/godot/android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralAndroidPlugin.kt'
+          python3 "$GAME/tools/patch-enterprise-android.py" "$PLUGIN"
+          grep -q 'LUHM_ENTERPRISE_DISTRIBUTION_NATIVE_V1' "$PLUGIN"
+          grep -q 'RELEASE_HOST = "github.com"' "$PLUGIN"
+          grep -q 'expectedSha256' "$PLUGIN"
+          grep -q 'Intent.ACTION_DELETE' "$PLUGIN"
+          grep -q '/eggie-admin/hydra-shell-android/releases/download/' "$PLUGIN"
+          echo 'LUHM_ENTERPRISE_ANDROID_PATCH_GREEN'
 
       - name: Verify preloaded Android SDK 36 or install fallback
         shell: bash
@@ -278,7 +318,7 @@ jobs:
           test -s "$TEMPLATE_DIR/android_debug.apk"
           test -s "$TEMPLATE_DIR/android_source.zip"
 
-      - name: Compose Cathedral with authoritative local Lum avatar
+      - name: Compose branded Cathedral with authoritative local Lum avatar
         shell: bash
         run: |
           set -euo pipefail
@@ -299,12 +339,14 @@ jobs:
             '<link rel="stylesheet" href="apk-install-gui.css">',
             '<script defer src="final-form.js"></script>',
             '<script defer src="apk-install-gui.js"></script>',
+            '<script defer src="enterprise-distribution.js"></script>',
           ]
           missing=[x for x in links if x not in text]
           if missing: text=text.replace('</head>','\n'.join(missing)+'\n</head>',1)
           p.write_text(text,encoding='utf-8')
           PY
           grep -q "$LUM_AVATAR_NAME" "$CMS/apk-install-gui.js"
+          grep -q 'LUHM_OS_ENTERPRISE_DISTRIBUTION_V1' "$CMS/enterprise-distribution.js"
           ! grep -q 'drive.google' "$CMS/apk-install-gui.js"
 
           python3 - "$CMS/apk-install-gui.js" "$RELEASE_PACKAGE_ID" "$PACKAGE_ID" <<'PY'
@@ -371,7 +413,7 @@ jobs:
           echo 'GODOT_ANDROID_KEYSTORE_DEBUG_USER=androiddebugkey' >> "$GITHUB_ENV"
           echo 'GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD=android' >> "$GITHUB_ENV"
 
-      - name: Export candidate APK
+      - name: Export branded candidate APK
         shell: bash
         run: |
           set -euo pipefail
@@ -382,7 +424,7 @@ jobs:
             "$GITHUB_WORKSPACE/build/android/$APK_NAME"
           test -s "build/android/$APK_NAME"
 
-      - name: Hard verify APK and embedded Drive avatar
+      - name: Hard verify branded APK and enterprise runtime
         shell: bash
         run: |
           set -euo pipefail
@@ -400,14 +442,31 @@ jobs:
           grep -q "targetSdkVersion:'36'" build/android/badging.txt
           grep -q "assets/cms/${LUM_AVATAR_NAME}" build/android/contents.txt
           grep -q 'assets/cms/apk-install-gui.js' build/android/contents.txt
+          grep -q 'assets/cms/enterprise-distribution.js' build/android/contents.txt
+          grep -q 'assets/cms/distribution/enterprise-distribution.json' build/android/contents.txt
           grep -q 'android.permission.REQUEST_INSTALL_PACKAGES' build/android/permissions.txt
           ! grep -q 'com.termux.permission.RUN_COMMAND' build/android/permissions.txt
           grep -Eq 'Verified using v(2|3|4) scheme .*: true' build/android/signature.txt
           unzip -p "$APK" "assets/cms/${LUM_AVATAR_NAME}" > build/android/embedded-lum-avatar.mp4
           echo "${LUM_AVATAR_SHA256}  build/android/embedded-lum-avatar.mp4" | sha256sum --check --strict
           unzip -p "$APK" assets/cms/apk-install-gui.js > build/android/embedded-apk-install-gui.js
+          unzip -p "$APK" assets/cms/enterprise-distribution.js > build/android/embedded-enterprise-distribution.js
+          unzip -p "$APK" assets/cms/distribution/enterprise-distribution.json > build/android/embedded-enterprise-distribution.json
           grep -q "$LUM_AVATAR_NAME" build/android/embedded-apk-install-gui.js
           ! grep -Eq 'drive\.google|drive\.usercontent|googleusercontent' build/android/embedded-apk-install-gui.js
+          grep -q 'LUHM_OS_ENTERPRISE_DISTRIBUTION_V1' build/android/embedded-enterprise-distribution.js
+          grep -q 'eggie-admin/hydra-shell-android/releases/download/' build/android/embedded-enterprise-distribution.js
+          grep -q 'app.uninstall.open' build/android/embedded-enterprise-distribution.js
+          python3 - build/android/embedded-enterprise-distribution.json <<'PY'
+          import json,sys
+          d=json.load(open(sys.argv[1],encoding='utf-8'))
+          assert d['release']['repository']=='eggie-admin/hydra-shell-android'
+          assert d['release']['manifest_asset']=='luhmos-release.json'
+          assert d['local_harness']['public_backend_fallback'] is False
+          assert d['android']['silent_install'] is False
+          assert d['android']['silent_uninstall'] is False
+          print('LUHM_EMBEDDED_ENTERPRISE_DISTRIBUTION_GREEN')
+          PY
           cat > build/android/AVATAR_SOURCE_RECEIPT.txt <<EOF
           Drive source-of-truth file ID: ${LUM_AVATAR_DRIVE_FILE_ID}
           Embedded filename: ${LUM_AVATAR_NAME}
@@ -416,16 +475,18 @@ jobs:
           Runtime policy: packaged local bytes only; no Drive/network fetch.
           EOF
           cat > build/android/CANDIDATE_AUTHORITY.txt <<EOF
-          COLLISION-FREE TEST CANDIDATE ONLY.
+          COLLISION-FREE BRANDED TEST CANDIDATE ONLY.
           Package: ${PACKAGE_ID}
           Production package remains: ${RELEASE_PACKAGE_ID}
           Ephemeral signer. No release signing authority.
-          Android user confirmation remains mandatory.
-          No deployment, publication, canonical merge, Crown, or seal is implied by this artifact.
+          Updates are eligible only from the LuHm GitHub Releases lane and require a release-manifest SHA-256.
+          Android user confirmation remains mandatory for install/update and uninstall.
+          Local backend posture has no public fallback.
+          No deployment, release publication, canonical merge, Crown, or seal is implied by this artifact.
           EOF
-          echo 'LUHM_DRIVE_AVATAR_CANDIDATE_GREEN'
+          echo 'LUHM_BRANDED_ENTERPRISE_CANDIDATE_GREEN'
 
-      - name: Bind artifact to universal forge state
+      - name: Bind artifact and stage GitHub Release manifest
         shell: bash
         env:
           LUHM_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -447,19 +508,48 @@ jobs:
             'artifact':{'name':apk.name,'sha256':hashlib.sha256(apk.read_bytes()).hexdigest()},
             'forge_lock_sha256':hashlib.sha256(lock_path.read_bytes()).hexdigest(),
             'forge_contract_sha256':fingerprint['contract_sha256'],
-            'authority':{'merge':'NOT_TRIGGERED','deploy':'NOT_TRIGGERED','release_signing':'NOT_TRIGGERED','crown':'NOT_TRIGGERED'},
+            'distribution':{'provider':'github_releases','manifest_asset':'luhmos-release.json','publish':'NOT_TRIGGERED'},
+            'authority':{'merge':'NOT_TRIGGERED','deploy':'NOT_TRIGGERED','release_signing':'NOT_TRIGGERED','release_publish':'NOT_TRIGGERED','crown':'NOT_TRIGGERED'},
           }
           out.write_text(json.dumps(payload,indent=2,sort_keys=True)+'\n')
           print('LUHM_ARTIFACT_FORGE_BINDING_GREEN')
           PY
+          CONTRACT_SHA="$(python3 -c 'import json;print(json.load(open("build/android/FORGE_FINGERPRINT.json"))["contract_sha256"])')"
+          RELEASE_TAG="v${VERSION_NAME}-proposed.${GITHUB_RUN_NUMBER}"
+          python3 "$GAME/tools/make-release-manifest.py" \
+            --apk "$APK" \
+            --tag "$RELEASE_TAG" \
+            --channel proposed \
+            --package-id "$PACKAGE_ID" \
+            --version-name "$VERSION_NAME" \
+            --version-code "$VERSION_CODE" \
+            --source-sha "$LUHM_SOURCE_SHA" \
+            --forge-contract-sha256 "$CONTRACT_SHA" \
+            --output build/android/luhmos-release.json
+          python3 - "$APK" build/android/luhmos-release.json <<'PY'
+          from pathlib import Path
+          import hashlib,json,sys
+          apk=Path(sys.argv[1]); m=json.load(open(sys.argv[2],encoding='utf-8'))
+          assert m['schema']=='luhm_os.release.v1'
+          assert m['apk_asset']==apk.name
+          assert m['apk_sha256']==hashlib.sha256(apk.read_bytes()).hexdigest()
+          assert m['package_id']=='art.eggiebagelface.luhmos.candidate'
+          assert m['channel']=='proposed'
+          print('LUHM_GITHUB_RELEASE_PAYLOAD_GREEN')
+          PY
+          cp "$GAME/distribution/enterprise-distribution.json" build/android/ENTERPRISE_DISTRIBUTION.json
           grep -q '"release_signing": "NOT_TRIGGERED"' build/android/ARTIFACT_MANIFEST.json
+          grep -q '"release_publish": "NOT_TRIGGERED"' build/android/ARTIFACT_MANIFEST.json
+          echo 'LUHM_RELEASE_PUBLISH_NOT_TRIGGERED'
 
-      - name: Upload candidate and proof
+      - name: Upload branded candidate and release proof
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: luhmos-drive-avatar-${{ env.VERSION_NAME }}-${{ github.run_number }}
           path: |
             build/android/${{ env.APK_NAME }}
+            build/android/luhmos-release.json
+            build/android/ENTERPRISE_DISTRIBUTION.json
             build/android/sha256.txt
             build/android/signature.txt
             build/android/zipalign.txt
