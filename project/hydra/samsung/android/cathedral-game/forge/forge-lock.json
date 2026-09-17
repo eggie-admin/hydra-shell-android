@@ -51,6 +51,25 @@
     "explicit_install_apply_flag": "--apply",
     "npm_install_lifecycle_device_mutation": false
   },
+  "distribution": {
+    "schema": "luhm_os.enterprise_distribution.v1",
+    "contract": "distribution/enterprise-distribution.json",
+    "runtime_client": "enterprise-distribution.js",
+    "runtime_test": "tests/enterprise-distribution.test.mjs",
+    "native_patch": "tools/patch-enterprise-android.py",
+    "release_manifest_builder": "tools/make-release-manifest.py",
+    "release_provider": "github_releases",
+    "release_repository": "eggie-admin/hydra-shell-android",
+    "release_manifest_asset": "luhmos-release.json",
+    "local_backend_harness": "python/src/luhm_core/local_harness.py",
+    "arbitrary_apk_url": false,
+    "release_asset_sha256_required": true,
+    "same_android_signer_required": true,
+    "downgrade_allowed": false,
+    "silent_install": false,
+    "silent_uninstall": false,
+    "public_backend_fallback": false
+  },
   "pinned_inputs": {
     "android_forge_repository": "eggie-admin/vue-headless-cms",
     "android_forge_commit": "dd9b3e68e14ce7a559b7b13aebfe10c630fa171b",
@@ -62,7 +81,9 @@
     "verified_downloads_require_sha256": true,
     "build_prefers_preloaded_sdk": true,
     "cache_restore_policy": "exact_key_only",
-    "post_prepare_validation_network_required": false
+    "post_prepare_validation_network_required": false,
+    "runtime_update_remote_authority": "github_releases_only",
+    "local_backend_public_fallback": false
   },
   "security": {
     "workflow_permissions": "contents_read_only",
@@ -91,6 +112,7 @@
     "canonical_merge": "NOT_TRIGGERED",
     "production_deploy": "NOT_TRIGGERED",
     "release_signing": "NOT_TRIGGERED",
+    "release_publish": "NOT_TRIGGERED",
     "crown": "NOT_TRIGGERED"
   }
 }
