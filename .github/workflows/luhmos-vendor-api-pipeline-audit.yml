@@ -9,10 +9,13 @@ on:
       - 'integrations/vendor-apis.manifest.json'
       - 'docs/API_TRINITY_DOCTRINE.md'
       - 'tools/vendor_api_pipeline_audit.py'
+      - 'infra/gcp/bootstrap-github-wif.sh'
       - '.github/workflows/luhmos-vendor-api-pipeline-audit.yml'
+      - '.github/workflows/kai9000-remote-ai-smoke.yml'
       - '.github/workflows/cloudflare-coming-soon.yml'
       - '.github/workflows/cloudflare-ultima-audit.yml'
       - '.github/workflows/google-white-magic-strict-free-vm.yml'
+      - '.github/workflows/luhmos-gcp-oidc-smoke.yml'
   push:
     branches:
       - luhmos-main
@@ -20,10 +23,13 @@ on:
       - 'integrations/vendor-apis.manifest.json'
       - 'docs/API_TRINITY_DOCTRINE.md'
       - 'tools/vendor_api_pipeline_audit.py'
+      - 'infra/gcp/bootstrap-github-wif.sh'
       - '.github/workflows/luhmos-vendor-api-pipeline-audit.yml'
+      - '.github/workflows/kai9000-remote-ai-smoke.yml'
       - '.github/workflows/cloudflare-coming-soon.yml'
       - '.github/workflows/cloudflare-ultima-audit.yml'
       - '.github/workflows/google-white-magic-strict-free-vm.yml'
+      - '.github/workflows/luhmos-gcp-oidc-smoke.yml'
 
 permissions:
   contents: read
