@@ -1,0 +1,11 @@
+# Project Hydra source ownership. Server-side enforcement remains a separate GitHub governance gate.
+* @eggie-admin
+
+/project/hydra/source-of-truth/ @eggie-admin
+/project/hydra/runtime/ @eggie-admin
+/project/hydra/doctrine/ @eggie-admin
+/project/hydra/project.manifest.json @eggie-admin
+/.github/workflows/ @eggie-admin
+/.github/agents/ @eggie-admin
+/.github/instructions/ @eggie-admin
+/AGENTS.md @eggie-admin

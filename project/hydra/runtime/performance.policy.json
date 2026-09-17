@@ -1,6 +1,6 @@
 {
   "schema": "luhm-os.project-hydra.performance-policy.v1",
-  "status": "PROPOSED_ACTIVE_ON_CANDIDATE_BRANCH",
+  "status": "SEALED_ACTIVE_CANONICAL",
   "date_local": "2026-09-17",
   "project": "Project Hydra",
   "canonical_branch": "luhmos-main",
@@ -128,7 +128,7 @@
     "unmeasured_optimization_state": "PROPOSED_NOT_PROVEN_FASTER"
   },
   "promotion": {
-    "candidate_branch_only": true,
+    "candidate_branch_only": false,
     "canonical_merge_requires_explicit_current_professor_authorization": true,
     "source_of_truth_crown_requires_explicit_current_professor_authorization": true,
     "release_promotion": false,
@@ -137,5 +137,11 @@
     "public_publish": false,
     "dns_mutation": false,
     "billing_mutation": false
+  },
+  "canonical_state": {
+    "promoted": true,
+    "final_form_milestone": "project/hydra/source-of-truth/KAI9000_LUM_FINAL_FORM_MILESTONE_20260917.json",
+    "runtime_speedup_proven": false,
+    "benchmark_receipt_pending": true
   }
 }
