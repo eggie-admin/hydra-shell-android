@@ -1,7 +1,7 @@
 {
   "schema": "luhm-os.kai9000.apk-install-gui-proposal.v1",
   "manifest_id": "KAI9000_PROPOSED_APK_INSTALL_GUI_20260917",
-  "state": "PROPOSED",
+  "state": "PROPOSED_VIRGIN_INSTALL_BUILD",
   "seal_status": "PROPOSED_NOT_CROWNED",
   "date_local": "2026-09-17",
   "repository": "eggie-admin/hydra-shell-android",
@@ -9,11 +9,12 @@
   "canonical_parent_at_lane_creation": "e65210ccc189084acc88e692f4beec540ca21d8b",
   "proposal_branch": "luhmos/proposed-apk-install-gui-20260917",
   "human_final_authority": "Professor",
-  "purpose": "Advance the sealed LuHm OS source of truth into an APK/install GUI candidate lane without granting signing, physical install, deployment, publication, release, shell, or retired Termux bridge authority.",
+  "purpose": "Build a fresh-install LuHm OS 1.0.8 GUI/UI debug candidate after the Professor removed the previously installed LuHm OS package. Preserve all release, publication, shell, and canonical promotion boundaries.",
   "candidate": {
     "package_id": "art.eggiebagelface.luhmos",
     "version_name": "1.0.8",
     "version_code": 108,
+    "install_mode": "VIRGIN_INSTALL_AFTER_USER_UNINSTALL",
     "ui_script": "project/hydra/samsung/android/cathedral-game/apk-install-gui.js",
     "ui_style": "project/hydra/samsung/android/cathedral-game/apk-install-gui.css",
     "contract_test": "project/hydra/samsung/android/cathedral-game/tests/apk-install-gui.test.mjs",
@@ -32,8 +33,8 @@
   "install_contract": {
     "explicit_user_gesture_required": true,
     "https_only": true,
-    "package_must_match_installed_app": true,
-    "signer_must_match_installed_app": true,
+    "virgin_install_expected": true,
+    "signer_collision_expected": false,
     "downgrade_rejected": true,
     "android_packageinstaller_user_action_required": true,
     "request_install_packages_permission_required": true,
@@ -47,13 +48,15 @@
   "ci_candidate_signing": {
     "mode": "EPHEMERAL_DEBUG_CANDIDATE",
     "persistent_release_signing_used": false,
+    "fresh_install_with_package_absent": true,
     "can_replace_differently_signed_installed_build": false
   },
   "authority_boundaries": {
     "apk_build_candidate_authorized": true,
     "gui_install_bridge_candidate_authorized": true,
+    "physical_device_install_authorized": true,
+    "physical_device_install_completed": false,
     "persistent_release_signing_authorized": false,
-    "physical_device_install_authorized": false,
     "termux_command_bridge_authorized": false,
     "canonical_merge_authorized": false,
     "deploy_authorized": false,
@@ -70,9 +73,10 @@
     "requires_apk_signature_and_zipalign_readback": true,
     "requires_embedded_gui_payload_readback": true,
     "requires_no_termux_permission_or_package_query": true,
-    "requires_professor_install_authorization_for_physical_install": true,
+    "requires_android_installer_success_for_physical_green": true,
+    "requires_launch_screenshot_for_physical_launch_green": true,
     "requires_separate_signing_authorization_for_release_signer": true
   },
   "source_law": "AI proposes. Policy authorizes. CI proves. Android confirms installation. The human promotes.",
-  "result": "APK_INSTALL_GUI_CANDIDATE_STAGED"
+  "result": "VIRGIN_INSTALL_CANDIDATE_REBUILD_TRIGGERED"
 }
