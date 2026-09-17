@@ -1,0 +1,80 @@
+{
+  "schema": "luhm_os.universal_forge_lock.v1",
+  "project": "LuHm OS // Cathedral",
+  "lock_date": "2026-09-17",
+  "state": "candidate_locked_not_crowned",
+  "runner": {
+    "label": "ubuntu-24.04",
+    "os": "Linux",
+    "arch": "x86_64",
+    "minimum_cpu_threads": 4,
+    "minimum_memory_kib": 14680064,
+    "minimum_root_free_kib": 8388608,
+    "exact_kernel_version_pinned": false,
+    "kernel_policy": "capability_probe_not_version_pin"
+  },
+  "actions": {
+    "actions/checkout": {"version": "v7.0.1", "sha": "3d3c42e5aac5ba805825da76410c181273ba90b1"},
+    "actions/setup-python": {"version": "v6.0.0", "sha": "e797f83bcb11b83ae66e0230d6156d7c80228e7c"},
+    "actions/setup-java": {"version": "v6.0.1", "sha": "de7274f081f381c8f8158605e0321c36c376e2e6"},
+    "actions/setup-node": {"version": "v7.0.0", "sha": "820762786026740c76f36085b0efc47a31fe5020"},
+    "actions/cache": {"version": "v6.0.0", "sha": "2c8a9bd7457de244a408f35966fab2fb45fda9c8"},
+    "actions/upload-artifact": {"version": "v6.0.0", "sha": "b7c566a772e6b6bfb58ed0dc250532a479d7789f"}
+  },
+  "toolchain": {
+    "python": "3.14.7",
+    "python_build_backend": "hatchling==1.32.3",
+    "java": "17",
+    "node": "24",
+    "godot": "4.7.2-stable",
+    "godot_template": "4.7.2.stable",
+    "android_min_sdk": 24,
+    "android_target_sdk": 36,
+    "android_build_tools": "36.1.0",
+    "android_target_abi": "arm64-v8a",
+    "godot_android_gradle": "8.11.1",
+    "plugin_gradle": "8.13"
+  },
+  "pinned_inputs": {
+    "android_forge_repository": "eggie-admin/vue-headless-cms",
+    "android_forge_commit": "dd9b3e68e14ce7a559b7b13aebfe10c630fa171b",
+    "avatar_sha256": "1a20bd7bf495ee930d2cc9dab9342d7cb29d326ce0c7f433c206581ebdddad97"
+  },
+  "network": {
+    "runtime_vendor_cdn": false,
+    "arbitrary_pipe_to_shell": false,
+    "verified_downloads_require_sha256": true,
+    "build_prefers_preloaded_sdk": true,
+    "cache_restore_policy": "exact_key_only",
+    "post_prepare_validation_network_required": false
+  },
+  "security": {
+    "workflow_permissions": "contents_read_only",
+    "persist_checkout_credentials": false,
+    "floating_action_refs": false,
+    "pull_request_target": false,
+    "ubuntu_latest": false,
+    "secrets_from_environment_only": true,
+    "ai_direct_shell_execution": false,
+    "production_signing": false,
+    "release_publish": false,
+    "deploy": false,
+    "crown": false
+  },
+  "reproducibility": {
+    "source_archive_mtime": 0,
+    "source_archive_uid": 0,
+    "source_archive_gid": 0,
+    "normalized_file_order": true,
+    "contract_digest_required": true,
+    "runner_fingerprint_required": true,
+    "artifact_sha256_required": true,
+    "artifact_retention_days": 14
+  },
+  "release_gates": {
+    "canonical_merge": "NOT_TRIGGERED",
+    "production_deploy": "NOT_TRIGGERED",
+    "release_signing": "NOT_TRIGGERED",
+    "crown": "NOT_TRIGGERED"
+  }
+}
