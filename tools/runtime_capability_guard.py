@@ -9,7 +9,7 @@ POLICY = ROOT / "integrations/runtime-capabilities.policy.json"
 VENDOR = ROOT / "integrations/vendor-apis.manifest.json"
 REMOTE = ROOT / "ultima/ollama-ffmpeg-antenna-v3/remote_ai.py"
 ASSIST = ROOT / "ultima/ollama-ffmpeg-antenna-v3/assistance.py"
-GATEWAY = ROOT / "ultima/ollama-ffmpeg-antenna-v3/gateway.py"
+GOOGLE_ASSIST = ROOT / "ultima/ollama-ffmpeg-antenna-v3/google_assist.py"
 
 
 def require(ok: bool, message: str) -> None:
@@ -22,7 +22,7 @@ def main() -> None:
     vendor = json.loads(VENDOR.read_text(encoding="utf-8"))
     remote = REMOTE.read_text(encoding="utf-8")
     assist = ASSIST.read_text(encoding="utf-8")
-    gateway = GATEWAY.read_text(encoding="utf-8")
+    google_assist = GOOGLE_ASSIST.read_text(encoding="utf-8")
 
     require(policy.get("schema") == "luhm-os.runtime-capabilities.v1", "policy schema drift")
     require(policy.get("project") == "LuHm OS", "project branding drift")
@@ -50,7 +50,18 @@ def main() -> None:
     require(google.get("use_client_process_cache") is True, "Google client cache disabled")
     paid_google = set(google.get("paid_capabilities", []))
     require({"context_caching", "batch_or_flex_for_offline_work", "higher_rate_limits", "advanced_models"}.issubset(paid_google), "Google paid-capability registry drift")
-    require("_GOOGLE_CLIENT_CACHE" in gateway or "lru_cache" in gateway, "Google process client reuse missing")
+    for needle in (
+        'GOOGLE_FAST_MODEL = os.environ.get("KAI_GOOGLE_FAST_TEXT_MODEL", "gemini-3.5-flash-lite")',
+        'GOOGLE_DEEP_MODEL = os.environ.get("KAI_GOOGLE_DEEP_TEXT_MODEL", "gemini-3.8-flash")',
+        'GOOGLE_LIVE_API_MODEL = os.environ.get("KAI_GEMINI_LIVE_API_MODEL", "gemini-3.8-live")',
+        "_CLIENT_LOCK = threading.Lock()",
+        "_CLIENT_SIGNATURE",
+        "def _client()",
+        '"client_cache": "process_reuse"',
+    ):
+        require(needle in google_assist, f"Google assistance fastpath drift: {needle}")
+    require("import google_assist" in assist, "Google assistance module not mounted on orchestration hot path")
+    require("google_assist.generate(" in assist, "Google assistance cache bypassed by orchestration")
 
     github = providers["github"]
     require(github.get("public_repository_standard_actions_are_preferred") is True, "GitHub public Actions preference drift")
