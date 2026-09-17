@@ -3,11 +3,13 @@
 This repository is the LuHm OS / KAI 9000 Samsung Android orchestration altar.
 
 ## Read first
+- `project/hydra/source-of-truth/KAI9000_FULL_DOCTRINE_MUTATION_SEAL_20260917.json`
 - `project/hydra/source-of-truth/KAI9000_SEAL_OF_TRUTH_CROWN_20260917.json`
 - `project/hydra/source-of-truth/LUHMOS_HYDRA_DIRECTORY_CROWN_20260916.json`
 - `project/hydra/source-of-truth/LUHM_M1_SIGNED_SECURE_WEBVIEW_SOCKET_20260916.json`
 - `project/hydra/doctrine/directory-structure.json`
 - `project/hydra/project.manifest.json`
+- `project/hydra/runtime/performance.policy.json` when present on the current candidate/source branch
 - `.github/copilot-instructions.md`
 - The exact workflow, manifest, and tests for the lane being changed
 
@@ -21,6 +23,25 @@ Legacy trees such as `lumh-os/kai9000/**`, `ultima/**`, ULTIMA-named workflows/s
 - GitHub Actions is compile/build authority. Fresh physical device behavior is device-proof authority.
 - Google Drive is private recovery/source-of-truth documentation and private artifact staging, not Git source control.
 - Resolve conflicts in this order: exact current Professor instruction, fresh physical/runtime proof when applicable, newest applicable crowned source-of-truth contract, Project Hydra directory/project manifests, these agent instructions plus the exact lane workflow, proposed doctrine, then legacy/history.
+
+## Fast-path law
+Speed means less repeated work, not fewer proof or authority gates.
+
+- Resolve authority once per exact repository/branch/head and carry compact `path@sha` references forward.
+- Reuse immutable Git evidence. Refresh mutable branch, PR, Drive-revision, runtime, and device state immediately before a mutation or claim that depends on it.
+- Deterministic local validation comes before remote AI when it can answer the question completely.
+- Default helper count is zero. Use at most two parallel helpers, and only for independent read/search work.
+- Delegation depth is at most one. Helpers do not delegate to helpers.
+- Keep one Lum parent and one serialized write sequence. Never race competing writes.
+- Do not race providers or duplicate model calls to manufacture confidence.
+- Use the fast OpenAI route for ordinary classification, structured transforms, source triage, small coding assistance, and proof summaries. Escalate to the deep route only when complexity materially warrants it.
+- Run the smallest relevant deterministic/focused test first, then exact-head CI for claims that require repository-wide evidence.
+- Base Android launch and first render must remain network-independent. Cloud AI, ADMIN surfaces, and optional helpers are lazy/on-demand.
+- One verified proof payload may render as JSON, scriptless HTML, and chat-safe text. Do not recompute or duplicate large evidence bodies when a hash or immutable ID is sufficient.
+- A performance improvement is `PROPOSED_NOT_PROVEN_FASTER` until measured against a comparable baseline on the relevant runner/device.
+- Never weaken Crown Law, provenance, signing continuity, secret handling, physical-device proof, or required CI merely to reduce latency.
+
+Machine enforcement lives in `project/hydra/runtime/performance.policy.json` and `tools/project_hydra_fastpath_guard.py` when those candidate files are present.
 
 ## Android release identity
 - App: `LuHm OS`
@@ -57,14 +78,15 @@ For coding work use:
 `DOCTRINE -> INSPECT -> OUTLINE/READ -> DEBUG -> COMPILE/TEST -> PROPOSE -> HUMAN APPROVAL -> EXECUTION EVIDENCE`
 
 ## Fast verification order
-1. Resolve the newest applicable crowned contract and exact current source ref.
-2. `python tools/project_hydra_structure_guard.py`
-3. `python tools/kai9000_ci_guard.py`
-4. Run the exact current tests/workflow for the lane being changed. Do not route new verification through `ultima/**` merely because legacy tests still exist.
-5. When runtime environment state matters, run the read-only `sh tools/hydra-sanity-audit.sh` and review its report before mutation.
-6. Require exact-head GitHub Actions evidence for build/signature/alignment or other lane-specific candidate claims.
-7. For APK claims, bind source commit, workflow/run ID, artifact ID/hash, APK hash, and signer fingerprint.
-8. For hardware/runtime completion, require fresh human-observed physical install/update/launch proof. CI cannot close device gates.
+1. Resolve the newest applicable crowned contract, exact current source ref, and performance policy if the branch contains one.
+2. `python tools/project_hydra_fastpath_guard.py` when present.
+3. `python tools/project_hydra_structure_guard.py`.
+4. `python tools/kai9000_ci_guard.py`.
+5. Run the exact current focused tests/workflow for the lane being changed. Do not route new verification through `ultima/**` merely because legacy tests still exist.
+6. When runtime environment state matters, run the read-only `sh tools/hydra-sanity-audit.sh` and review its report before mutation.
+7. Require exact-head GitHub Actions evidence for build/signature/alignment or other lane-specific candidate claims.
+8. For APK claims, bind source commit, workflow/run ID, artifact ID/hash, APK hash, and signer fingerprint.
+9. For hardware/runtime completion, require fresh human-observed physical install/update/launch proof. CI cannot close device gates.
 
 ## Agent roles
 - Copilot: implementation, repair, tests, documentation.

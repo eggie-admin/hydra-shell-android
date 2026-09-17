@@ -7,6 +7,7 @@
   "directory_doctrine": "project/hydra/doctrine/directory-structure.json",
   "runtime": {
     "kai9000_reference": "project/hydra/runtime/kai9000.reference.json",
+    "performance_policy": "project/hydra/runtime/performance.policy.json",
     "android_external_runtime_required": false
   },
   "forge": {
@@ -25,6 +26,7 @@
     "canonical_doctrine": "docs/LUHMOS_CANONICAL_DOCTRINE.md",
     "ai_stack": "docs/AI_STACK.md",
     "api_doctrine": "docs/API_TRINITY_DOCTRINE.md",
+    "performance_policy": "project/hydra/runtime/performance.policy.json",
     "samsung_apk_reference": "project/hydra/samsung/android/apk/app.reference.json",
     "fdroid_goal": "fdroid/final-goal.manifest.json",
     "fdroid_publication": "fdroid/publication.manifest.json",
@@ -98,6 +100,19 @@
     "huggingface_responses": "https://router.huggingface.co/v1/responses",
     "huggingface_reference_model": "openai/gpt-oss-120b:fastest",
     "model_ids_are_runtime_configurable": true
+  },
+  "performance_goal": {
+    "policy": "project/hydra/runtime/performance.policy.json",
+    "resolve_authority_once_per_exact_head": true,
+    "default_helpers": 0,
+    "max_parallel_read_only_helpers": 2,
+    "max_delegation_depth": 1,
+    "max_ai_rounds": 3,
+    "parallel_writes": false,
+    "focused_tests_before_full_ci": true,
+    "base_launch_network_independent": true,
+    "speed_claim_requires_measurement": true,
+    "authority_or_security_shortcuts_for_speed": false
   },
   "migration": {
     "strategy": "reference_not_copy",
