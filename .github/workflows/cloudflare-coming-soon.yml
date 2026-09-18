@@ -1,4 +1,4 @@
-name: Cloudflare Coming Soon
+name: LuHm OS Cloudflare Edge
 
 on:
   workflow_dispatch:
@@ -19,27 +19,30 @@ on:
   pull_request:
     branches:
       - luhmos-main
-      - 'luhmos/**'
-      - testing/luhm-os-android
     paths:
       - 'site/coming-soon/**'
       - '.github/workflows/cloudflare-coming-soon.yml'
-  push:
-    branches:
-      - testing/luhm-os-android
-    paths:
-      - 'site/coming-soon/**'
-      - '.github/workflows/cloudflare-coming-soon.yml'
+      - 'integrations/enterprise-api.posture.json'
+      - 'tools/enterprise_api_posture_guard.py'
 
 permissions:
   contents: read
 
+concurrency:
+  group: luhmos-cloudflare-edge-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   validate:
-    name: Validate static coming-soon site
+    name: Validate public edge boundary
     runs-on: ubuntu-24.04
+    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout exact source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
       - name: Public/private boundary invariants
         shell: bash
         run: |
@@ -75,17 +78,23 @@ jobs:
           echo 'LUHM_PUBLIC_PRIVATE_BOUNDARY_GREEN'
 
   deploy:
-    name: Deploy Cloudflare static site
+    name: Cloudflare manual deploy
     if: github.event_name == 'workflow_dispatch'
     needs: validate
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout exact source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Node 24
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '24.18.0'
 
-      - name: Credential and publish guard
+      - name: Credential and publish authority guard
         env:
           TARGET: ${{ inputs.target }}
           CONFIRM: ${{ inputs.confirm_publish }}
@@ -99,6 +108,25 @@ jobs:
           if [ "$TARGET" = publish ]; then
             test "$CONFIRM" = YES
           fi
+
+      - name: Verify Cloudflare account service principal
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CF_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          response="$(curl -fsS \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/tokens/verify" \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN")"
+          printf '%s' "$response" | python3 -c '
+          import json, sys
+          payload = json.load(sys.stdin)
+          result = payload.get("result") or {}
+          if payload.get("success") is not True or result.get("status") != "active":
+              raise SystemExit("CLOUDFLARE_ACCOUNT_TOKEN_NOT_ACTIVE")
+          '
+          echo 'CLOUDFLARE_ACCOUNT_SERVICE_PRINCIPAL_GREEN'
 
       - name: Deploy preview
         if: inputs.target == 'preview'
