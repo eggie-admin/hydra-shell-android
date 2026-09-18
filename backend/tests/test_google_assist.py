@@ -28,6 +28,8 @@ def test_current_google_assistance_models() -> None:
 def test_profile_resolution() -> None:
     assert google_assist._resolve_model("fast") == "gemini-3.5-flash-lite"
     assert google_assist._resolve_model("deep") == "gemini-3.8-flash"
+    assert google_assist._timeout_ms("fast") == google_assist.GOOGLE_FAST_TIMEOUT_MS
+    assert google_assist._timeout_ms("deep") == google_assist.GOOGLE_DEEP_TIMEOUT_MS
 
 
 def test_google_client_reuses_same_auth_signature(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -77,9 +79,10 @@ def test_generate_uses_fast_model_without_network(monkeypatch: pytest.MonkeyPatc
         text = "GREEN"
 
     class Models:
-        def generate_content(self, *, model: str, contents: str) -> Response:
+        def generate_content(self, *, model: str, contents: str, config: dict) -> Response:
             assert model == "gemini-3.5-flash-lite"
             assert contents == "hello"
+            assert config["http_options"]["timeout"] == google_assist.GOOGLE_FAST_TIMEOUT_MS
             return Response()
 
     class Client:
@@ -92,4 +95,6 @@ def test_generate_uses_fast_model_without_network(monkeypatch: pytest.MonkeyPatc
     assert result["model"] == "gemini-3.5-flash-lite"
     assert result["profile"] == "fast"
     assert result["client_cache"] == "process_reuse"
+    assert result["timeout_ms"] == google_assist.GOOGLE_FAST_TIMEOUT_MS
+    assert result["implicit_context_cache"] is True
     assert result["secret_material_present"] is False
