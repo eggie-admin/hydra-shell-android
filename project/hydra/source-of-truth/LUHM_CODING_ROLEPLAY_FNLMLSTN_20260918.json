@@ -97,7 +97,7 @@
     "billing_mutation": false,
     "secret_print": false,
     "destructive_purge": false,
-    "retired_vercel_status_residue": "NONBLOCKING_EXTERNAL_INTEGRATION_DEBT"
+    "retired_external_status_residue": "NONBLOCKING_EXTERNAL_INTEGRATION_DEBT"
   },
   "final_gate": {
     "exact_head_ci_required_before_merge": true,
