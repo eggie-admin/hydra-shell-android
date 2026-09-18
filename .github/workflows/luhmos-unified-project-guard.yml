@@ -4,8 +4,13 @@ on:
   pull_request:
     paths:
       - 'lumh-os/kai9000/project.manifest.json'
+      - 'project/hydra/project.manifest.json'
+      - 'project/hydra/source-of-truth/KAI9000_CROWN_CATHEDRAL_FOUNDATION_SEAL_20260918.json'
+      - 'project/hydra/source-of-truth/LUHM_OS_SOURCE_OF_TRUTH_AUDIT_20260918.json'
       - 'integrations/vendor-apis.manifest.json'
+      - 'integrations/runtime-capabilities.policy.json'
       - 'tools/unified_project_guard.py'
+      - 'tools/runtime_capability_guard.py'
       - '.github/workflows/project-hydra-fastpath-gate.yml'
       - '.github/workflows/hydra-local.yml'
       - '.github/workflows/luhmos-unified-project-guard.yml'
