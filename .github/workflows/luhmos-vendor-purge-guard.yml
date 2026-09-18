@@ -3,7 +3,8 @@ name: LuHm Vendor Purge Guard
 on:
   push:
     branches:
-      - luhmos/proposed-toy-gui-mutation-20260917
+      - luhmos-main
+      - 'luhmos/**'
   pull_request:
     branches:
       - luhmos-main
