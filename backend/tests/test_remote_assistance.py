@@ -52,7 +52,7 @@ def test_research_single_prefers_google(monkeypatch: pytest.MonkeyPatch) -> None
     assert plan["calls"] == [{"blade": "research", "provider": "google", "profile": "fast"}]
 
 
-def test_github_context_is_reference_only(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_github_context_is_reference_first(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("GITHUB_REPOSITORY", "eggie-admin/hydra-shell-android")
     monkeypatch.setenv("GITHUB_SHA", "abc123")
     context = assistance._github_context([
@@ -61,6 +61,7 @@ def test_github_context_is_reference_only(monkeypatch: pytest.MonkeyPatch) -> No
     ])
     assert context["provider"] == "github"
     assert context["policy"] == "evidence_by_reference_not_full_history_copy"
+    assert context["resolution"] == "bounded_exact_sha_on_demand"
     assert context["mutation_authority"] is False
     assert len(context["references"]) == 2
 
@@ -70,6 +71,48 @@ def test_github_context_rejects_reference_sprawl() -> None:
     with pytest.raises(HTTPException) as exc:
         assistance._github_context(refs)
     assert exc.value.status_code == 400
+
+
+def test_exact_sha_parser_rejects_mutable_ref_and_accepts_canonical_ref() -> None:
+    sha = "a" * 40
+    assert assistance._parse_exact_github_ref(
+        f"eggie-admin/hydra-shell-android@{sha}:README.md"
+    ) == (sha, "README.md")
+    assert assistance._parse_exact_github_ref(
+        f"https://github.com/eggie-admin/hydra-shell-android/blob/{sha}/docs/API_TRINITY_DOCTRINE.md"
+    ) == (sha, "docs/API_TRINITY_DOCTRINE.md")
+    assert assistance._parse_exact_github_ref(
+        "eggie-admin/hydra-shell-android@luhmos-main:README.md"
+    ) is None
+
+
+def test_github_path_guard_rejects_traversal_and_key_material() -> None:
+    assert assistance._safe_repo_path("../secret") is None
+    assert assistance._safe_repo_path("keys/operator.pem") is None
+    assert assistance._safe_repo_path("docs/README.md") == "docs/README.md"
+
+
+def test_helper_message_resolves_bounded_context_once(monkeypatch: pytest.MonkeyPatch) -> None:
+    sha = "b" * 40
+    ref = f"eggie-admin/hydra-shell-android@{sha}:README.md"
+    monkeypatch.setattr(
+        assistance,
+        "_resolve_github_references",
+        lambda refs: [{"reference": ref, "status": "GREEN", "text": "SOURCE EVIDENCE", "truncated": False}],
+    )
+    message, resolved = assistance._helper_message("audit this", assistance._github_context([ref]))
+    assert "SOURCE EVIDENCE" in message
+    assert ref in message
+    assert len(resolved) == 1
+
+
+def test_no_refs_add_zero_github_resolution_work(monkeypatch: pytest.MonkeyPatch) -> None:
+    def should_not_run(refs):
+        raise AssertionError("resolver should not run without refs")
+    monkeypatch.setattr(assistance, "_resolve_github_references", should_not_run)
+    message, resolved = assistance._helper_message("direct", assistance._github_context([]))
+    assert message == "direct"
+    assert resolved == []
 
 
 def test_no_configured_provider_does_not_invent_remote_green(monkeypatch: pytest.MonkeyPatch) -> None:
