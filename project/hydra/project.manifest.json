@@ -33,7 +33,8 @@
     "fdroid_publication": "fdroid/publication.manifest.json",
     "izzy_publication": "docs/IZZYONDROID_PUBLICATION_AND_HUMAN_CODE_MONETIZATION_20260911.md",
     "izzy_metadata": "fdroid/metadata/art.eggiebagelface.luhmos.yml",
-    "enterprise_policy": "project/hydra/runtime/enterprise.policy.json"
+    "enterprise_policy": "project/hydra/runtime/enterprise.policy.json",
+    "foundation": "project/hydra/source-of-truth/KAI9000_CROWN_CATHEDRAL_FOUNDATION_SEAL_20260918.json"
   },
   "platforms": {
     "samsung_s24fe_stock": "project/hydra/samsung/android/apk/app.reference.json",
@@ -147,5 +148,14 @@
     "compliance_certification_claimed": false,
     "crown_manifest": "project/hydra/source-of-truth/KAI9000_PROJECT_HYDRA_ENTERPRISE_CROWN_20260918.json",
     "enterprise_full_green": false
+  },
+  "foundation": {
+    "status": "CROWN_CATHEDRAL_FOUNDATION",
+    "canonical_branch": "luhmos-main",
+    "seal": "project/hydra/source-of-truth/KAI9000_CROWN_CATHEDRAL_FOUNDATION_SEAL_20260918.json",
+    "promotion_rule": "PR_EXACT_HEAD_CI_GREEN_THEN_HUMAN_MERGE",
+    "future_development_rule": "BRANCH_FROM_CANONICAL_FOUNDATION_AND_PRESERVE_AUTHORITY_BOUNDARIES",
+    "direct_canonical_write_default": false,
+    "history_rewrite_default": false
   }
 }

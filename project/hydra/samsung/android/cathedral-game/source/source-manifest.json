@@ -14,7 +14,16 @@
     "apk-install-gui.css",
     "apk-install-gui.js",
     "enterprise-distribution.js",
-    "update-channel.json"
+    "update-channel.json",
+    "crown-cathedral.css",
+    "crown-cathedral.js",
+    "CROWN_CATHEDRAL_DEMO_MANIFEST.json",
+    "godot-world/assets/lum_world_sprite.svg",
+    "godot-world/assets/lum_hud_icon.svg",
+    "godot4-cleared/secondary-motion-profile.json",
+    "system-shell.css",
+    "system-shell.js",
+    "SYSTEM_SHELL_MANIFEST.json"
   ],
   "templates": [
     "source/templates/cathedral-shell.html",
@@ -28,8 +37,15 @@
   "vendor_catalog": "vendor/vendor-catalog.json",
   "vendor_profiles": {
     "minimal": [],
-    "cockpit": ["jquery", "jquery-ui"],
-    "3d": ["jquery", "jquery-ui", "babylonjs-core"]
+    "cockpit": [
+      "jquery",
+      "jquery-ui"
+    ],
+    "3d": [
+      "jquery",
+      "jquery-ui",
+      "babylonjs-core"
+    ]
   },
   "bundle": {
     "include": [
@@ -49,7 +65,10 @@
       "config",
       "python",
       "java",
-      "forge"
+      "forge",
+      "godot-world",
+      "godot4-cleared",
+      "tools/run-local-harness-termux.sh"
     ],
     "exclude_globs": [
       "**/__pycache__/**",

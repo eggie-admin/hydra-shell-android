@@ -50,9 +50,29 @@ def main() -> int:
                         beginApkUpdate(updateUrl, expectedSha256, expectedPackageId)
                     }
                     "app.uninstall.open" -> openUninstallConfirmation()
+                    "app.window.immersive" -> setImmersiveKiosk(true)
+                    "app.window.system_bars" -> setImmersiveKiosk(false)
+                    "app.quit" -> requestQuit()
                 }
 '''
     text = replace_once(text, old_listener, new_listener, "bridge dispatch")
+
+    old_nav = '''                if (uri.scheme == "https" && uri.host == "appassets.androidplatform.net") {
+                    return false
+                }
+'''
+    new_nav = '''                if (uri.scheme == "https" && uri.host == "appassets.androidplatform.net") {
+                    return false
+                }
+                if (
+                    uri.scheme == "http" &&
+                    (uri.host == "127.0.0.1" || uri.host == "localhost") &&
+                    uri.port == 8791
+                ) {
+                    return false
+                }
+'''
+    text = replace_once(text, old_nav, new_nav, "loopback navigation")
 
     old_begin = '''    private fun beginApkUpdate(rawUrl: String) {
         val hostActivity = activity ?: run {
@@ -114,7 +134,14 @@ def main() -> int:
 
     anchor = '''    private fun emitUpdateEvent(type: String, message: String) {
 '''
-    uninstall = '''    private fun openUninstallConfirmation() {
+    uninstall = '''    private fun requestQuit() {
+        runOnHostThread {
+            val hostActivity = activity ?: return@runOnHostThread
+            hostActivity.finishAndRemoveTask()
+        }
+    }
+
+    private fun openUninstallConfirmation() {
         val hostActivity = activity ?: run {
             emitUpdateEvent("app.uninstall.error", "Android host activity unavailable.")
             return
