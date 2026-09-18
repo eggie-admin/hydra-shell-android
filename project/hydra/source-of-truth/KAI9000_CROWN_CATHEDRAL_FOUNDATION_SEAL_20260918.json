@@ -1,0 +1,169 @@
+{
+  "schema": "luhm-os.project-hydra.foundation-seal.v1",
+  "manifest_id": "KAI9000_CROWN_CATHEDRAL_FOUNDATION_SEAL_20260918",
+  "status": "FOUNDATION_SEAL_CONTRACT",
+  "date_local": "2026-09-18",
+  "project": "Project Hydra",
+  "parent_os": "LuHm OS",
+  "repository": "eggie-admin/hydra-shell-android",
+  "canonical_branch": "luhmos-main",
+  "proposal_pr": 91,
+  "human_authority": "Professor",
+  "authorization": "EXPLICIT_CURRENT_USER_HARD_SOURCE_OF_TRUTH_AUDIT_FINAL_MUTATION_AND_FOUNDATION",
+  "source_law": "AI proposes. Policy authorizes. CI proves. The human promotes.",
+  "supersedes_for_future_development": {
+    "previous_enterprise_crown": "project/hydra/source-of-truth/KAI9000_PROJECT_HYDRA_ENTERPRISE_CROWN_20260918.json",
+    "semantics": "The enterprise Crown remains historical and governing evidence. This seal becomes the active development foundation only after exact-head CI succeeds and PR #91 is merged.",
+    "history_preserved": true
+  },
+  "preseal_audit": {
+    "source_head": "b1d4832b05ab24a8e1fd4d8339fcf0fede329056",
+    "exact_head_ci": "10/10_SUCCESS",
+    "workflows": [
+      [
+        "LuHm OS Android Release Contract",
+        35290720679
+      ],
+      [
+        "LuHm Modular Cockpit Source Gate",
+        35290720699
+      ],
+      [
+        "LuHm Vendor Purge Guard",
+        35290720698
+      ],
+      [
+        "Cathedral Android Gate",
+        35290720690
+      ],
+      [
+        "LuHm OS ULTIMA Debug Contract",
+        35290720700
+      ],
+      [
+        "PR guardrails",
+        35290720694
+      ],
+      [
+        "LuHm OS lane gates",
+        35290720677
+      ],
+      [
+        "KAI9000 Cathedral CI",
+        35290720630
+      ],
+      [
+        "LuHm Working Demo Candidate",
+        35290720636
+      ],
+      [
+        "LuHm APK Install GUI Candidate v2",
+        35290720635
+      ]
+    ]
+  },
+  "foundation": {
+    "crown_cathedral": {
+      "manifest": "project/hydra/samsung/android/cathedral-game/CROWN_CATHEDRAL_DEMO_MANIFEST.json",
+      "entrypoint": "project/hydra/samsung/android/cathedral-game/index.html",
+      "original_world_assets": [
+        "project/hydra/samsung/android/cathedral-game/godot-world/assets/lum_world_sprite.svg",
+        "project/hydra/samsung/android/cathedral-game/godot-world/assets/lum_hud_icon.svg"
+      ],
+      "local_avatar_sha256": "1a20bd7bf495ee930d2cc9dab9342d7cb29d326ce0c7f433c206581ebdddad97"
+    },
+    "ui_shell": {
+      "manifest": "project/hydra/samsung/android/cathedral-game/SYSTEM_SHELL_MANIFEST.json",
+      "modes": [
+        "FULL_APP",
+        "ICON_TASKBAR",
+        "LUM_SPRITE_BUBBLE"
+      ],
+      "taskbar": [
+        "GAME",
+        "SYSTEM",
+        "ADMIN",
+        "LUM",
+        "MINIMIZE",
+        "SETTINGS"
+      ],
+      "explicit_native_actions": [
+        "app.window.immersive",
+        "app.window.system_bars",
+        "app.quit"
+      ]
+    },
+    "local_system_harness": {
+      "implementation": "project/hydra/samsung/android/cathedral-game/python/src/luhm_core/local_harness.py",
+      "runner": "project/hydra/samsung/android/cathedral-game/tools/run-local-harness-termux.sh",
+      "bind": "127.0.0.1",
+      "port": 8791,
+      "auth": "EPHEMERAL_SIX_DIGIT_LOCAL_PAIRING",
+      "session_storage": "MEMORY_ONLY",
+      "session_ttl_seconds": 900,
+      "cockpit_ticket_ttl_seconds": 30,
+      "pair_failure_limit": 5,
+      "pair_failure_window_seconds": 60,
+      "pair_lockout_seconds": 60,
+      "offline_game_allowed": true,
+      "direct_shell": false,
+      "termux_run_command_permission": false
+    },
+    "android_demo_candidate": {
+      "package_id": "art.eggiebagelface.luhmos.demo",
+      "version_name": "1.0.11",
+      "version_code": 111,
+      "signer": "EPHEMERAL_DEBUG_CANDIDATE",
+      "install": "ANDROID_USER_CONFIRMATION_REQUIRED",
+      "release_identity": false
+    }
+  },
+  "last_verified_demo_artifact": {
+    "source_head": "bd7138a30ff2c03280f204fb9005177900b07d9f",
+    "workflow_run": 35290287816,
+    "artifact_name": "luhmos-working-demo-1.0.11-11",
+    "artifact_zip_digest": "sha256:be1ea441417d1d046d446779354e3177d845e1ccdf3ef49949dfaebb0be8ee0e",
+    "apk_name": "luhmos-working-demo-1.0.11.apk",
+    "apk_sha256": "5cdcc07a3334e20f5d669054be7d7a5eaec50ce9ee0f0cda44ca0c54cf1292de",
+    "package_id": "art.eggiebagelface.luhmos.demo",
+    "version_code": 111,
+    "version_name": "1.0.11",
+    "signature_v2": true,
+    "signer_certificate_sha256": "fd1e090bb921feefddb23b82e5291ce0363dd8034b1dbc0348acf5286f8c026e",
+    "physical_install_launch_proof": "PENDING_USER_DEVICE"
+  },
+  "authority_boundaries": {
+    "ai_to_shell": false,
+    "direct_shell_execution": false,
+    "silent_install": false,
+    "production_package_replacement": false,
+    "persistent_release_signing": false,
+    "release_promotion": false,
+    "public_publish": false,
+    "deploy": false,
+    "dns_mutation": false,
+    "billing_mutation": false
+  },
+  "future_development_contract": {
+    "foundation_becomes_canonical_only_after_exact_head_ci_and_merge": true,
+    "all_future_source_work_branches_from_canonical_foundation": true,
+    "source_of_truth_pointer_must_remain_this_seal_until_explicitly_superseded": true,
+    "changes_to_foundation_require_reviewed_branch": true,
+    "exact_head_ci_required": true,
+    "physical_device_proof_required_for_final_android_green": true,
+    "preserve_history": true,
+    "no_mass_delete_or_rewrite": true
+  },
+  "known_nonblocking_external_debt": [
+    "server_side_branch_protection_or_ruleset remains external governance work",
+    "persistent release signer remains separately gated",
+    "public release and deployment remain separately gated"
+  ],
+  "private_recovery_source": {
+    "drive_document_id": "18lvC_M8KB-FeiEAh7sNAKEs5xhg3RmDFKv_-mNL144I",
+    "append_only_final_promotion_receipt_required_after_merge": true,
+    "shared": false
+  },
+  "promotion_condition": "EXACT_HEAD_CI_10_OF_10_SUCCESS_AND_PR91_MERGED",
+  "result_if_promoted": "CROWN_CATHEDRAL_FOUNDATION_CANONICAL_FOR_FUTURE_DEVELOPMENT"
+}
