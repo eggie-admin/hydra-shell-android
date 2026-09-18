@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import atexit
+import hashlib
 import os
 import re
 import time
@@ -12,20 +13,18 @@ from pydantic import BaseModel, Field
 
 ROUTER = APIRouter(prefix="/api/remote-ai", tags=["remote-ai"])
 
-OPENAI_RESPONSES_URL = os.environ.get(
-    "OPENAI_API_URL", "https://api.openai.com/v1/responses"
-)
+OPENAI_RESPONSES_URL = os.environ.get("OPENAI_API_URL", "https://api.openai.com/v1/responses")
 OPENAI_FAST_MODEL = os.environ.get("OPENAI_FAST_MODEL", "gpt-5.6-luna")
 OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-5.6-sol")
-
-HF_RESPONSES_URL = os.environ.get(
-    "HF_RESPONSES_URL", "https://router.huggingface.co/v1/responses"
-)
+HF_RESPONSES_URL = os.environ.get("HF_RESPONSES_URL", "https://router.huggingface.co/v1/responses")
 HF_FAST_MODEL = os.environ.get("HF_FAST_MODEL", "openai/gpt-oss-20b:fastest")
 HF_MODEL = os.environ.get("HF_MODEL", "openai/gpt-oss-120b:fastest")
 DEFAULT_PROVIDER = os.environ.get("KAI_REMOTE_AI_PROVIDER", "auto").strip().lower()
-MAX_OUTPUT_TOKENS = max(1, min(int(os.environ.get("KAI_REMOTE_AI_MAX_OUTPUT_TOKENS", "1200")), 8192))
-REQUEST_TIMEOUT = max(5.0, min(float(os.environ.get("KAI_REMOTE_AI_TIMEOUT", "60")), 180.0))
+
+FAST_MAX_OUTPUT_TOKENS = max(64, min(int(os.environ.get("KAI_REMOTE_AI_FAST_MAX_OUTPUT_TOKENS", "512")), 2048))
+DEEP_MAX_OUTPUT_TOKENS = max(256, min(int(os.environ.get("KAI_REMOTE_AI_MAX_OUTPUT_TOKENS", "1200")), 8192))
+FAST_REQUEST_TIMEOUT = max(5.0, min(float(os.environ.get("KAI_REMOTE_AI_FAST_TIMEOUT", "30")), 90.0))
+DEEP_REQUEST_TIMEOUT = max(15.0, min(float(os.environ.get("KAI_REMOTE_AI_TIMEOUT", "90")), 180.0))
 CONNECT_TIMEOUT = max(1.0, min(float(os.environ.get("KAI_REMOTE_AI_CONNECT_TIMEOUT", "5")), 30.0))
 
 ALLOWED_PROVIDERS = {"auto", "openai", "huggingface"}
@@ -40,18 +39,9 @@ SECRET_PATTERNS = {
 }
 RESPONSE_ID_PATTERN = re.compile(r"^resp_[A-Za-z0-9_-]{4,128}$")
 
-_HTTP_LIMITS = httpx.Limits(
-    max_keepalive_connections=16,
-    max_connections=32,
-    keepalive_expiry=45.0,
-)
-_HTTP_TIMEOUT = httpx.Timeout(
-    connect=CONNECT_TIMEOUT,
-    read=REQUEST_TIMEOUT,
-    write=min(REQUEST_TIMEOUT, 30.0),
-    pool=min(CONNECT_TIMEOUT, 5.0),
-)
-_HTTP_CLIENT = httpx.Client(limits=_HTTP_LIMITS, timeout=_HTTP_TIMEOUT)
+_HTTP_LIMITS = httpx.Limits(max_keepalive_connections=16, max_connections=32, keepalive_expiry=45.0)
+_HTTP_TIMEOUT = httpx.Timeout(connect=CONNECT_TIMEOUT, read=DEEP_REQUEST_TIMEOUT, write=30.0, pool=min(CONNECT_TIMEOUT, 5.0))
+_HTTP_CLIENT = httpx.Client(limits=_HTTP_LIMITS, timeout=_HTTP_TIMEOUT, http2=True)
 atexit.register(_HTTP_CLIENT.close)
 
 
@@ -97,7 +87,6 @@ def _extract_response_text(payload: dict[str, Any]) -> str:
     direct = payload.get("output_text")
     if isinstance(direct, str) and direct.strip():
         return direct.strip()
-
     parts: list[str] = []
     for item in payload.get("output", []):
         if not isinstance(item, dict) or item.get("type") != "message":
@@ -115,21 +104,15 @@ def _extract_response_text(payload: dict[str, Any]) -> str:
 def _select_provider(requested: str | None = None) -> str:
     provider = (requested or DEFAULT_PROVIDER or "auto").strip().lower()
     if provider not in ALLOWED_PROVIDERS:
-        raise HTTPException(
-            status_code=400,
-            detail={"message": "Unsupported remote AI provider", "allowed": sorted(ALLOWED_PROVIDERS)},
-        )
-
+        raise HTTPException(status_code=400, detail={"message": "Unsupported remote AI provider", "allowed": sorted(ALLOWED_PROVIDERS)})
     if provider == "openai":
         if not os.environ.get("OPENAI_API_KEY"):
             raise HTTPException(status_code=503, detail="OpenAI provider is not configured")
         return "openai"
-
     if provider == "huggingface":
         if not os.environ.get("HF_TOKEN"):
             raise HTTPException(status_code=503, detail="Hugging Face provider is not configured")
         return "huggingface"
-
     if os.environ.get("OPENAI_API_KEY"):
         return "openai"
     if os.environ.get("HF_TOKEN"):
@@ -143,8 +126,6 @@ def _resolve_profile(profile: str | None, message: str) -> str:
         raise HTTPException(status_code=400, detail="Unsupported remote AI profile")
     if value != "auto":
         return value
-    # Short/direct turns use the low-latency lane. Long context automatically
-    # promotes to the deeper model instead of forcing the caller to guess.
     return "fast" if len(message) <= 4000 else "deep"
 
 
@@ -156,14 +137,19 @@ def _profile_model(provider: str, profile: str) -> str:
     raise RuntimeError(f"No model profile for provider {provider}")
 
 
+def _profile_max_output_tokens(profile: str) -> int:
+    return FAST_MAX_OUTPUT_TOKENS if profile == "fast" else DEEP_MAX_OUTPUT_TOKENS
+
+
+def _profile_timeout(profile: str) -> httpx.Timeout:
+    read_timeout = FAST_REQUEST_TIMEOUT if profile == "fast" else DEEP_REQUEST_TIMEOUT
+    return httpx.Timeout(connect=CONNECT_TIMEOUT, read=read_timeout, write=min(read_timeout, 30.0), pool=min(CONNECT_TIMEOUT, 5.0))
+
+
 def _allowed_models(provider: str) -> set[str]:
     env_name = "KAI_OPENAI_ALLOWED_MODELS" if provider == "openai" else "KAI_HF_ALLOWED_MODELS"
     configured = os.environ.get(env_name, "").strip()
-    defaults = (
-        {OPENAI_FAST_MODEL, OPENAI_MODEL}
-        if provider == "openai"
-        else {HF_FAST_MODEL, HF_MODEL}
-    )
+    defaults = {OPENAI_FAST_MODEL, OPENAI_MODEL} if provider == "openai" else {HF_FAST_MODEL, HF_MODEL}
     if not configured:
         return defaults
     return defaults | {value.strip() for value in configured.split(",") if value.strip()}
@@ -196,6 +182,11 @@ def _validate_previous_response_id(value: str | None) -> str | None:
     return candidate
 
 
+def _prompt_cache_key(instructions: str, model: str, profile: str) -> str:
+    digest = hashlib.sha256(instructions.encode("utf-8")).hexdigest()[:16]
+    return f"luhm-os:{profile}:{model}:{digest}"[:64]
+
+
 def _call_responses_api(
     provider: str,
     message: str,
@@ -207,35 +198,36 @@ def _call_responses_api(
 ) -> dict[str, Any]:
     resolved_profile = _resolve_profile(profile, message)
     url, credential, resolved_model = _provider_config(provider, model, resolved_profile)
+    resolved_instructions = instructions or _instructions()
     payload: dict[str, Any] = {
         "model": resolved_model,
-        "instructions": instructions or _instructions(),
+        "instructions": resolved_instructions,
         "input": message,
         "store": False,
-        "max_output_tokens": MAX_OUTPUT_TOKENS,
+        "max_output_tokens": _profile_max_output_tokens(resolved_profile),
     }
     previous = _validate_previous_response_id(previous_response_id)
     if previous and provider == "openai":
         payload["previous_response_id"] = previous
+    if provider == "openai":
+        payload["prompt_cache_key"] = _prompt_cache_key(resolved_instructions, resolved_model, resolved_profile)
+        payload["prompt_cache_options"] = {"mode": "implicit", "ttl": "30m"}
+        payload["reasoning"] = {"effort": "none" if resolved_profile == "fast" else "medium"}
+        payload["text"] = {"verbosity": "low" if resolved_profile == "fast" else "medium"}
+        payload["service_tier"] = "auto"
 
     started = time.perf_counter()
     try:
         response = _HTTP_CLIENT.post(
             url,
-            headers={
-                "Authorization": f"Bearer {credential}",
-                "Content-Type": "application/json",
-                "User-Agent": "LuHmOS/remote-assistance",
-            },
+            headers={"Authorization": f"Bearer {credential}", "Content-Type": "application/json", "User-Agent": "LuHmOS/remote-assistance"},
             json=payload,
+            timeout=_profile_timeout(resolved_profile),
         )
         response.raise_for_status()
         data = response.json()
     except (httpx.HTTPError, ValueError) as exc:
-        raise HTTPException(
-            status_code=502,
-            detail=f"{provider} Responses request failed without failover: {type(exc).__name__}",
-        ) from exc
+        raise HTTPException(status_code=502, detail=f"{provider} Responses request failed without failover: {type(exc).__name__}") from exc
     latency_ms = round((time.perf_counter() - started) * 1000, 1)
 
     assistant = _extract_response_text(data)
@@ -243,6 +235,8 @@ def _call_responses_api(
         raise HTTPException(status_code=502, detail=f"{provider} returned no usable assistant text")
     _reject_secret_output(assistant)
 
+    usage = data.get("usage") if isinstance(data.get("usage"), dict) else {}
+    details = usage.get("input_tokens_details") if isinstance(usage.get("input_tokens_details"), dict) else {}
     return {
         "ok": True,
         "mode": "remote",
@@ -252,7 +246,11 @@ def _call_responses_api(
         "assistant": assistant,
         "response_id": data.get("id"),
         "latency_ms": latency_ms,
-        "connection_pool": "keepalive",
+        "connection_pool": "keepalive_http2",
+        "max_output_tokens": _profile_max_output_tokens(resolved_profile),
+        "prompt_cache": "openai_implicit_30m" if provider == "openai" else "provider_managed",
+        "cached_input_tokens": details.get("cached_tokens", 0),
+        "service_tier": data.get("service_tier") if provider == "openai" else None,
         "secret_material_present": False,
     }
 
@@ -270,6 +268,10 @@ def remote_ai_status() -> dict[str, Any]:
                 "deep_model": OPENAI_MODEL,
                 "allowed_models": sorted(_allowed_models("openai")),
                 "previous_response_id": True,
+                "prompt_cache": "implicit_30m",
+                "service_tier": "auto",
+                "fast_reasoning_effort": "none",
+                "deep_reasoning_effort": "medium",
             },
             "huggingface": {
                 "configured": bool(os.environ.get("HF_TOKEN")),
@@ -282,6 +284,9 @@ def remote_ai_status() -> dict[str, Any]:
         },
         "auto_profile": "fast_for_messages_up_to_4000_chars_else_deep",
         "http_keepalive": True,
+        "http2": True,
+        "fast_timeout_s": FAST_REQUEST_TIMEOUT,
+        "deep_timeout_s": DEEP_REQUEST_TIMEOUT,
         "silent_cross_provider_failover": False,
         "output_secret_guard": True,
     }
@@ -299,17 +304,7 @@ def remote_ai_chat(req: RemoteAIRequest) -> dict[str, Any]:
             "provider": None,
             "profile": resolved_profile,
             "model": None,
-            "assistant": (
-                "No remote AI provider is configured. KAI 9000 remains operational through "
-                "local deterministic/Ollama lanes; configure server-side provider credentials "
-                "to enable a remote provider."
-            ),
+            "assistant": "No remote AI provider is configured. KAI 9000 remains operational through local deterministic/Ollama lanes; configure server-side provider credentials to enable a remote provider.",
             "secret_material_present": False,
         }
-    return _call_responses_api(
-        provider,
-        req.message,
-        req.model,
-        profile=resolved_profile,
-        previous_response_id=req.previous_response_id,
-    )
+    return _call_responses_api(provider, req.message, req.model, profile=resolved_profile, previous_response_id=req.previous_response_id)
