@@ -6,6 +6,7 @@ on:
       - 'integrations/api-spine.manifest.json'
       - 'integrations/vendor-apis.manifest.json'
       - 'integrations/runtime-capabilities.policy.json'
+      - 'lumh-os/kai9000/project.manifest.json'
       - 'ultima/ollama-ffmpeg-antenna-v3/api_spine.py'
       - 'ultima/ollama-ffmpeg-antenna-v3/magic_server.py'
       - 'ultima/ollama-ffmpeg-antenna-v3/magic_chat.py'
@@ -27,6 +28,7 @@ on:
     paths:
       - 'integrations/api-spine.manifest.json'
       - 'integrations/runtime-capabilities.policy.json'
+      - 'lumh-os/kai9000/project.manifest.json'
       - 'ultima/ollama-ffmpeg-antenna-v3/api_spine.py'
       - 'ultima/ollama-ffmpeg-antenna-v3/magic_server.py'
       - 'ultima/ollama-ffmpeg-antenna-v3/magic_chat.py'
