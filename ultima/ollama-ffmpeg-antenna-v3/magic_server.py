@@ -14,6 +14,7 @@ os.environ.setdefault("KAI_GOOGLE_DEEP_TEXT_MODEL", "gemini-3.8-flash")
 os.environ.setdefault("KAI_GEMINI_LIVE_API_MODEL", "gemini-3.8-live")
 
 from ai_feed.router import ROUTER as AI_FEED_ROUTER
+from api_spine import ROUTER as API_SPINE_ROUTER
 from assistance import ROUTER as ASSISTANCE_ROUTER
 from gateway import ROUTER as GATEWAY_ROUTER
 from lum_agent.router import ROUTER as LUM_AGENT_ROUTER
@@ -21,8 +22,12 @@ from magic_chat import ROUTER as MAGIC_ROUTER
 from main import APP
 from remote_ai import ROUTER as REMOTE_AI_ROUTER
 
-APP.title = "LuHm OS Remote Assistance Cockpit"
-APP.version = "3.5.0"
+APP.title = "LuHm OS Unified API Cockpit"
+APP.version = "4.0.0"
+
+# /api/v1 is the canonical LuHm API spine. Remaining routers are retained as
+# bounded compatibility/component planes so existing clients are not broken.
+APP.include_router(API_SPINE_ROUTER)
 APP.include_router(MAGIC_ROUTER)
 APP.include_router(LUM_AGENT_ROUTER)
 APP.include_router(AI_FEED_ROUTER)
