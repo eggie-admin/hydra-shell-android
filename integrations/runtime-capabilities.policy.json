@@ -16,6 +16,12 @@
       "deep_model": "gpt-5.6-sol",
       "use_http_keepalive": true,
       "use_previous_response_id_for_followups": true,
+      "use_prompt_cache": true,
+      "prompt_cache_ttl": "30m",
+      "fast_reasoning_effort": "none",
+      "deep_reasoning_effort": "medium",
+      "fast_max_output_tokens": 512,
+      "fast_timeout_seconds": 30,
       "paid_capability_policy": "use_best_verified_api_capability_within_operator_budget"
     },
     "google": {
@@ -30,26 +36,36 @@
         "search_grounding_when_task_requires_fresh_external_research"
       ],
       "cost_increasing_features_require_task_need": true,
-      "use_client_process_cache": true
+      "use_client_process_cache": true,
+      "implicit_context_cache": true,
+      "fast_timeout_ms": 30000,
+      "deep_timeout_ms": 90000
     },
     "github": {
       "runtime_proof": "authenticated_repo_access_and_exact_sha_ci",
       "public_repository_standard_actions_are_preferred": true,
       "larger_paid_runners_are_not_assumed": true,
       "paid_plan_features_must_be_detected_before_use": true,
-      "context_policy": "resolve_evidence_by_reference_not_full_history_copy"
+      "context_policy": "resolve_evidence_by_reference_not_full_history_copy",
+      "prefer_exact_sha_reads": true,
+      "prefer_conditional_requests_and_cache_when_runtime_resolver_exists": true,
+      "avoid_search_api_when_exact_resource_is_known": true
     },
     "cloudflare": {
       "runtime_proof": "live_account_plan_and_token_scope_probe_green",
       "paid_workers_features_may_be_used_when_verified": true,
       "production_publish_still_requires": "YES",
       "private_lan_exposure": false,
-      "router_port_forwarding": false
+      "router_port_forwarding": false,
+      "prefer_service_bindings_over_public_worker_to_worker_http": true,
+      "smart_placement_requires_measurement": true
     },
     "hugging_face": {
       "runtime_proof": "authenticated_account_plus_inference_token_or_job_entitlement_probe_green",
       "critic_is_conditional": true,
       "fast_model": "openai/gpt-oss-20b:fastest",
+      "deep_model": "openai/gpt-oss-120b:fastest",
+      "routing_policy": "fastest",
       "gpu_or_paid_jobs_never_auto_launch": true,
       "paid_plan_features_must_be_detected_before_use": true
     }
@@ -60,6 +76,7 @@
     "no_silent_cross_provider_failover": true,
     "max_parallel_remote_helpers": 3,
     "direct_questions_bypass_mesh": true,
-    "consequential_actions_remain_crown_gated": true
+    "consequential_actions_remain_crown_gated": true,
+    "latency_priority": "avoid_extra_proxy_hops_reuse_connections_bound_payloads_parallelize_independent_helpers"
   }
 }
