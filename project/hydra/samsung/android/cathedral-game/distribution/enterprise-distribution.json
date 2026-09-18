@@ -67,4 +67,4 @@
     "uninstall": "USER_CONFIRMED",
     "backend_mutation": "LOCAL_POLICY_GATED"
   }
-}\n
+}
