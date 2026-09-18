@@ -13,6 +13,8 @@ import gateway
 GOOGLE_FAST_MODEL = os.environ.get("KAI_GOOGLE_FAST_TEXT_MODEL", "gemini-3.5-flash-lite")
 GOOGLE_DEEP_MODEL = os.environ.get("KAI_GOOGLE_DEEP_TEXT_MODEL", "gemini-3.8-flash")
 GOOGLE_LIVE_API_MODEL = os.environ.get("KAI_GEMINI_LIVE_API_MODEL", "gemini-3.8-live")
+GOOGLE_FAST_TIMEOUT_MS = max(5000, min(int(os.environ.get("KAI_GOOGLE_FAST_TIMEOUT_MS", "30000")), 120000))
+GOOGLE_DEEP_TIMEOUT_MS = max(15000, min(int(os.environ.get("KAI_GOOGLE_DEEP_TIMEOUT_MS", "90000")), 300000))
 
 _CLIENT_LOCK = threading.Lock()
 _CLIENT: Any | None = None
@@ -57,11 +59,27 @@ def _resolve_model(profile: str) -> str:
     raise HTTPException(status_code=400, detail="Unsupported Google assistance profile")
 
 
+def _timeout_ms(profile: str) -> int:
+    return GOOGLE_FAST_TIMEOUT_MS if profile.strip().lower() == "fast" else GOOGLE_DEEP_TIMEOUT_MS
+
+
 def generate(prompt: str, profile: str = "fast") -> dict[str, Any]:
     resolved_model = _resolve_model(profile)
+    timeout_ms = _timeout_ms(profile)
+    try:
+        from google.genai import types
+    except ImportError as exc:  # pragma: no cover - dependency guard
+        raise HTTPException(status_code=503, detail="google-genai is not installed") from exc
+
     started = time.perf_counter()
     try:
-        response = _client().models.generate_content(model=resolved_model, contents=prompt)
+        response = _client().models.generate_content(
+            model=resolved_model,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                http_options=types.HttpOptions(timeout=timeout_ms),
+            ),
+        )
     except HTTPException:
         raise
     except Exception as exc:
@@ -70,6 +88,8 @@ def generate(prompt: str, profile: str = "fast") -> dict[str, Any]:
             detail=f"Google assistance request failed without provider failover: {type(exc).__name__}",
         ) from exc
 
+    usage = getattr(response, "usage_metadata", None)
+    cached_tokens = getattr(usage, "cached_content_token_count", None) if usage is not None else None
     return {
         "ok": True,
         "provider": "google",
@@ -79,6 +99,9 @@ def generate(prompt: str, profile: str = "fast") -> dict[str, Any]:
         "text": getattr(response, "text", None) or "",
         "latency_ms": round((time.perf_counter() - started) * 1000, 1),
         "client_cache": "process_reuse",
+        "timeout_ms": timeout_ms,
+        "implicit_context_cache": True,
+        "cached_input_tokens": cached_tokens,
         "secret_material_present": False,
     }
 
@@ -91,4 +114,7 @@ def status() -> dict[str, Any]:
         "deep_model": GOOGLE_DEEP_MODEL,
         "api_key_live_model": GOOGLE_LIVE_API_MODEL,
         "client_cache": "process_reuse",
+        "fast_timeout_ms": GOOGLE_FAST_TIMEOUT_MS,
+        "deep_timeout_ms": GOOGLE_DEEP_TIMEOUT_MS,
+        "implicit_context_cache": True,
     }
