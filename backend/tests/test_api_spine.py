@@ -62,3 +62,21 @@ def test_canonical_route_registry_is_v1() -> None:
         "/api/v1/ai/chat",
         "/api/v1/providers/route",
     }.issubset(paths)
+
+
+def test_component_planes_are_fully_classified() -> None:
+    assert set(api_spine.COMPONENT_PLANES) == {
+        "remote_assistance_v1",
+        "remote_ai",
+        "lum_agent",
+        "magic_cast",
+        "ai_feed",
+        "antenna_gateway",
+        "local_antenna",
+        "media",
+        "widget_cms",
+        "local_agent",
+    }
+    capabilities = api_spine.capabilities()
+    assert capabilities["new_clients_must_use"] == "/api/v1"
+    assert capabilities["component_planes"] == api_spine.COMPONENT_PLANES
