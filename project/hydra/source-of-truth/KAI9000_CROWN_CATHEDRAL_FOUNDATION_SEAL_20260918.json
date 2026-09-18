@@ -1,65 +1,47 @@
 {
-  "schema": "luhm-os.project-hydra.foundation-seal.v1",
+  "schema": "luhm-os.project-hydra.foundation-seal.v2",
   "manifest_id": "KAI9000_CROWN_CATHEDRAL_FOUNDATION_SEAL_20260918",
   "status": "FOUNDATION_SEAL_CONTRACT",
   "date_local": "2026-09-18",
-  "project": "Project Hydra",
-  "parent_os": "LuHm OS",
+  "project": "LuHm OS",
+  "project_id": "luhm_os",
+  "component": "Hydra",
+  "component_classification": "COMPATIBILITY_AND_ARCHITECTURE_COMPONENT_NOT_INDEPENDENT_VENDOR_PROJECT",
+  "foundation_scope": "LuHm OS / Crown Cathedral on the Hydra compatibility path",
   "repository": "eggie-admin/hydra-shell-android",
   "canonical_branch": "luhmos-main",
   "proposal_pr": 91,
   "human_authority": "Professor",
   "authorization": "EXPLICIT_CURRENT_USER_HARD_SOURCE_OF_TRUTH_AUDIT_FINAL_MUTATION_AND_FOUNDATION",
   "source_law": "AI proposes. Policy authorizes. CI proves. The human promotes.",
+  "identity_reconciliation": {
+    "canonical_project": "LuHm OS",
+    "canonical_project_id": "luhm_os",
+    "project_hydra_semantics": "legacy component, compatibility path and historical naming only",
+    "project_hydra_is_peer_project": false,
+    "new_vendor_target_name": "LuHm OS",
+    "historical_pr91_title_and_body_preserved_in_git_history": true,
+    "superseding_audit": "project/hydra/source-of-truth/LUHM_OS_SOURCE_OF_TRUTH_AUDIT_20260918.json"
+  },
   "supersedes_for_future_development": {
     "previous_enterprise_crown": "project/hydra/source-of-truth/KAI9000_PROJECT_HYDRA_ENTERPRISE_CROWN_20260918.json",
-    "semantics": "The enterprise Crown remains historical and governing evidence. This seal becomes the active development foundation only after exact-head CI succeeds and PR #91 is merged.",
+    "semantics": "The enterprise Crown remains historical and governing evidence. This foundation is part of LuHm OS; Hydra naming is compatibility/history only and does not create a second vendor project.",
     "history_preserved": true
   },
   "preseal_audit": {
     "source_head": "b1d4832b05ab24a8e1fd4d8339fcf0fede329056",
     "exact_head_ci": "10/10_SUCCESS",
     "workflows": [
-      [
-        "LuHm OS Android Release Contract",
-        35290720679
-      ],
-      [
-        "LuHm Modular Cockpit Source Gate",
-        35290720699
-      ],
-      [
-        "LuHm Vendor Purge Guard",
-        35290720698
-      ],
-      [
-        "Cathedral Android Gate",
-        35290720690
-      ],
-      [
-        "LuHm OS ULTIMA Debug Contract",
-        35290720700
-      ],
-      [
-        "PR guardrails",
-        35290720694
-      ],
-      [
-        "LuHm OS lane gates",
-        35290720677
-      ],
-      [
-        "KAI9000 Cathedral CI",
-        35290720630
-      ],
-      [
-        "LuHm Working Demo Candidate",
-        35290720636
-      ],
-      [
-        "LuHm APK Install GUI Candidate v2",
-        35290720635
-      ]
+      ["LuHm OS Android Release Contract", 35290720679],
+      ["LuHm Modular Cockpit Source Gate", 35290720699],
+      ["LuHm Vendor Purge Guard", 35290720698],
+      ["Cathedral Android Gate", 35290720690],
+      ["LuHm OS ULTIMA Debug Contract", 35290720700],
+      ["PR guardrails", 35290720694],
+      ["LuHm OS lane gates", 35290720677],
+      ["KAI9000 Cathedral CI", 35290720630],
+      ["LuHm Working Demo Candidate", 35290720636],
+      ["LuHm APK Install GUI Candidate v2", 35290720635]
     ]
   },
   "foundation": {
@@ -74,24 +56,9 @@
     },
     "ui_shell": {
       "manifest": "project/hydra/samsung/android/cathedral-game/SYSTEM_SHELL_MANIFEST.json",
-      "modes": [
-        "FULL_APP",
-        "ICON_TASKBAR",
-        "LUM_SPRITE_BUBBLE"
-      ],
-      "taskbar": [
-        "GAME",
-        "SYSTEM",
-        "ADMIN",
-        "LUM",
-        "MINIMIZE",
-        "SETTINGS"
-      ],
-      "explicit_native_actions": [
-        "app.window.immersive",
-        "app.window.system_bars",
-        "app.quit"
-      ]
+      "modes": ["FULL_APP", "ICON_TASKBAR", "LUM_SPRITE_BUBBLE"],
+      "taskbar": ["GAME", "SYSTEM", "ADMIN", "LUM", "MINIMIZE", "SETTINGS"],
+      "explicit_native_actions": ["app.window.immersive", "app.window.system_bars", "app.quit"]
     },
     "local_system_harness": {
       "implementation": "project/hydra/samsung/android/cathedral-game/python/src/luhm_core/local_harness.py",
@@ -145,7 +112,9 @@
     "billing_mutation": false
   },
   "future_development_contract": {
-    "foundation_becomes_canonical_only_after_exact_head_ci_and_merge": true,
+    "canonical_project_identity": "LuHm OS",
+    "hydra_path_role": "compatibility_component",
+    "foundation_is_current_canonical_evidence": true,
     "all_future_source_work_branches_from_canonical_foundation": true,
     "source_of_truth_pointer_must_remain_this_seal_until_explicitly_superseded": true,
     "changes_to_foundation_require_reviewed_branch": true,
@@ -155,7 +124,9 @@
     "no_mass_delete_or_rewrite": true
   },
   "known_nonblocking_external_debt": [
-    "server_side_branch_protection_or_ruleset remains external governance work",
+    "luhmos-main server-side branch protection is disabled",
+    "repository rulesets are empty",
+    "repository default branch remains legacy main rather than canonical luhmos-main",
     "persistent release signer remains separately gated",
     "public release and deployment remain separately gated"
   ],
@@ -164,10 +135,11 @@
     "append_only_final_promotion_receipt_required_after_merge": true,
     "shared": false
   },
-  "promotion_condition": "ALL_REQUIRED_EXACT_HEAD_WORKFLOWS_SUCCESS_AND_PR91_MERGED",
-  "result_if_promoted": "CROWN_CATHEDRAL_FOUNDATION_CANONICAL_FOR_FUTURE_DEVELOPMENT",
+  "promotion_condition": "HISTORICALLY_SATISFIED_BY_PR91_MERGE",
+  "result_if_promoted": "LUHM_OS_CROWN_CATHEDRAL_FOUNDATION_CANONICAL_WITH_HYDRA_AS_COMPATIBILITY_COMPONENT",
   "final_promotion_proof": {
-    "github": "PR91_HEAD_AT_MERGE_PLUS_REQUIRED_WORKFLOW_RUNS",
+    "github_merge_commit": "dc8ff1ee0cde75c15c559e5c8c4a0f8ba37d04d4",
+    "pr91_head_at_merge": "5d861fc98efabd6c82f368c47142dd2215d47321",
     "private_drive": "APPEND_ONLY_FINAL_PROMOTION_RECEIPT",
     "no_post_green_source_rewrite": true
   }
