@@ -3,6 +3,8 @@
 This repository is the LuHm OS / KAI 9000 Samsung Android orchestration altar.
 
 ## Read first
+- `project/hydra/source-of-truth/KAI9000_CROWN_CATHEDRAL_FOUNDATION_SEAL_20260918.json`
+- `project/hydra/source-of-truth/LUHM_CODING_ROLEPLAY_THWTCHNGHR_GREEN_RECONCILIATION_20260918.json`
 - `project/hydra/source-of-truth/KAI9000_FULL_DOCTRINE_MUTATION_SEAL_20260917.json`
 - `project/hydra/source-of-truth/KAI9000_SEAL_OF_TRUTH_CROWN_20260917.json`
 - `project/hydra/source-of-truth/LUHMOS_HYDRA_DIRECTORY_CROWN_20260916.json`
