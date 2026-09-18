@@ -1,0 +1,51 @@
+{
+  "schema": "kai9000.milestone.v1",
+  "state": "PROPOSED_NOT_CROWNED",
+  "milestone": "LUHMOS_APK_INSTALL_HANDOFF_READY",
+  "date": "2026-09-17",
+  "repository": "eggie-admin/hydra-shell-android",
+  "canonical_branch": "luhmos-main",
+  "canonical_head": "35a47720d8646500fe7469b83f81bd3d113463dc",
+  "candidate": {
+    "source_head": "602a47232b08b8546b664fee66bf63c4b7c0a586",
+    "package_id": "art.eggiebagelface.luhmos.candidate",
+    "version_name": "1.0.9",
+    "version_code": 109,
+    "apk_name": "luhmos-apk-install-probe-1.0.9.apk",
+    "apk_sha256": "6cf175ba005972e0eb0da13e5ef4b843c946680ff08c0400f6620bff2b73b3d6",
+    "artifact_id": 10491572716,
+    "artifact_name": "luhmos-apk-install-probe-1.0.9-20",
+    "artifact_zip_sha256": "f7e7e9824890a9376ba1a4e6cd8efd4dcf3aee274fe61ba6e88a2ef296e7f767",
+    "workflow_run": 35209515577,
+    "artifact_expired": false,
+    "signing_lane": "EPHEMERAL_CANDIDATE_DEBUG_SIGNER",
+    "production_package_untouched": true
+  },
+  "evidence": {
+    "source_pr": 73,
+    "source_pr_merged": true,
+    "source_ci": "10/10_SUCCESS",
+    "historical_physical_install_launch_mobile_ui": "GREEN",
+    "local_apk_sha256_reverified_20260917": true,
+    "local_artifact_zip_sha256_reverified_20260917": true,
+    "canonical_app_source_drift_since_candidate_head": "NONE_OBSERVED_IN_COMPARE_FILENAME_SET",
+    "canonical_post_merge_ci": "GREEN"
+  },
+  "authority": {
+    "canonical_merge": "NOT_AUTHORIZED_BY_THIS_RECEIPT",
+    "release_signing": "LOCKED",
+    "deploy": "NOT_TRIGGERED",
+    "public_release": "NOT_TRIGGERED",
+    "crown": "NOT_TRIGGERED",
+    "seal": "NOT_TRIGGERED",
+    "canonical_branch_server_lock": "RED_EXTERNAL"
+  },
+  "acceptance": {
+    "artifact_retrievable": true,
+    "candidate_package_collision_free": true,
+    "apk_hash_bound": true,
+    "artifact_hash_bound": true,
+    "install_handoff_ready": true,
+    "fresh_device_install_receipt_required_for_new_install_claim": true
+  }
+}
