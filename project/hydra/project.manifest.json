@@ -34,7 +34,8 @@
     "izzy_publication": "docs/IZZYONDROID_PUBLICATION_AND_HUMAN_CODE_MONETIZATION_20260911.md",
     "izzy_metadata": "fdroid/metadata/art.eggiebagelface.luhmos.yml",
     "enterprise_policy": "project/hydra/runtime/enterprise.policy.json",
-    "foundation": "project/hydra/source-of-truth/KAI9000_CROWN_CATHEDRAL_FOUNDATION_SEAL_20260918.json"
+    "foundation": "project/hydra/source-of-truth/KAI9000_CROWN_CATHEDRAL_FOUNDATION_SEAL_20260918.json",
+    "coding_roleplay": "project/hydra/source-of-truth/LUHM_CODING_ROLEPLAY_THWTCHNGHR_GREEN_RECONCILIATION_20260918.json"
   },
   "platforms": {
     "samsung_s24fe_stock": "project/hydra/samsung/android/apk/app.reference.json",

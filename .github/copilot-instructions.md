@@ -1,6 +1,6 @@
 # LuHm OS / KAI 9000 Copilot Instructions
 
-Status: CURRENT ACTIVE INSTRUCTIONS · 2026-09-17
+Status: CURRENT ACTIVE INSTRUCTIONS · 2026-09-18
 
 ## Mission
 
@@ -90,6 +90,18 @@ Required receipts, when applicable:
 
 Persistent release signing is required for update continuity. Public publishing is OFF unless explicitly authorized. Silent install is false.
 
+## Current foundation and roleplay contracts
+
+The current Project Hydra development foundation is:
+
+`project/hydra/source-of-truth/KAI9000_CROWN_CATHEDRAL_FOUNDATION_SEAL_20260918.json`
+
+The current coding-roleplay reconciliation contract is:
+
+`project/hydra/source-of-truth/LUHM_CODING_ROLEPLAY_THWTCHNGHR_GREEN_RECONCILIATION_20260918.json`
+
+It preserves `thwtchnghr` as a crowned readiness/roleplay namespace while aligning it to current performance law: zero helpers by default, at most two parallel read-only helpers, delegation depth one, no recursive recruitment, no parallel writes, and no helper consensus authority. PR #87 authorization fields are historical consumed receipts and do not create standing authority for future RECKONING actions.
+
 ## Current M1 source contract
 
 The current crowned M1 source contract is:
@@ -177,7 +189,7 @@ Latency doctrine:
 - use the fast/front-door OpenAI model configured by the active AI stack for ordinary chat, classification, schema filling, diff review, test triage, and proof summaries;
 - escalate only difficult architecture, security, release, or multi-file debugging to the deep model;
 - prefer structured JSON outputs for helper handoffs so the parent agent does not have to reinterpret prose;
-- parallelize **read-only** helper work only; never parallelize competing writes to the same file or authority decision;
+- parallelize **read-only** helper work only, with at most two helpers in parallel; never parallelize competing writes to the same file or authority decision;
 - mini helpers are read/search/audit specialists. They may return evidence and proposals but cannot approve, mutate, merge, sign, install, publish, deploy, or crown;
 - one parent Lum owns the final plan and the single write sequence.
 
