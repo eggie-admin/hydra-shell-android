@@ -1,6 +1,10 @@
 {
-  "schema": "luhm-os.project-hydra.v6",
-  "name": "Project Hydra",
+  "schema": "luhm-os.project-hydra.v7",
+  "name": "LuHm OS",
+  "project_id": "luhm_os",
+  "component": "Hydra",
+  "component_role": "legacy source path and compatibility architecture within LuHm OS",
+  "is_independent_vendor_project": false,
   "canonical_root": "project/hydra",
   "parent_os": "LuHm OS",
   "branch_authority": "luhmos-main",
@@ -34,7 +38,8 @@
     "izzy_publication": "docs/IZZYONDROID_PUBLICATION_AND_HUMAN_CODE_MONETIZATION_20260911.md",
     "izzy_metadata": "fdroid/metadata/art.eggiebagelface.luhmos.yml",
     "enterprise_policy": "project/hydra/runtime/enterprise.policy.json",
-    "foundation": "project/hydra/source-of-truth/KAI9000_CROWN_CATHEDRAL_FOUNDATION_SEAL_20260918.json"
+    "foundation": "project/hydra/source-of-truth/KAI9000_CROWN_CATHEDRAL_FOUNDATION_SEAL_20260918.json",
+    "identity_audit": "project/hydra/source-of-truth/LUHM_OS_SOURCE_OF_TRUTH_AUDIT_20260918.json"
   },
   "platforms": {
     "samsung_s24fe_stock": "project/hydra/samsung/android/apk/app.reference.json",
@@ -124,10 +129,12 @@
     "green_required_before_path_retirement": true,
     "legacy_termux_acodex_material": "historical_only",
     "legacy_videoforge_and_kai_package_lines": "historical_only",
-    "superseded_chat_decisions": "historical_only_unless_reaffirmed_in_current_doctrine"
+    "superseded_chat_decisions": "historical_only_unless_reaffirmed_in_current_doctrine",
+    "project_hydra_name": "component_or_history_only_not_independent_vendor_project"
   },
   "authority": {
     "final": "Professor",
+    "project_identity": "LuHm OS",
     "runtime_mutation_requires_evidence": true,
     "secrets_in_repo": false,
     "third_party_code_requires_provenance": true,
@@ -151,6 +158,8 @@
   },
   "foundation": {
     "status": "CROWN_CATHEDRAL_FOUNDATION",
+    "project_identity": "LuHm OS",
+    "component_scope": "Hydra compatibility path",
     "canonical_branch": "luhmos-main",
     "seal": "project/hydra/source-of-truth/KAI9000_CROWN_CATHEDRAL_FOUNDATION_SEAL_20260918.json",
     "promotion_rule": "PR_EXACT_HEAD_CI_GREEN_THEN_HUMAN_MERGE",
