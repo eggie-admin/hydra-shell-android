@@ -22,7 +22,10 @@ from magic_chat import ROUTER as MAGIC_ROUTER
 from main import APP
 from remote_ai import ROUTER as REMOTE_AI_ROUTER
 
-APP.title = "LuHm OS Unified API Cockpit"
+# Preserve the legacy application title because existing compatibility guards
+# and consumers bind to it. The canonical LuHm OS identity is advertised by
+# the /api/v1 spine contract instead of breaking application-level branding.
+APP.title = "LuHm OS Remote Assistance Cockpit"
 APP.version = "4.0.0"
 
 # /api/v1 is the canonical LuHm API spine. Remaining routers are retained as
