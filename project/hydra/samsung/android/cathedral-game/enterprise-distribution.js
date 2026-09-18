@@ -14,9 +14,10 @@ const CANDIDATE_PACKAGE='art.eggiebagelface.luhmos.candidate';
 const PROD_PACKAGE='art.eggiebagelface.luhmos';
 const UPDATE_EVENT='app.update.install';
 const UNINSTALL_EVENT='app.uninstall.open';
+const LOCAL_HARNESS_PORT=8791;
 const LOCAL_BACKENDS=Object.freeze([
-  'http://127.0.0.1',
-  'http://localhost'
+  `http://127.0.0.1:${LOCAL_HARNESS_PORT}`,
+  `http://localhost:${LOCAL_HARNESS_PORT}`
 ]);
 const CHANNELS=Object.freeze(['testing','proposed','preview','beta','stable']);
 
@@ -128,7 +129,7 @@ function mount(){
   document.getElementById('luhmProbeLocal').onclick=async()=>{status.textContent='Probing local loopback harness…';const r=await probeLocalHarness();status.textContent=r.ok?`LOCAL GREEN · ${r.origin}`:'LOCAL OFFLINE · packaged frontend remains available.'};
   document.getElementById('luhmUninstall').onclick=()=>{const r=postUninstall(window);status.textContent=r.ok?'Opening Android removal confirmation…':r.error};
 }
-const core=Object.freeze({REPO,RELEASES_PAGE,RELEASES_API,RELEASE_ASSET_PATH_PREFIX,ASSET_PREFIX,MANIFEST_ASSET,CANDIDATE_PACKAGE,PROD_PACKAGE,LOCAL_BACKENDS,CHANNELS,tagMatchesChannel,trustedReleaseAssetUrl,validSha256,validPackage,pickManifestAsset,pickApkAsset,resolveRelease,resolveInstallPlan,bridgeAvailable,postUpdate,postUninstall,probeLocalHarness,retireLegacyInstallDock});
+const core=Object.freeze({REPO,RELEASES_PAGE,RELEASES_API,RELEASE_ASSET_PATH_PREFIX,ASSET_PREFIX,MANIFEST_ASSET,CANDIDATE_PACKAGE,PROD_PACKAGE,LOCAL_HARNESS_PORT,LOCAL_BACKENDS,CHANNELS,tagMatchesChannel,trustedReleaseAssetUrl,validSha256,validPackage,pickManifestAsset,pickApkAsset,resolveRelease,resolveInstallPlan,bridgeAvailable,postUpdate,postUninstall,probeLocalHarness,retireLegacyInstallDock});
 globalThis.LuHmEnterpriseDistribution=core;
 if(globalThis.__LUHM_TEST__)return;
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();

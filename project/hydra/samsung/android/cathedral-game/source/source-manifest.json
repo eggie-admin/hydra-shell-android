@@ -20,7 +20,10 @@
     "CROWN_CATHEDRAL_DEMO_MANIFEST.json",
     "godot-world/assets/lum_world_sprite.svg",
     "godot-world/assets/lum_hud_icon.svg",
-    "godot4-cleared/secondary-motion-profile.json"
+    "godot4-cleared/secondary-motion-profile.json",
+    "system-shell.css",
+    "system-shell.js",
+    "SYSTEM_SHELL_MANIFEST.json"
   ],
   "templates": [
     "source/templates/cathedral-shell.html",
@@ -64,7 +67,8 @@
       "java",
       "forge",
       "godot-world",
-      "godot4-cleared"
+      "godot4-cleared",
+      "tools/run-local-harness-termux.sh"
     ],
     "exclude_globs": [
       "**/__pycache__/**",

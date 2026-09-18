@@ -130,9 +130,14 @@ jobs:
           PATCH="$GAME/tools/patch-enterprise-android.py"
           RELEASE_BUILDER="$GAME/tools/make-release-manifest.py"
           HARNESS="$GAME/python/src/luhm_core/local_harness.py"
+          SHELL_JS="$GAME/system-shell.js"
+          SHELL_CSS="$GAME/system-shell.css"
+          SHELL_TEST="$GAME/tests/system-shell.test.mjs"
+          SHELL_MANIFEST="$GAME/SYSTEM_SHELL_MANIFEST.json"
           test -s "$JS" && test -s "$CSS" && test -s "$TEST"
           test -s "$ENTERPRISE_JS" && test -s "$ENTERPRISE_TEST" && test -s "$DIST"
           test -s "$PATCH" && test -s "$RELEASE_BUILDER" && test -s "$HARNESS"
+          test -s "$SHELL_JS" && test -s "$SHELL_CSS" && test -s "$SHELL_TEST" && test -s "$SHELL_MANIFEST"
           grep -q 'LUHM_AVATAR_SOURCE_OF_TRUTH_V1' "$JS"
           grep -q 'LUHM_OS_ENTERPRISE_DISTRIBUTION_V1' "$ENTERPRISE_JS"
           grep -q 'luhmos-release.json' "$ENTERPRISE_JS"
@@ -147,6 +152,12 @@ jobs:
           node --check "$ENTERPRISE_JS"
           node --test "$TEST"
           node --test "$ENTERPRISE_TEST"
+          node --check "$SHELL_JS"
+          node --test "$SHELL_TEST"
+          grep -q 'http://127.0.0.1:8791' "$SHELL_JS" "$ENTERPRISE_JS"
+          grep -q 'app.window.immersive' "$SHELL_JS" "$PATCH"
+          grep -q 'app.quit' "$SHELL_JS" "$PATCH"
+          grep -q 'finishAndRemoveTask' "$PATCH"
           python3 -m py_compile "$PATCH" "$RELEASE_BUILDER" "$HARNESS"
           python3 - "$DIST" <<'PY'
           import json,sys
@@ -156,6 +167,10 @@ jobs:
           assert d['release']['provider']=='github_releases'
           assert d['release']['manifest_asset']=='luhmos-release.json'
           assert d['local_harness']['backend_hosts']==['127.0.0.1','localhost']
+          assert d['local_harness']['port']==8791
+          assert d['local_harness']['cockpit_path']=='/cockpit'
+          assert d['local_harness']['termux_run_command_permission_required'] is False
+          assert d['local_harness']['direct_shell_execution'] is False
           assert d['local_harness']['operator_lan_origin_source']=='protected_local_config_only'
           assert d['local_harness']['committed_private_hostnames'] is False
           assert d['local_harness']['public_backend_fallback'] is False
@@ -225,6 +240,10 @@ jobs:
           grep -q 'RELEASE_HOST = "github.com"' "$PLUGIN"
           grep -q 'expectedSha256' "$PLUGIN"
           grep -q 'Intent.ACTION_DELETE' "$PLUGIN"
+          grep -q 'app.window.immersive' "$PLUGIN"
+          grep -q 'app.window.system_bars' "$PLUGIN"
+          grep -q 'finishAndRemoveTask' "$PLUGIN"
+          grep -q 'uri.port == 8791' "$PLUGIN"
           grep -q '/eggie-admin/hydra-shell-android/releases/download/' "$PLUGIN"
           echo 'LUHM_ENTERPRISE_ANDROID_PATCH_GREEN'
 
@@ -460,6 +479,9 @@ jobs:
           grep -q 'assets/cms/crown-cathedral.css' build/android/contents.txt
           grep -q 'assets/cms/crown-cathedral.js' build/android/contents.txt
           grep -q 'assets/cms/CROWN_CATHEDRAL_DEMO_MANIFEST.json' build/android/contents.txt
+          grep -q 'assets/cms/system-shell.css' build/android/contents.txt
+          grep -q 'assets/cms/system-shell.js' build/android/contents.txt
+          grep -q 'assets/cms/SYSTEM_SHELL_MANIFEST.json' build/android/contents.txt
           grep -q 'assets/cms/godot-world/assets/lum_world_sprite.svg' build/android/contents.txt
           grep -q 'assets/cms/godot-world/assets/lum_hud_icon.svg' build/android/contents.txt
           grep -q 'assets/cms/godot-world/WORLD_FIRST_MANIFEST.json' build/android/contents.txt
