@@ -2,5 +2,5 @@
 pytest>=8,<9
 # Cross-stack tests load the KAI FastAPI remote-provider router.
 fastapi
-httpx
+httpx[http2]
 pydantic
