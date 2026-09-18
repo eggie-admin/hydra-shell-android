@@ -1,0 +1,85 @@
+{
+  "schema": "luhm-os.coding-roleplay.thwtchnghr-green-reconciliation.v1",
+  "manifest_id": "LUHM_CODING_ROLEPLAY_THWTCHNGHR_GREEN_RECONCILIATION_20260918",
+  "date_local": "2026-09-18",
+  "status": "SEALED_SOURCE_OF_TRUTH_ON_CANONICAL_MERGE",
+  "project": "LuHm OS / KAI 9000 / Project Hydra",
+  "repository": "eggie-admin/hydra-shell-android",
+  "canonical_branch": "luhmos-main",
+  "human_final_authority": "Professor",
+  "authorization": {
+    "explicit_current_user_authorization": true,
+    "scope": "Reconcile the crowned thwtchnghr roleplay doctrine to current canonical helper, authority, and foundation law and get the mutation to GREEN",
+    "outer_boundaries_unchanged": true
+  },
+  "lineage": {
+    "foundation_base_commit": "dc8ff1ee0cde75c15c559e5c8c4a0f8ba37d04d4",
+    "foundation_seal": "project/hydra/source-of-truth/KAI9000_CROWN_CATHEDRAL_FOUNDATION_SEAL_20260918.json",
+    "supersedes_for_current_roleplay_governance": "project/hydra/source-of-truth/LUHM_CODING_ROLEPLAY_THWTCHNGHR_CROWN_20260917.json",
+    "prior_crown_blob_sha": "e866eb8e481a996809112b6c3dafbc90d87164ee",
+    "historical_prior_crown_preserved": true,
+    "history_rewrite": false
+  },
+  "reconciliation": {
+    "thwtchnghr_status": "CROWNED_ACTIVE_ROLEPLAY_NAMESPACE",
+    "vowel_rip": "UNCHANGED",
+    "witching_hour_effect": "READINESS_AUDIT_ONLY",
+    "tiers": [
+      "WHISPER",
+      "CROSSING",
+      "RECKONING"
+    ],
+    "single_parent_writer": true,
+    "default_helpers": 0,
+    "max_parallel_read_only_helpers": 2,
+    "max_delegation_depth": 1,
+    "parallel_writes": false,
+    "recursive_recruiting": false,
+    "helper_consensus_grants_authority": false,
+    "evidence_transport": "REFERENCE_NOT_FULL_HISTORY",
+    "prior_parallelism_max_3_disposition": "SUPERSEDED_BY_CURRENT_PERFORMANCE_POLICY_MAX_2"
+  },
+  "authorization_receipt_reconciliation": {
+    "prior_pr87_doctrine_crown_authorization": "CONSUMED_HISTORICAL_RECEIPT",
+    "prior_pr87_canonical_merge_authorization": "CONSUMED_HISTORICAL_RECEIPT",
+    "standing_authority_created": false,
+    "future_reckoning_requires_fresh_exact_professor_authorization": true
+  },
+  "active_pointer_reconciliation": {
+    "project_manifest_roleplay_pointer_required": true,
+    "agents_read_first_foundation_pointer_required": true,
+    "agents_read_first_roleplay_pointer_required": true,
+    "copilot_instruction_date_refresh_required": true,
+    "copilot_current_foundation_pointer_required": true,
+    "copilot_current_roleplay_pointer_required": true
+  },
+  "preserved_hard_laws": [
+    "AI proposes. Policy authorizes. CI proves. The human promotes.",
+    "POWER LEVEL != PERMISSION LEVEL.",
+    "Roleplay may decorate truth but may not replace contradict hide or authorize it.",
+    "No helper consensus grants authority.",
+    "No arbitrary model-authored shell authority.",
+    "GAME state never grants ADMIN authority.",
+    "Technical evidence outranks theatrical status language."
+  ],
+  "boundaries": {
+    "public_publish": false,
+    "release_promotion": false,
+    "persistent_signing": false,
+    "apk_install": false,
+    "deploy": false,
+    "dns_mutation": false,
+    "billing_mutation": false,
+    "secret_print": false,
+    "destructive_purge": false
+  },
+  "green_gate": {
+    "json_structure": "REQUIRED",
+    "current_foundation_alignment": "REQUIRED",
+    "helper_limit_alignment": "REQUIRED",
+    "authorization_receipt_alignment": "REQUIRED",
+    "active_pointer_alignment": "REQUIRED",
+    "exact_head_ci_required_before_merge": true,
+    "activation": "This reconciliation becomes current roleplay source-of-truth only when this exact candidate is merged into luhmos-main after successful required checks."
+  }
+}
