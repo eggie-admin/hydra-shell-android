@@ -1,29 +1,36 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="420" height="620" viewBox="0 0 420 620">
   <defs>
-    <linearGradient id="hair" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff1b4"/><stop offset="1" stop-color="#e6c36f"/></linearGradient>
-    <linearGradient id="coat" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#24172d"/><stop offset="1" stop-color="#09070d"/></linearGradient>
-    <filter id="glow"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <linearGradient id="horn" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ff5ba8"/><stop offset=".5" stop-color="#9f2c72"/><stop offset="1" stop-color="#35112d"/></linearGradient>
+    <linearGradient id="wing" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ff4b9b"/><stop offset="1" stop-color="#572047"/></linearGradient>
+    <linearGradient id="wrap" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d92e75"/><stop offset=".55" stop-color="#7e285e"/><stop offset="1" stop-color="#2c1730"/></linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
   </defs>
   <g stroke-linecap="round" stroke-linejoin="round">
-    <path d="M112 132 C72 71 89 24 117 15 C112 64 137 86 156 111Z" fill="#f5e4bd" stroke="#6f3650" stroke-width="8"/>
-    <path d="M308 132 C348 71 331 24 303 15 C308 64 283 86 264 111Z" fill="#f5e4bd" stroke="#6f3650" stroke-width="8"/>
-    <path d="M104 160 C92 96 135 67 210 66 C286 68 327 104 314 170 L335 392 C292 442 250 464 210 466 C169 463 126 443 85 392Z" fill="url(#hair)" opacity=".97"/>
-    <ellipse cx="210" cy="193" rx="100" ry="105" fill="#9c324d" stroke="#e4679a" stroke-width="6"/>
-    <path d="M145 190 Q170 173 190 191" fill="none" stroke="#2c1024" stroke-width="8"/>
-    <path d="M230 191 Q252 173 276 190" fill="none" stroke="#2c1024" stroke-width="8"/>
-    <ellipse cx="169" cy="218" rx="18" ry="9" fill="#74f4ff" filter="url(#glow)"/>
-    <ellipse cx="251" cy="218" rx="18" ry="9" fill="#74f4ff" filter="url(#glow)"/>
-    <path d="M174 262 Q210 286 246 260" fill="none" stroke="#2d1022" stroke-width="8"/>
-    <path d="M146 309 L210 346 L275 309 L300 405 L267 566 L153 566 L120 405Z" fill="url(#coat)" stroke="#4b264d" stroke-width="7"/>
-    <path d="M176 326 L210 350 L244 326 L225 381 L195 381Z" fill="#c43d64"/>
-    <path d="M196 381 L224 381 L241 479 L210 503 L179 479Z" fill="#a92f4f"/>
-    <path d="M120 367 Q80 392 69 455 Q58 515 93 559" fill="none" stroke="#32111f" stroke-width="12"/>
-    <path d="M91 558 l18 -10 l-8 21 z" fill="#32111f"/>
-    <path d="M300 382 Q346 409 347 463 Q347 507 323 538" fill="none" stroke="#32111f" stroke-width="9"/>
-    <path d="M323 538 l17 -4 l-11 16 z" fill="#32111f"/>
-    <path d="M145 566 L113 604 H186 L200 566Z" fill="#111017"/>
-    <path d="M275 566 L307 604 H234 L220 566Z" fill="#111017"/>
-    <rect x="118" y="548" width="75" height="23" rx="8" fill="#15111d" stroke="#7c5d86" stroke-width="4"/>
-    <rect x="227" y="548" width="75" height="23" rx="8" fill="#15111d" stroke="#7c5d86" stroke-width="4"/>
+    <path d="M142 119 C112 71 121 27 150 18 C144 55 158 79 177 101Z" fill="url(#horn)" stroke="#160b14" stroke-width="7"/>
+    <path d="M278 119 C308 71 299 27 270 18 C276 55 262 79 243 101Z" fill="url(#horn)" stroke="#160b14" stroke-width="7"/>
+    <path d="M132 157 Q93 112 63 137 Q101 151 128 191Z" fill="url(#wing)" stroke="#171018" stroke-width="7"/>
+    <path d="M288 157 Q327 112 357 137 Q319 151 292 191Z" fill="url(#wing)" stroke="#171018" stroke-width="7"/>
+    <path d="M127 148 Q145 86 210 82 Q275 86 293 148 L306 257 Q283 304 210 311 Q137 304 114 257Z" fill="#121018" stroke="#382039" stroke-width="8"/>
+    <path d="M137 140 Q124 109 147 95 Q165 107 176 134Z" fill="#1d1520"/>
+    <path d="M283 140 Q296 109 273 95 Q255 107 244 134Z" fill="#1d1520"/>
+    <path d="M145 166 Q210 125 275 166 Q266 240 210 260 Q154 240 145 166Z" fill="#291925"/>
+    <ellipse cx="179" cy="187" rx="15" ry="19" fill="#ff4b9b" filter="url(#glow)"/>
+    <ellipse cx="241" cy="187" rx="15" ry="19" fill="#ff4b9b" filter="url(#glow)"/>
+    <ellipse cx="184" cy="181" rx="5" ry="7" fill="#fff4fa"/><ellipse cx="246" cy="181" rx="5" ry="7" fill="#fff4fa"/>
+    <path d="M198 212 Q210 222 222 212" fill="none" stroke="#f2b4c9" stroke-width="5"/>
+    <path d="M189 230 Q210 245 231 230" fill="none" stroke="#f57bac" stroke-width="5"/>
+    <path d="M138 128 C124 102 131 84 150 73 C156 86 165 94 179 99 C163 106 157 119 157 138Z" fill="#ff4b88"/>
+    <circle cx="139" cy="87" r="12" fill="#ff5e97"/><circle cx="158" cy="86" r="12" fill="#ff5e97"/><circle cx="149" cy="69" r="12" fill="#ff5e97"/><circle cx="149" cy="87" r="7" fill="#ffc66b"/>
+    <path d="M144 284 Q210 333 276 284 L291 423 Q271 501 210 521 Q149 501 129 423Z" fill="#151019" stroke="#352038" stroke-width="8"/>
+    <path d="M151 314 Q210 346 269 314 L279 399 Q252 423 210 428 Q168 423 141 399Z" fill="url(#wrap)"/>
+    <path d="M165 329 L206 351 L163 394" fill="none" stroke="#ff7ab7" stroke-width="6"/><path d="M255 329 L214 351 L257 394" fill="none" stroke="#ff7ab7" stroke-width="6"/>
+    <path d="M167 303 Q210 318 253 303" fill="none" stroke="#cda36f" stroke-width="7"/>
+    <path d="M198 311 q12 22 24 0 q-12-22-24 0" fill="#f0d7b0" stroke="#6b4b36" stroke-width="3"/>
+    <path d="M151 441 Q116 458 105 519 Q102 552 123 577" fill="none" stroke="#111017" stroke-width="22"/>
+    <path d="M269 441 Q304 458 315 519 Q318 552 297 577" fill="none" stroke="#111017" stroke-width="22"/>
+    <ellipse cx="124" cy="580" rx="42" ry="18" fill="#111017"/><ellipse cx="296" cy="580" rx="42" ry="18" fill="#111017"/>
+    <path d="M282 396 Q352 397 349 462 Q348 509 313 538 Q340 523 345 550 Q347 568 328 580" fill="none" stroke="#121018" stroke-width="14"/>
+    <path d="M329 565 c16-14 32 4 18 18 c-8 8-18 14-18 14 c0 0-10-6-18-14 c-14-14 2-32 18-18z" fill="#ff4b9b" stroke="#39152f" stroke-width="4"/>
+    <path d="M146 420 Q210 447 274 420" fill="none" stroke="#8b5f43" stroke-width="7" stroke-dasharray="4 9"/>
   </g>
 </svg>
