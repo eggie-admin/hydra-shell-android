@@ -7,7 +7,7 @@ import urllib.request
 
 FORBIDDEN_CONTEXT = bytes((118, 101, 114, 99, 101, 108)).decode("ascii")
 REPOSITORY = os.environ["GITHUB_REPOSITORY"]
-SHA = os.environ["GITHUB_SHA"]
+SHA = os.environ.get("TARGET_SHA") or os.environ["GITHUB_SHA"]
 TOKEN = os.environ["GITHUB_TOKEN"]
 
 url = f"https://api.github.com/repos/{REPOSITORY}/commits/{SHA}/status"
