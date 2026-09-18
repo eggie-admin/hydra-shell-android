@@ -6,7 +6,6 @@ from pathlib import Path
 import pytest
 from fastapi import HTTPException
 
-
 ROOT = Path(__file__).resolve().parents[2]
 MODULE_PATH = ROOT / "ultima" / "ollama-ffmpeg-antenna-v3" / "remote_ai.py"
 SPEC = importlib.util.spec_from_file_location("kai9000_remote_ai", MODULE_PATH)
@@ -54,12 +53,14 @@ def test_unknown_provider_is_rejected() -> None:
 def test_short_auto_profile_uses_fast_lane() -> None:
     assert remote_ai._resolve_profile("auto", "hello") == "fast"
     assert remote_ai._resolve_model("openai", None, "fast") == "gpt-5.6-luna"
+    assert remote_ai._profile_max_output_tokens("fast") == 512
 
 
 def test_long_auto_profile_uses_deep_lane() -> None:
     message = "x" * 4001
     assert remote_ai._resolve_profile("auto", message) == "deep"
     assert remote_ai._resolve_model("openai", None, "deep") == "gpt-5.6-sol"
+    assert remote_ai._profile_max_output_tokens("deep") == 1200
 
 
 def test_huggingface_token_shape_is_rejected_from_prompt() -> None:
@@ -126,7 +127,7 @@ def test_provider_error_does_not_silently_failover(monkeypatch: pytest.MonkeyPat
     assert "without failover" in str(exc.value.detail)
 
 
-def test_previous_response_id_is_forwarded_to_openai(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_previous_response_id_and_openai_fastpath_payload(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("OPENAI_API_KEY", "placeholder")
     captured: dict = {}
 
@@ -135,7 +136,12 @@ def test_previous_response_id_is_forwarded_to_openai(monkeypatch: pytest.MonkeyP
             return None
 
         def json(self) -> dict:
-            return {"id": "resp_next", "output_text": "GREEN"}
+            return {
+                "id": "resp_next",
+                "output_text": "GREEN",
+                "service_tier": "default",
+                "usage": {"input_tokens_details": {"cached_tokens": 77}},
+            }
 
     def post(*args, **kwargs):
         captured.update(kwargs.get("json") or {})
@@ -151,8 +157,42 @@ def test_previous_response_id_is_forwarded_to_openai(monkeypatch: pytest.MonkeyP
     )
     assert captured["previous_response_id"] == "resp_previous1234"
     assert captured["model"] == "gpt-5.6-luna"
+    assert captured["max_output_tokens"] == 512
+    assert captured["prompt_cache_options"] == {"mode": "implicit", "ttl": "30m"}
+    assert captured["prompt_cache_key"].startswith("luhm-os:fast:gpt-5.6-luna:")
+    assert captured["reasoning"] == {"effort": "none"}
+    assert captured["text"] == {"verbosity": "low"}
+    assert captured["service_tier"] == "auto"
     assert result["response_id"] == "resp_next"
-    assert result["connection_pool"] == "keepalive"
+    assert result["connection_pool"] == "keepalive_http2"
+    assert result["cached_input_tokens"] == 77
+    assert result["service_tier"] == "default"
+
+
+def test_huggingface_payload_does_not_receive_openai_only_fields(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("HF_TOKEN", "placeholder")
+    captured: dict = {}
+
+    class Response:
+        def raise_for_status(self) -> None:
+            return None
+
+        def json(self) -> dict:
+            return {"id": "hf_resp", "output_text": "GREEN"}
+
+    def post(*args, **kwargs):
+        captured.update(kwargs.get("json") or {})
+        return Response()
+
+    monkeypatch.setattr(remote_ai._HTTP_CLIENT, "post", post)
+    result = remote_ai._call_responses_api("huggingface", "check", None, profile="fast")
+    assert captured["model"] == "openai/gpt-oss-20b:fastest"
+    assert "prompt_cache_key" not in captured
+    assert "prompt_cache_options" not in captured
+    assert "reasoning" not in captured
+    assert "text" not in captured
+    assert "service_tier" not in captured
+    assert result["prompt_cache"] == "provider_managed"
 
 
 def test_invalid_previous_response_id_is_rejected() -> None:
