@@ -164,6 +164,11 @@
     "append_only_final_promotion_receipt_required_after_merge": true,
     "shared": false
   },
-  "promotion_condition": "EXACT_HEAD_CI_10_OF_10_SUCCESS_AND_PR91_MERGED",
-  "result_if_promoted": "CROWN_CATHEDRAL_FOUNDATION_CANONICAL_FOR_FUTURE_DEVELOPMENT"
+  "promotion_condition": "ALL_REQUIRED_EXACT_HEAD_WORKFLOWS_SUCCESS_AND_PR91_MERGED",
+  "result_if_promoted": "CROWN_CATHEDRAL_FOUNDATION_CANONICAL_FOR_FUTURE_DEVELOPMENT",
+  "final_promotion_proof": {
+    "github": "PR91_HEAD_AT_MERGE_PLUS_REQUIRED_WORKFLOW_RUNS",
+    "private_drive": "APPEND_ONLY_FINAL_PROMOTION_RECEIPT",
+    "no_post_green_source_rewrite": true
+  }
 }
