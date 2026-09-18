@@ -1,0 +1,124 @@
+{
+  "schema": "luhm-os.source-of-truth-audit.v1",
+  "manifest_id": "LUHM_OS_SOURCE_OF_TRUTH_AUDIT_20260918",
+  "date_local": "2026-09-18",
+  "state": "PROPOSED_NOT_CROWNED",
+  "project": {
+    "display_name": "LuHm OS",
+    "project_id": "luhm_os",
+    "single_logical_project": true,
+    "human_authority": "Professor",
+    "boss_agent": "Lum"
+  },
+  "audit_basis": {
+    "canonical_branch": "luhmos-main",
+    "canonical_head_at_audit_start": "dc8ff1ee0cde75c15c559e5c8c4a0f8ba37d04d4",
+    "canonical_merge_pr": 91,
+    "canonical_merge_pr_head": "5d861fc98efabd6c82f368c47142dd2215d47321",
+    "prior_vendor_convergence_pr": 81,
+    "repository": "eggie-admin/hydra-shell-android",
+    "proposal_branch": "luhmos/proposed-sot-realign-20260918"
+  },
+  "findings": {
+    "canonical_luhm_identity": "GREEN",
+    "runtime_capability_policy": "PRESENT_CANONICAL",
+    "runtime_capability_guard": "PRESENT_CANONICAL_AND_GOOGLE_CACHE_AWARE",
+    "vendor_api_manifest": "LUHM_OS_ALIGNED",
+    "luhm_project_manifest": "LUHM_OS_ALIGNED",
+    "hydra_compatibility_manifest_before_repair": "DRIFT_PROJECT_NAME_PROJECT_HYDRA",
+    "crown_cathedral_foundation_seal_before_repair": "DRIFT_PROJECT_FIELD_PROJECT_HYDRA",
+    "pr91_human_facing_language": "HISTORICAL_PROJECT_HYDRA_FOUNDATION_WORDING_CONFLICTS_WITH_SINGLE_PROJECT_IDENTITY",
+    "foundation_runtime_and_artifact_evidence": "PRESERVED",
+    "history_rewrite": false
+  },
+  "identity_reconciliation": {
+    "canonical_project": "LuHm OS",
+    "canonical_project_id": "luhm_os",
+    "hydra": "compatibility_component_and_historical_alias",
+    "kai9000": "subsystem",
+    "cathedral": "cockpit_game_and_android_foundation_component",
+    "project_hydra_is_independent_vendor_project": false,
+    "historical_project_hydra_names_are_evidence_not_current_identity": true,
+    "all_new_vendor_targets_must_use": "LuHm OS"
+  },
+  "vendor_spine": {
+    "openai": {
+      "project_label": "LuHm OS",
+      "role": "primary_build_and_reasoning",
+      "fast_model": "gpt-5.6-luna",
+      "deep_model": "gpt-5.6-sol",
+      "live_api_inference": "NOT_VERIFIED_UNTIL_RUNTIME_PROJECT_KEY_SMOKE_GREEN",
+      "chat_subscription_is_not_api_billing": true
+    },
+    "google": {
+      "project_label": "LuHm OS",
+      "role": "research_realtime_multimodal_and_cloud",
+      "fast_model": "gemini-3.5-flash-lite",
+      "deep_model": "gemini-3.8-flash",
+      "client_cache": "process_reuse",
+      "live_wif_auth": "NOT_VERIFIED_REPOSITORY_WIF_CONFIGURATION_INCOMPLETE"
+    },
+    "github": {
+      "project_label": "LuHm OS",
+      "role": "versioned_source_ci_and_context_evidence",
+      "canonical_branch": "luhmos-main",
+      "repository_default_branch_observed": "main",
+      "canonical_branch_protected": false,
+      "repository_rulesets": [],
+      "external_governance": "RED_EXTERNAL"
+    },
+    "cloudflare": {
+      "project_label": "LuHm OS",
+      "role": "edge_dns_https_tunnel_and_distribution",
+      "live_plan_and_token_scope": "UNVERIFIED",
+      "production_publish_confirmation": "YES_REQUIRED"
+    },
+    "hugging_face": {
+      "project_label": "LuHm OS",
+      "role": "conditional_critic_and_open_model_lane",
+      "account_auth": "CONFIRMED_READ_JOBS_OAUTH_CONTEXT",
+      "live_inference_token": "NOT_VERIFIED",
+      "paid_gpu_jobs_auto_launch": false
+    }
+  },
+  "runtime_capability_policy": {
+    "path": "integrations/runtime-capabilities.policy.json",
+    "policy": "prefer_paid_capability_when_proven_and_task_relevant",
+    "personal_plan_names_in_public_source": false,
+    "billing_amounts_in_public_source": false,
+    "credentials_in_public_source": false,
+    "do_not_spend_more_only_to_prove_entitlement": true,
+    "no_silent_cross_provider_failover": true,
+    "max_parallel_remote_helpers": 3,
+    "direct_questions_bypass_mesh": true,
+    "consequential_actions_remain_crown_gated": true
+  },
+  "repairs_in_this_proposal": [
+    "project/hydra/project.manifest.json now identifies LuHm OS as project and Hydra as non-independent compatibility component",
+    "Crown Cathedral foundation seal now binds foundation to LuHm OS and classifies Hydra as compatibility/history only",
+    "active Hydra manifest points to this audit receipt",
+    "historical PR and Git commit wording is preserved rather than rewritten"
+  ],
+  "external_debt": [
+    "repository default branch remains main while canonical authority is luhmos-main",
+    "luhmos-main branch protection is disabled",
+    "repository rulesets are empty",
+    "OpenAI live API inference requires a verified LuHm OS project runtime key",
+    "Google live WIF auth remains unverified until repository variables and immutable-subject binding are configured",
+    "Cloudflare live account plan, token scopes and tunnel state remain unverified through current connectors",
+    "Hugging Face runtime inference credential remains unverified"
+  ],
+  "authority": {
+    "canonical_merge": "NOT_TRIGGERED",
+    "release_signing": "LOCKED",
+    "deploy": "NOT_TRIGGERED",
+    "public_release": "NOT_TRIGGERED",
+    "crown": "NOT_TRIGGERED",
+    "seal": "NOT_TRIGGERED"
+  },
+  "promotion_gate": {
+    "exact_head_ci_required": true,
+    "canonical_merge_requires_explicit_professor_authority": true,
+    "proposal_may_not_self_promote": true
+  }
+}
