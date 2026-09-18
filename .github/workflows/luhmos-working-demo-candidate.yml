@@ -159,6 +159,10 @@ jobs:
           grep -q 'app.quit' "$SHELL_JS" "$PATCH"
           grep -q 'finishAndRemoveTask' "$PATCH"
           python3 -m py_compile "$PATCH" "$RELEASE_BUILDER" "$HARNESS"
+          grep -q 'PAIR_FAILURE_LIMIT = 5' "$HARNESS"
+          grep -q 'PAIR_LOCKOUT_SECONDS = 60' "$HARNESS"
+          grep -q 'X-LuHm-Request' "$HARNESS" "$SHELL_JS"
+          grep -q 'memory_only' "$HARNESS"
           python3 - "$DIST" <<'PY'
           import json,sys
           d=json.load(open(sys.argv[1],encoding='utf-8'))

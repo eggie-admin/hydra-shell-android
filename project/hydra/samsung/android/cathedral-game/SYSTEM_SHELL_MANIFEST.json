@@ -17,7 +17,12 @@
     "session_ttl_seconds": 900,
     "cockpit_ticket_ttl_seconds": 30,
     "harness_restart_invalidates_sessions": true,
-    "persistent_password": false
+    "persistent_password": false,
+    "pair_failure_limit": 5,
+    "pair_failure_window_seconds": 60,
+    "pair_lockout_seconds": 60,
+    "operator_request_header": "X-LuHm-Request",
+    "operator_request_header_value": "operator"
   },
   "modes": {
     "full": "FULL_APP",

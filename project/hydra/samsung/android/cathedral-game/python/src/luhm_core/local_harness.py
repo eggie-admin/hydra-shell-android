@@ -16,6 +16,9 @@ HARNESS_PORT = 8791
 PAIR_SCHEMA = "luhm_os.local_harness_pair.v1"
 SESSION_TTL_SECONDS = 900
 TICKET_TTL_SECONDS = 30
+PAIR_FAILURE_LIMIT = 5
+PAIR_FAILURE_WINDOW_SECONDS = 60
+PAIR_LOCKOUT_SECONDS = 60
 PAIR_CODE = os.environ.get("LUHM_PAIR_CODE", "")
 ALLOWED_ORIGINS = [
     "https://appassets.androidplatform.net",
@@ -24,6 +27,8 @@ ALLOWED_ORIGINS = [
 ]
 _sessions: dict[str, float] = {}
 _tickets: dict[str, float] = {}
+_pair_failures: list[float] = []
+_pair_locked_until = 0.0
 
 app = FastAPI(title=APP_NAME, version=APP_VERSION, docs_url=None, redoc_url=None, openapi_url=None)
 app.add_middleware(
@@ -45,6 +50,22 @@ def _purge() -> None:
         stale = [key for key, expires in store.items() if expires <= now]
         for key in stale:
             store.pop(key, None)
+
+
+def _record_pair_failure() -> float:
+    global _pair_locked_until
+    now = _now()
+    cutoff = now - PAIR_FAILURE_WINDOW_SECONDS
+    _pair_failures[:] = [stamp for stamp in _pair_failures if stamp >= cutoff]
+    _pair_failures.append(now)
+    if len(_pair_failures) >= PAIR_FAILURE_LIMIT:
+        _pair_failures.clear()
+        _pair_locked_until = now + PAIR_LOCKOUT_SECONDS
+    return _pair_locked_until
+
+
+def _operator_request(request: Request) -> bool:
+    return request.headers.get("X-LuHm-Request", "") == "operator"
 
 
 def _bearer(request: Request) -> str:
@@ -76,6 +97,7 @@ def health() -> dict[str, object]:
         "cockpit": "/cockpit",
         "auth": "ephemeral_local_pairing",
         "pairing_available": bool(PAIR_CODE and len(PAIR_CODE) == 6 and PAIR_CODE.isdigit()),
+        "pairing_rate_limit": "5_failures_per_60s_then_60s_lockout",
         "termux_role": "external_loopback_host_only",
         "direct_shell_execution": False,
     }
@@ -99,12 +121,37 @@ def runtime() -> dict[str, object]:
 
 @app.post("/auth/pair")
 async def pair(request: Request) -> JSONResponse:
+    global _pair_locked_until
+    if request.headers.get("X-LuHm-Request", "") != "pair":
+        return JSONResponse({"ok": False, "error": "pair_header_required"}, status_code=400, headers={"Cache-Control": "no-store"})
     if not (PAIR_CODE and len(PAIR_CODE) == 6 and PAIR_CODE.isdigit()):
-        return JSONResponse({"ok": False, "error": "pairing_unavailable"}, status_code=503)
-    body: Any = await request.json()
+        return JSONResponse({"ok": False, "error": "pairing_unavailable"}, status_code=503, headers={"Cache-Control": "no-store"})
+    now = _now()
+    if _pair_locked_until > now:
+        retry = max(1, int(_pair_locked_until - now))
+        return JSONResponse(
+            {"ok": False, "error": "pairing_locked", "retry_after_seconds": retry},
+            status_code=429,
+            headers={"Cache-Control": "no-store", "Retry-After": str(retry)},
+        )
+    try:
+        body: Any = await request.json()
+    except Exception:
+        _record_pair_failure()
+        return JSONResponse({"ok": False, "error": "invalid_json"}, status_code=400, headers={"Cache-Control": "no-store"})
     code = str(body.get("code", "")) if isinstance(body, dict) else ""
     if not hmac.compare_digest(code, PAIR_CODE):
-        return JSONResponse({"ok": False, "error": "pairing_rejected"}, status_code=401)
+        locked_until = _record_pair_failure()
+        if locked_until > _now():
+            retry = max(1, int(locked_until - _now()))
+            return JSONResponse(
+                {"ok": False, "error": "pairing_locked", "retry_after_seconds": retry},
+                status_code=429,
+                headers={"Cache-Control": "no-store", "Retry-After": str(retry)},
+            )
+        return JSONResponse({"ok": False, "error": "pairing_rejected"}, status_code=401, headers={"Cache-Control": "no-store"})
+    _pair_failures.clear()
+    _pair_locked_until = 0.0
     _purge()
     token = secrets.token_urlsafe(32)
     expires = int(_now() + SESSION_TTL_SECONDS)
@@ -124,6 +171,8 @@ async def pair(request: Request) -> JSONResponse:
 
 @app.get("/auth/status")
 def auth_status(request: Request) -> JSONResponse:
+    if not _operator_request(request):
+        return JSONResponse({"ok": False, "error": "operator_header_required"}, status_code=400, headers={"Cache-Control": "no-store"})
     current = _require_session(request)
     if current is None:
         return JSONResponse({"ok": False, "authenticated": False}, status_code=401)
@@ -136,6 +185,8 @@ def auth_status(request: Request) -> JSONResponse:
 
 @app.post("/auth/ticket")
 def auth_ticket(request: Request) -> JSONResponse:
+    if not _operator_request(request):
+        return JSONResponse({"ok": False, "error": "operator_header_required"}, status_code=400, headers={"Cache-Control": "no-store"})
     if _require_session(request) is None:
         return JSONResponse({"ok": False, "error": "session_required"}, status_code=401)
     ticket = secrets.token_urlsafe(24)
@@ -149,6 +200,8 @@ def auth_ticket(request: Request) -> JSONResponse:
 
 @app.post("/auth/logout")
 def auth_logout(request: Request) -> JSONResponse:
+    if not _operator_request(request):
+        return JSONResponse({"ok": False, "error": "operator_header_required"}, status_code=400, headers={"Cache-Control": "no-store"})
     token = _bearer(request)
     if token:
         _sessions.pop(token, None)
