@@ -1,0 +1,69 @@
+{
+  "schema": "luhm-os.brand-profile.island-chaos.v1",
+  "manifest_id": "LUHM_ISLAND_CHAOS_BRAND_PROFILE_20260918",
+  "status": "SOURCE_STAGED_BUILD_PENDING",
+  "date_local": "2026-09-18",
+  "character": "Lum",
+  "role": "pet companion / Crown mascot / world HUD familiar",
+  "visual_source": {
+    "conversation_asset": "lum_oni_kitty_neon_sprite_sheet.png",
+    "sha256": "0e06d8fd89e077fb6d1b96c393411439425465cb050d80b6eee955b36ebfc8dd",
+    "pixel_size": [
+      1448,
+      1086
+    ],
+    "bundled_in_repository": false,
+    "purpose": "canonical visual reference for this branding mutation; runtime uses LuHm-authored SVG derivatives"
+  },
+  "silhouette": {
+    "species": "oni-kitty",
+    "body_language": "compact chibi companion with soft sturdy proportions",
+    "horns": "paired glossy magenta oni horns",
+    "ears": "feline ears",
+    "wings": "small bat wings",
+    "tail": "long dark tail with luminous heart tip",
+    "hair": "long black layered hair",
+    "flower": "hibiscus accent",
+    "eyes": "large glossy magenta eyes"
+  },
+  "costume_language": {
+    "primary": "island-adventure wrap with magenta geometric trim",
+    "accessories": [
+      "shell charm",
+      "gold-tone collar hardware",
+      "hibiscus",
+      "heart pendant"
+    ],
+    "variants": [
+      "festival",
+      "modern remix",
+      "raincoat",
+      "pirate",
+      "witch",
+      "beach day",
+      "tropical",
+      "angel",
+      "devil"
+    ],
+    "constraint": "original LuHm design language; no copied franchise costume or proprietary character asset"
+  },
+  "palette": {
+    "black_sand": "#121018",
+    "hibiscus_pink": "#ff4b9b",
+    "sunset_magenta": "#d92e75",
+    "deep_plum": "#572047",
+    "shell_gold": "#cda36f",
+    "ivory_shell": "#f0d7b0"
+  },
+  "voice_line": "Islands call. Chaos follows.",
+  "runtime_assets": [
+    "project/hydra/samsung/android/cathedral-game/godot-world/assets/lum_world_sprite.svg",
+    "project/hydra/samsung/android/cathedral-game/godot-world/assets/lum_hud_icon.svg"
+  ],
+  "authority": {
+    "human_final_authority": "Professor",
+    "public_publish": false,
+    "deploy": false,
+    "release_promotion": false
+  }
+}

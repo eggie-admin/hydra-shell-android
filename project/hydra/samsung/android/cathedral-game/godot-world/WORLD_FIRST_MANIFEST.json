@@ -1,7 +1,7 @@
 {
   "schema": "luhmos.godot.world_first.v1",
   "mutation": "LUHM_OS_GODOT_WORLD_FIRST_HUD_1.0.7",
-  "status": "SOURCE_GREEN_BUILD_GREEN_DEVICE_PENDING",
+  "status": "SOURCE_MUTATED_BUILD_PENDING",
   "engine": "Godot 4.7.2",
   "main_layer": "native Godot 3D world",
   "hud": "CanvasLayer minimal floating HUD",
@@ -9,7 +9,9 @@
   "world": {
     "zone": "Corktown Switchyard",
     "style": "original Detroit-ish cathedral-tech procedural diorama",
-    "runtime_assets": "LuHm-authored SVG + generated Godot primitive geometry"
+    "runtime_assets": "LuHm-authored SVG + generated Godot primitive geometry",
+    "branding_profile": "LUM_ISLAND_CHAOS_BRAND_PROFILE.json",
+    "branding_theme": "ISLAND_CHAOS"
   },
   "persistent_hud": [
     "quest sigil",
@@ -18,7 +20,11 @@
     "Lum floating icon",
     "tiny status line"
   ],
-  "lum_micro_menu": ["PET", "QUEST", "CROWN"],
+  "lum_micro_menu": [
+    "PET",
+    "QUEST",
+    "CROWN"
+  ],
   "authority": {
     "human_final_authority": "Professor",
     "game_to_admin_escalation": false,
@@ -30,6 +36,7 @@
   "rights": {
     "lum_world_sprite.svg": "LUHM_ORIGINAL",
     "lum_hud_icon.svg": "LUHM_ORIGINAL",
+    "LUM_ISLAND_CHAOS_BRAND_PROFILE.json": "LUHM_ORIGINAL_DERIVATIVE_PROFILE_FROM_USER_APPROVED_GENERATION",
     "procedural_geometry": "LUHM_ORIGINAL",
     "third_party_private_reference_bundled": false
   },
@@ -38,7 +45,7 @@
     "run_id": 35083853376,
     "artifact_id": 10441064288,
     "artifact_name": "luhmos-world-first-1.0.7",
-    "artifact_zip_sha256": "2b2c80319647c1dbd3d4c4aa27c813666af7d4ac9705389a64a2e80ebac0c869",
+    "artifact_zip_sha256": "2b2c80319647d1dbd3d4c4aa27c813666af7d4ac9705389a64a2e80ebac0c869",
     "apk_sha256": "7c74dcb546021c5938fcbb94121671d09c617d86e1189821f6e914018f59c487",
     "signer_sha256": "598d7272d62dbebb71972d6164822636ad1439cd35631d0cd43321d003c92142",
     "package": "art.eggiebagelface.luhmos",
@@ -47,7 +54,8 @@
     "min_sdk": 24,
     "target_sdk": 36,
     "abi": "arm64-v8a",
-    "conclusion": "success"
+    "conclusion": "success",
+    "superseded_by_current_source_mutation": true
   },
   "private_update_handoff": {
     "stable_drive_file_id": "1FgtidWj7C_IgBb0q3JWYwc47zwiNzQlp",

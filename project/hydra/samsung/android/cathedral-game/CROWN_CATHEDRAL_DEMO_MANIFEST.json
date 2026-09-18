@@ -26,8 +26,16 @@
     ],
     "original_world_assets": [
       "godot-world/assets/lum_world_sprite.svg",
-      "godot-world/assets/lum_hud_icon.svg"
+      "godot-world/assets/lum_hud_icon.svg",
+      "godot-world/LUM_ISLAND_CHAOS_BRAND_PROFILE.json"
     ],
+    "branding": {
+      "profile": "godot-world/LUM_ISLAND_CHAOS_BRAND_PROFILE.json",
+      "theme": "ISLAND_CHAOS",
+      "tagline": "Islands call. Chaos follows.",
+      "runtime_sprite": "godot-world/assets/lum_world_sprite.svg",
+      "hud_icon": "godot-world/assets/lum_hud_icon.svg"
+    },
     "world_contract": [
       "godot-world/WORLD_FIRST_MANIFEST.json",
       "godot-world/scenes/main.tscn",

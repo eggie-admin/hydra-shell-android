@@ -1,4 +1,4 @@
-name: LuHm Vendor Purge Guard
+name: LuHm External Status Purge Guard
 
 on:
   push:
@@ -12,6 +12,7 @@ on:
 
 permissions:
   contents: read
+  statuses: read
 
 jobs:
   guard:
@@ -20,5 +21,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
-      - name: Verify current tree has no retired vendor references
-        run: python3 tools/vendor_purge_guard.py
+      - name: Verify retired external status provider is absent
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 tools/external_status_purge_guard.py
