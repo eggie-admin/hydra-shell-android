@@ -1,7 +1,7 @@
 {
   "schema": "luhm-os.project-hydra.brand-foundation-seal.v1",
   "manifest_id": "KAI9000_CROWN_CATHEDRAL_BRAND_FOUNDATION_SEAL_20260918",
-  "status": "PROPOSED_NOT_CROWNED",
+  "status": "CANDIDATE_GREEN_EXTERNAL_ACCESS_RECHECK",
   "date_local": "2026-09-18",
   "project": "Project Hydra",
   "parent_os": "LuHm OS",
@@ -73,5 +73,25 @@
   "proposal_head_before_seal": "80d0ca906d54f63a81aba7534da5b7141b66e2bb",
   "promotion_condition": "ALL_REQUIRED_EXACT_HEAD_WORKFLOWS_SUCCESS_AND_EXTERNAL_STATUS_PURGE_GREEN_AND_HUMAN_MERGE",
   "result_if_promoted": "ISLAND_CHAOS_BRANDING_BECOMES_CANONICAL_CROWN_CATHEDRAL_FOUNDATION_BRAND",
-  "physical_device_proof": "PENDING_USER_DEVICE_FOR_FINAL_ANDROID_GREEN"
+  "physical_device_proof": "PENDING_USER_DEVICE_FOR_FINAL_ANDROID_GREEN",
+  "exact_head_receipt": {
+    "source_head": "db61c50443d933caa1e469bd02373af51f4695a4",
+    "github_workflows": "14/14_SUCCESS",
+    "working_demo": {
+      "workflow_run": 35293860226,
+      "artifact_name": "luhmos-working-demo-1.0.11-18",
+      "artifact_digest": "sha256:0568ca086d9539734678da17cbefaeb0fbee8e12e8443fdb126aecec322c1c7c"
+    },
+    "install_gui": {
+      "workflow_run": 35293860395,
+      "artifact_name": "luhmos-apk-install-probe-1.0.9-106",
+      "artifact_digest": "sha256:9775b857e610c30d8f3c460e4ba8e3088d6e68bd8e473acdd64490120be192dc"
+    },
+    "retired_external_provider_status": "PRESENT_ON_SOURCE_HEAD",
+    "conclusion": "BRANDING_BUILD_GREEN_BUT_EXTERNAL_ACCESS_NOT_YET_PROVEN_PURGED"
+  },
+  "fresh_purge_probe": {
+    "reason": "Existing commit statuses are historical and cannot disappear after access revocation. This seal update creates a fresh candidate head. Crown requires that the fresh head receive no status from the retired external deployment provider.",
+    "required": "NO_RETIRED_EXTERNAL_PROVIDER_STATUS_ON_THIS_OR_SUBSEQUENT_EXACT_HEAD"
+  }
 }
