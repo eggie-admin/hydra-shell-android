@@ -6,6 +6,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PROJECT = ROOT / "lumh-os/kai9000/project.manifest.json"
+HYDRA_PROJECT = ROOT / "project/hydra/project.manifest.json"
+FOUNDATION = ROOT / "project/hydra/source-of-truth/KAI9000_CROWN_CATHEDRAL_FOUNDATION_SEAL_20260918.json"
+IDENTITY_AUDIT = ROOT / "project/hydra/source-of-truth/LUHM_OS_SOURCE_OF_TRUTH_AUDIT_20260918.json"
 VENDORS = ROOT / "integrations/vendor-apis.manifest.json"
 FASTPATH = ROOT / ".github/workflows/project-hydra-fastpath-gate.yml"
 LOCAL_CI = ROOT / ".github/workflows/hydra-local.yml"
@@ -22,6 +25,9 @@ def req(ok: bool, msg: str) -> None:
 
 def main() -> None:
     project = json.loads(PROJECT.read_text(encoding="utf-8"))
+    hydra = json.loads(HYDRA_PROJECT.read_text(encoding="utf-8"))
+    foundation = json.loads(FOUNDATION.read_text(encoding="utf-8"))
+    audit = json.loads(IDENTITY_AUDIT.read_text(encoding="utf-8"))
     vendors = json.loads(VENDORS.read_text(encoding="utf-8"))
 
     req(project.get("schema") == "luhm-os.project.v4", "project schema drift")
@@ -32,6 +38,27 @@ def main() -> None:
     req(project.get("identity", {}).get("legacy_alias_policy") == "component_or_history_only_not_independent_vendor_project", "legacy alias policy drift")
     for component in ("kai9000", "hydra", "cathedral"):
         req(project.get("components", {}).get(component, {}).get("is_independent_vendor_project") is False, f"{component} became a peer project")
+
+    req(hydra.get("schema") == "luhm-os.project-hydra.v7", "Hydra compatibility schema drift")
+    req(hydra.get("name") == NAME, "Hydra path became a peer project")
+    req(hydra.get("project_id") == PID, "Hydra path project id drift")
+    req(hydra.get("component") == "Hydra", "Hydra component label drift")
+    req(hydra.get("is_independent_vendor_project") is False, "Hydra escaped unified project")
+    req(hydra.get("authority", {}).get("project_identity") == NAME, "Hydra authority project identity drift")
+    req(hydra.get("source_of_truth", {}).get("identity_audit") == "project/hydra/source-of-truth/LUHM_OS_SOURCE_OF_TRUTH_AUDIT_20260918.json", "Hydra identity audit pointer drift")
+
+    req(foundation.get("schema") == "luhm-os.project-hydra.foundation-seal.v2", "foundation seal schema drift")
+    req(foundation.get("project") == NAME, "foundation seal peer-project drift")
+    req(foundation.get("project_id") == PID, "foundation project id drift")
+    req(foundation.get("component") == "Hydra", "foundation component drift")
+    req(foundation.get("identity_reconciliation", {}).get("project_hydra_is_peer_project") is False, "foundation resurrected Project Hydra as peer project")
+    req(foundation.get("identity_reconciliation", {}).get("new_vendor_target_name") == NAME, "foundation vendor target drift")
+
+    req(audit.get("schema") == "luhm-os.source-of-truth-audit.v1", "identity audit schema drift")
+    req(audit.get("state") == "PROPOSED_NOT_CROWNED", "identity audit authority drift")
+    req(audit.get("project", {}).get("display_name") == NAME, "identity audit project drift")
+    req(audit.get("project", {}).get("project_id") == PID, "identity audit project id drift")
+    req(audit.get("identity_reconciliation", {}).get("project_hydra_is_independent_vendor_project") is False, "identity audit peer-project drift")
 
     req(vendors.get("schema") == "luhm-os.vendor-apis.v7", "vendor schema drift")
     req(vendors.get("project_display_name") == NAME, "vendor project display name drift")
@@ -67,6 +94,7 @@ def main() -> None:
     print("LUHM_UNIFIED_PROJECT=GREEN")
     print("PROJECT=LuHm OS")
     print("PROJECT_ID=luhm_os")
+    print("HYDRA=COMPATIBILITY_COMPONENT")
     print("LEGACY_NAMES=COMPONENT_OR_HISTORY_ONLY")
     print("VENDOR_SPINE=openai,google,github,cloudflare,hugging_face")
 
