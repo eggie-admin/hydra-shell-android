@@ -9,6 +9,7 @@ on:
       - "backend/**"
       - "tools/**"
       - "integrations/**"
+      - "infra/gcp/**"
       - "docs/**"
       - "README.md"
       - "SUPPORT.md"
@@ -34,6 +35,7 @@ on:
       - "backend/**"
       - "tools/**"
       - "integrations/**"
+      - "infra/gcp/**"
       - "docs/**"
       - "README.md"
       - "SUPPORT.md"
@@ -100,6 +102,9 @@ jobs:
       - name: LuHm OS runtime entitlement guard
         run: python tools/runtime_capability_guard.py
 
+      - name: LuHm OS enterprise API posture guard
+        run: python tools/enterprise_api_posture_guard.py
+
       - name: Remote assistance unit contract
         run: python -m pytest -q backend/tests/test_remote_ai_router.py backend/tests/test_remote_assistance.py backend/tests/test_google_assist.py
 
@@ -115,7 +120,7 @@ jobs:
       - name: Python compile gate
         run: |
           python -m compileall -q ultima/ollama-ffmpeg-antenna-v3
-          python -m py_compile tools/kai9000_ci_guard.py tools/project_hydra_structure_guard.py tools/remote_assistance_guard.py tools/remote_assistance_bench.py tools/runtime_capability_guard.py tools/retired_lane_guard.py tools/public_release_lock_guard.py tools/deploy_authority_guard.py tools/canonical_branch_governance_audit.py
+          python -m py_compile tools/kai9000_ci_guard.py tools/project_hydra_structure_guard.py tools/remote_assistance_guard.py tools/remote_assistance_bench.py tools/runtime_capability_guard.py tools/enterprise_api_posture_guard.py tools/retired_lane_guard.py tools/public_release_lock_guard.py tools/deploy_authority_guard.py tools/canonical_branch_governance_audit.py
 
       - name: Lum Crown authority contract
         working-directory: ultima/ollama-ffmpeg-antenna-v3

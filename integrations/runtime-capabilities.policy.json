@@ -2,6 +2,7 @@
   "schema": "luhm-os.runtime-capabilities.v1",
   "project": "LuHm OS",
   "logical_project_id": "luhm_os",
+  "enterprise_posture": "integrations/enterprise-api.posture.json",
   "privacy": {
     "account_specific_plan_names_in_public_source": false,
     "billing_amounts_in_public_source": false,

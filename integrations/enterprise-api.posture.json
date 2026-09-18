@@ -1,0 +1,114 @@
+{
+  "schema": "luhm-os.enterprise-api-posture.v1",
+  "date": "2026-09-18",
+  "project": "LuHm OS",
+  "logical_project_id": "luhm_os",
+  "classification": "ENTERPRISE_APPROACH_NOT_ENTERPRISE_PLAN_CLAIM",
+  "scope": ["openai", "cloudflare", "google"],
+  "identity_model": {
+    "human_admin": "interactive_admin_only",
+    "runtime_service_principal": "application_inference_only",
+    "ci_deploy_principal": "deployment_pipeline_only",
+    "audit_reader": "read_only_security_telemetry_only",
+    "shared_super_token": false,
+    "personal_credentials_for_production_automation": false
+  },
+  "shared_controls": {
+    "least_privilege": true,
+    "short_lived_credentials_when_supported": true,
+    "credentials_in_git": false,
+    "credentials_in_apk": false,
+    "credentials_in_logs": false,
+    "credential_rotation_required": true,
+    "audit_trail_required": true,
+    "production_mutation_requires_explicit_human_gate": true,
+    "billing_or_plan_tier_is_never_inferred_from_code": true,
+    "live_capability_must_be_proven_before_green": true
+  },
+  "providers": {
+    "openai": {
+      "project_label": "LuHm OS",
+      "api": "responses",
+      "production_runtime_identity_target": "project_scoped_service_account",
+      "personal_api_key_for_production": false,
+      "service_account_key_permissions_target": "restricted_minimum_required_endpoints",
+      "model_usage_allowlist_required": true,
+      "project_rate_limits_required": true,
+      "project_spend_limit_required": true,
+      "hard_spend_limit_preferred_when_available": true,
+      "ip_allowlist_policy": "enable_for_fixed_or_well_defined_production_egress",
+      "admin_api_identity_separate_from_runtime": true,
+      "audit_log_reader_separate_from_runtime": true,
+      "audit_log_export_for_long_term_retention": true,
+      "api_data_sharing_assumed_enabled": false,
+      "zero_data_retention_assumed": false,
+      "live_state": {
+        "project_exists": "VERIFIED",
+        "project_service_account": "UNVERIFIED",
+        "restricted_runtime_key": "UNVERIFIED",
+        "project_model_limits": "UNVERIFIED",
+        "project_spend_limit": "UNVERIFIED",
+        "ip_allowlist": "UNVERIFIED",
+        "audit_logging": "UNVERIFIED"
+      }
+    },
+    "cloudflare": {
+      "project_label": "LuHm OS",
+      "production_ci_identity_target": "account_owned_api_token",
+      "user_token_policy": "ad_hoc_human_tasks_only",
+      "global_api_key_allowed": false,
+      "account_token_verify_endpoint": "/accounts/{account_id}/tokens/verify",
+      "token_scope_policy": "smallest_required_account_zone_worker_resources",
+      "token_ip_filter_policy": "use_when_runner_egress_is_stable",
+      "token_ttl_or_rotation_policy_required": true,
+      "deploy_token_separate_from_tunnel_token": true,
+      "deploy_token_separate_from_access_service_token": true,
+      "workers_secrets_for_runtime_secrets": true,
+      "secrets_store_policy": "optional_until_stable_for_required_products",
+      "tunnel_policy": "outbound_only_no_router_port_forwarding",
+      "access_jwt_validation_required_when_origin_is_not_tunnel_protected": true,
+      "production_publish_confirmation": "YES",
+      "live_state": {
+        "account_token_type": "UNVERIFIED",
+        "token_scope": "UNVERIFIED",
+        "token_status": "UNVERIFIED",
+        "tunnel_state": "UNVERIFIED",
+        "account_entitlements": "UNVERIFIED"
+      }
+    },
+    "google": {
+      "project_label": "LuHm OS",
+      "external_ci_auth": "github_oidc_to_workload_identity_federation",
+      "service_account_key_files_allowed": false,
+      "immutable_subject_required": true,
+      "attribute_condition_required": true,
+      "single_provider_per_pool_target": true,
+      "dedicated_service_account_per_pipeline_required": true,
+      "service_account_id_must_be_explicit": true,
+      "service_account_key_creation_org_policy_target": "disabled",
+      "service_account_key_upload_org_policy_target": "disabled",
+      "secret_manager_scope": "secret_level_least_privilege",
+      "secret_manager_data_access_logs_target": "enabled",
+      "iam_data_access_logs_target": "enabled",
+      "cloud_audit_log_correlation_required": true,
+      "vpc_service_controls_policy": "optional_for_stronger_data_perimeter",
+      "regional_sts_policy": "optional_when_data_residency_requires_it",
+      "live_state": {
+        "github_immutable_oidc_subject": "UNVERIFIED",
+        "wif_auth": "UNVERIFIED",
+        "pipeline_service_account": "UNVERIFIED",
+        "org_key_creation_constraint": "UNVERIFIED",
+        "org_key_upload_constraint": "UNVERIFIED",
+        "data_access_logs": "UNVERIFIED"
+      }
+    }
+  },
+  "authority": {
+    "canonical_merge": "NOT_AUTHORIZED_BY_THIS_POSTURE",
+    "deploy": "NOT_AUTHORIZED_BY_THIS_POSTURE",
+    "public_release": "NOT_AUTHORIZED_BY_THIS_POSTURE",
+    "billing_mutation": "NOT_AUTHORIZED_BY_THIS_POSTURE",
+    "crown": "NOT_AUTHORIZED_BY_THIS_POSTURE",
+    "seal": "NOT_AUTHORIZED_BY_THIS_POSTURE"
+  }
+}
