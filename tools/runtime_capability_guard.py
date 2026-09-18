@@ -42,7 +42,10 @@ def main() -> None:
     require(openai.get("deep_model") == "gpt-5.6-sol", "OpenAI deep model drift")
     require(openai.get("use_http_keepalive") is True, "OpenAI keepalive disabled")
     require(openai.get("use_previous_response_id_for_followups") is True, "OpenAI response reuse disabled")
-    require("httpx.Client(" in remote and "previous_response_id" in remote, "OpenAI runtime does not implement paid-capability fastpath")
+    require("httpx.Client(" in remote, "OpenAI/HF shared HTTP pool missing")
+    require("previous_response_id" in remote, "OpenAI response continuation missing")
+    require("prompt_cache_key" in remote and "prompt_cache_options" in remote, "OpenAI prompt-cache fastpath missing")
+    require("max_keepalive_connections=16" in remote, "remote keepalive pool drift")
 
     google = providers["google"]
     require(google.get("fast_model") == "gemini-3.5-flash-lite", "Google fast model drift")
@@ -50,10 +53,10 @@ def main() -> None:
     require(google.get("use_client_process_cache") is True, "Google client cache disabled")
     paid_google = set(google.get("paid_capabilities", []))
     require({"context_caching", "batch_or_flex_for_offline_work", "higher_rate_limits", "advanced_models"}.issubset(paid_google), "Google paid-capability registry drift")
-    require("_CLIENT_LOCK = threading.Lock()" in google_assist, "Google cache lock missing")
-    require("_CLIENT_SIGNATURE" in google_assist, "Google credential-aware cache signature missing")
-    require("_CLIENT = gateway._google_client()" in google_assist, "Google cached client creation missing")
-    require('"client_cache": "process_reuse"' in google_assist, "Google process client reuse receipt missing")
+    require("_CLIENT_LOCK" in google_assist and "_CLIENT_SIGNATURE" in google_assist, "Google credential-aware process cache missing")
+    require("def _client()" in google_assist and "gateway._google_client()" in google_assist, "Google process client reuse missing")
+    require("GOOGLE_FAST_TIMEOUT_MS" in google_assist and "GOOGLE_DEEP_TIMEOUT_MS" in google_assist, "Google profile timeout contract missing")
+    require("process_reuse" in google_assist and "implicit_context_cache" in google_assist, "Google reuse/cache receipt missing")
 
     github = providers["github"]
     require(github.get("public_repository_standard_actions_are_preferred") is True, "GitHub public Actions preference drift")
