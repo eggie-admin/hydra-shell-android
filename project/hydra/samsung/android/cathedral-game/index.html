@@ -67,7 +67,34 @@ body[data-scene="date"] .sky{background:radial-gradient(circle at 50% 14%,#ef9bd
       <button type="button" data-crown-action="world">WORLD MODE</button>
       <button type="button" data-crown-action="lum">SUMMON LUM</button>
       <button type="button" data-crown-action="crown">OPEN CROWN</button>
+      <button type="button" data-crown-action="dashboard" aria-controls="crownDashboard" aria-expanded="false">CROWN DASHBOARD</button>
     </div>
+    <section id="crownDashboard" class="crown-dashboard" hidden aria-label="Crown foundation dashboard">
+      <div class="crown-dashboard-head">
+        <div>
+          <small>FOUNDATION STATUS</small>
+          <b>ISLAND CHAOS // CROWN READINESS</b>
+        </div>
+        <span class="crown-dashboard-state crown-dashboard-state--hold">CROWN HELD</span>
+      </div>
+      <div class="crown-dashboard-grid">
+        <article><small>BRANDING</small><b class="ok">GREEN</b><span>Island Chaos Lum bound to HUD + world sprite.</span></article>
+        <article><small>BUILD MATRIX</small><b class="ok">14 / 14</b><span>Last exact branding proof completed successfully.</span></article>
+        <article><small>APK PROOF</small><b class="ok">GREEN</b><span>Working Demo + collision-free install candidate built.</span></article>
+        <article><small>VENDOR TREE</small><b class="ok">GREEN</b><span>Retired provider absent from active repository source.</span></article>
+        <article><small>EXTERNAL APP ACCESS</small><b class="bad">RED</b><span>Retired provider still posts a GitHub commit status.</span></article>
+        <article><small>FOUNDATION SEAL</small><b class="hold">HELD</b><span>Merge remains blocked until a fresh head receives no retired-provider status.</span></article>
+      </div>
+      <div class="crown-dashboard-receipt">
+        <span>Working Demo</span><code>0568ca086d95…322c1c7c</code>
+        <span>Install GUI</span><code>9775b857e610…20be192dc</code>
+      </div>
+      <div class="crown-dashboard-actions">
+        <a href="https://github.com/eggie-admin/hydra-shell-android/pull/92" target="_blank" rel="noopener noreferrer">OPEN LIVE PR #92</a>
+        <button type="button" data-crown-action="dashboard-close">CLOSE</button>
+      </div>
+      <p class="crown-dashboard-law">AI proposes. Policy authorizes. CI proves. The human promotes.</p>
+    </section>
     <div class="crown-assets" id="crownAssets" aria-label="Source of truth asset status"></div>
   </div>
 </section>
