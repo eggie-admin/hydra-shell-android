@@ -10,6 +10,7 @@ CAPS = ROOT / "integrations/runtime-capabilities.policy.json"
 VENDOR = ROOT / "integrations/vendor-apis.manifest.json"
 CF = ROOT / ".github/workflows/cloudflare-coming-soon.yml"
 GCP = ROOT / "infra/gcp/bootstrap-github-wif.sh"
+GCP_ENTERPRISE = ROOT / "infra/gcp/bootstrap-github-wif-enterprise.sh"
 REMOTE = ROOT / "ultima/ollama-ffmpeg-antenna-v3/remote_ai.py"
 
 CHECKOUT_SHA = "actions/checkout@11d5960a326750d5838078e36cf38b85af677262"
@@ -27,6 +28,7 @@ def main() -> None:
     vendor = json.loads(VENDOR.read_text(encoding="utf-8"))
     cf = CF.read_text(encoding="utf-8")
     gcp = GCP.read_text(encoding="utf-8")
+    gcp_enterprise = GCP_ENTERPRISE.read_text(encoding="utf-8")
     remote = REMOTE.read_text(encoding="utf-8")
 
     require(posture.get("schema") == "luhm-os.enterprise-api-posture.v1", "posture schema drift")
@@ -107,15 +109,20 @@ def main() -> None:
         "google.subject=assertion.sub",
         "principal://iam.googleapis.com/${POOL_NAME}/subject/${IMMUTABLE_SUBJECT}",
         "WIF_LEGACY_MUTABLE_REPOSITORY_BINDING_REMOVED",
-        "GCP_SERVICE_ACCOUNT_ID is required",
     ):
-        require(needle in gcp, f"Google enterprise WIF drift: {needle}")
+        require(needle in gcp, f"Google keyless WIF drift: {needle}")
+    for needle in (
+        "GCP_SERVICE_ACCOUNT_ID is required",
+        "^luhmos-[a-z0-9-]+$",
+        "exec \"$SCRIPT_DIR/bootstrap-github-wif.sh\"",
+    ):
+        require(needle in gcp_enterprise, f"Google enterprise preflight drift: {needle}")
     for forbidden in (
         "service-accounts keys create",
         "iam service-accounts keys create",
         "--key-file=",
     ):
-        require(forbidden not in gcp, f"Google long-lived key creation escaped: {forbidden}")
+        require(forbidden not in gcp and forbidden not in gcp_enterprise, f"Google long-lived key creation escaped: {forbidden}")
 
     require(caps.get("project") == "LuHm OS", "runtime capability contract project drift")
     require(vendor.get("project_display_name") == "LuHm OS", "vendor contract project drift")
