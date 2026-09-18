@@ -9,7 +9,7 @@ POLICY = ROOT / "integrations/runtime-capabilities.policy.json"
 VENDOR = ROOT / "integrations/vendor-apis.manifest.json"
 REMOTE = ROOT / "ultima/ollama-ffmpeg-antenna-v3/remote_ai.py"
 ASSIST = ROOT / "ultima/ollama-ffmpeg-antenna-v3/assistance.py"
-GATEWAY = ROOT / "ultima/ollama-ffmpeg-antenna-v3/gateway.py"
+GOOGLE_ASSIST = ROOT / "ultima/ollama-ffmpeg-antenna-v3/google_assist.py"
 
 
 def require(ok: bool, message: str) -> None:
@@ -22,7 +22,7 @@ def main() -> None:
     vendor = json.loads(VENDOR.read_text(encoding="utf-8"))
     remote = REMOTE.read_text(encoding="utf-8")
     assist = ASSIST.read_text(encoding="utf-8")
-    gateway = GATEWAY.read_text(encoding="utf-8")
+    google_assist = GOOGLE_ASSIST.read_text(encoding="utf-8")
 
     require(policy.get("schema") == "luhm-os.runtime-capabilities.v1", "policy schema drift")
     require(policy.get("project") == "LuHm OS", "project branding drift")
@@ -50,7 +50,10 @@ def main() -> None:
     require(google.get("use_client_process_cache") is True, "Google client cache disabled")
     paid_google = set(google.get("paid_capabilities", []))
     require({"context_caching", "batch_or_flex_for_offline_work", "higher_rate_limits", "advanced_models"}.issubset(paid_google), "Google paid-capability registry drift")
-    require("_GOOGLE_CLIENT_CACHE" in gateway or "lru_cache" in gateway, "Google process client reuse missing")
+    require("_CLIENT_LOCK = threading.Lock()" in google_assist, "Google cache lock missing")
+    require("_CLIENT_SIGNATURE" in google_assist, "Google credential-aware cache signature missing")
+    require("_CLIENT = gateway._google_client()" in google_assist, "Google cached client creation missing")
+    require('"client_cache": "process_reuse"' in google_assist, "Google process client reuse receipt missing")
 
     github = providers["github"]
     require(github.get("public_repository_standard_actions_are_preferred") is True, "GitHub public Actions preference drift")
