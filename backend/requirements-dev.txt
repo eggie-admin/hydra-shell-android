@@ -1,6 +1,7 @@
 -r requirements.txt
 pytest>=8,<9
-# Cross-stack tests load the KAI FastAPI remote-provider router.
+# Cross-stack tests load the LuHm remote-assistance provider stack.
 fastapi
 httpx[http2]
+google-genai>=2.24.0,<3
 pydantic
