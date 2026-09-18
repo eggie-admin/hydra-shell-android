@@ -1,0 +1,77 @@
+{
+  "schema": "luhm-os.project-hydra.brand-foundation-seal.v1",
+  "manifest_id": "KAI9000_CROWN_CATHEDRAL_BRAND_FOUNDATION_SEAL_20260918",
+  "status": "PROPOSED_NOT_CROWNED",
+  "date_local": "2026-09-18",
+  "project": "Project Hydra",
+  "parent_os": "LuHm OS",
+  "repository": "eggie-admin/hydra-shell-android",
+  "canonical_branch": "luhmos-main",
+  "candidate_branch": "luhmos/foundation-branding-island-chaos-20260918",
+  "parent_foundation_seal": "project/hydra/source-of-truth/KAI9000_CROWN_CATHEDRAL_FOUNDATION_SEAL_20260918.json",
+  "human_final_authority": "Professor",
+  "authorization": "EXPLICIT_CURRENT_USER_BRANDING_MUTATION_AND_GET_TO_GREEN_FOR_FOUNDATION_SEAL",
+  "source_law": "AI proposes. Policy authorizes. CI proves. The human promotes.",
+  "branding": {
+    "theme": "ISLAND_CHAOS",
+    "tagline": "Islands call. Chaos follows.",
+    "profile": "project/hydra/samsung/android/cathedral-game/godot-world/LUM_ISLAND_CHAOS_BRAND_PROFILE.json",
+    "visual_source": {
+      "sha256": "0e06d8fd89e077fb6d1b96c393411439425465cb050d80b6eee955b36ebfc8dd",
+      "pixel_size": [
+        1448,
+        1086
+      ],
+      "repository_bundle": false,
+      "treatment": "approved design source; runtime representation is LuHm-authored SVG"
+    },
+    "runtime_assets": {
+      "hud_icon": {
+        "path": "project/hydra/samsung/android/cathedral-game/godot-world/assets/lum_hud_icon.svg",
+        "blob_sha": "c2f569da05841e1cdc022c711e5c2c084b027456"
+      },
+      "world_sprite": {
+        "path": "project/hydra/samsung/android/cathedral-game/godot-world/assets/lum_world_sprite.svg",
+        "blob_sha": "f03bfa02449000c99248c1c1fdaf18697e5e8833"
+      }
+    },
+    "design_contract": [
+      "black-sand oni-kitty silhouette",
+      "hibiscus pink and sunset magenta accents",
+      "paired oni horns",
+      "small bat wings",
+      "heart-tipped tail",
+      "shell-gold and ivory-shell jewelry",
+      "island-adventure wrap vocabulary",
+      "original LuHm identity; no copied franchise costume or proprietary character asset"
+    ]
+  },
+  "shell_mutation": {
+    "inline_placeholder_replaced_by_runtime_world_sprite": true,
+    "crown_palette_updated": true,
+    "crown_copy_updated": true,
+    "project_manifest_pointer_added": true
+  },
+  "inherited_purge_gate": {
+    "candidate_manifest": "project/hydra/source-of-truth/KAI9000_EXTERNAL_STATUS_PROVIDER_PURGE_CROWN_20260918.json",
+    "tree_guard": "tools/vendor_purge_guard.py",
+    "external_status_guard": "tools/external_status_purge_guard.py",
+    "external_status_absence_required_for_full_green": true
+  },
+  "authority_boundaries": {
+    "ai_to_shell": false,
+    "direct_shell_execution": false,
+    "silent_install": false,
+    "production_package_replacement": false,
+    "persistent_release_signing": false,
+    "release_promotion": false,
+    "public_publish": false,
+    "deploy": false,
+    "dns_mutation": false,
+    "billing_mutation": false
+  },
+  "proposal_head_before_seal": "80d0ca906d54f63a81aba7534da5b7141b66e2bb",
+  "promotion_condition": "ALL_REQUIRED_EXACT_HEAD_WORKFLOWS_SUCCESS_AND_EXTERNAL_STATUS_PURGE_GREEN_AND_HUMAN_MERGE",
+  "result_if_promoted": "ISLAND_CHAOS_BRANDING_BECOMES_CANONICAL_CROWN_CATHEDRAL_FOUNDATION_BRAND",
+  "physical_device_proof": "PENDING_USER_DEVICE_FOR_FINAL_ANDROID_GREEN"
+}
