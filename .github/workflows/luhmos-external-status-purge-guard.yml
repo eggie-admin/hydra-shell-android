@@ -1,0 +1,27 @@
+name: LuHm External Status Purge Guard
+
+on:
+  push:
+    branches:
+      - luhmos-main
+      - 'luhmos/**'
+  pull_request:
+    branches:
+      - luhmos-main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  statuses: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Verify retired external status provider is absent
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 tools/external_status_purge_guard.py
