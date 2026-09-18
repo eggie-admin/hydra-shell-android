@@ -1,0 +1,77 @@
+name: LuHm GUI Mockup Source Gate
+
+on:
+  push:
+    branches:
+      - luhmos/gui-mockup-workflow-20260917
+    paths:
+      - 'project/hydra/samsung/android/gui-mockup/**'
+      - '.github/workflows/luhmos-gui-mockup-source-gate.yml'
+  pull_request:
+    paths:
+      - 'project/hydra/samsung/android/gui-mockup/**'
+      - '.github/workflows/luhmos-gui-mockup-source-gate.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  mockup-source-contract:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+
+      - name: Validate doctrine markers
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT='project/hydra/samsung/android/gui-mockup'
+          test -f "$ROOT/index.html"
+          test -f "$ROOT/mockup.css"
+          test -f "$ROOT/mockup.js"
+          test -f "$ROOT/mockup-contract.json"
+          test -f "$ROOT/README.md"
+          grep -q 'LUM FAST' "$ROOT/index.html"
+          grep -q 'SPRITE_BUBBLE' "$ROOT/index.html"
+          grep -q 'WIDGET_DECK' "$ROOT/index.html"
+          grep -q 'FULL_COCKPIT' "$ROOT/index.html"
+          grep -q 'GAME' "$ROOT/index.html"
+          grep -q 'ADMIN' "$ROOT/index.html"
+          grep -q 'SYSTEM' "$ROOT/index.html"
+          grep -q 'WHISPER' "$ROOT/index.html"
+          grep -q 'CROSSING' "$ROOT/index.html"
+          grep -q 'RECKONING' "$ROOT/index.html"
+          grep -q 'AI PROPOSES' "$ROOT/index.html"
+          grep -q 'HUMAN PROMOTES' "$ROOT/index.html"
+          grep -q 'helper_consensus_grants_authority' "$ROOT/mockup-contract.json"
+          grep -q 'READ_SEARCH_ONLY' "$ROOT/mockup-contract.json"
+          echo 'LUHM_GUI_MOCKUP_DOCTRINE_MARKERS_GREEN'
+
+      - name: Validate static source
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT='project/hydra/samsung/android/gui-mockup'
+          python3 -m json.tool "$ROOT/mockup-contract.json" >/dev/null
+          node --check "$ROOT/mockup.js"
+          ! grep -R -nE 'fetch\s*\(|XMLHttpRequest|WebSocket|EventSource|navigator\.sendBeacon|eval\s*\(|new[[:space:]]+Function|OS\.execute|Runtime\.getRuntime|pm[[:space:]]+install|termux-open' "$ROOT"
+          echo 'LUHM_GUI_MOCKUP_NO_NETWORK_NO_EXECUTION_GREEN'
+
+      - name: Verify workflow boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT='project/hydra/samsung/android/gui-mockup'
+          grep -q 'MOCKUP_ONLY' "$ROOT/README.md"
+          grep -q 'Public publish is OFF' "$ROOT/README.md"
+          grep -q 'apk_install.*false' "$ROOT/mockup-contract.json"
+          grep -q 'connected_by_mockup.*false' "$ROOT/mockup-contract.json"
+          echo 'LUHM_GUI_MOCKUP_SOURCE_GREEN'

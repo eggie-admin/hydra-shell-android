@@ -1,0 +1,55 @@
+{
+  "schema": "luhmos.gui_mockup.v1",
+  "seal": "KAI9000_LUHM_GUI_MOCKUP_WORKFLOW_20260917",
+  "status": "MOCKUP_ONLY_CROSSING_AMBER",
+  "authority": {
+    "human": "Professor",
+    "parent_agent": "Lum Fast",
+    "helper_authority": "READ_SEARCH_ONLY",
+    "helper_consensus_grants_authority": false,
+    "public_publish": false,
+    "apk_promotion": false,
+    "apk_install": false
+  },
+  "state": {
+    "mode": "FULL_COCKPIT",
+    "allowed_modes": ["SPRITE_BUBBLE", "WIDGET_DECK", "FULL_COCKPIT"],
+    "realm": "GAME",
+    "allowed_realms": ["GAME", "ADMIN", "SYSTEM"],
+    "tier": "WHISPER",
+    "allowed_tiers": ["WHISPER", "CROSSING", "RECKONING"],
+    "session_id": "MOCK-SESSION-001",
+    "state_pass": true,
+    "pending_reckoning": null,
+    "layout_profile": "portrait_phone"
+  },
+  "helpers": {
+    "default_helpers": 0,
+    "max_helpers_per_turn": 3,
+    "max_parallel_read_only_helpers": 2,
+    "max_delegation_depth": 1,
+    "active": [
+      {"id": "context", "label": "CONTEXT", "capability": "READ_SEARCH_ONLY"},
+      {"id": "research", "label": "RESEARCH", "capability": "READ_SEARCH_ONLY"},
+      {"id": "repo_read", "label": "REPO READ", "capability": "READ_SEARCH_ONLY"}
+    ]
+  },
+  "for_loop": {
+    "max_evidence_passes": 10,
+    "max_agent_rounds": 3,
+    "terminal_states": ["PROVEN", "BLOCKED", "CROWN_REQUIRED", "NEEDS_HUMAN"],
+    "null_becomes_green": false
+  },
+  "widgets": ["PET", "QUEST", "PARLEY", "STATUS", "MEDIA", "UPDATE", "CROWN", "LOG"],
+  "mutation_gateway": {
+    "endpoint": "127.0.0.1:8790",
+    "connected_by_mockup": false,
+    "shell_execution": false,
+    "human_approval_required": true,
+    "checkpoint_before_write": true,
+    "preimage_sha_recheck": true,
+    "atomic_replace": true,
+    "post_write_verification": true
+  },
+  "proof_law": ["AI_PROPOSES", "POLICY_AUTHORIZES", "CI_PROVES", "HUMAN_PROMOTES"]
+}
