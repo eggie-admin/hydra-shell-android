@@ -21,6 +21,49 @@ MAX_DELEGATION_DEPTH = 1
 ALLOWED_TASKS = {"direct", "build", "research", "audit"}
 ALLOWED_MODES = {"auto", "single", "mesh"}
 
+COMPONENT_PLANES = {
+    "remote_assistance_v1": {
+        "paths": ["/api/assist/status", "/api/assist/route", "/api/assist/query"],
+        "policy": "compatibility_only_no_new_clients",
+    },
+    "remote_ai": {
+        "paths": ["/api/remote-ai/status", "/api/remote-ai/chat"],
+        "policy": "compatibility_only_no_new_clients",
+    },
+    "lum_agent": {
+        "paths": ["/api/lum/status", "/api/lum/chat"],
+        "policy": "component_agent_plane_bounded_by_spine_authority",
+    },
+    "magic_cast": {
+        "paths": ["/api/magic/spells", "/api/magic/chat", "/api/magic/cast/*"],
+        "policy": "component_tool_plane_human_approval_required_for_mutation",
+    },
+    "ai_feed": {
+        "paths": ["/api/ai/health", "/api/ai/rss/*", "/api/ai/chat", "/api/ai/learning/*"],
+        "policy": "component_feed_learning_plane_review_gated",
+    },
+    "antenna_gateway": {
+        "paths": ["/api/status", "/api/providers/route", "/api/director", "/providers/google/*", "/providers/gemini/live", "/ws"],
+        "policy": "component_transport_compatibility",
+    },
+    "local_antenna": {
+        "paths": ["/api/antenna/status", "/api/antenna/ollama/chat"],
+        "policy": "optional_local_provider_component_not_boot_authority",
+    },
+    "media": {
+        "paths": ["/api/jobs", "/api/demux", "/api/apng", "/api/comfy/*", "/api/remux", "/api/seal", "/api/backup", "/api/file/*"],
+        "policy": "component_plane_no_vendor_authority",
+    },
+    "widget_cms": {
+        "paths": ["/api/health", "/api/pages*"],
+        "policy": "separate_content_plane",
+    },
+    "local_agent": {
+        "paths": ["/health", "/v1/*"],
+        "policy": "local_only_compatibility_plane",
+    },
+}
+
 
 class SpineAssistRequest(BaseModel):
     message: str = Field(min_length=1, max_length=16000)
@@ -174,13 +217,7 @@ def status() -> dict[str, Any]:
             "recursive_recruiting": False,
             "single_parent_writer": True,
         },
-        "compatibility": {
-            "remote_assistance": "/api/assist/*",
-            "remote_ai": "/api/remote-ai/*",
-            "antenna_gateway": "/api/status and /api/providers/route",
-            "local_agent": "backend/server.py /v1/*",
-            "widget_cms": "widget-cms /api/pages*",
-        },
+        "component_planes": COMPONENT_PLANES,
     }
 
 
@@ -223,11 +260,7 @@ def capabilities() -> dict[str, Any]:
             "ai_chat": "POST /api/v1/ai/chat",
             "provider_route": "POST /api/v1/providers/route",
         },
-        "component_planes": {
-            "media": "compatibility endpoints under /api/* in main.py",
-            "cms": "separate content plane under /api/pages*",
-            "local_agent": "local-only compatibility plane under /v1/*",
-        },
+        "component_planes": COMPONENT_PLANES,
         "new_clients_must_use": "/api/v1",
     }
 
