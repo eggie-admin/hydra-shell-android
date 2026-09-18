@@ -1,0 +1,65 @@
+{
+  "schema": "luhm-os.external-status-provider-purge-crown.v1",
+  "manifest_id": "KAI9000_EXTERNAL_STATUS_PROVIDER_PURGE_CROWN_20260918",
+  "date_local": "2026-09-17",
+  "status": "PROPOSED_NOT_CROWNED",
+  "project": "LuHm OS / KAI 9000 / Project Hydra",
+  "repository": "eggie-admin/hydra-shell-android",
+  "canonical_branch": "luhmos-main",
+  "candidate_branch": "luhmos/external-status-purge-crown-20260918",
+  "human_final_authority": "Professor",
+  "crown_authorization": {
+    "explicit_current_user_authorization": true,
+    "scope": "Continue the retired external deployment-provider purge lane to Crown",
+    "authority_gain": false,
+    "outer_boundaries_unchanged": true
+  },
+  "base": {
+    "canonical_head": "dc8ff1ee0cde75c15c559e5c8c4a0f8ba37d04d4",
+    "foundation": "KAI9000_CROWN_CATHEDRAL_FOUNDATION_SEAL_20260918"
+  },
+  "observed_problem": {
+    "tree_purge": "GREEN",
+    "active_project_binding": "ABSENT_IN_CONNECTED_PROVIDER_PROJECT_LIST",
+    "external_commit_status_contamination": "PRESENT_ON_CANONICAL_HEAD",
+    "classification": "STALE_EXTERNAL_INTEGRATION_ACCESS",
+    "may_be_ignored_for_purge_claim": false
+  },
+  "mutation": {
+    "add_guard_script": "tools/external_status_purge_guard.py",
+    "add_workflow": ".github/workflows/luhmos-external-status-purge-guard.yml",
+    "repair_existing_workflow": ".github/workflows/luhmos-vendor-purge-guard.yml",
+    "forbidden_provider_context_bytes": [
+      118,
+      101,
+      114,
+      99,
+      101,
+      108
+    ],
+    "reason": "Tree purity alone is insufficient. Crown requires absence of status publication by the retired external deployment provider."
+  },
+  "crown_gate": {
+    "repository_tree_has_no_retired_provider_reference": true,
+    "external_status_provider_absent_on_exact_head": "REQUIRED",
+    "exact_head_required_workflows_success": "REQUIRED",
+    "human_merge_required": true,
+    "activation": "Canonical only after the exact candidate head proves both tree purge and external-status absence, all required checks succeed, and the Professor-authorized proposal is merged."
+  },
+  "authority_boundaries": {
+    "public_publish_authorized": false,
+    "deploy_authorized": false,
+    "release_promotion_authorized": false,
+    "persistent_signing_authorized": false,
+    "production_package_replacement_authorized": false,
+    "silent_install_authorized": false,
+    "dns_mutation_authorized": false,
+    "billing_mutation_authorized": false,
+    "ai_to_shell_authority": false
+  },
+  "truth_law": [
+    "Purged means absent from the active tree and unable to post active repository status.",
+    "A stale external status is evidence of incomplete purge, not a valid product gate.",
+    "AI proposes. Policy authorizes. CI proves. The human promotes."
+  ]
+}
