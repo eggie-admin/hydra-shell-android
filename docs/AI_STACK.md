@@ -27,14 +27,19 @@ No provider, model, framework, or UI surface becomes operating-system authority,
 
 Lum is the user-facing intent and typed-plan layer. Provider selection is policy, not personality.
 
-Canonical application-facing contract remains:
+Canonical application-facing AI contract for new clients is:
 
 ```text
-GET  /api/remote-ai/status
-POST /api/remote-ai/chat
+GET  /api/v1/status
+GET  /api/v1/providers
+POST /api/v1/assist/plan
+POST /api/v1/assist/query
+POST /api/v1/ai/chat
 ```
 
-Provider values:
+The older `/api/remote-ai/*`, `/api/assist/*`, `/api/lum/*`, `/api/magic/*`, `/api/ai/*`, antenna/provider, media, CMS, and local `/v1/*` surfaces remain bounded compatibility or component planes. They are not new-client routing authority. See `integrations/api-spine.manifest.json` and `docs/LUHMOS_API_SPINE.md`.
+
+Provider values for the compatibility remote-AI adapter remain:
 
 ```text
 auto | openai | huggingface

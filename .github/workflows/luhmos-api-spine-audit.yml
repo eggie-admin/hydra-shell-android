@@ -1,0 +1,65 @@
+name: LuHm OS API Spine Audit
+
+on:
+  pull_request:
+    paths:
+      - 'integrations/api-spine.manifest.json'
+      - 'integrations/vendor-apis.manifest.json'
+      - 'integrations/runtime-capabilities.policy.json'
+      - 'lumh-os/kai9000/project.manifest.json'
+      - 'ultima/ollama-ffmpeg-antenna-v3/api_spine.py'
+      - 'ultima/ollama-ffmpeg-antenna-v3/magic_server.py'
+      - 'ultima/ollama-ffmpeg-antenna-v3/magic_chat.py'
+      - 'ultima/ollama-ffmpeg-antenna-v3/gateway.py'
+      - 'ultima/ollama-ffmpeg-antenna-v3/lum_agent/**'
+      - 'ultima/ollama-ffmpeg-antenna-v3/ai_feed/**'
+      - 'backend/tests/test_api_spine.py'
+      - 'tools/api_spine_guard.py'
+      - 'tools/runtime_capability_guard.py'
+      - 'docs/LUHMOS_API_SPINE.md'
+      - 'docs/AI_STACK.md'
+      - '.github/instructions/api-trinity.instructions.md'
+      - 'project/hydra/source-of-truth/LUHM_CODING_ROLEPLAY_FNLMLSTN_20260918.json'
+      - 'project/hydra/source-of-truth/LUHMOS_API_SPINE_UNIFICATION_20260918.json'
+      - '.github/workflows/luhmos-api-spine-audit.yml'
+  push:
+    branches:
+      - luhmos-main
+    paths:
+      - 'integrations/api-spine.manifest.json'
+      - 'integrations/runtime-capabilities.policy.json'
+      - 'lumh-os/kai9000/project.manifest.json'
+      - 'ultima/ollama-ffmpeg-antenna-v3/api_spine.py'
+      - 'ultima/ollama-ffmpeg-antenna-v3/magic_server.py'
+      - 'ultima/ollama-ffmpeg-antenna-v3/magic_chat.py'
+      - 'ultima/ollama-ffmpeg-antenna-v3/gateway.py'
+      - 'ultima/ollama-ffmpeg-antenna-v3/lum_agent/**'
+      - 'ultima/ollama-ffmpeg-antenna-v3/ai_feed/**'
+      - 'tools/api_spine_guard.py'
+      - 'tools/runtime_capability_guard.py'
+      - 'docs/LUHMOS_API_SPINE.md'
+      - 'docs/AI_STACK.md'
+      - '.github/instructions/api-trinity.instructions.md'
+      - 'project/hydra/source-of-truth/LUHMOS_API_SPINE_UNIFICATION_20260918.json'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Install focused test dependencies
+        run: python3 -m pip install --disable-pip-version-check fastapi httpx pydantic pytest google-genai
+      - name: Compile API spine and component routers
+        run: python3 -m py_compile ultima/ollama-ffmpeg-antenna-v3/api_spine.py ultima/ollama-ffmpeg-antenna-v3/magic_server.py ultima/ollama-ffmpeg-antenna-v3/magic_chat.py ultima/ollama-ffmpeg-antenna-v3/gateway.py ultima/ollama-ffmpeg-antenna-v3/lum_agent/router.py ultima/ollama-ffmpeg-antenna-v3/ai_feed/router.py tools/api_spine_guard.py tools/runtime_capability_guard.py
+      - name: Run API spine guard
+        run: python3 tools/api_spine_guard.py
+      - name: Run runtime capability guard
+        run: python3 tools/runtime_capability_guard.py
+      - name: Run focused API spine tests
+        run: python3 -m pytest -q backend/tests/test_api_spine.py
