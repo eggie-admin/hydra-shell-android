@@ -95,6 +95,8 @@
   "doctrine": {
     "ai_logic": "lumh-os/kai9000/AI_MAGIC_DOCTRINE.md",
     "api_constellation": "docs/API_TRINITY_DOCTRINE.md",
+    "api_spine": "docs/LUHMOS_API_SPINE.md",
+    "api_spine_manifest": "integrations/api-spine.manifest.json",
     "huggingface_api": "docs/HUGGINGFACE_API_REROLL.md",
     "vendor_api_manifest": "integrations/vendor-apis.manifest.json",
     "business_identity": "docs/EGGIEBAGELFACE_ART_IDENTITY.md",
@@ -114,7 +116,11 @@
   "runtime": {
     "orchestrator": "python3",
     "command_front_door": "npm",
+    "canonical_api_contract": "luhm-os.api-spine.v1",
+    "canonical_api_prefix": "/api/v1",
+    "canonical_ai_route": "/api/v1/ai/chat",
     "remote_ai_endpoint": "http://127.0.0.1:8797/api/remote-ai/chat",
+    "remote_ai_endpoint_policy": "compatibility_only_no_new_clients",
     "remote_ai_provider_mode": "auto",
     "remote_ai_auto_order": ["openai", "huggingface", "deterministic_mock"],
     "silent_cross_provider_failover": false,
