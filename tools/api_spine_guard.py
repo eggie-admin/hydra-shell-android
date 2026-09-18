@@ -6,6 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "integrations/api-spine.manifest.json"
+PROJECT = ROOT / "lumh-os/kai9000/project.manifest.json"
 SPINE = ROOT / "ultima/ollama-ffmpeg-antenna-v3/api_spine.py"
 COMPOSITION = ROOT / "ultima/ollama-ffmpeg-antenna-v3/magic_server.py"
 MAGIC = ROOT / "ultima/ollama-ffmpeg-antenna-v3/magic_chat.py"
@@ -58,6 +59,7 @@ def require(ok: bool, message: str) -> None:
 
 def main() -> None:
     data = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    project = json.loads(PROJECT.read_text(encoding="utf-8"))
     roleplay = json.loads(FINAL_ROLEPLAY.read_text(encoding="utf-8"))
     vendor = json.loads(VENDOR.read_text(encoding="utf-8"))
     runtime = json.loads(RUNTIME_POLICY.read_text(encoding="utf-8"))
@@ -78,6 +80,18 @@ def main() -> None:
     require(data.get("canonical_routes") == EXPECTED_ROUTES, "canonical route registry drift")
     require(set(data.get("compatibility_planes", {})) == EXPECTED_PLANES, "component/compatibility plane inventory drift")
     require(data.get("provider_defaults") == EXPECTED_DEFAULTS, "provider default registry drift")
+
+    project_runtime = project.get("runtime", {})
+    project_doctrine = project.get("doctrine", {})
+    require(project.get("schema") == "luhm-os.project.v4", "project manifest schema drift")
+    require(project.get("name") == "LuHm OS" and project.get("project_id") == "luhm_os", "project manifest identity drift")
+    require(project_doctrine.get("api_spine") == "docs/LUHMOS_API_SPINE.md", "project doctrine API spine pointer drift")
+    require(project_doctrine.get("api_spine_manifest") == "integrations/api-spine.manifest.json", "project doctrine spine manifest pointer drift")
+    require(project_runtime.get("canonical_api_contract") == data.get("schema"), "project runtime spine contract drift")
+    require(project_runtime.get("canonical_api_prefix") == data.get("canonical_prefix") == "/api/v1", "project runtime prefix drift")
+    require(project_runtime.get("canonical_ai_route") == "/api/v1/ai/chat", "project canonical AI route drift")
+    require(project_runtime.get("remote_ai_endpoint_policy") == "compatibility_only_no_new_clients", "legacy remote AI gained canonical authority")
+    require(project_runtime.get("silent_cross_provider_failover") is False, "project runtime silent failover drift")
 
     limits = data.get("roleplay_runtime_limits", {})
     sealed = roleplay.get("final_milestone_contract", {})
@@ -132,7 +146,6 @@ def main() -> None:
     )
     require('APP.title = "LuHm OS Remote Assistance Cockpit"' in composition, "legacy cockpit branding contract drift")
 
-    # Every mounted sidecar/component plane must remain explicitly inventoried.
     require('APIRouter(prefix="/api/lum"' in lum_router, "Lum component plane drift")
     require('APIRouter(prefix="/api/ai"' in ai_feed_router, "AI-feed component plane drift")
     require('APIRouter(prefix="/api/magic"' in magic, "Magic component plane drift")
