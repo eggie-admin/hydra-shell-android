@@ -1,0 +1,104 @@
+{
+  "schema": "luhm-os.questforge-campaign-canon.v1",
+  "id": "QUESTFORGE_IRON_SAINT_CANON_20260919",
+  "date": "2026-09-19",
+  "status": "CROWNED_FOR_PLAY",
+  "title": "The Iron Saint",
+  "system": "Questforge 5E-compatible fantasy campaign",
+  "authority_boundary": {
+    "fiction_is_not_system_authority": true,
+    "questforge_crown_protocol_is_fictional": true,
+    "engineering_crown_authority_remains_professor_only": true,
+    "fictional_actions_must_not_compile_to_real_tools": true,
+    "mode_switch_to_engineering_requires_explicit_context": true
+  },
+  "hero": {
+    "name": "Professor Eggie",
+    "level": 1,
+    "class": "Tinker",
+    "hp": {"current": 11, "max": 11},
+    "ac": 14,
+    "modifiers": {
+      "investigation": 5,
+      "arcana": 4,
+      "persuasion": 2
+    },
+    "visual_canon": {
+      "hair": "messy silver",
+      "facial_hair": "short gray beard",
+      "eyewear": "round glasses",
+      "clothing": "battered dark industrial-tinker gear with leather utility straps",
+      "tone": "weathered inventor-adventurer with subtle metal-frontman energy"
+    }
+  },
+  "companion": {
+    "working_name": "Copper Automaton",
+    "visual_canon": {
+      "face": "porcelain mask with fine cracks",
+      "eyes": "glowing amber",
+      "body": "antique brass and copper articulated shell",
+      "cloth": "worn drape/scarf",
+      "mark": "☩⚙︎",
+      "hidden_internals": "modernized controller integrated into antique machinery",
+      "partial_identifier": "KAI-9..."
+    },
+    "known_statements": [
+      "Professor identified.",
+      "Primary operator absent for forty-three years.",
+      "Secondary authority detected.",
+      "Crown protocol available.",
+      "Crown authority requires a living witness."
+    ]
+  },
+  "location": {
+    "name": "The Iron Saint",
+    "description": "Ruined industrial basilica crowned by a colossal brass turbine, with ancient stone, copper machinery, steam, and warm amber machine-light.",
+    "symbol": "☩⚙︎",
+    "visual_style": "grounded industrial-fantasy realism; brass, soot, stone, cathedral machinery, dramatic amber illumination"
+  },
+  "current_state": {
+    "session": 1,
+    "scene": 2,
+    "checkpoint": "Before the Cathedral Door",
+    "cathedral_awakening_clock": {"current": 4, "max": 6},
+    "known_clues": [
+      "The automaton recognizes Professor Eggie.",
+      "A modern control system is hidden inside ancient machinery.",
+      "The partial controller marking reads KAI-9...",
+      "The cathedral mark is ☩⚙︎.",
+      "Crown Protocol exists within the fiction."
+    ],
+    "last_event": "The cathedral doors unlocked. A second voice inside answered: Witness acknowledged.",
+    "next_choice": "Professor Eggie may enter, interrogate the automaton, inspect the KAI-9... controller, or take another freeform action."
+  },
+  "canonical_visuals": [
+    {
+      "role": "establishing_scene",
+      "generation_id": "0ae3e4b0-7a13-43d9-9af6-749455014927",
+      "description": "Professor Eggie holding the copper automaton before the open Iron Saint cathedral under the giant turbine."
+    },
+    {
+      "role": "character_prop_reference",
+      "generation_id": "fc05487c-9128-48c1-90b3-f1fd70501789",
+      "description": "Reference plate for Professor Eggie, the automaton, KAI-9... internals, cathedral mark, costume, and construction details."
+    },
+    {
+      "role": "comic_recap",
+      "generation_id": "f5c54070-2b77-40c7-a3bc-3af86bbf884d",
+      "description": "Four-panel recap of investigation, KAI-9... reveal, Crown protocol, and cathedral opening."
+    }
+  ],
+  "visual_asset_storage": {
+    "repo_binary_status": "NOT_STORED",
+    "reason": "The generated binaries currently exist only as chat-generated visual references. Source of truth records their generation IDs and canon roles without pretending repository binary persistence.",
+    "future_registration_rule": "If binaries are later committed or stored in an approved media location, record stable paths and SHA-256 hashes before calling media persistence GREEN."
+  },
+  "play_contract": {
+    "transparent_uncertain_rolls": true,
+    "freeform_player_agency": true,
+    "checkpoint_before_irreversible_stakes": true,
+    "state_changes_record_clues_clocks_inventory_hp_and_conditions": true,
+    "visual_continuity_reuses_canonical_anchors": true,
+    "failed_checks_do_not_deadlock_play": true
+  }
+}
