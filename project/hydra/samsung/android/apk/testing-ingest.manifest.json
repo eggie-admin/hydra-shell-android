@@ -1,6 +1,7 @@
 {
-  "schema": "kai9000.android-testing-ingest.v5",
-  "date": "2026-09-16",
+  "schema": "kai9000.android-testing-ingest.v6",
+  "date": "2026-09-19",
+  "source_of_truth": "docs/CROWN_SOURCE_OF_TRUTH_20260919.json",
   "project": {
     "os": "LuHm OS",
     "working_title": "KAI 9000",
@@ -16,16 +17,36 @@
     "model": "SM-S721U1",
     "android": 16,
     "abi": "arm64-v8a",
-    "secure_folder_role": "cockpit_client",
+    "secure_folder_role": "cockpit_client_isolation_only",
     "daemon_owner": "ordinary_termux",
     "root": false
   },
+  "authority": {
+    "final": "Professor",
+    "boss_ai": "Lum",
+    "ollama_role": "local_inference_provider_helper",
+    "ollama_authority": false,
+    "model_self_authorization": false
+  },
   "loopback": {
-    "axs": "localhost:8767",
-    "vnc": "localhost:5901",
-    "websocket": "localhost:6080",
     "cockpit": "localhost:8787",
-    "ollama": "localhost:11434"
+    "ollama": "localhost:11434",
+    "state": "RECHECK_LIVE"
+  },
+  "historical_loopback": {
+    "axs": {
+      "endpoint": "localhost:8767",
+      "status": "HISTORICAL_NON_CANONICAL",
+      "restore_requires_fresh_crown": true
+    },
+    "vnc": {
+      "endpoint": "localhost:5901",
+      "status": "HISTORICAL_RECHECK_LIVE"
+    },
+    "websocket": {
+      "endpoint": "localhost:6080",
+      "status": "HISTORICAL_RECHECK_LIVE"
+    }
   },
   "apk_source": {
     "ownership": "kai9000_owned",
@@ -76,20 +97,26 @@
     "openai_api_keys_in_source_or_apk",
     "private_keys_in_source_or_apk",
     "proprietary_game_runtime_assets",
-    "exported_control_receivers"
+    "exported_control_receivers",
+    "acodex_axs_as_active_dependency"
   ],
   "ci_authority": {
     "external_hosting_status_is_authoritative": false,
-    "authoritative_evidence": [
+    "apk_build_green_requires": [
       "repository_ci",
       "donor_purge_gate",
+      "python_tests_green",
       "reproducible_android_build",
       "installable_apk_evidence",
       "package_identity_evidence",
       "apk_signature_evidence",
       "apk_sha256_evidence",
-      "zipalign_16k_evidence",
-      "device_or_emulator_validation"
+      "zipalign_16k_evidence"
+    ],
+    "android_green_additionally_requires": [
+      "device_or_emulator_validation",
+      "loopback_boundary_verified",
+      "secure_folder_client_boundary_verified"
     ]
   },
   "promotion_gate": {
@@ -105,7 +132,8 @@
       "loopback_boundary_verified",
       "secret_scan_green",
       "proprietary_asset_scan_green",
-      "secure_folder_client_boundary_verified"
+      "secure_folder_client_boundary_verified",
+      "device_or_emulator_validation"
     ]
   }
 }
