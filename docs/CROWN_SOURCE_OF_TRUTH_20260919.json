@@ -1,0 +1,133 @@
+{
+  "schema": "luhm-os.crown-source-of-truth.v1",
+  "id": "CROWN_SOURCE_OF_TRUTH_20260919",
+  "date": "2026-09-19",
+  "status": "CROWNED",
+  "scope": "LuHm OS / KAI 9000 development doctrine and source-of-truth precedence",
+  "authority": {
+    "human_final_authority": "Professor",
+    "boss_ai": "Lum",
+    "operating_system_permissions_final": true,
+    "ai_may_self_approve_consequential_actions": false
+  },
+  "agent_mesh": {
+    "version": "LUHM Agent Mesh v1",
+    "boss": "Lum",
+    "default_blades": ["Context", "Build", "Research"],
+    "conditional_blade": "Critic",
+    "deterministic_edge": "Tool Executor",
+    "helpers_report_only_to_boss": true,
+    "helpers_may_recursively_recruit": false,
+    "task_budget_required": true,
+    "evidence_moves_by_reference": true,
+    "max_parallelism": 3,
+    "direct_questions_bypass_mesh": true,
+    "consequential_actions_crown_gated": true
+  },
+  "doctrine": {
+    "local_first": true,
+    "automatic_publishing": false,
+    "automatic_destructive_operations": false,
+    "automatic_privileged_operations": false,
+    "secrets_in_repo_logs_screenshots_frontend_artifacts": false,
+    "untrusted_output_becomes_shell_authority": false,
+    "evidence_before_green": true,
+    "prefer_mature_open_source_with_provenance": true,
+    "prefer_explicit_json_yaml_manifests": true,
+    "prefer_deterministic_auditable_tools": true
+  },
+  "project_pillars": [
+    "Hydra/LuHm local workstation",
+    "KAI 9000 Samsung Android development",
+    "Hydra social/creative production",
+    "LuHm OS/agent architecture"
+  ],
+  "kai9000": {
+    "device": {
+      "manufacturer": "Samsung",
+      "model": "SM-S721U1",
+      "android": 16,
+      "abi": "aarch64",
+      "root_assumed": false
+    },
+    "control_plane": "ordinary_termux",
+    "secure_folder_role": "isolation_and_cockpit_client_only",
+    "camera_integration": "android_camera2_api_permission_path",
+    "direct_usb_video_device_authority": false,
+    "active_apk_source": {
+      "repository": "eggie-admin/hydra-shell-android",
+      "branch": "testing/luhm-os-android",
+      "native_project": "luhmos/samsung-android-s24/native-cathedral",
+      "cockpit_assets": "luhmos/samsung-android-s24/live2d-chat"
+    },
+    "historical_services": {
+      "acodex_axs": {
+        "status": "HISTORICAL_NON_CANONICAL",
+        "former_endpoint": "localhost:8767",
+        "restore_requires_fresh_crown": true
+      },
+      "vnc": {
+        "status": "HISTORICAL_RECHECK_LIVE",
+        "former_endpoint": "localhost:5901"
+      },
+      "websocket": {
+        "status": "HISTORICAL_RECHECK_LIVE",
+        "former_endpoint": "localhost:6080"
+      }
+    }
+  },
+  "providers": {
+    "ollama": {
+      "role": "local_inference_provider_helper",
+      "authority": false
+    },
+    "openai": {
+      "role": "remote_reasoning_and_typed_tool_request_provider",
+      "authority": false
+    },
+    "github_actions": {
+      "role": "deterministic_compile_build_evidence_oracle",
+      "authority": "build_evidence_only"
+    }
+  },
+  "green_semantics": {
+    "source_crowned_does_not_imply_runtime_green": true,
+    "ci_build_green_does_not_imply_device_green": true,
+    "apk_build_green_requires": [
+      "repository_ci",
+      "donor_purge_gate",
+      "tests",
+      "installable_apk",
+      "package_identity",
+      "signature",
+      "sha256",
+      "zipalign_16k"
+    ],
+    "android_green_additionally_requires": [
+      "device_or_emulator_validation",
+      "loopback_boundary_verified",
+      "secure_folder_client_boundary_verified"
+    ],
+    "ultima_green_requires_all_goal_required_evidence": true
+  },
+  "repository": {
+    "canonical_repository": "eggie-admin/hydra-shell-android",
+    "active_development_branch": "testing/luhm-os-android",
+    "promotion_target": "main",
+    "automatic_promotion": false,
+    "legacy_workflows": "archive_or_noncanonical_unless_explicitly_reactivated",
+    "vercel_active_architecture": false
+  },
+  "precedence": [
+    "docs/CROWN_SOURCE_OF_TRUTH_20260919.json",
+    "AGENTS.md",
+    "lumh-os/kai9000/project.manifest.json",
+    "project/hydra/samsung/android/apk/testing-ingest.manifest.json",
+    "project/hydra/samsung/android/apk/app.reference.json",
+    "other repository documentation and historical artifacts"
+  ],
+  "runtime_truth": {
+    "rule": "Repository doctrine describes intended state. Current service/device state must be rechecked live before GREEN.",
+    "recheck_live": true
+  }
+}
