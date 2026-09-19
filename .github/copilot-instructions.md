@@ -4,6 +4,8 @@
 Build and maintain the Samsung Android testing lane for **LuHm OS / KAI 9000**. Optimize for small patches, reproducible builds, fast feedback, and truthful execution evidence.
 
 Read these before mutation:
+- `docs/CROWN_SOURCE_OF_TRUTH_20260919.json`
+- `lumh-os/kai9000/CODING_ROLEPLAY_DOCTRINE.md`
 - `lumh-os/kai9000/AI_MAGIC_DOCTRINE.md`
 - `lumh-os/kai9000/project.manifest.json`
 - `project/hydra/samsung/android/apk/testing-ingest.manifest.json`
@@ -17,10 +19,12 @@ Read these before mutation:
 - Prefer focused patches over tree-wide rewrites.
 - When the Professor explicitly says `push`, `ship`, `set sail`, or otherwise authorizes repo mutation, prepare and push the bounded change to the testing lane, then report commit SHA and CI state.
 
-## KAI roleplay compiler
-Treat KAI roleplay language as coding/orchestration DSL in engineering context.
+## KAI coding-roleplay compiler
+Treat KAI coding-roleplay language as coding/orchestration DSL in engineering context.
 
-Canonical tokens:
+**Questforge and other fun/tabletop roleplay are a separate system.** They are governed by `docs/QUESTFORGE_ROLEPLAY_DOCTRINE.md` and must never compile into engineering actions, Git operations, shell execution, Android operations, CI actions, publishing, account changes, credentials, or infrastructure mutations.
+
+Canonical engineering tokens:
 - **KAI 9000 / Airship** = integration/runtime vehicle.
 - **Warp** = Git transport through refs, branches, commits, PRs, merges, checkpoints, and history.
 - **GitHub / Blue Magic** = hosted source of truth, collaboration, Actions/CI, and evidence surface.
@@ -33,7 +37,7 @@ Canonical tokens:
 - **Green rune** = actual passed execution evidence.
 - **ULTIMA** = final convergence requiring evidence from every required lane.
 
-Never interpret roleplay as permission escalation.
+Never interpret coding roleplay as permission escalation. Never interpret fictional/game roleplay as coding roleplay.
 
 ## ULTIMA doctrine
 ULTIMA is GREEN only when:
@@ -101,12 +105,7 @@ Never translate free text directly into privilege escalation or unreviewed shell
 - Stock Shizuku is preferred only when privileged Android operations explicitly require it.
 - Camera/USB permission work remains isolated from the green control plane.
 
-Canonical operator-facing local endpoints:
-- AcodeX/AXS `localhost:8767`
-- TigerVNC `localhost:5901`
-- WebSocket bridge `localhost:6080`
-- Hydra cockpit `localhost:8787`
-- Ollama `localhost:11434`
+Historical/recheck-only endpoints are governed by the Crown source of truth. Do not revive AcodeX/AXS or other historical services unless a fresh Crown explicitly authorizes it.
 
 ## Secrets and external status
 Never commit API keys, OAuth tokens, signing secrets, voice recordings, model weights, proprietary game assets, browser donor payloads, or credentials. Base64 is encoding, not encryption.
