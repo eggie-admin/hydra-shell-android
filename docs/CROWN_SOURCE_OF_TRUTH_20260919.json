@@ -36,6 +36,24 @@
     "prefer_explicit_json_yaml_manifests": true,
     "prefer_deterministic_auditable_tools": true
   },
+  "roleplay_systems": {
+    "coding_roleplay": {
+      "system": "ENGINEERING_DSL",
+      "canonical_doctrine": "lumh-os/kai9000/CODING_ROLEPLAY_DOCTRINE.md",
+      "may_compile_to_engineering_intent": true,
+      "normal_risk_approval_and_evidence_gates_required": true,
+      "vowel_ripped_artifact_naming": true
+    },
+    "questforge": {
+      "system": "FICTIONAL_TABLETOP",
+      "canonical_doctrine": "docs/QUESTFORGE_ROLEPLAY_DOCTRINE.md",
+      "active_campaign_canon": "docs/QUESTFORGE_IRON_SAINT_CANON_20260919.json",
+      "engineering_authority": false,
+      "fictional_actions_may_compile_to_real_tools": false
+    },
+    "hard_separation": true,
+    "shared_mythology_does_not_imply_shared_authority": true
+  },
   "project_pillars": [
     "Hydra/LuHm local workstation",
     "KAI 9000 Samsung Android development",
@@ -121,6 +139,9 @@
   "precedence": [
     "docs/CROWN_SOURCE_OF_TRUTH_20260919.json",
     "AGENTS.md",
+    "lumh-os/kai9000/CODING_ROLEPLAY_DOCTRINE.md",
+    "docs/QUESTFORGE_ROLEPLAY_DOCTRINE.md",
+    "docs/QUESTFORGE_IRON_SAINT_CANON_20260919.json",
     "lumh-os/kai9000/project.manifest.json",
     "project/hydra/samsung/android/apk/testing-ingest.manifest.json",
     "project/hydra/samsung/android/apk/app.reference.json",
