@@ -190,8 +190,8 @@ jobs:
           fi
 
           printf '%s\n' 'DONOR_PURGED_BEFORE_APK=true' | tee build/android/donor-purge.txt
-          echo 'KAI_APK_GREEN'
-          echo 'ULTIMA_GREEN'
+          echo 'APK_BUILD_GREEN'
+          echo 'ULTIMA_PENDING_DEVICE_VALIDATION'
 
       - name: Upload KAI 9000 APK
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
