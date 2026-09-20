@@ -1,5 +1,5 @@
 {
-  "schema": "luhm-os.demo-manifest.v2",
+  "schema": "luhm-os.demo-manifest.v3",
   "id": "LUHM_OS_SOURCE_OF_TRUTH_DEMO_20260920",
   "date": "2026-09-20",
   "mode": "LOCAL_STATIC_DEMO",
@@ -27,6 +27,18 @@
       "root_assumed": false
     }
   },
+  "assets": {
+    "registry_path": "luhmos/demo/asset.registry.json",
+    "registry_id": "LUHM_OS_DEMO_ASSET_REGISTRY_20260920",
+    "public_forge_bundle_count": 3,
+    "private_original_art_index_count": 22,
+    "private_art_binary_status": "LOCAL_ONLY_NOT_IN_PUBLIC_GIT",
+    "local_private_mount_enabled": true,
+    "three_d_source_registry_count": 20,
+    "repo_model_binary_count": 0,
+    "three_d_runtime_status": "REGISTRY_ONLY_NO_APPROVED_BINARY_IN_GIT",
+    "rights_wall_enforced": true
+  },
   "questforge": {
     "canon_path": "docs/QUESTFORGE_IRON_SAINT_CANON_20260919.json",
     "canon_id": "QUESTFORGE_IRON_SAINT_CANON_20260919",
@@ -34,6 +46,7 @@
     "hero": "Professor Eggie",
     "checkpoint": "Before the Cathedral Door",
     "cathedral_awakening": "4/6",
+    "visual_reference_count": 3,
     "visual_binaries_in_repo": false
   },
   "evidence": {
@@ -61,12 +74,14 @@
     "final_goal": "PENDING_DEVICE_VALIDATION"
   },
   "demo_contract": {
-    "self_contained_html": true,
+    "self_contained_html": false,
+    "self_contained_artifact": true,
     "local_only": true,
     "no_external_dependencies": true,
     "no_real_tool_execution": true,
     "engineering_and_questforge_modes_do_not_cross": true,
     "legacy_convergence_terms_hidden": true,
-    "evidence_before_green": true
+    "evidence_before_green": true,
+    "private_assets_never_auto_uploaded": true
   }
 }

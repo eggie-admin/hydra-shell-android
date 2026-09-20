@@ -5,36 +5,68 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#090b10">
 <title>LuHm OS Source-of-Truth Demo</title>
-<style>
-:root{--bg:#090b10;--panel:#111720;--line:#2c3748;--text:#edf4fa;--muted:#9cafc0;--teal:#35d6c3;--rose:#ef496f;--amber:#ffbf69;--green:#7ce39d;--shadow:0 22px 60px rgba(0,0,0,.38)}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 12% 0%,rgba(239,73,111,.1),transparent 28rem),radial-gradient(circle at 100% 15%,rgba(53,214,195,.09),transparent 30rem),var(--bg);color:var(--text);font:15px/1.45 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}button{font:inherit;cursor:pointer}.app{max-width:1400px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:16px}h1{margin:0;font-size:clamp(26px,4vw,44px);letter-spacing:-.035em}.subtitle{color:var(--muted);margin-top:5px}.badges{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}.badge{border:1px solid var(--line);border-radius:999px;padding:6px 10px;background:#0e131a;color:var(--muted);font-size:12px}.badge.good{color:var(--green);border-color:#2e6642}.badge.warn{color:var(--amber);border-color:#675128}.badge.crown{color:#ffe09a;border-color:#725d2e}.grid{display:grid;grid-template-columns:1.25fr .75fr;gap:16px}.panel{border:1px solid var(--line);background:linear-gradient(180deg,rgba(23,30,41,.97),rgba(13,17,24,.97));border-radius:17px;box-shadow:var(--shadow);overflow:hidden}.head{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;align-items:center}.head h2{margin:0;font-size:15px}.small{font-size:12px;color:var(--muted)}.status-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px}.status{padding:12px;border:1px solid var(--line);border-radius:13px;background:#0d1219}.status strong{display:block;margin-bottom:4px}.state{font-size:12px;font-weight:800;letter-spacing:.04em}.green{color:var(--green)}.pending{color:var(--amber)}.tabs{display:flex;gap:7px;flex-wrap:wrap;padding:12px 14px;border-bottom:1px solid var(--line)}.tab{border:1px solid var(--line);background:#111822;color:var(--muted);border-radius:9px;padding:8px 10px}.tab.active{color:var(--text);border-color:#34756c;background:#12342f}.view{display:none;padding:16px;min-height:430px}.view.active{display:block}.card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.card{border:1px solid var(--line);border-radius:13px;background:#0e131a;padding:13px}.card h3{margin:0 0 7px;font-size:14px}.card p{margin:0;color:var(--muted)}code{color:#cfe9ff}.wall{display:grid;grid-template-columns:1fr 54px 1fr;gap:10px;align-items:stretch}.wall-center{display:grid;place-items:center;color:var(--rose);font-size:25px;font-weight:900}.mode{border:1px solid var(--line);border-radius:14px;padding:14px;background:#0d1219}.mode.engineering{border-color:#3b5f8f}.mode.quest{border-color:#744d84}.mode ul{padding-left:18px;color:var(--muted)}.console{white-space:pre-wrap;font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;background:#080c11;border:1px solid var(--line);border-radius:12px;padding:12px;min-height:195px;color:#cbd8e5}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.btn{border:1px solid var(--line);background:#182231;color:var(--text);border-radius:9px;padding:8px 11px}.btn.primary{border-color:#29655d;background:#12352f;color:#d2fff8}.footer{margin-top:16px;color:var(--muted);font-size:12px;text-align:center}@media(max-width:900px){.grid{grid-template-columns:1fr}.top{flex-direction:column}.badges{justify-content:flex-start}}@media(max-width:620px){.status-grid,.card-grid{grid-template-columns:1fr}.wall{grid-template-columns:1fr}.wall-center{transform:rotate(90deg);height:38px}}
-</style>
+<link rel="stylesheet" href="./style.css">
 </head>
 <body>
 <div class="app" data-crown-id="CROWN_SOURCE_OF_TRUTH_20260919" data-roleplay-hard-separation="true" data-device="SM-S721U1">
-<header class="top"><div><h1>LuHm OS // Source-of-Truth Demo</h1><div class="subtitle">Local static cockpit. Receipts before confetti.</div></div><div class="badges"><span class="badge crown">CROWNED SOURCE</span><span class="badge good">APK BUILD GREEN</span><span class="badge warn">DEVICE VALIDATION PENDING</span><span class="badge">NO NETWORK CALLS</span></div></header>
+<header class="top">
+  <div class="brand"><img src="./assets/logo-dark.svg" alt="LuHm / Hydra mark"><div><h1>LuHm OS // Source-of-Truth Demo</h1><div class="subtitle">Local cockpit. Canon, art, rights, and runtime claims stay separate.</div></div></div>
+  <div class="badges"><span class="badge crown">CROWNED SOURCE</span><span class="badge good">APK BUILD GREEN</span><span class="badge warn">DEVICE PENDING</span><span class="badge">LOCAL ONLY</span></div>
+</header>
 <section class="grid">
-<div class="panel"><div class="head"><h2>Evidence Board</h2><span class="small">baseline 3a866738…</span></div><div class="status-grid">
-<div class="status"><strong>Source doctrine</strong><span class="state green">CROWNED ✓</span><div class="small">Professor final authority · Lum Boss</div></div>
-<div class="status"><strong>Roleplay systems</strong><span class="state green">SEPARATED ✓</span><div class="small">Engineering DSL ≠ Questforge</div></div>
-<div class="status"><strong>Doctrine CI</strong><span class="state green">GREEN ✓</span><div class="small">Run 35464067296</div></div>
-<div class="status"><strong>APK build</strong><span class="state green">APK_BUILD_GREEN ✓</span><div class="small">v0.8.0-dev · v2 signed · 16K aligned</div></div>
-<div class="status"><strong>Android</strong><span class="state pending">PENDING</span><div class="small">Needs device/emulator validation</div></div>
-<div class="status"><strong>Final goal</strong><span class="state pending">PENDING</span><div class="small">Never promoted from build evidence alone</div></div>
-</div>
-<div class="tabs"><button class="tab active" data-tab="authority">Authority</button><button class="tab" data-tab="mesh">Agent Mesh</button><button class="tab" data-tab="roleplay">Roleplay Wall</button><button class="tab" data-tab="questforge">Questforge</button><button class="tab" data-tab="audit">Self Audit</button></div>
-<div id="authority" class="view active"><div class="card-grid"><article class="card"><h3>👑 Crown</h3><p><b>Professor</b> is final human authority. AI never self-approves consequential actions.</p></article><article class="card"><h3>🧠 Boss</h3><p><b>Lum</b> coordinates bounded helpers. Providers remain helpers, never authority.</p></article><article class="card"><h3>📱 Device contract</h3><p>Samsung <code>SM-S721U1</code> · Android 16 · aarch64 · no root assumed.</p></article><article class="card"><h3>🔒 Runtime truth</h3><p>Repository doctrine describes intended state. Runtime/device state must be rechecked live before GREEN.</p></article></div></div>
-<div id="mesh" class="view"><div class="card-grid"><article class="card"><h3>Lum // Boss</h3><p>Single user-facing orchestrator.</p></article><article class="card"><h3>Context</h3><p>Default bounded blade.</p></article><article class="card"><h3>Build</h3><p>Default bounded blade.</p></article><article class="card"><h3>Research</h3><p>Default bounded blade.</p></article><article class="card"><h3>Critic</h3><p>Conditional review blade.</p></article><article class="card"><h3>Tool Executor</h3><p>Deterministic edge for typed approved actions.</p></article></div><div class="small" style="padding-top:12px">Max helper parallelism: 3 · helpers report only to Lum · direct questions bypass the mesh.</div></div>
-<div id="roleplay" class="view"><div class="wall"><section class="mode engineering"><h3>⚙ Coding Roleplay</h3><b>ENGINEERING_DSL</b><ul><li>May compile metaphors into structured engineering intent.</li><li>Still passes risk, approval, OS, Git and evidence gates.</li><li>Never receives authority from fictional dialogue.</li></ul></section><div class="wall-center">║</div><section class="mode quest"><h3>🎲 Fun Roleplay</h3><b>FICTIONAL_TABLETOP</b><ul><li>Changes fictional campaign state only.</li><li>No shell, Git, Android, CI, account or publishing authority.</li><li>A fictional Crown remains fictional.</li></ul></section></div><div class="small" style="padding-top:14px">Hard separation is a source-of-truth invariant.</div></div>
-<div id="questforge" class="view"><div class="card-grid"><article class="card"><h3>The Iron Saint</h3><p>Professor Eggie · Level 1 Tinker · HP 11/11 · AC 14.</p></article><article class="card"><h3>Checkpoint</h3><p><code>Before the Cathedral Door</code></p></article><article class="card"><h3>Awakening clock</h3><p>■■■■□□ 4/6</p></article><article class="card"><h3>Visual storage</h3><p>Canon references recorded. Image binaries are <b>not claimed</b> to be stored in the repo.</p></article></div></div>
-<div id="audit" class="view"><div id="console" class="console">SELF AUDIT READY\nNo test has run in this browser yet.</div><div class="actions"><button id="runAudit" class="btn primary">RUN LOCAL SELF AUDIT</button><button id="showReceipt" class="btn">SHOW BUILD RECEIPT</button></div></div>
-</div>
-<aside class="panel"><div class="head"><h2>Build Receipt</h2><span class="small">GitHub forge evidence</span></div><div style="padding:14px"><div class="console" id="receipt">PACKAGE art.eggiebagelface.kai9000.dev\nVERSION 0.8.0-dev\nAPK SHA256 3a0bb62e71657cc61a292f1cc8811436112da047fe1a5d09d875e66bf1a85dda\nSIGNATURE v2 VERIFIED\nZIPALIGN 16K VERIFIED\nDONOR PURGED true\nARTIFACT 10590876988\n\nANDROID_GREEN = PENDING_DEVICE_VALIDATION</div><div class="actions"><button class="btn" data-jump="roleplay">VIEW ROLEPLAY WALL</button><button class="btn" data-jump="audit">VERIFY DEMO</button></div></div></aside>
+<main class="panel">
+  <div class="head"><h2>Evidence Board</h2><span class="small">asset-aware forge</span></div>
+  <div class="status-grid">
+    <div class="status"><strong>Source doctrine</strong><span class="state green">CROWNED ✓</span><div class="small">Professor final authority · Lum Boss</div></div>
+    <div class="status"><strong>Roleplay systems</strong><span class="state green">SEPARATED ✓</span><div class="small">Engineering DSL ≠ Questforge</div></div>
+    <div class="status"><strong>Public art</strong><span class="state green">3 HASHED ASSETS</span><div class="small">Bundled by the forge</div></div>
+    <div class="status"><strong>Private original art</strong><span class="state green">22 INDEXED</span><div class="small">Local mount only · never auto-uploaded</div></div>
+    <div class="status"><strong>3D registry</strong><span class="state green">20 SOURCES</span><div class="small">Rights/source registry verified</div></div>
+    <div class="status"><strong>3D runtime</strong><span class="state pending">PENDING</span><div class="small">0 approved model binaries in Git</div></div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" data-tab="authority">Authority</button><button class="tab" data-tab="assets">Art & Assets</button><button class="tab" data-tab="models">3D</button><button class="tab" data-tab="roleplay">Roleplay Wall</button><button class="tab" data-tab="questforge">Questforge</button><button class="tab" data-tab="audit">Self Audit</button>
+  </div>
+  <section id="authority" class="view active">
+    <div class="card-grid">
+      <article class="card"><h3>👑 Crown</h3><p><b>Professor</b> remains final human authority. No AI self-approval.</p></article>
+      <article class="card"><h3>🧠 Boss</h3><p><b>Lum</b> coordinates Context, Build, Research, conditional Critic, and deterministic Tool Executor.</p></article>
+      <article class="card"><h3>📱 Device contract</h3><p>Samsung <code>SM-S721U1</code> · Android 16 · aarch64 · no root assumed.</p></article>
+      <article class="card"><h3>🔒 Runtime truth</h3><p>Source and asset registries describe intended state. Device/runtime state still requires live evidence.</p></article>
+    </div>
+  </section>
+  <section id="assets" class="view">
+    <div class="asset-hero"><img src="./assets/icon.svg" alt="Public LuHm icon"><div><h3>Public-safe forge bundle</h3><div class="small">These three repo assets are copied into the compiled artifact and verified by SHA-256.</div></div></div>
+    <div class="previews"><div class="preview"><img src="./assets/icon.svg" alt="icon"><small>icon.svg</small></div><div class="preview"><img src="./assets/logo-dark.svg" alt="dark logo"><small>logo-dark.svg</small></div><div class="preview"><img src="./assets/logo-light.svg" alt="light logo"><small>logo-light.svg</small></div></div>
+    <h3>Canonical private/original art index</h3><div id="privateArtList" class="asset-list"></div>
+    <div class="rights">Private art stays off public Git. Select your local files to preview and verify against the indexed filename/hash. Files never leave this page.</div>
+    <div class="actions"><label class="file-label primary">MOUNT LOCAL ART<input id="artFiles" type="file" accept="image/*" multiple></label></div><div id="artMountResults" class="previews"></div>
+  </section>
+  <section id="models" class="view">
+    <div class="card-grid"><article class="card"><h3>3D source registry</h3><p><b>20</b> rights-tracked Godot-compatible source matches are registered.</p></article><article class="card"><h3>Approved model binaries in Git</h3><p><b>0</b>. Runtime import is intentionally not claimed.</p></article></div>
+    <h3>Registered 3D lanes</h3><div id="modelSources" class="asset-list"></div>
+    <div class="rights">Local model mount accepts GLB/GLTF/VRM/OBJ/FBX/BLEND for inspection only. Selecting a file does not promote it, publish it, or make runtime GREEN.</div>
+    <div class="actions"><label class="file-label primary">MOUNT LOCAL 3D FILES<input id="modelFiles" type="file" accept=".glb,.gltf,.vrm,.obj,.fbx,.blend" multiple></label></div><div id="modelMountResults" class="asset-list"></div>
+  </section>
+  <section id="roleplay" class="view"><div class="wall"><section class="mode"><h3>⚙ Coding Roleplay</h3><b>ENGINEERING_DSL</b><ul><li>Compiles only explicit engineering context.</li><li>Still passes normal Crown, OS, risk, and evidence gates.</li></ul></section><div class="wall-center">║</div><section class="mode"><h3>🎲 Questforge</h3><b>FICTIONAL_TABLETOP</b><ul><li>Changes fictional campaign state only.</li><li>Zero shell, Git, Android, CI, account, or publishing authority.</li></ul></section></div></section>
+  <section id="questforge" class="view"><div class="card-grid"><article class="card"><h3>The Iron Saint</h3><p>Professor Eggie · Level 1 Tinker · HP 11/11 · AC 14.</p></article><article class="card"><h3>Checkpoint</h3><p><code>Before the Cathedral Door</code></p></article><article class="card"><h3>Awakening</h3><p>■■■■□□ 4/6</p></article><article class="card"><h3>Visual canon</h3><p>3 generation references registered. Image binaries are not falsely claimed to be in Git.</p></article></div><div id="questVisuals" class="asset-list" style="margin-top:12px"></div></section>
+  <section id="audit" class="view"><div id="console" class="console">SELF AUDIT READY
+Browser checks have not run yet.</div><div class="actions"><button id="runAudit" class="primary">RUN LOCAL SELF AUDIT</button><button id="showReceipt">SHOW SOURCE RECEIPT</button></div></section>
+</main>
+<aside class="panel"><div class="head"><h2>Truth Receipt</h2><span class="small">no inflated claims</span></div><div style="padding:14px"><div id="receipt" class="console">PUBLIC ART = 3 BUNDLED
+PRIVATE ART = 22 INDEXED / LOCAL MOUNT
+QUESTFORGE VISUALS = 3 REFERENCES / BINARIES NOT STORED
+3D SOURCES = 20 REGISTERED
+3D BINARIES IN GIT = 0
+3D RUNTIME = NOT CLAIMED
+
+APK_BUILD_GREEN = VERIFIED
+ANDROID_GREEN = PENDING_DEVICE_VALIDATION</div><div class="actions"><button data-jump="assets">ART LANES</button><button data-jump="models">3D LANES</button><button data-jump="audit">VERIFY DEMO</button></div></div></aside>
 </section>
-<div class="footer">LuHm OS source-of-truth candidate demo · local static artifact · no real tool execution</div>
+<div class="footer">LuHm OS asset-aware source-of-truth demo · local artifact · private files remain local</div>
 </div>
-<script id="demo-manifest" type="application/json">
-{
-  "schema": "luhm-os.demo-manifest.v2",
+<script id="demo-manifest" type="application/json">{
+  "schema": "luhm-os.demo-manifest.v3",
   "id": "LUHM_OS_SOURCE_OF_TRUTH_DEMO_20260920",
   "date": "2026-09-20",
   "mode": "LOCAL_STATIC_DEMO",
@@ -57,6 +89,18 @@
     "vercel_active_architecture": false,
     "device": {"model": "SM-S721U1", "android": 16, "abi": "aarch64", "root_assumed": false}
   },
+  "assets": {
+    "registry_path": "luhmos/demo/asset.registry.json",
+    "registry_id": "LUHM_OS_DEMO_ASSET_REGISTRY_20260920",
+    "public_forge_bundle_count": 3,
+    "private_original_art_index_count": 22,
+    "private_art_binary_status": "LOCAL_ONLY_NOT_IN_PUBLIC_GIT",
+    "local_private_mount_enabled": true,
+    "three_d_source_registry_count": 20,
+    "repo_model_binary_count": 0,
+    "three_d_runtime_status": "REGISTRY_ONLY_NO_APPROVED_BINARY_IN_GIT",
+    "rights_wall_enforced": true
+  },
   "questforge": {
     "canon_path": "docs/QUESTFORGE_IRON_SAINT_CANON_20260919.json",
     "canon_id": "QUESTFORGE_IRON_SAINT_CANON_20260919",
@@ -64,6 +108,7 @@
     "hero": "Professor Eggie",
     "checkpoint": "Before the Cathedral Door",
     "cathedral_awakening": "4/6",
+    "visual_reference_count": 3,
     "visual_binaries_in_repo": false
   },
   "evidence": {
@@ -87,18 +132,19 @@
     "final_goal": "PENDING_DEVICE_VALIDATION"
   },
   "demo_contract": {
-    "self_contained_html": true,
+    "self_contained_html": false,
+    "self_contained_artifact": true,
     "local_only": true,
     "no_external_dependencies": true,
     "no_real_tool_execution": true,
     "engineering_and_questforge_modes_do_not_cross": true,
     "legacy_convergence_terms_hidden": true,
-    "evidence_before_green": true
+    "evidence_before_green": true,
+    "private_assets_never_auto_uploaded": true
   }
 }
 </script>
-<script>
-(()=>{const q=s=>document.querySelector(s),qa=s=>[...document.querySelectorAll(s)],manifest=JSON.parse(q('#demo-manifest').textContent);function tab(name){qa('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));qa('.view').forEach(v=>v.classList.toggle('active',v.id===name))}qa('.tab').forEach(b=>b.addEventListener('click',()=>tab(b.dataset.tab)));qa('[data-jump]').forEach(b=>b.addEventListener('click',()=>tab(b.dataset.jump)));q('#runAudit').addEventListener('click',()=>{const checks=[['Crown ID',manifest.source_of_truth.crown_id==='CROWN_SOURCE_OF_TRUTH_20260919'],['Final authority',manifest.source_of_truth.human_final_authority==='Professor'],['Boss AI',manifest.source_of_truth.boss_ai==='Lum'],['Roleplay hard wall',manifest.source_of_truth.roleplay_hard_separation===true&&manifest.source_of_truth.questforge_engineering_authority===false],['Local-only contract',manifest.network_calls===false&&manifest.demo_contract.no_external_dependencies===true],['APK evidence',manifest.evidence.apk_build.status==='GREEN'&&manifest.evidence.apk_build.zipalign_16k===true&&manifest.evidence.apk_build.donor_purged===true],['Device remains pending',manifest.evidence.android_green==='PENDING_DEVICE_VALIDATION']];const lines=['LOCAL SELF AUDIT'];let ok=true;for(const [n,p] of checks){lines.push((p?'PASS ':'FAIL ')+n);ok=ok&&p}lines.push('',ok?'DEMO_SELF_AUDIT_PASS':'DEMO_SELF_AUDIT_FAIL');q('#console').textContent=lines.join('\n')});q('#showReceipt').addEventListener('click',()=>{q('#console').textContent='MANIFEST '+manifest.id+'\nSOURCE '+manifest.source_of_truth.crown_id+'\nCI RUN '+manifest.evidence.apk_build.run_id+'\nAPK '+manifest.evidence.apk_build.apk_sha256+'\nDEVICE '+manifest.evidence.android_green})})();
-</script>
+<script src="./asset-data.js"></script>
+<script src="./app.js"></script>
 </body>
 </html>
