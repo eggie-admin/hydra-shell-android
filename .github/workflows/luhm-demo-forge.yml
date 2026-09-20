@@ -1,0 +1,55 @@
+name: LuHm OS Source-of-Truth Demo Forge
+
+on:
+  push:
+    branches:
+      - testing/luhm-os-android
+      - demo/luhm-sot-forge-20260920
+    paths:
+      - 'luhmos/demo/**'
+      - 'tools/luhm_demo_forge.py'
+      - 'docs/CROWN_SOURCE_OF_TRUTH_20260919.json'
+      - 'lumh-os/kai9000/CODING_ROLEPLAY_DOCTRINE.md'
+      - 'docs/QUESTFORGE_ROLEPLAY_DOCTRINE.md'
+      - 'docs/QUESTFORGE_IRON_SAINT_CANON_20260919.json'
+      - '.github/workflows/luhm-demo-forge.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: luhm-demo-forge-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit-compile:
+    name: Source truth audit + deterministic demo compile
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+
+      - name: Python 3.14
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.14'
+
+      - name: Audit demo source against Crown source of truth
+        run: python tools/luhm_demo_forge.py audit
+
+      - name: Compile static demo artifact
+        run: python tools/luhm_demo_forge.py build --out dist/luhm-os-demo
+
+      - name: Verify compiled artifact hashes
+        run: python tools/luhm_demo_forge.py verify --out dist/luhm-os-demo
+
+      - name: Upload compiled demo
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        with:
+          name: luhm-os-source-of-truth-demo
+          path: dist/luhm-os-demo
+          if-no-files-found: error
+          retention-days: 7

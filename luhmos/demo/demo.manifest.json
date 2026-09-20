@@ -1,0 +1,72 @@
+{
+  "schema": "luhm-os.demo-manifest.v2",
+  "id": "LUHM_OS_SOURCE_OF_TRUTH_DEMO_20260920",
+  "date": "2026-09-20",
+  "mode": "LOCAL_STATIC_DEMO",
+  "network_calls": false,
+  "source_of_truth": {
+    "crown_path": "docs/CROWN_SOURCE_OF_TRUTH_20260919.json",
+    "crown_id": "CROWN_SOURCE_OF_TRUTH_20260919",
+    "crown_status": "CROWNED",
+    "canonical_repository": "eggie-admin/hydra-shell-android",
+    "active_branch": "testing/luhm-os-android",
+    "human_final_authority": "Professor",
+    "boss_ai": "Lum",
+    "agent_mesh_version": "LUHM Agent Mesh v1",
+    "max_parallelism": 3,
+    "coding_roleplay_system": "ENGINEERING_DSL",
+    "questforge_system": "FICTIONAL_TABLETOP",
+    "roleplay_hard_separation": true,
+    "questforge_engineering_authority": false,
+    "runtime_recheck_required": true,
+    "vercel_active_architecture": false,
+    "device": {
+      "model": "SM-S721U1",
+      "android": 16,
+      "abi": "aarch64",
+      "root_assumed": false
+    }
+  },
+  "questforge": {
+    "canon_path": "docs/QUESTFORGE_IRON_SAINT_CANON_20260919.json",
+    "canon_id": "QUESTFORGE_IRON_SAINT_CANON_20260919",
+    "title": "The Iron Saint",
+    "hero": "Professor Eggie",
+    "checkpoint": "Before the Cathedral Door",
+    "cathedral_awakening": "4/6",
+    "visual_binaries_in_repo": false
+  },
+  "evidence": {
+    "source_doctrine": "CROWNED",
+    "roleplay_systems": "SEPARATED",
+    "doctrine_ci": {
+      "status": "GREEN",
+      "run_id": 35464067296,
+      "job": "Donor purge + doctrine gate"
+    },
+    "apk_build": {
+      "status": "GREEN",
+      "run_id": 35464067296,
+      "artifact_id": 10590876988,
+      "artifact_name": "kai9000-native-cathedral-158",
+      "artifact_zip_sha256": "4209f4bdc76c81ffe4ded7135c79e37b37d9da02f2e0da95447f18eec286be35",
+      "package_id": "art.eggiebagelface.kai9000.dev",
+      "version": "0.8.0-dev",
+      "apk_sha256": "3a0bb62e71657cc61a292f1cc8811436112da047fe1a5d09d875e66bf1a85dda",
+      "signature_scheme": "v2",
+      "zipalign_16k": true,
+      "donor_purged": true
+    },
+    "android_green": "PENDING_DEVICE_VALIDATION",
+    "final_goal": "PENDING_DEVICE_VALIDATION"
+  },
+  "demo_contract": {
+    "self_contained_html": true,
+    "local_only": true,
+    "no_external_dependencies": true,
+    "no_real_tool_execution": true,
+    "engineering_and_questforge_modes_do_not_cross": true,
+    "legacy_convergence_terms_hidden": true,
+    "evidence_before_green": true
+  }
+}
