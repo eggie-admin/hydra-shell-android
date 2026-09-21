@@ -1,0 +1,25 @@
+{
+  "schema": "luhm-os.cathedral-canonical-assets.v1",
+  "id": "LUHM_OS_CATHEDRAL_CANONICAL_ASSETS_20260921",
+  "device_target": "SM-X400",
+  "android_target_api": 37,
+  "rights_rule": "Only current production anchors or explicitly sealed LuHm-original assets may ship.",
+  "drive_assets": [
+    {"name":"CURRENT_LUM_MIDNIGHT_1996_MODEL_SHEET.png","drive_id":"1pd8Ow4bxcVg5vf0JIkIcdvzYURRhXujW","sha256":"60a84012d60965c3cfb02c2f94aaeca11401f0965c85595fc9ebcc79a0961ce0","bytes":2879195,"class":"CURRENT_PRODUCTION_ANCHOR"},
+    {"name":"CURRENT_KAI9000_GAME_WORLD_BIBLE.png","drive_id":"1gjrEfS1tK1YdRCpMB1QOqSXK0WQ2-_4z","sha256":"fe6cbd614e5078c21b7de4896eaff2c600329ab1cb969694d45669ad8b1c7175","bytes":3698092,"class":"CURRENT_PRODUCTION_ANCHOR"},
+    {"name":"CURRENT_KAI9000_CATHEDRAL_POSTER.png","drive_id":"1efXJVIApFVvDmgL5_1Czju-XzpgI_-oL","sha256":"02a7b16dd88c6574d9f230c45335736fdebe9098002ea1fb42c7001497aaf794","bytes":3402994,"class":"CURRENT_PRODUCTION_ANCHOR"},
+    {"name":"CURRENT_LUM_ANIMATED_REEL.mp4","drive_id":"1yPhZgEeHPEhIe0ncDRhfuScKIvRpg0wo","sha256":"1a20bd7bf495ee930d2cc9dab9342d7cb29d326ce0c7f433c206581ebdddad97","bytes":510676,"class":"CURRENT_PRODUCTION_ANCHOR"},
+    {"name":"KAI9000_LUM_AVATAR_ACTUAL_ANIMATED.gif","drive_id":"1_6cgTXU2tgH15OZOuLmABGloKqhtfYJU","sha256":"a9df1d2b5c63d5740be8c476b59f389171b99609a14cd02fc8ae7568d27b2aba","bytes":5596161,"class":"SEALED_LUHM_ORIGINAL"},
+    {"name":"KAI9000_LUM_AVATAR_ACTUAL_ANIMATED.manifest.json","drive_id":"1Uq29nL8iM2hQn7hgLmzxcO7PC7_SC49L","sha256":"6b95f05e2532464022fa363c1d067755c3358600cfced0d791fd9fd7b95e2742","bytes":759,"class":"SEALED_LUHM_ORIGINAL_MANIFEST"}
+  ],
+  "repo_assets": [
+    {"name":"icon.svg","source":"assets/icon.svg","sha256":"fdc62c4d21922a3b2101d70d9400e3df598d1498baa36354b887afb4e2df1b57","class":"PUBLIC_LUHM_BRAND"},
+    {"name":"logo-dark.svg","source":"assets/logo-dark.svg","sha256":"cdfda5be645e54b0925405dbd1169e56a919f17af20acaaabdf8d7a7a1da2a09","class":"PUBLIC_LUHM_BRAND"},
+    {"name":"logo-light.svg","source":"assets/logo-light.svg","sha256":"83880741355c39fffd62dd804b6b8db576de7b7fc6ff514e89151811b9ff6010","class":"PUBLIC_LUHM_BRAND"}
+  ],
+  "explicit_exclusions": [
+    {"pattern":"luhm_*_demo.png","reason":"AI_GENERATED_DEMO_ONLY_PROTOTYPE_PENDING_REVIEW"},
+    {"name":"00000000.txt","reason":"THIRD_PARTY_PRIVATE_REFERENCE_DO_NOT_PUBLISH"},
+    {"name":"c246_10.pck.bin","reason":"THIRD_PARTY_PRIVATE_REFERENCE_DO_NOT_PUBLISH"}
+  ]
+}
