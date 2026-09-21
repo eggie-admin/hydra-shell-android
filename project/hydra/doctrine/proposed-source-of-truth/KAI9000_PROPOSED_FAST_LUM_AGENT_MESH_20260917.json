@@ -1,0 +1,145 @@
+{
+  "schema": "luhm-os.kai9000.proposed-fast-lum-agent-mesh.v1",
+  "manifest_id": "KAI9000_PROPOSED_FAST_LUM_AGENT_MESH_20260917",
+  "date_local": "2026-09-17",
+  "state": "PROPOSED",
+  "seal_status": "PROPOSED_NOT_CROWNED",
+  "project": "LuHm OS / KAI 9000 / Project Hydra",
+  "repository": "eggie-admin/hydra-shell-android",
+  "canonical_branch": "luhmos-main",
+  "proposal_branch": "luhmos/proposed-doctrine-drift-cleanup-20260917",
+  "human_final_authority": "Professor",
+  "source_basis": {
+    "crown": "project/hydra/source-of-truth/KAI9000_SEAL_OF_TRUTH_CROWN_20260917.json",
+    "m1_contract": "project/hydra/source-of-truth/LUHM_M1_SIGNED_SECURE_WEBVIEW_SOCKET_20260916.json",
+    "directory_crown": "project/hydra/source-of-truth/LUHMOS_HYDRA_DIRECTORY_CROWN_20260916.json",
+    "ai_stack": "docs/AI_STACK.md",
+    "copilot_law": ".github/copilot-instructions.md",
+    "mutation_gateway": "backend/candidate_workflow.py"
+  },
+  "source_law": "AI proposes. Policy authorizes. CI proves. The human promotes.",
+  "routing": {
+    "front_door": {
+      "role": "LUM_FAST",
+      "provider": "openai",
+      "api_surface": "responses",
+      "model_env": "OPENAI_MODEL_FAST",
+      "source_default_model": "gpt-5.6-luna",
+      "reasoning_env": "OPENAI_REASONING_FAST",
+      "source_default_reasoning": "none",
+      "verbosity_env": "OPENAI_VERBOSITY_FAST",
+      "source_default_verbosity": "low",
+      "service_tier_env": "OPENAI_SERVICE_TIER_FAST",
+      "source_default_service_tier": "fast",
+      "streaming": true,
+      "structured_output_preferred": true
+    },
+    "deep_escalation": {
+      "role": "LUM_DEEP",
+      "provider": "openai",
+      "model_env": "OPENAI_MODEL_DEEP",
+      "source_default_model": "gpt-5.6-sol",
+      "only_for": ["architecture_redesign", "difficult_multi_file_debugging", "security_or_release_audit", "high_consequence_code_review", "deep_research_or_synthesis", "fast_lane_failed_and_more_reasoning_is_material"]
+    }
+  },
+  "mini_helper_mesh": {
+    "model_policy": "inherit_fast_model_unless_explicitly_overridden",
+    "parallelism": "READ_ONLY_ONLY",
+    "write_parallelism": false,
+    "helpers": [
+      {"id": "mini-source", "role": "resolve_exact_source_refs_and_authority", "tools": ["read", "search"], "mutation_authority": false},
+      {"id": "mini-diff", "role": "summarize_smallest_safe_delta", "tools": ["read", "search"], "mutation_authority": false},
+      {"id": "mini-test", "role": "map_changed_files_to_existing_validation_gates", "tools": ["read", "search"], "mutation_authority": false},
+      {"id": "mini-proof", "role": "normalize_executed_evidence_into_json_html_chat_receipts", "tools": ["read", "search"], "mutation_authority": false}
+    ],
+    "parent_agent": "LUM_FAST",
+    "parent_owns_final_plan": true,
+    "parent_owns_single_write_sequence": true,
+    "helper_consensus_grants_authority": false
+  },
+  "turn_schema": {
+    "schema": "luhm.agent-turn.v1",
+    "required_fields": ["request_id", "lane", "authority", "source_refs", "intent", "proposed_actions", "validation", "proof_required", "stop_reason"],
+    "lane_values": ["FAST", "DEEP", "MINI"],
+    "authority_values": ["READ_ONLY", "PROPOSE_ONLY", "HUMAN_GATE_REQUIRED"],
+    "freeform_shell_field": false,
+    "secrets_field": false
+  },
+  "openai_agent_runtime": {
+    "direct_responses_api_preferred_when": "short_structured_turns_and_project_owned_loop",
+    "agents_sdk_allowed_when": ["guardrails_reduce_risk", "handoffs_reduce_parent_context", "sessions_are_deliberately_required", "human_in_the_loop_orchestration_is_material"],
+    "guardrails_do_not_replace_project_policy": true,
+    "human_approval_remains_external_authority_gate": true,
+    "tracing": {
+      "default_project_posture": "explicit_opt_in",
+      "must_exclude": ["approval_tokens", "api_keys", "signing_material", "staged_source_contents", "private_user_data"]
+    }
+  },
+  "paid_product_boundary": {
+    "chatgpt_or_codex_paid_plan": "human_operator_productivity_lane",
+    "programmatic_api_billing": "separate_openai_api_platform_billing",
+    "chatgpt_subscription_is_apk_credential": false,
+    "chatgpt_subscription_is_api_key": false,
+    "api_key_location": "server_side_only",
+    "billing_mutation_authorized": false
+  },
+  "github_copilot_integration": {
+    "repo_wide": ".github/copilot-instructions.md",
+    "path_specific": ".github/instructions/luhm-fast-agent.instructions.md",
+    "parent_custom_agent": ".github/agents/lum-fast.md",
+    "mini_custom_agent": ".github/agents/lum-mini-readonly.md",
+    "task_skill": "skills/luhm-fast-agent-mesh/SKILL.md",
+    "hardcode_openai_runtime_model_into_copilot_profile": false
+  },
+  "mutation_contract": {
+    "gateway": "backend/candidate_workflow.py",
+    "bind": "127.0.0.1",
+    "default_port": 8790,
+    "shell_execution": false,
+    "ai_output_direct_to_shell": false,
+    "human_approval_required": true,
+    "checkpoint_before_write": true,
+    "preimage_sha_recheck": true,
+    "atomic_replace": true,
+    "postwrite_sha_verify": true,
+    "single_writer": true
+  },
+  "proof_contract": {
+    "one_payload_many_views": true,
+    "shared_digest": "sha256",
+    "views": ["json", "scriptless_html", "chat_safe_text"],
+    "exclude": ["approval_token", "secret", "staged_file_content"],
+    "html_external_network_dependencies": false,
+    "html_script_execution": false
+  },
+  "ci_alignment": {
+    "stale_legacy_doctrine_gate_detected": true,
+    "repaired_workflow": ".github/workflows/luhmos-modular-cockpit-source-gate.yml",
+    "legacy_ai_magic_doctrine_removed_from_active_gate": true,
+    "current_crown_checked_instead": true,
+    "repaired_run_id": 35195817293,
+    "repaired_run_conclusion": "success"
+  },
+  "authority_boundaries": {
+    "read_and_reason": true,
+    "parallel_read_helpers": true,
+    "propose_mutation": true,
+    "self_approval": false,
+    "direct_unapproved_write": false,
+    "arbitrary_shell": false,
+    "signing": false,
+    "apk_install": false,
+    "canonical_merge": false,
+    "public_publish": false,
+    "deploy": false,
+    "release_promotion": false,
+    "crown": false,
+    "billing_mutation": false
+  },
+  "promotion_gate": {
+    "exact_head_ci_required": true,
+    "human_review_required": true,
+    "explicit_professor_promotion_required": true,
+    "current_result": "STAGED_FOR_EXACT_HEAD_CI_NOT_CROWNED"
+  }
+}

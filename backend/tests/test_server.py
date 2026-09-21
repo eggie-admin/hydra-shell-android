@@ -60,7 +60,7 @@ def test_system_status(monkeypatch):
         lambda: {
             "hydra": {"online": True, "port": 8787},
             "ollama": {"online": True, "port": 11434},
-            "axs": {"online": True, "port": 8767, "http_status": 200},
+            "mutation": {"online": True, "port": 8790, "role": "human-approved file mutation gateway"},
             "vnc": {"online": True, "port": 5901, "display": ":1"},
             "tts": {"online": False},
         },
@@ -69,15 +69,17 @@ def test_system_status(monkeypatch):
     response = client.get("/v1/system/status")
     assert response.status_code == 200
     body = response.get_json()
-    assert body["services"]["axs"]["online"] is True
+    assert body["services"]["mutation"]["online"] is True
+    assert body["services"]["mutation"]["port"] == 8790
     assert body["services"]["vnc"]["display"] == ":1"
 
 
 def test_service_tool(monkeypatch):
-    monkeypatch.setattr(server, "service_status", lambda: {"axs": {"online": True}})
+    monkeypatch.setattr(server, "service_status", lambda: {"mutation": {"online": True, "port": 8790}})
     result = server.run_tool("get_service_status", {})
     assert result["ok"] is True
-    assert result["services"]["axs"]["online"] is True
+    assert result["services"]["mutation"]["online"] is True
+    assert result["services"]["mutation"]["port"] == 8790
 
 
 def test_unknown_tool_is_rejected():

@@ -1,0 +1,119 @@
+{
+  "schema": "luhm-os.kai9000.proposed-google-ai-edge-low-latency-doctrine.v1",
+  "manifest_id": "KAI9000_PROPOSED_GOOGLE_AI_EDGE_LOW_LATENCY_DOCTRINE_20260917",
+  "status": "PROPOSED_NOT_CROWNED",
+  "date_local": "2026-09-17",
+  "project": "LuHm OS / KAI 9000 / Project Hydra",
+  "canonical_branch": "luhmos-main",
+  "proposal_branch": "luhmos/perf-google-ai-edge-doctrine-20260917",
+  "human_authority": "Professor",
+  "source_law": "AI proposes. Policy authorizes. CI proves. The human promotes.",
+  "objective": "Reduce wall-clock latency across AI-assisted Project Hydra work while adding a bounded Google AI Edge Gallery evaluation lane for on-device model benchmarking and skill prototyping.",
+  "external_reference": {
+    "product": "Google AI Edge Gallery",
+    "upstream_repo": "google-ai-edge/gallery",
+    "role": "EXPERIMENTAL_REFERENCE_AND_BENCHMARK_SANDBOX",
+    "current_characteristics": [
+      "on-device model execution",
+      "LiteRT-based mobile inference",
+      "model management and benchmarking",
+      "agent skills",
+      "Hugging Face model discovery",
+      "offline inference after model acquisition"
+    ],
+    "authority": "NONE"
+  },
+  "latency_doctrine": {
+    "resolve_authority_once_per_head": true,
+    "reuse_exact_path_at_sha_refs": true,
+    "duplicate_fetch_same_path_same_sha": false,
+    "parallel_read_only_helpers": true,
+    "parallel_competing_writes": false,
+    "single_parent_writer": true,
+    "structured_json_handoffs": true,
+    "focused_tests_before_full_ci": true,
+    "batch_remote_reads_when_possible": true,
+    "local_deterministic_validation_first": true,
+    "fast_model_for_routine_work": true,
+    "deep_model_only_on_complexity_trigger": true,
+    "on_device_model_only_for_bounded_offline_tasks": true
+  },
+  "routing_order": [
+    "deterministic local code and schema validation",
+    "bounded on-device helper inference when no fresh external state is required",
+    "fast OpenAI parent route for ordinary coding, triage, classification, structured transforms, and proof summaries",
+    "deep OpenAI route for architecture, security, release, or difficult multi-file debugging"
+  ],
+  "edge_gallery_lane": {
+    "purpose": [
+      "benchmark approved local models on Android hardware",
+      "prototype non-authoritative helper skills",
+      "measure TTFT, decode speed, latency, and memory behavior",
+      "evaluate local/offline helper suitability before any LuHm integration"
+    ],
+    "deployment_mode": "LOCAL_TEST_ONLY",
+    "public_publish": false,
+    "silent_install": false,
+    "source_donor": false,
+    "production_dependency": false,
+    "source_of_truth_authority": false,
+    "mutation_authority": false,
+    "shell_authority": false,
+    "signing_authority": false,
+    "release_authority": false,
+    "network_required_for_first_render": false,
+    "notes": "Google AI Edge Gallery is treated as a separate experimental harness. Do not vendor or silently transplant upstream application code into the LuHm OS production APK."
+  },
+  "edge_skill_contract": {
+    "allowed": [
+      "read-only model benchmarking",
+      "local prompt and skill experiments",
+      "manual import of approved local model artifacts",
+      "manual capture of benchmark receipts",
+      "comparison against OpenAI fast/deep routes using normalized metrics"
+    ],
+    "forbidden": [
+      "automatic shell execution",
+      "automatic Android privileged actions",
+      "implicit user data upload",
+      "browser-stored API keys",
+      "direct write to canonical source",
+      "self-approval",
+      "automatic deployment or public release"
+    ]
+  },
+  "performance_receipt": {
+    "required_before_claiming_runtime_speedup": [
+      "exact device/profile",
+      "exact model artifact and hash",
+      "runtime/backend",
+      "prompt/task class",
+      "TTFT or equivalent startup latency",
+      "decode throughput where applicable",
+      "peak memory when available",
+      "thermal state note",
+      "comparison baseline"
+    ],
+    "claim_rule": "Do not call a path faster until measured on the target hardware with comparable inputs."
+  },
+  "mutation_boundary": {
+    "gateway": "backend/candidate_workflow.py",
+    "bind": "127.0.0.1",
+    "shell_execution": false,
+    "ai_output_direct_to_shell": false,
+    "human_approval_required": true,
+    "checkpoint_before_write": true,
+    "preimage_sha_recheck": true,
+    "atomic_replace": true,
+    "postwrite_sha_verify": true
+  },
+  "promotion_gates": [
+    "repo instruction and skill review",
+    "JSON/schema validation",
+    "secret scan",
+    "exact-head CI",
+    "real-device Google AI Edge Gallery benchmark evidence before any runtime-speed claim",
+    "explicit Professor promotion for crown/source-of-truth status"
+  ],
+  "result": "PROPOSED_LOW_LATENCY_EDGE_GALLERY_LANE_STAGED"
+}

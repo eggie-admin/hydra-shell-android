@@ -24,4 +24,5 @@ ingress:
 #
 # Private .lan routing is configured in Cloudflare Zero Trust private-network/private-hostname
 # routes plus private DNS, never by publishing .lan records in authoritative public DNS.
-# Keep AcodeX/VNC/WebSocket loopback-only unless a separately reviewed private route is declared.
+# Retired development bridges are not publication targets. Keep optional VNC/WebSocket services
+# loopback-only unless a separately reviewed private route is declared.

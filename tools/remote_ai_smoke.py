@@ -6,6 +6,7 @@ import json
 import os
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -27,15 +28,19 @@ def run(provider: str) -> dict[str, object]:
             provider,
             "Reply with exactly the word GREEN and no other text.",
             None,
+            profile="fast",
         )
         latency_ms = round((time.monotonic() - started) * 1000)
         text = str(result.get("assistant", "")).strip()
         return {
             "provider": provider,
             "status": "GREEN" if text == "GREEN" else "YELLOW",
+            "profile": result.get("profile"),
             "model": result.get("model"),
             "latency_ms": latency_ms,
+            "provider_latency_ms": result.get("latency_ms"),
             "response_id_present": bool(result.get("response_id")),
+            "connection_pool": result.get("connection_pool"),
             "content_match": text == "GREEN",
             "secret_material_present": False,
         }
@@ -49,8 +54,17 @@ def run(provider: str) -> dict[str, object]:
 
 
 def main() -> int:
-    results = [run("openai"), run("huggingface")]
-    print(json.dumps({"schema": "luhmos.remote-ai-smoke.v1", "results": results}, indent=2))
+    started = time.monotonic()
+    with ThreadPoolExecutor(max_workers=2, thread_name_prefix="luhm-provider-smoke") as pool:
+        futures = {provider: pool.submit(run, provider) for provider in ("openai", "huggingface")}
+        results = [futures[provider].result() for provider in ("openai", "huggingface")]
+    payload = {
+        "schema": "luhmos.remote-ai-smoke.v2",
+        "execution": "parallel_max_2",
+        "wall_latency_ms": round((time.monotonic() - started) * 1000),
+        "results": results,
+    }
+    print(json.dumps(payload, indent=2))
     return 1 if any(item["status"] == "RED" for item in results) else 0
 
 

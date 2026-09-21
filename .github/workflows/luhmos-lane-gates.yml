@@ -87,10 +87,17 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
     steps:
+      - name: Checkout promotion history
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
       - name: Enforce supported PR direction
         env:
           BASE: ${{ github.base_ref }}
           HEAD: ${{ github.head_ref }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         shell: bash
         run: |
           set -euo pipefail
@@ -102,6 +109,37 @@ jobs:
               exit 0
               ;;
           esac
+
+          upstream=''
+          case "${BASE}:${HEAD}" in
+            luhmos/testing:luhmos/reconcile-testing-*)
+              upstream='luhmos-main'
+              ;;
+            luhmos/proposed:luhmos/reconcile-proposed-*)
+              upstream='luhmos/testing'
+              ;;
+            luhmos/beta:luhmos/reconcile-beta-*)
+              upstream='luhmos/proposed'
+              ;;
+            luhmos/stable:luhmos/reconcile-stable-*)
+              upstream='luhmos/beta'
+              ;;
+          esac
+
+          if [ -n "$upstream" ]; then
+            git fetch --no-tags origin "$upstream:refs/remotes/origin/$upstream"
+            git fetch --no-tags origin "$HEAD_SHA"
+            head_tree="$(git rev-parse "${HEAD_SHA}^{tree}")"
+            upstream_tree="$(git rev-parse "origin/${upstream}^{tree}")"
+
+            if [ "$head_tree" != "$upstream_tree" ]; then
+              echo "Reconciliation tree mismatch: $HEAD ($head_tree) != $upstream ($upstream_tree)" >&2
+              exit 1
+            fi
+
+            echo "LUHMOS_RECONCILIATION_TREE_GREEN: $HEAD -> $BASE == $upstream"
+            exit 0
+          fi
 
           if [ "$BASE" = 'luhmos-main' ]; then
             case "$HEAD" in

@@ -7,9 +7,11 @@ on:
     paths:
       - 'project/hydra/samsung/android/cathedral-game/**'
       - 'project/hydra/doctrine/LUHM_MODULAR_SPRITE_COCKPIT_SOURCE_SEAL_CANDIDATE_20260916.json'
+      - 'project/hydra/source-of-truth/**'
+      - 'project/hydra/doctrine/STALE_ARTIFACT_AUDIT_REGISTRY_20260916.json'
       - 'docs/LUHM_CROWN_GATE.md'
       - 'docs/LUHM_MODULAR_SPRITE_COCKPIT.md'
-      - 'lumh-os/kai9000/AI_MAGIC_DOCTRINE.md'
+      - 'AGENTS.md'
       - '.github/copilot-instructions.md'
       - '.github/workflows/luhmos-modular-cockpit-source-gate.yml'
   pull_request:
@@ -18,9 +20,11 @@ on:
     paths:
       - 'project/hydra/samsung/android/cathedral-game/**'
       - 'project/hydra/doctrine/LUHM_MODULAR_SPRITE_COCKPIT_SOURCE_SEAL_CANDIDATE_20260916.json'
+      - 'project/hydra/source-of-truth/**'
+      - 'project/hydra/doctrine/STALE_ARTIFACT_AUDIT_REGISTRY_20260916.json'
       - 'docs/LUHM_CROWN_GATE.md'
       - 'docs/LUHM_MODULAR_SPRITE_COCKPIT.md'
-      - 'lumh-os/kai9000/AI_MAGIC_DOCTRINE.md'
+      - 'AGENTS.md'
       - '.github/copilot-instructions.md'
       - '.github/workflows/luhmos-modular-cockpit-source-gate.yml'
 
@@ -83,12 +87,28 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          grep -q 'CURRENT CANONICAL ROLEPLAY / AGENT DOCTRINE' lumh-os/kai9000/AI_MAGIC_DOCTRINE.md
-          grep -q 'WHISPER / GREEN' lumh-os/kai9000/AI_MAGIC_DOCTRINE.md
-          grep -q 'CROSSING / AMBER' lumh-os/kai9000/AI_MAGIC_DOCTRINE.md
-          grep -q 'RECKONING / RED' lumh-os/kai9000/AI_MAGIC_DOCTRINE.md
-          grep -q 'ULTIMA.*historical compatibility' lumh-os/kai9000/AI_MAGIC_DOCTRINE.md
-          grep -q 'Canonical integration branch: `luhmos-main`' .github/copilot-instructions.md
+          CROWN='project/hydra/source-of-truth/KAI9000_SEAL_OF_TRUTH_CROWN_20260917.json'
+          STALE='project/hydra/doctrine/STALE_ARTIFACT_AUDIT_REGISTRY_20260916.json'
+          test -f "$CROWN"
+          test -f "$STALE"
+          python3 - "$CROWN" <<'PY'
+          import json,sys
+          d=json.load(open(sys.argv[1],encoding='utf-8'))
+          assert d['status']=='SEALED_SOURCE_OF_TRUTH'
+          assert d['canonical_branch']=='luhmos-main'
+          assert d['human_authority']=='Professor'
+          assert d['active_mutation_contract']['gateway']=='backend/candidate_workflow.py'
+          assert d['active_mutation_contract']['shell_execution'] is False
+          assert d['active_mutation_contract']['ai_output_direct_to_shell'] is False
+          assert d['active_mutation_contract']['human_approval_required'] is True
+          assert d['source_law']=='AI proposes. Policy authorizes. CI proves. The human promotes.'
+          PY
+          grep -q 'WHISPER / GREEN' .github/copilot-instructions.md
+          grep -q 'CROSSING / AMBER' .github/copilot-instructions.md
+          grep -q 'RECKONING / RED' .github/copilot-instructions.md
+          grep -q 'retired execution vocabulary are historical compatibility only' .github/copilot-instructions.md
+          grep -q 'The canonical integration branch is `luhmos-main`' .github/copilot-instructions.md
+          grep -q 'legacy' AGENTS.md
           grep -q 'SOURCE IMPLEMENTATION CANDIDATE' docs/LUHM_MODULAR_SPRITE_COCKPIT.md
           grep -q 'final source-of-truth promotion' docs/LUHM_CROWN_GATE.md
 
@@ -122,6 +142,9 @@ jobs:
           git diff --check HEAD^ HEAD || true
           ! git grep -nE 'delete\.me/acode\.apk|sephiroth|gpgkey\.bin' -- \
             project/hydra/samsung/android/cathedral-game \
+            project/hydra/source-of-truth \
+            project/hydra/doctrine/STALE_ARTIFACT_AUDIT_REGISTRY_20260916.json \
             docs/LUHM_MODULAR_SPRITE_COCKPIT.md \
-            lumh-os/kai9000/AI_MAGIC_DOCTRINE.md
+            AGENTS.md \
+            .github/copilot-instructions.md
           echo 'LUHM_MODULAR_SPRITE_COCKPIT_SOURCE_GREEN'

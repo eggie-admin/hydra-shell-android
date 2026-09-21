@@ -1,0 +1,77 @@
+{
+  "schema": "luhm-os.kai9000.source-of-truth-update-seal.v1",
+  "manifest_id": "KAI9000_SOURCE_OF_TRUTH_UPDATE_SEAL_20260917",
+  "status": "SEALED_SOURCE_OF_TRUTH_UPDATE",
+  "date_local": "2026-09-17",
+  "generated_local": "2026-09-17T19:15:26.714465-04:00",
+  "generated_utc": "2026-09-17T23:15:26.714465Z",
+  "project": "LuHm OS / KAI 9000 / Project Hydra",
+  "repository": "eggie-admin/hydra-shell-android",
+  "canonical_branch": "luhmos-main",
+  "human_authority": "Professor",
+  "authorization": "EXPLICIT_USER_SEAL_UPDATE_SOURCE_OF_TRUTH",
+  "source_law": "AI proposes. Policy authorizes. CI proves. The human promotes.",
+  "roll_forward": {
+    "prior_seal": "project/hydra/source-of-truth/KAI9000_SEAL_OF_TRUTH_CROWN_20260917.json",
+    "prior_full_doctrine_seal": "project/hydra/source-of-truth/KAI9000_FULL_DOCTRINE_MUTATION_SEAL_20260917.json",
+    "prior_editor_bridge_crown_merge": "546b002ba4920a7ce239c839aee3d0c2e6dafb96",
+    "prior_full_doctrine_merge": "df8be929415ab0af9724b5c497b46a440f10ce71",
+    "canonical_head_at_update": "35a47720d8646500fe7469b83f81bd3d113463dc",
+    "canonical_head_signature_verified": true,
+    "canonical_head_subject": "security: audit canonical branch governance lock"
+  },
+  "promoted_truth": {
+    "retired_editor_bridge_active_authority": false,
+    "historical_editor_bridge_evidence_preserved": true,
+    "mutation_gateway": {
+      "path": "backend/candidate_workflow.py",
+      "bind": "127.0.0.1",
+      "default_port": 8790,
+      "human_approval_required": true,
+      "shell_execution": false,
+      "ai_output_direct_to_shell": false,
+      "checkpoint_before_write": true,
+      "preimage_sha_recheck": true,
+      "atomic_replace": true,
+      "postwrite_sha_verify": true
+    },
+    "governance_audit_merged": true,
+    "branch_protection_external_state": "NOT_PROMOTED_BY_THIS_SEAL",
+    "crowned_source_of_truth_first": true
+  },
+  "authority_boundaries": {
+    "source_of_truth_update_authorized": true,
+    "canonical_source_anchor_roll_forward_authorized": true,
+    "historical_rewrite_authorized": false,
+    "mass_delete_authorized": false,
+    "apk_install_authorized": false,
+    "public_publish_authorized": false,
+    "deploy_authorized": false,
+    "release_promotion_authorized": false,
+    "production_signing_authorized": false,
+    "dns_mutation_authorized": false,
+    "billing_mutation_authorized": false
+  },
+  "audit": {
+    "prior_retired_editor_bridge_audit": "10/10_GREEN",
+    "prior_exact_head_ci": "7/7_SUCCESS",
+    "prior_full_doctrine_audit": "10/10_GREEN",
+    "prior_full_doctrine_ci": "8/8_SUCCESS",
+    "current_head_signature": "VERIFIED",
+    "current_head_scope": "READ_ONLY_GOVERNANCE_AUDIT_MERGE",
+    "historical_evidence": "PRESERVED",
+    "source_anchor_freshness": "ROLLED_FORWARD_TO_CURRENT_LUHMOS_MAIN"
+  },
+  "supersession": {
+    "supersedes_proposed_state_for_this_mutation": true,
+    "proposal_manifest_state": "HISTORICAL_PROPOSAL_EVIDENCE",
+    "prior_seals_remain_valid_lineage": true,
+    "this_manifest_is_latest_source_anchor_update": true
+  },
+  "result": "SOURCE_OF_TRUTH_UPDATE_SEALED_GREEN",
+  "integrity": {
+    "algorithm": "SHA-256",
+    "scope": "canonical JSON payload excluding integrity object",
+    "payload_sha256": "44993516bc54439d45e734fc1df1a40deaedd38146adde83f3ecc42e75e967df"
+  }
+}

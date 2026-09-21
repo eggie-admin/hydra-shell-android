@@ -1,0 +1,322 @@
+{
+  "schema": "luhm-os.unified-naming-canon.v1",
+  "manifest_id": "LUHM_OS_UNIFIED_NAMING_CANON_CROWN_20260921",
+  "artifact_phrase": "LuHm OS unified naming canon crown",
+  "artifact_id": "lhmsnfdnmngcnncrwn",
+  "status": "CROWNED_SOURCE_CONTRACT",
+  "date": "2026-09-21",
+  "human_final_authority": "Professor",
+  "authorization": "EXPLICIT_CURRENT_USER_TEN_PASS_SOURCE_OF_TRUTH_HARD_EDIT",
+  "source_law": "AI proposes. Policy authorizes. CI proves. The human promotes.",
+
+  "canonical_identity": {
+    "human_name": "LuHm OS",
+    "machine_name": "lhms",
+    "single_product_identity": true,
+    "kai9000": {
+      "status": "DONOR_REFERENCE_ARCHAEOLOGY_ONLY",
+      "active_runtime": false,
+      "active_dependency": false,
+      "naming_authority": false,
+      "may_supply_reviewed_donor_patterns": true
+    },
+    "project_hydra": {
+      "status": "HISTORICAL_COMPATIBILITY_REPOSITORY_LINEAGE",
+      "product_identity": false,
+      "stable_paths_may_remain": true,
+      "new_external_provider_names": false
+    }
+  },
+
+  "naming_law": {
+    "name": "VOWEL_RIP",
+    "rule": "Remove a e i o u, lowercase, remove spaces and punctuation, preserve consonant order, preserve y.",
+    "human_phrase_adjacent_to_machine_name": true,
+    "historical_sealed_names_rewritten": false,
+    "first_party_machine_names_use_vowel_rip": true,
+    "vendor_owned_names_remain_vendor_canonical": true,
+    "examples": {
+      "LuHm OS": "lhms",
+      "the witching hour": "thwtchnghr",
+      "final milestone": "fnlmlstn",
+      "Edge Gallery Antenna": "dggllryntnn",
+      "Lum Boss": "lmbss",
+      "Crown Gate": "crwngt",
+      "Tool Executor": "tlxctr"
+    }
+  },
+
+  "platform_bindings": {
+    "openai": {
+      "organization": {
+        "human_name": "Pirate Daddy Film",
+        "machine_name": "prtdddyflm",
+        "role": "OWNER_ORGANIZATION"
+      },
+      "active_api_project": {
+        "human_name": "LuHm OS",
+        "machine_name": "lhms",
+        "role": "CANONICAL_ACTIVE_PROJECT"
+      },
+      "legacy_api_project": {
+        "human_name": "Project Hydra",
+        "machine_name": "prjcthydr",
+        "role": "LEGACY_COMPATIBILITY_NO_NEW_WORK",
+        "provider_side_archive_or_rename_performed": false
+      },
+      "personal_default_project": {
+        "role": "OUTSIDE_LUHM_OS_CANON"
+      },
+      "provider_resource_ids": "PRIVATE_TRANSPORT_METADATA_NOT_CANONICAL_NAMES"
+    },
+
+    "github": {
+      "owner": {
+        "human_name": "eggie-admin",
+        "machine_name": "ggdmn"
+      },
+      "repository": {
+        "provider_name": "hydra-shell-android",
+        "machine_alias": "hydrshllndrd",
+        "logical_product_binding": "lhms",
+        "rename_performed": false,
+        "role": "STABLE_COMPATIBILITY_SOURCE_BINDING"
+      },
+      "canonical_branch": "luhmos-main",
+      "canonical_source_root": "project/hydra",
+      "source_root_role": "STABLE_COMPATIBILITY_PATH_NOT_PRODUCT_IDENTITY"
+    },
+
+    "google_drive": {
+      "canonical_private_doctrine": "PRIVATE_CANONICAL_LUHM_OS_CROWN_DOCTRINE_HARDENED_20260921",
+      "machine_root": "lhms",
+      "role": "PRIVATE_RECOVERY_SOURCE_OF_TRUTH",
+      "git_history_replacement": false
+    },
+
+    "dns": {
+      "brand_zone": "eggiebagelface.art",
+      "brand_zone_machine_alias": "ggbglfcrt",
+      "public_product_target": {
+        "fqdn": "lhms.eggiebagelface.art",
+        "state": "CANONICAL_TARGET_NOT_CLAIMED_LIVE"
+      },
+      "local_antenna": {
+        "human_name": "Edge Gallery Antenna",
+        "machine_name": "dggllryntnn",
+        "fqdn": "dggllryntnn.localhost",
+        "state": "NAMED_LOCAL_ENDPOINT_CANON"
+      },
+      "dns_mutation_performed": false
+    }
+  },
+
+  "agent_tool_chain": {
+    "human": {
+      "human_name": "Professor",
+      "role": "FINAL_AUTHORITY"
+    },
+    "boss": {
+      "human_name": "Lum Boss",
+      "machine_name": "lmbss",
+      "role": "SINGLE_PARENT_WRITER_AND_SYNTHESIZER",
+      "self_approval": false
+    },
+    "oni_helpers": [
+      {
+        "human_name": "Banshee Archivist",
+        "machine_name": "bnshrchvst",
+        "role": "SOURCE_AND_PROVENANCE"
+      },
+      {
+        "human_name": "Nekomata Branch-Warden",
+        "machine_name": "nkmtbrnchwrdn",
+        "role": "GIT_BRANCH_AND_ORIGIN_STATE"
+      },
+      {
+        "human_name": "Lamia Schema-Sage",
+        "machine_name": "lmschmsg",
+        "role": "SCHEMA_CONTRACT_AND_DIFF"
+      },
+      {
+        "human_name": "Oni Forgekeeper",
+        "machine_name": "nfrgkpr",
+        "role": "BUILD_TEST_AND_READINESS"
+      },
+      {
+        "human_name": "Selkie Courier",
+        "machine_name": "slkcrr",
+        "role": "ARTIFACT_AND_PROOF_TRANSPORT"
+      },
+      {
+        "human_name": "Moth-Witch",
+        "machine_name": "mthwtch",
+        "role": "VISUAL_AND_UI_DRIFT"
+      }
+    ],
+    "conditional_critic": {
+      "human_name": "The Empty Throne",
+      "machine_name": "thmptythrn",
+      "role": "BOUNDED_ADVERSARIAL_REVIEW"
+    },
+    "crown_gate": {
+      "human_name": "Crown Gate",
+      "machine_name": "crwngt",
+      "role": "HUMAN_AUTHORIZATION_BOUNDARY"
+    },
+    "local_antenna": {
+      "human_name": "Edge Gallery Antenna",
+      "machine_name": "dggllryntnn",
+      "role": "LOCAL_POLICY_AND_CAPABILITY_GATEWAY",
+      "shell_authority": false,
+      "crown_authority": false
+    },
+    "tool_executor": {
+      "human_name": "Tool Executor",
+      "machine_name": "tlxctr",
+      "role": "DETERMINISTIC_BOUNDED_EXECUTOR",
+      "ai": false,
+      "self_authorize": false
+    },
+    "canonical_route": [
+      "Professor",
+      "lmbss",
+      "bounded_oni_if_needed",
+      "lmbss",
+      "crwngt_if_consequential",
+      "dggllryntnn",
+      "tlxctr",
+      "proof_receipt",
+      "lmbss",
+      "Professor"
+    ],
+    "helper_policy": {
+      "default_helpers": "ZERO",
+      "parallel_read_only_helpers": "BOUNDED_TO_CURRENT_CROWN_POLICY",
+      "parallel_writes": false,
+      "recursive_recruitment": false,
+      "delegation_depth": "ONE_HOP",
+      "helper_consensus_is_authority": false
+    }
+  },
+
+  "endpoint_law": {
+    "operator_facing_literal_ip_addresses": false,
+    "operator_facing_numeric_endpoint_identity": false,
+    "named_endpoints_required": true,
+    "local_named_namespace": "localhost",
+    "historical_low_level_receipts_may_preserve_transport_numbers": true,
+    "historical_transport_numbers_create_current_naming_authority": false,
+    "vendor_fqdns_are_not_renamed": true
+  },
+
+  "privilege_law": {
+    "default_identity": "NORMAL_ADMIN",
+    "persistent_root_login": false,
+    "persistent_root_shell": false,
+    "remote_root": false,
+    "model_issued_raw_sudo": false,
+    "privileged_operation_requires_crown": true,
+    "sudo_scope": "ONE_EXACT_APPROVED_OPERATION",
+    "sudo_duration": "MINIMUM_REQUIRED",
+    "drop_back_after_operation": "IMMEDIATE_NORMAL_ADMIN_RETURN",
+    "root_is_agent_identity": false,
+    "permission_bypass_hacks": false
+  },
+
+  "security_and_evidence": {
+    "default_deny": true,
+    "allowlisted_tools_only": true,
+    "arbitrary_remote_shell": false,
+    "parallel_writes": false,
+    "secrets_in_source": false,
+    "secrets_in_frontend": false,
+    "evidence_before_green": true,
+    "no_execution_claim_without_receipt": true,
+    "history_preserved": true,
+    "unknown_state": "VERIFY_NOT_GREEN"
+  },
+
+  "ten_pass_hard_edit": [
+    {
+      "pass": "IDENTITY",
+      "result": "PASS",
+      "finding": "LuHm OS is the single current product identity; KAI 9000 is donor/reference only; Project Hydra is compatibility lineage."
+    },
+    {
+      "pass": "NAMING_CANON",
+      "result": "PASS",
+      "finding": "VOWEL_RIP is the first-party machine naming law with human labels adjacent."
+    },
+    {
+      "pass": "OPENAI_ORG_PROJECT",
+      "result": "PASS_WITH_EXTERNAL_COMPATIBILITY_BINDING",
+      "finding": "Pirate Daddy Film owns the canonical LuHm OS API project; legacy Project Hydra receives no new canonical work. No provider-side archive or rename is claimed."
+    },
+    {
+      "pass": "GITHUB",
+      "result": "PASS_WITH_STABLE_COMPATIBILITY_BINDING",
+      "finding": "Existing owner/repository/path names remain stable provider bindings; logical product identity is lhms on luhmos-main."
+    },
+    {
+      "pass": "FQDN_AND_LOCAL_ENDPOINTS",
+      "result": "PASS_SOURCE_CONTRACT_ONLY",
+      "finding": "Named endpoints are canonical. dggllryntnn.localhost is the local antenna name; lhms.eggiebagelface.art is a target only and is not claimed live."
+    },
+    {
+      "pass": "AGENT_TOOL_CHAIN",
+      "result": "PASS",
+      "finding": "One Lum Boss, bounded Oni helpers, Crown Gate, named local antenna, deterministic Tool Executor, proof return."
+    },
+    {
+      "pass": "PRIVILEGE",
+      "result": "PASS",
+      "finding": "Normal admin by default; one exact Crown-approved sudo operation only; immediate drop back; no persistent root."
+    },
+    {
+      "pass": "DONOR_AND_LEGACY",
+      "result": "PASS",
+      "finding": "KAI donor material and historical Hydra names remain preserved but cannot steer current identity or authority."
+    },
+    {
+      "pass": "SECURITY_AND_PROOF",
+      "result": "PASS",
+      "finding": "Default deny, allowlisted tools, no arbitrary shell, no self-approval, receipt before GREEN."
+    },
+    {
+      "pass": "CROWN_AND_CONTINUATION",
+      "result": "PASS_SOURCE_CONTRACT",
+      "finding": "This crown supersedes conflicting active naming/identity claims without rewriting historical sealed evidence or claiming external deployment changes."
+    }
+  ],
+
+  "supersession": {
+    "scope": "CURRENT_IDENTITY_NAMING_PROVIDER_BINDINGS_AGENT_ROUTE_ENDPOINT_AND_PRIVILEGE_LAW",
+    "supersedes_conflicting_active_naming_claims": true,
+    "rewrites_historical_receipts": false,
+    "historical_kai_and_hydra_artifacts": "PRESERVED_AS_LINEAGE_OR_DONOR_EVIDENCE",
+    "runtime_or_release_proof_superseded": false
+  },
+
+  "boundaries": {
+    "openai_provider_side_project_archive_or_rename": false,
+    "github_repository_rename": false,
+    "dns_mutation": false,
+    "deployment": false,
+    "billing_mutation": false,
+    "public_publish": false,
+    "release_promotion": false,
+    "apk_install": false,
+    "persistent_signing": false,
+    "history_rewrite": false,
+    "mass_delete": false
+  },
+
+  "final_crowned_goal": {
+    "human_summary": "One LuHm OS identity and one lhms machine namespace. Professor holds final authority. Lum Boss is the single parent writer. Oni helpers are bounded. Edge Gallery Antenna is a named local policy gateway. Tool execution is deterministic and evidence-backed. Normal admin is the default; sudo is one exact approved operation and immediately returns to normal admin. KAI 9000 is donor/reference only. Stable provider names may remain as compatibility bindings but cannot redefine the product.",
+    "result": "LHMS_UNIFIED_NAMING_AND_AUTHORITY_SOURCE_CONTRACT_CROWNED",
+    "source_contract_green": true,
+    "runtime_green_claimed": false,
+    "external_provider_renames_claimed": false
+  }
+}

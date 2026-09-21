@@ -1,0 +1,30 @@
+/* LUHM_CROWN_CATHEDRAL_DEMO_V1
+   Source-of-truth game demo shell. Local packaged assets only. */
+.crown-cathedral{position:relative;margin:0 0 12px;border:1px solid #b968ff4d;border-radius:26px;overflow:hidden;background:
+radial-gradient(circle at 50% 5%,#9b52ff2e,transparent 31%),
+linear-gradient(180deg,#100b1af2,#07050cf5 68%,#030207);
+box-shadow:0 26px 90px #000c,inset 0 1px #ffffff13}
+.crown-cathedral:before{content:"";position:absolute;inset:0;pointer-events:none;background:
+linear-gradient(90deg,transparent 0 8%,#cb7aff12 8.2% 8.55%,transparent 8.8% 91.2%,#cb7aff12 91.45% 91.8%,transparent 92%),
+repeating-linear-gradient(0deg,transparent 0 5px,#fff 6px);opacity:.38}
+.crown-vault{position:relative;padding:16px}.crown-spires{height:26px;display:grid;grid-template-columns:1fr 1.2fr 1.5fr 1.2fr 1fr;gap:5px;align-items:end;padding:0 16px}
+.crown-spires i{display:block;height:12px;background:linear-gradient(#d99aff,#612a92);clip-path:polygon(50% 0,100% 100%,0 100%);opacity:.7}
+.crown-spires i:nth-child(3){height:25px}.crown-spires i:nth-child(2),.crown-spires i:nth-child(4){height:18px}
+.crown-hero{display:flex;align-items:center;gap:14px}.crown-sigil-wrap{flex:0 0 92px;display:grid;place-items:center;position:relative}.crown-sigil{width:78px;height:78px;filter:drop-shadow(0 0 22px #ff5ea066)}.crown-sigil-wrap span{font:900 7px/1 ui-monospace,monospace;letter-spacing:.14em;color:#ffd7f2;margin-top:4px}
+.crown-copy small{font:800 8px/1.3 ui-monospace,monospace;letter-spacing:.12em;color:#8eefff}.crown-copy h1{margin:5px 0 6px;font-size:clamp(20px,5vw,34px);line-height:.95;letter-spacing:.04em}.crown-copy p{margin:0;max-width:690px;color:#c5b8cb;font-size:11px;line-height:1.45}
+.crown-stage{position:relative;min-height:280px;margin-top:12px;border:1px solid #ffffff12;border-radius:21px;overflow:hidden;background:
+radial-gradient(ellipse at 50% 25%,#ff4b8823,transparent 28%),
+linear-gradient(180deg,#160f26 0,#08060e 72%,#030206 100%)}
+.crown-stage:before,.crown-stage:after{content:"";position:absolute;bottom:0;width:30%;height:72%;border:1px solid #a96eff24;border-bottom:0;border-radius:55% 55% 0 0}
+.crown-stage:before{left:4%}.crown-stage:after{right:4%}.crown-glass{position:absolute;left:50%;top:22px;width:120px;height:178px;transform:translateX(-50%);border-radius:70px 70px 18px 18px;border:2px solid #b277ff55;background:
+conic-gradient(from 15deg,#ff4b8850,#6edfff42,#b46dff4d,#ffc76b35,#ff4b8850);box-shadow:0 0 45px #9a4cff22,inset 0 0 28px #0008}
+.crown-lum-world,.crown-lum-video{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);height:238px;max-width:52%;object-fit:contain;filter:drop-shadow(0 20px 28px #000b)}
+.crown-lum-video{display:none;border-radius:18px}.crown-cathedral[data-lum="video"] .crown-lum-video{display:block}.crown-cathedral[data-lum="video"] .crown-lum-world{opacity:.16}
+.crown-console{position:absolute;left:10px;right:10px;bottom:10px;display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px 10px;border:1px solid #ffffff14;border-radius:12px;background:#050309d9;backdrop-filter:blur(9px)}
+.crown-console b{font:900 8px/1.2 ui-monospace,monospace;letter-spacing:.11em;color:#ff8bc2}.crown-console span{font:700 8px/1.25 ui-monospace,monospace;color:#aa9eb2;text-align:right}
+.crown-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:9px}.crown-actions button{min-height:42px;border:1px solid #ffffff18;background:linear-gradient(180deg,#2b193e,#130d1d);color:#fff;border-radius:12px;font-size:9px;font-weight:950;letter-spacing:.07em}.crown-actions button:first-child{background:linear-gradient(135deg,#c52e65,#6940ca)}
+.crown-assets{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}.crown-assets span{padding:5px 7px;border-radius:999px;border:1px solid #ffffff10;background:#ffffff07;color:#a99caf;font:700 7px/1 ui-monospace,monospace}.crown-assets span[data-ok="1"]{color:#a9efc2;border-color:#75e9a12e}
+.crown-cathedral[data-mode="world"] .crown-stage{background:radial-gradient(circle at 50% 20%,#51dfff26,transparent 25%),linear-gradient(#0b1520,#05070c 72%,#020305)}
+.crown-cathedral[data-mode="crown"]{border-color:#ffcf706b;box-shadow:0 26px 90px #000c,0 0 44px #ffcf7014}
+@media(max-width:620px){.crown-hero{align-items:flex-start}.crown-sigil-wrap{flex-basis:72px}.crown-sigil{width:62px;height:62px}.crown-stage{min-height:250px}.crown-lum-world,.crown-lum-video{height:210px}.crown-actions{grid-template-columns:repeat(2,1fr)}.crown-console{display:block}.crown-console span{display:block;text-align:left;margin-top:4px}}
+@media(prefers-reduced-motion:reduce){.crown-cathedral *{animation:none!important;transition:none!important}}
