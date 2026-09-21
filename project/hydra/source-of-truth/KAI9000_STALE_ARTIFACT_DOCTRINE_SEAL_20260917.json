@@ -1,0 +1,113 @@
+{
+  "schema": "luhm-os.kai9000.stale-artifact-doctrine-seal.v1",
+  "manifest_id": "KAI9000_STALE_ARTIFACT_DOCTRINE_SEAL_20260917",
+  "status": "SEALED_SOURCE_OF_TRUTH_SCOPED",
+  "date_local": "2026-09-17",
+  "generated_utc": "2026-09-17T23:17:00Z",
+  "project": "LuHm OS / KAI 9000 / Project Hydra",
+  "repository": "eggie-admin/hydra-shell-android",
+  "canonical_branch": "luhmos-main",
+  "human_authority": "Professor",
+  "crown_authorization": "EXPLICIT_CURRENT_USER_SEAL_UPLOAD_TO_SOURCE_OF_TRUTH",
+  "scope": "stale_artifact_doctrine_and_seal_of_truth_reconciliation_only",
+  "source_law": "AI proposes. Policy authorizes. CI proves. The human promotes.",
+  "lineage": {
+    "canonical_head_before_seal": "86a0ba2b966ccdfb53e9310a469ac056f65df60c",
+    "parent_full_doctrine_seal": "project/hydra/source-of-truth/KAI9000_FULL_DOCTRINE_MUTATION_SEAL_20260917.json",
+    "parent_general_crown": "project/hydra/source-of-truth/KAI9000_SEAL_OF_TRUTH_CROWN_20260917.json",
+    "promoted_proposal_path": "project/hydra/doctrine/proposed-source-of-truth/KAI9000_PROPOSED_SEAL_OF_TRUTH_STALE_ARTIFACT_AUDIT_DOCTRINE_AI_MANIFEST_20260916_V3.json",
+    "promoted_proposal_commit": "93ef0af6ca1ed9b03dfe5ee28a17e51546fd1bbb",
+    "promoted_proposal_blob_sha": "3fd79c063d1cadf3d16ab5ef29ef1f340a3af6c2",
+    "promoted_proposal_file_sha256": "4f5fde87568f0beb55dbf068315ba34766efd7feb188e91b995ae6423d9e18a0",
+    "promoted_proposal_drive_file_id": "1afB3S9IsgaRLXNeYfKOZ-iAaEcwxk6LD",
+    "proposal_preserved": true,
+    "history_rewritten": false
+  },
+  "promoted_doctrine": {
+    "stale_definition": "Stale means an active operational claim, source coordinate, package identity, security boundary, runtime dependency, provider-routing rule, budget/promotion rule, or authority claim is superseded by fresher crowned/canonical evidence. Age alone is not staleness.",
+    "stale_does_not_equal_delete": true,
+    "historical_evidence_must_be_preserved": true,
+    "provenance_license_and_cryptographic_receipts_must_be_preserved": true,
+    "proposal_never_self_crowns": true,
+    "recency_alone_grants_authority": false,
+    "filename_alone_grants_authority": false,
+    "duplicate_drive_name_grants_authority": false,
+    "ci_green_equals_release_authority": false,
+    "build_green_equals_device_green": false,
+    "source_green_equals_build_green": false,
+    "retirement_sequence": [
+      "classify",
+      "identify_live_references",
+      "sever_or_patch_active_dependencies",
+      "prove_replacement",
+      "record_rollback_and_provenance",
+      "mark_retirement_candidate",
+      "retire_only_with_required_human_authority"
+    ],
+    "artifact_classes": {
+      "CROWNED_CURRENT": "Current authority; supersede only by explicit later crown.",
+      "ACTIVE_CANONICAL": "Current code/config/instruction surface; drift must be reconciled.",
+      "PROPOSED": "Review candidate with zero automatic authority until explicitly crowned.",
+      "HISTORICAL_EVIDENCE": "Immutable lineage and receipts; preserve read-only.",
+      "LEGACY_COMPATIBILITY": "May remain for compatibility but cannot outrank current doctrine.",
+      "TEST_HARNESS_ONLY": "Behavior validation only; no implicit production dependency.",
+      "QUARANTINED": "Not promotable until provenance, license, security and relevance gates pass.",
+      "STALE_BLOCKER": "Active conflict with current authority; blocks promotion until reconciled."
+    },
+    "drive_proposal_collision_policy": "Preserve existing proposal artifacts, require explicit revisioned filenames for new proposal snapshots, and never infer crown authority from duplicate names, upload order, or modified time."
+  },
+  "carry_forward_audit": {
+    "proposal_revision": 3,
+    "proposal_audit_verdict": "PROPOSED_GREEN_STRUCTURE_WITH_AMBER_STALE_SNAPSHOT_DRIVE_VERSION_COLLISION_AND_REPO_HARDENING_DEBT",
+    "repo_hardening_debt_remains_open": true,
+    "canonical_branch_protected": false,
+    "current_canonical_head_signature_verified": false,
+    "repo_admin_changes_authorized_by_this_seal": false,
+    "runtime_release_and_device_gates_remain_independent": true,
+    "historical_and_legacy_artifacts_preserved": true
+  },
+  "supersession": {
+    "supersedes_for_this_scope": [
+      "uncrowned stale-artifact doctrine proposals where they conflict with this scoped seal"
+    ],
+    "does_not_supersede": [
+      "KAI9000_FULL_DOCTRINE_MUTATION_SEAL_20260917",
+      "KAI9000_SEAL_OF_TRUTH_CROWN_20260917",
+      "KAI9000_SOURCE_OF_TRUTH_UPDATE_SEAL_20260917",
+      "KAI9000_LUM_FINAL_FORM_MILESTONE_20260917",
+      "LUHM_M1_SIGNED_SECURE_WEBVIEW_SOCKET_20260916",
+      "LUHMOS_HYDRA_DIRECTORY_CROWN_20260916",
+      "signed APK receipts",
+      "physical-device proof",
+      "unrelated release or agent-mesh doctrine"
+    ]
+  },
+  "authority_boundaries": {
+    "doctrine_crown_authorized": true,
+    "source_of_truth_upload_authorized": true,
+    "proposal_history_preservation_required": true,
+    "compile_authorized": false,
+    "sign_authorized": false,
+    "apk_install_authorized": false,
+    "public_publish_authorized": false,
+    "release_promotion_authorized": false,
+    "deploy_authorized": false,
+    "delete_authorized": false,
+    "purge_authorized": false,
+    "repo_admin_mutation_authorized": false,
+    "dns_mutation_authorized": false,
+    "billing_mutation_authorized": false,
+    "secret_print_authorized": false
+  },
+  "canonical_destinations": {
+    "github": "project/hydra/source-of-truth/KAI9000_STALE_ARTIFACT_DOCTRINE_SEAL_20260917.json",
+    "private_drive_folder_id": "1NNkAaH4hP5WQ6n-PvuvA-f3ZFp0X4__9",
+    "private_drive_folder_title": "00_CANONICAL_CROWN"
+  },
+  "result": "STALE_ARTIFACT_DOCTRINE_CROWNED_AND_SEALED_SCOPED",
+  "integrity": {
+    "algorithm": "sha256",
+    "scope": "canonical_json_without_integrity_field",
+    "payload_sha256": "79d538d6046ffb00e5df6343d8f76f2667b960d12ac79c08f9760f62637f94db"
+  }
+}

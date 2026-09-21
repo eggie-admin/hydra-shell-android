@@ -1,0 +1,47 @@
+{
+  "schema": "luhm-os.stale-artifact-audit-registry.v1",
+  "status": "PROPOSED_AUDIT_REGISTRY",
+  "date": "2026-09-16",
+  "human_authority": "Professor",
+  "canonical_branch": "luhmos-main",
+  "proposal_manifest": "project/hydra/doctrine/proposed-source-of-truth/KAI9000_PROPOSED_LEGACY_EDITOR_BRIDGE_PURGE_STALE_ARTIFACT_AUDIT_20260916.json",
+  "classification_order": [
+    "CROWNED_CURRENT",
+    "ACTIVE_CANONICAL",
+    "PROPOSED",
+    "TEST_HARNESS_ONLY",
+    "LEGACY_COMPATIBILITY",
+    "HISTORICAL_EVIDENCE",
+    "QUARANTINED",
+    "STALE_BLOCKER"
+  ],
+  "path_rules": [
+    {"pattern":"project/hydra/source-of-truth/*.json","classification":"CROWNED_CURRENT","rule":"Authority only when file declares a sealed/crowned status; never infer authority from directory alone."},
+    {"pattern":"project/hydra/doctrine/proposed-source-of-truth/**","classification":"PROPOSED","rule":"Never automatic authority."},
+    {"pattern":"project/hydra/project.manifest.json","classification":"ACTIVE_CANONICAL","rule":"Audit legacy distribution/version fields before relying on them for release decisions."},
+    {"pattern":".github/copilot-instructions.md","classification":"ACTIVE_CANONICAL","rule":"Must resolve current authority dynamically and must not hard-code stale release baselines."},
+    {"pattern":"ultima/**","classification":"LEGACY_COMPATIBILITY","rule":"Reference/migration only unless a crowned contract explicitly promotes a component."},
+    {"pattern":"lumh-os/kai9000/**","classification":"LEGACY_COMPATIBILITY","rule":"Compatibility/history only; cannot outrank Project Hydra."},
+    {"pattern":"scripts/cast-ultima*","classification":"HISTORICAL_EVIDENCE","rule":"Retired ritual execution names; never authority."},
+    {"pattern":".github/**/*ultima*","classification":"HISTORICAL_EVIDENCE","rule":"Audit dispatchability before any cleanup; preserve history by default."},
+    {"pattern":"docs/**/*ULTIMA*","classification":"HISTORICAL_EVIDENCE","rule":"Historical documentation unless explicitly reaffirmed."},
+    {"pattern":"release/**/*ULTIMA*","classification":"HISTORICAL_EVIDENCE","rule":"Historical release evidence; never rewrite cryptographic receipts."},
+    {"pattern":"luhmos/chrome-dev-canary-plugin/**","classification":"TEST_HARNESS_ONLY","rule":"No donor ingestion or production runtime dependency."},
+    {"pattern":"project/hydra/samsung/android/rooted/**","classification":"PROPOSED","rule":"Noncanonical lab lane until fresh hardware proof and explicit promotion."}
+  ],
+  "active_drift_checks": [
+    {"id":"D01","path":".github/copilot-instructions.md","forbidden_active_claim":"current signed Crown Gate 1.0.5 lane remains the last sealed build baseline","severity":"STALE_BLOCKER","remedy":"Resolve release state from crowned SOT and exact build receipts."},
+    {"id":"D02","path":".github/copilot-instructions.md","forbidden_required_authority":"lumh-os/kai9000/AI_MAGIC_DOCTRINE.md","severity":"AMBER","remedy":"Legacy doctrine may be consulted as history but not required as current authority."},
+    {"id":"D03","path":"project/hydra/project.manifest.json","marker":"\"preferred_public_repo\": \"IzzyOnDroid\"","severity":"AMBER","remedy":"Treat as compatibility/distribution debt until separately reconciled; public publish remains explicit."},
+    {"id":"D04","path":"project/hydra/samsung/android/rooted/SMX400_ROOTED_DEV_GOAL_20260911.json","severity":"AMBER","remedy":"Do not infer current SM-X400 state; private hardware doctrine and fresh device proof win."},
+    {"id":"D05","path":"project/hydra/**","forbidden_active_claim":"the retired localhost editor bridge on port 8767 is canonical, required, or an authority surface","severity":"STALE_BLOCKER","remedy":"Sever active doctrine and runtime dependencies on the retired editor bridge. Preserve historical receipts and prior seals as evidence only; future reintroduction requires fresh proof plus an explicit superseding mutation."}
+  ],
+  "retirement_gate": [
+    "No active canonical reference depends on artifact.",
+    "Replacement behavior is implemented and tested.",
+    "Provenance and rollback are preserved.",
+    "Historical evidence is retained where material.",
+    "Professor explicitly authorizes destructive retirement if deletion is requested."
+  ],
+  "non_goals": ["No mass rename.","No mass delete.","No history rewrite.","No release promotion.","No public publication."]
+}

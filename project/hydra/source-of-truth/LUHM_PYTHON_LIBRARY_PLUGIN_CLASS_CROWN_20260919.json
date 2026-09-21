@@ -1,0 +1,161 @@
+{
+  "schema": "luhm-os.python.library-plugin-class.v1",
+  "manifest_id": "LUHM_PYTHON_LIBRARY_PLUGIN_CLASS_CROWN_20260919",
+  "artifact_id": "pythnlbrryplgnclssystm",
+  "artifact_phrase": "python library plugin class system",
+  "naming_rule": "VOWEL_RIP",
+  "date_local": "2026-09-19",
+  "status": "CROWNED_SOURCE_CONTRACT",
+  "project": "LuHm OS / KAI 9000 / Project Hydra",
+  "repository": "eggie-admin/hydra-shell-android",
+  "canonical_branch": "luhmos-main",
+  "human_final_authority": "Professor",
+  "promotion_authorization": "EXPLICIT_CURRENT_USER_UPDATE_SOURCE_OF_TRUTH",
+  "source_law": "AI proposes. Policy authorizes. CI proves. The human promotes.",
+  "lineage": {
+    "coding_roleplay_seal": "project/hydra/source-of-truth/LUHM_CODING_ROLEPLAY_FNLMLSTN_20260918.json",
+    "python_core_skill": "ultima/ollama-ffmpeg-antenna-v3/lum_agent/skills/python-core/SKILL.md",
+    "jquery_plugin_skill": "ultima/ollama-ffmpeg-antenna-v3/lum_agent/skills/jquery-plugin/SKILL.md",
+    "prior_canonical_head": "d0cb42969b96c4812995fbb979f97854bd195c93",
+    "history_rewrite": false
+  },
+  "intent": {
+    "goal": "Give LuHm Python 3 the shortened intent-first feel the Professor likes in jQuery while preserving explicit architecture and boring-safe internals.",
+    "surface_rule": "Short on the surface, boring underneath.",
+    "migration_rule": "Add wrappers and contracts first. Move old code only after tests prove the wrapper path.",
+    "existing_code_is_not_automatically_deleted_or_moved": true
+  },
+  "three_layer_system": {
+    "library": {
+      "meaning": "Shared reusable foundation and primitives.",
+      "examples": ["config", "json", "events", "io", "registry"],
+      "short_surface": "L.lib(...)"
+    },
+    "plugin": {
+      "meaning": "Explicitly registered optional capability with metadata, defaults, lifecycle, validation and public methods.",
+      "examples": ["github", "media", "ai", "android", "magic"],
+      "short_surface": "L.plugin(...)"
+    },
+    "class": {
+      "meaning": "Stateful object model for behavior, composition and stable extension boundaries.",
+      "examples": ["Repo", "Media", "Agent", "Spell", "Device"],
+      "short_surface": "L.class_(...)"
+    }
+  },
+  "public_shorthand_contract": {
+    "primary_namespace": "L",
+    "approved_primary_calls": ["L.lib(...)", "L.plugin(...)", "L.class_(...)"],
+    "optional_future_aliases": ["L.l(...)", "L.p(...)", "L.c(...)"],
+    "aliases_are_not_required": true,
+    "no_single_magical_bucket": true,
+    "compact_api_must_preserve_layer_identity": true
+  },
+  "python_architecture": {
+    "src_layout_preferred": true,
+    "tests_outside_package": true,
+    "composition_before_inheritance": true,
+    "cheap_constructors": true,
+    "typed_public_surface": true,
+    "py_typed_for_typed_packages": true,
+    "pyi_for_intentionally_separated_public_contracts": true,
+    "json_boundary": "DECODE -> VALIDATE -> TYPED PYTHON -> OPERATE -> ENCODE",
+    "plugin_registration": "EXPLICIT_ONLY",
+    "arbitrary_writable_directory_discovery": false,
+    "provider_or_ai_text_becomes_executable_code_automatically": false
+  },
+  "vowel_rip_human_naming": {
+    "canonical": true,
+    "rule": "Derive artifact identifiers from the human phrase by removing a, e, i, o and u while preserving consonant order, then remove spaces and punctuation.",
+    "y_is_preserved": true,
+    "examples": [
+      {"phrase": "plugin registry", "artifact": "plgnrgstry"},
+      {"phrase": "class system", "artifact": "clssystm"},
+      {"phrase": "library loader", "artifact": "lbrryldr"},
+      {"phrase": "magic system", "artifact": "mgcsystm"},
+      {"phrase": "python library plugin class system", "artifact": "pythnlbrryplgnclssystm"}
+    ],
+    "human_phrase_should_remain_visible_near_ripped_identifier": true
+  },
+  "breadcrumb_comment_standard": {
+    "required_for": [
+      "registries",
+      "plugins",
+      "class factories",
+      "policy boundaries",
+      "Crown gates",
+      "cross-runtime boundaries",
+      "non-obvious data flow",
+      "temporary compatibility code",
+      "dangerous or consequential operations"
+    ],
+    "comments_should_answer": [
+      "WHAT IS THIS?",
+      "WHY DOES IT EXIST?",
+      "WHERE DOES DATA COME FROM?",
+      "WHERE DOES IT GO NEXT?",
+      "WHAT SHOULD NOT CALL THIS?",
+      "WHAT REQUIRES CROWN?"
+    ],
+    "style": "HUMAN_READABLE_AMUSING_USEFUL",
+    "ban_obvious_noise": true,
+    "bad_example": "# increment x",
+    "tone_examples": [
+      "Keeps the weird little optional demons in labeled jars.",
+      "If this starts importing half the cathedral, we have failed.",
+      "Incoming JSON enters here wearing a fake mustache. Validate it before letting it near anything expensive.",
+      "OLD DRAGON CAVE: kept temporarily because ancient imports still live here. Do not build condos.",
+      "No Crown? No boom button."
+    ],
+    "humor_may_never_hide_risk_or_change_truth": true
+  },
+  "plugin_contract": {
+    "python_owns": [
+      "plugin name and metadata",
+      "defaults",
+      "lifecycle state",
+      "validation",
+      "allowed public methods",
+      "JSON boundary",
+      "deterministic wrapper generation"
+    ],
+    "browser_owns_actual_jquery_execution": true,
+    "browser_owns_provider_keys": false,
+    "browser_owns_filesystem_authority": false,
+    "mutation_capable_operations_remain_policy_gated": true
+  },
+  "implementation_order": [
+    "Define the public library/plugin/class contracts and stubs.",
+    "Wrap existing implementation behind the new contracts without moving it.",
+    "Compile and run focused tests.",
+    "Migrate one implementation organ at a time only after wrapper evidence is GREEN.",
+    "Retire compatibility paths only after no active import depends on them."
+  ],
+  "hard_laws": [
+    "Compact syntax must not erase architecture.",
+    "Library, plugin and class are different concepts and remain visibly different in the public API.",
+    "Vowel-ripped identifiers retain an adjacent human-readable phrase where practical.",
+    "Breadcrumb remarks explain intent and boundaries, not obvious syntax.",
+    "Humor may decorate truth but may not obscure danger, authority or failure.",
+    "AI-generated provider text never gains automatic execution authority.",
+    "Consequential operations remain Crown-gated.",
+    "Evidence is required before GREEN."
+  ],
+  "release_and_external_boundaries": {
+    "public_publish": false,
+    "release_promotion": false,
+    "persistent_signing": false,
+    "apk_install": false,
+    "deploy": false,
+    "dns_mutation": false,
+    "billing_mutation": false,
+    "secret_print": false,
+    "destructive_purge": false
+  },
+  "seal": {
+    "source_contract_authority": true,
+    "build_green_claimed": false,
+    "runtime_green_claimed": false,
+    "device_green_claimed": false,
+    "meaning": "This crown governs future LuHm Python organization and coding breadcrumbs. It does not claim that existing Python has already been migrated or tested under the new structure."
+  }
+}

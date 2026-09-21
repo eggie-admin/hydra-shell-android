@@ -1,0 +1,69 @@
+name: LuHm OS Fastpath Gate
+
+on:
+  pull_request:
+    paths:
+      - 'AGENTS.md'
+      - '.github/agents/**'
+      - '.github/copilot-instructions.md'
+      - '.github/instructions/**'
+      - 'skills/**'
+      - 'project/hydra/project.manifest.json'
+      - 'project/hydra/runtime/performance.policy.json'
+      - 'project/hydra/source-of-truth/**'
+      - 'project/hydra/doctrine/**'
+      - 'tools/project_hydra_fastpath_guard.py'
+      - '.github/workflows/project-hydra-fastpath-gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: luhm-os-fastpath-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fastpath-doctrine:
+    name: Deterministic latency and authority guard
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Python 3.12
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+
+      - name: JSON parse gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m json.tool project/hydra/project.manifest.json >/dev/null
+          python -m json.tool project/hydra/runtime/performance.policy.json >/dev/null
+          python -m json.tool project/hydra/doctrine/proposed-source-of-truth/KAI9000_PROPOSED_GOOGLE_AI_EDGE_LOW_LATENCY_DOCTRINE_20260917.json >/dev/null
+
+      - name: LuHm OS fastpath guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/project_hydra_fastpath_guard.py
+
+      - name: No authority shortcut gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(python - <<'PY'
+          import json
+          p=json.load(open('project/hydra/runtime/performance.policy.json'))
+          print(str(p['promotion']['public_publish']).lower())
+          PY
+          )" = false
+          grep -q 'AI proposes. Policy authorizes. CI proves. The human promotes.' project/hydra/runtime/performance.policy.json
+          grep -q 'performance_claim_requires_measurement' project/hydra/runtime/performance.policy.json
+          grep -q 'repeat_same_path_same_sha_fetch' project/hydra/runtime/performance.policy.json
+          echo LUHM_OS_FASTPATH_POLICY_GREEN

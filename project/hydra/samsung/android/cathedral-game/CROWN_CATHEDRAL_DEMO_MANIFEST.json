@@ -1,0 +1,61 @@
+{
+  "schema": "luhm-os.crown-cathedral-demo.v1",
+  "status": "SOURCE_STAGED_BUILD_PENDING",
+  "date_local": "2026-09-18",
+  "title": "LuHm OS // Crown Cathedral",
+  "source_authority": "project/hydra/source-of-truth/KAI9000_PROJECT_HYDRA_ENTERPRISE_CROWN_20260918.json",
+  "package": "art.eggiebagelface.luhmos.demo",
+  "version_name": "1.0.11",
+  "version_code": 111,
+  "composition": {
+    "cathedral_game": "index.html",
+    "final_form": [
+      "final-form.css",
+      "final-form.js"
+    ],
+    "modular_cockpit": "modular-cockpit.css",
+    "install_gui": [
+      "apk-install-gui.css",
+      "apk-install-gui.js"
+    ],
+    "enterprise_distribution": "enterprise-distribution.js",
+    "update_channel": "update-channel.json",
+    "crown_cathedral": [
+      "crown-cathedral.css",
+      "crown-cathedral.js"
+    ],
+    "original_world_assets": [
+      "godot-world/assets/lum_world_sprite.svg",
+      "godot-world/assets/lum_hud_icon.svg"
+    ],
+    "world_contract": [
+      "godot-world/WORLD_FIRST_MANIFEST.json",
+      "godot-world/scenes/main.tscn",
+      "godot-world/scripts/world_first.gd"
+    ],
+    "cleared_godot_profile": "godot4-cleared/secondary-motion-profile.json",
+    "local_avatar": {
+      "filename": "lum-avatar-actual-animated.mp4",
+      "sha256": "1a20bd7bf495ee930d2cc9dab9342d7cb29d326ce0c7f433c206581ebdddad97"
+    }
+  },
+  "exclusions": [
+    "raw multipart archive contents",
+    "secret-like files",
+    "private/reference media not explicitly sealed",
+    "third-party APK/binaries",
+    "recognizable franchise reference imagery",
+    "non-redistributable or provenance-blocked donor content"
+  ],
+  "authority": {
+    "human": "Professor",
+    "silent_install": false,
+    "public_publish": false,
+    "release_promotion": false,
+    "persistent_signing": false,
+    "deploy": false,
+    "dns": false,
+    "billing": false
+  },
+  "physical_proof": "PENDING_AFTER_BUILD_AND_USER_INSTALL"
+}

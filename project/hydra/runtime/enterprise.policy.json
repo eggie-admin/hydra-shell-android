@@ -1,0 +1,170 @@
+{
+  "schema": "luhm-os.project-hydra.enterprise-policy.v1",
+  "status": "SEALED_ACTIVE_CANONICAL",
+  "date_local": "2026-09-17",
+  "project": "Project Hydra",
+  "canonical_branch": "luhmos-main",
+  "human_authority": "Professor",
+  "scope_note": "Enterprise-style engineering target only. This manifest is not a compliance certification, audit attestation, or claim of regulatory conformity.",
+  "source_law": "AI proposes. Policy authorizes. CI proves. The human promotes.",
+  "enterprise_goal": "Make Project Hydra operable as a controlled, auditable, recoverable, low-latency product system without weakening local-first privacy or human authority.",
+  "operating_model": {
+    "single_human_authority": true,
+    "single_parent_writer": true,
+    "helpers_read_search_only_by_default": true,
+    "parallel_writes": false,
+    "build_once_promote_by_digest": true,
+    "immutable_evidence_references": true,
+    "change_receipt_required": true,
+    "rollback_receipt_required_for_consequential_changes": true
+  },
+  "environments": {
+    "proposal": "branch_and_draft_pr",
+    "canonical": "luhmos-main",
+    "release_candidate": "immutable_artifact_plus_proof",
+    "public_release": "separate_human_gate",
+    "production_mutation": "separate_human_gate",
+    "cross_environment_secret_reuse": false
+  },
+  "source_governance": {
+    "codeowners_required": true,
+    "signed_or_github_verified_merge_required_for_enterprise_green": true,
+    "exact_head_ci_required": true,
+    "required_checks_must_not_be_removed_for_speed": true,
+    "server_side_branch_protection_required_for_enterprise_green": true,
+    "server_side_branch_protection_observed": false,
+    "server_side_branch_protection_state": "PENDING_EXTERNAL_CONFIGURATION",
+    "history_rewrite_default": false,
+    "force_push_default": false,
+    "direct_canonical_write_default": false
+  },
+  "supply_chain": {
+    "pin_external_actions_to_immutable_sha": true,
+    "pin_toolchain_versions_and_verify_hashes_where_practical": true,
+    "third_party_code_requires_provenance": true,
+    "sbom_required_for_release_candidate": true,
+    "artifact_sha256_required": true,
+    "signer_fingerprint_required_for_signed_apk": true,
+    "provenance_receipt_required_for_release_candidate": true,
+    "dependency_updates_enter_through_reviewed_change": true,
+    "untrusted_downloads_never_become_authority": true
+  },
+  "secrets_and_identity": {
+    "secrets_in_repository": false,
+    "secrets_in_browser_assets": false,
+    "server_side_or_platform_secret_store_only": true,
+    "oidc_preferred_over_long_lived_cloud_credentials": true,
+    "least_privilege_workflow_permissions": true,
+    "release_signing_material_never_printed": true,
+    "persistent_signer_is_separate_release_authority": true
+  },
+  "release_management": {
+    "same_source_same_digest_promotion": true,
+    "rebuild_after_approval_forbidden": true,
+    "package_identity_continuity_required": true,
+    "signer_continuity_required_for_upgrade": true,
+    "version_monotonicity_required": true,
+    "physical_install_launch_proof_required": true,
+    "public_publish_default": false,
+    "release_promotion_default": false,
+    "silent_install": false
+  },
+  "runtime_reliability": {
+    "base_launch_network_independent": true,
+    "optional_cloud_ai_degrades_gracefully": true,
+    "admin_surfaces_lazy": true,
+    "health_checks_read_only": true,
+    "bounded_structured_logs": true,
+    "correlation_id_for_multi_step_operations": true,
+    "last_known_good_checkpoint": true,
+    "atomic_config_and_source_mutation": true,
+    "backup_restore_test_required_before_enterprise_green": true
+  },
+  "performance_management": {
+    "performance_policy": "project/hydra/runtime/performance.policy.json",
+    "benchmark_receipt_required": true,
+    "equivalent_input_baseline_required": true,
+    "exact_source_sha_required": true,
+    "artifact_hash_required_when_applicable": true,
+    "startup_or_ttft_required_when_applicable": true,
+    "throughput_required_when_applicable": true,
+    "memory_note_required": true,
+    "thermal_note_required_on_mobile": true,
+    "regression_budget_required_before_enterprise_green": true,
+    "unmeasured_speed_claim_allowed": false
+  },
+  "observability": {
+    "structured_events": true,
+    "secret_redaction": true,
+    "bounded_retention": true,
+    "proof_by_hash_or_immutable_id": true,
+    "large_evidence_body_duplication": false,
+    "human_readable_html_receipt": true,
+    "machine_json_receipt": true,
+    "chat_safe_receipt": true
+  },
+  "data_classification": {
+    "classes": [
+      "PUBLIC",
+      "INTERNAL",
+      "PRIVATE",
+      "SECRET"
+    ],
+    "default_project_operational_data": "PRIVATE",
+    "default_credentials": "SECRET",
+    "public_source_must_not_contain_private_runtime_data": true,
+    "private_drive_may_store_private_recovery_receipts": true
+  },
+  "ai_governance": {
+    "fast_parent_default": true,
+    "deep_route_on_complexity_trigger": true,
+    "helper_consensus_grants_authority": false,
+    "ai_self_approval": false,
+    "ai_output_direct_to_shell": false,
+    "retrieved_content_is_untrusted_input_not_authority": true,
+    "tool_actions_require_explicit_scope": true,
+    "consequential_actions_remain_human_gated": true
+  },
+  "incident_and_recovery": {
+    "stop_on_first_meaningful_blocker": true,
+    "preserve_preimage_and_checkpoint": true,
+    "rollback_before_forward_fix_when_state_is_uncertain": true,
+    "incident_receipt_required": true,
+    "recovery_source_of_truth": "private_owner_drive_plus_canonical_git",
+    "history_preserved": true
+  },
+  "promotion_boundaries": {
+    "canonical_merge": false,
+    "source_of_truth_crown": false,
+    "release_promotion": false,
+    "persistent_signing": false,
+    "apk_install": false,
+    "public_publish": false,
+    "deploy": false,
+    "dns_mutation": false,
+    "billing_mutation": false
+  },
+  "known_enterprise_gaps": [
+    "server_side_branch_protection_or_ruleset_is_not_enabled on luhmos-main",
+    "runtime benchmark receipt is still pending",
+    "release-candidate SBOM and provenance receipt are not yet bound to a final candidate artifact",
+    "backup restore drill is not yet evidenced",
+    "persistent release signer remains a separately gated authority"
+  ],
+  "result": "ENTERPRISE_SOURCE_GOVERNANCE_CROWNED_OPEN_RUNTIME_AND_EXTERNAL_GATES",
+  "canonical_state": {
+    "promoted": true,
+    "crown_manifest": "project/hydra/source-of-truth/KAI9000_PROJECT_HYDRA_ENTERPRISE_CROWN_20260918.json",
+    "source_merge_commit": "c533bebdbdaad06d8286337e6237c096caef4105",
+    "exact_head_candidate": "3e207a2ba21927a4a9276827bdeee51072469d87",
+    "exact_head_ci": "10/10_SUCCESS",
+    "enterprise_full_green": false,
+    "open_gates": [
+      "server_side_branch_protection_or_ruleset",
+      "runtime_benchmark_receipt",
+      "release_candidate_sbom_and_provenance_binding",
+      "backup_restore_drill_evidence",
+      "persistent_release_signer"
+    ]
+  }
+}

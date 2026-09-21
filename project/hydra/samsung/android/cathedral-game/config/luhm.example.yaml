@@ -1,0 +1,31 @@
+schema: luhm_os.runtime_config.v1
+mode: development
+
+security:
+  execution_posture: advisory_only
+  direct_shell_execution: false
+  secrets_from_environment_only: true
+  allow_browser_secrets: false
+
+providers:
+  default: none
+  openai:
+    enabled: false
+    api_key_env: OPENAI_API_KEY
+  google:
+    enabled: false
+    api_key_env: GOOGLE_API_KEY
+
+services:
+  bind_host: 127.0.0.1
+  public_api: false
+  docs_enabled: false
+
+android:
+  package_id: art.eggiebagelface.luhmos.candidate
+  target_sdk: 36
+  min_sdk: 24
+
+logging:
+  level: INFO
+  redact_secrets: true

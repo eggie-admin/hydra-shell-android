@@ -1,0 +1,36 @@
+name: LuHm OS Unified Project Guard
+
+on:
+  pull_request:
+    paths:
+      - 'lumh-os/kai9000/project.manifest.json'
+      - 'integrations/vendor-apis.manifest.json'
+      - 'tools/unified_project_guard.py'
+      - '.github/workflows/project-hydra-fastpath-gate.yml'
+      - '.github/workflows/hydra-local.yml'
+      - '.github/workflows/luhmos-unified-project-guard.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: luhm-os-unified-project-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unified-project:
+    name: One LuHm OS project identity
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Python 3.12
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Unified project contract
+        run: python tools/unified_project_guard.py
