@@ -1,13 +1,15 @@
 {
-  "schema": "luhm-os.sm-x400-package.v2",
-  "id": "LUHM_OS_IRON_SAINT_GODOT3D_SM_X400_API37_20260921",
+  "schema": "luhm-os.sm-x400-package.v3",
+  "id": "LUHM_OS_IRON_SAINT_UPDATE_LANE_SM_X400_API37_20260921",
   "source_of_truth": "docs/CROWN_SOURCE_OF_TRUTH_20260920.json",
-  "candidate_branch": "build/iron-saint-playable-20260921",
+  "candidate_branch": "build/luhm-update-lane-20260921",
   "app": {
     "label": "LuHm OS",
     "package_id": "art.eggiebagelface.kai9000.dev",
-    "version_name": "0.10.0-dev",
-    "version_code": 10
+    "base_version_name": "0.10.0-base",
+    "base_version_code": 1000,
+    "first_update_version_name": "0.10.1-update",
+    "first_update_version_code": 1001
   },
   "device": {"manufacturer":"Samsung","model":"SM-X400","abi":"arm64-v8a"},
   "android": {"min_sdk":31,"compile_sdk":37,"target_sdk":37},
@@ -33,6 +35,19 @@
     "internet_permission":false,
     "cross_profile_loopback":false
   },
+  "update_lane": {
+    "package_id_stable": true,
+    "signer_continuity_required": true,
+    "monotonic_version_code_required": true,
+    "public_forge_output_unsigned": true,
+    "private_signing_after_forge": true,
+    "private_key_in_git": false,
+    "private_key_in_public_ci": false,
+    "base_install_contract": "install persistent-signer base once; future LuHm OS APKs must use the same signing certificate and a higher versionCode",
+    "signature_conflict_after_base": "not_expected_when_update_contract_is_followed",
+    "no_nag_scope": "eliminate signer-conflict/uninstall cycle; Android and Samsung security UI may still require source authorization or confirmation",
+    "auto_blocker_compatible_without_user_change": false
+  },
   "forge": {
     "os":"ubuntu-24.04",
     "agp":"9.1.1",
@@ -42,12 +57,17 @@
     "build_tools":"37.0.0",
     "godot_android_aar":"org.godotengine:godot:4.7.2.stable",
     "node":24,
-    "python":"3.14"
+    "python":"3.14",
+    "base_release":"unsigned",
+    "update_release":"unsigned",
+    "signing_tools_exported":"official Android build-tools apksigner"
   },
   "signing": {
-    "testing":"android-debug-signature",
-    "production":"external-secret-keystore-required",
-    "private_key_in_repo":false
+    "base":"private-persistent-luhm-update-key",
+    "updates":"same-private-persistent-luhm-update-key",
+    "public_ci":"unsigned-release-only",
+    "private_key_in_repo":false,
+    "ephemeral_debug_signing_allowed_for_update_lane":false
   },
-  "status": "CANDIDATE_NOT_GREEN_UNTIL_CI_AND_DEVICE_PLAYTEST"
+  "status": "UPDATE_LANE_SOURCE_CANDIDATE"
 }

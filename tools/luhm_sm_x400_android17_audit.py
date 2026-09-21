@@ -13,6 +13,7 @@ INDEX = ROOT / 'samsung-sm-x400/luhm-os/app/src/main/assets/index.html'
 GODOT_PROJECT = ROOT / 'samsung-sm-x400/luhm-os/app/src/main/assets/project.godot'
 GODOT_SCENE = ROOT / 'samsung-sm-x400/luhm-os/app/src/main/assets/main.tscn'
 GODOT_SCRIPT = ROOT / 'samsung-sm-x400/luhm-os/app/src/main/assets/main.gd'
+WORKFLOW = ROOT / '.github/workflows/luhm-os-sm-x400-api37.yml'
 
 EXPECTED = {
     'CURRENT_LUM_MIDNIGHT_1996_MODEL_SHEET.png': '60a84012d60965c3cfb02c2f94aaeca11401f0965c85595fc9ebcc79a0961ce0',
@@ -38,20 +39,38 @@ def main():
     project = GODOT_PROJECT.read_text()
     scene = GODOT_SCENE.read_text()
     script = GODOT_SCRIPT.read_text()
+    wf = WORKFLOW.read_text()
 
     need(c['android']['hardware_target']['model'] == 'SM-X400', 'device target')
     need(c['android']['platform_target']['api'] == 37, 'api37 crown baseline')
     need(c['android']['termux_runtime_dependency'] is False, 'termux crown baseline')
 
-    need(p['app']['version_name'] == '0.10.0-dev' and p['app']['version_code'] == 10, 'game candidate version')
+    need(p['app']['base_version_code'] == 1000, 'base versionCode')
+    need(p['app']['first_update_version_code'] == 1001, 'first update versionCode')
+    need(p['app']['first_update_version_code'] > p['app']['base_version_code'], 'versionCode monotonicity')
+    need(p['update_lane']['package_id_stable'] is True, 'stable package id')
+    need(p['update_lane']['signer_continuity_required'] is True, 'signer continuity')
+    need(p['update_lane']['public_forge_output_unsigned'] is True, 'public forge must remain unsigned')
+    need(p['update_lane']['private_key_in_git'] is False, 'private signer leaked to git policy')
+    need(p['update_lane']['private_key_in_public_ci'] is False, 'private signer leaked to public CI policy')
+    need(p['signing']['ephemeral_debug_signing_allowed_for_update_lane'] is False, 'ephemeral debug signer allowed')
     need(p['game']['engine'] == 'Godot 4.7.2 stable', 'Godot version')
     need(p['game']['questforge_engineering_authority'] is False, 'Questforge authority boundary')
     need(p['runtime']['termux'] is False and p['runtime']['bash_installer'] is False, 'package termux/bash')
     need(p['runtime']['webview_primary_runtime'] is False, 'WebView still primary runtime')
 
-    for s in ['compileSdk = 37', 'targetSdk = 37', 'minSdk = 31', 'versionCode = 10', 'versionName = "0.10.0-dev"']:
-        need(s in g, 'gradle ' + s)
+    for token in [
+        'compileSdk = 37',
+        'targetSdk = 37',
+        'minSdk = 31',
+        'providers.gradleProperty("luhmVersionCode")',
+        'providers.gradleProperty("luhmVersionName")',
+        'orElse("1000")',
+        'orElse("0.10.0-base")'
+    ]:
+        need(token in g, 'gradle update-lane token ' + token)
     need('implementation("org.godotengine:godot:4.7.2.stable")' in g, 'Godot Android AAR dependency')
+    need('signingConfigs' not in g, 'signing secret/config must not live in public gradle source')
 
     need('android:label="LuHm OS"' in m, 'app label')
     need('android.permission.INTERNET' not in m, 'internet permission present')
@@ -82,13 +101,29 @@ def main():
     need('AI_GENERATED_DEMO_ONLY' in excluded['luhm_*_demo.png'], 'prototype demo exclusion missing')
     need('http://' not in h and 'https://' not in h, 'external URL in legacy Cathedral UI')
 
+    for token in [
+        'build/luhm-update-lane-20260921',
+        ':app:assembleRelease',
+        '-PluhmVersionCode="$BASE_VERSION_CODE"',
+        '-PluhmVersionCode="$UPDATE_VERSION_CODE"',
+        'app-release-unsigned.apk',
+        'luhm-os-base-unsigned.apk',
+        'luhm-os-update-unsigned.apk',
+        'lib/apksigner.jar'
+    ]:
+        need(token in wf, 'update forge token missing: ' + token)
+    need(':app:assembleDebug' not in wf, 'debug signing must not be used by update lane')
+    need('SIGNING_KEY' not in wf and 'KEYSTORE_B64' not in wf, 'private signing material referenced by public CI')
+
     print('LUHM_SM_X400_SOURCE_TRUTH_GREEN')
     print('LUHM_API37_HEADLESS_PACKAGE_GREEN')
     print('LUHM_GODOT3D_SOURCE_GREEN')
     print('IRON_SAINT_PLAYABLE_SOURCE_GREEN')
-    print('GODOT_VERSION=4.7.2.stable')
-    print('CANONICAL_DRIVE_ASSETS=6')
-    print('PUBLIC_BRAND_ASSETS=3')
+    print('LUHM_UPDATE_LANE_SOURCE_GREEN')
+    print('PUBLIC_FORGE_SIGNING=UNSIGNED_ONLY')
+    print('BASE_VERSION_CODE=1000')
+    print('FIRST_UPDATE_VERSION_CODE=1001')
+    print('PRIVATE_SIGNER_REQUIRED_AFTER_FORGE=true')
     print('TERMUX_DEPENDENCY=false')
     print('BASH_INSTALLER=false')
     print('EXTERNAL_DAEMON=false')
