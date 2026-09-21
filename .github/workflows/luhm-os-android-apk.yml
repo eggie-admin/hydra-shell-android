@@ -1,9 +1,11 @@
-name: KAI 9000 ULTIMA APK
+name: LuHm OS Android APK
 
 on:
   workflow_dispatch:
   push:
-    branches: [testing/luhm-os-android]
+    branches:
+      - testing/luhm-os-android
+      - 'build/luhm-os-signed-install-*'
     paths:
       - 'luhmos/samsung-android-s24/native-cathedral/**'
       - 'luhmos/samsung-android-s24/live2d-chat/**'
@@ -16,7 +18,7 @@ on:
       - 'THANKS.md'
       - 'AGENTS.md'
       - '.github/copilot-instructions.md'
-      - '.github/workflows/kai9000-ultima-apk.yml'
+      - '.github/workflows/luhm-os-android-apk.yml'
   pull_request:
     branches: [testing/luhm-os-android]
     paths:
@@ -31,22 +33,23 @@ on:
       - 'THANKS.md'
       - 'AGENTS.md'
       - '.github/copilot-instructions.md'
-      - '.github/workflows/kai9000-ultima-apk.yml'
+      - '.github/workflows/luhm-os-android-apk.yml'
 
 permissions:
   contents: read
 
 concurrency:
-  group: kai9000-ultima-${{ github.ref }}
+  group: luhm-os-android-${{ github.ref }}
   cancel-in-progress: true
 
 env:
   APP_DIR: luhmos/samsung-android-s24/native-cathedral
   UI_SRC: luhmos/samsung-android-s24/live2d-chat
   PACKAGE_ID: art.eggiebagelface.kai9000.dev
-  VERSION_NAME: 0.8.0-dev
-  VERSION_CODE: '8'
-  APK_NAME: kai9000-dev.apk
+  APP_LABEL: LuHm OS
+  VERSION_NAME: 0.8.1-dev
+  VERSION_CODE: '9'
+  APK_NAME: LuHm-OS-0.8.1-dev.apk
   DONOR_PURGED_BEFORE_APK: 'true'
 
 jobs:
@@ -55,11 +58,11 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           persist-credentials: false
 
-      - name: Verify KAI-owned APK source
+      - name: Verify LuHm OS owned APK source
         shell: bash
         run: |
           set -euo pipefail
@@ -68,27 +71,23 @@ jobs:
           test -f "$APP_DIR/app/src/main/AndroidManifest.xml"
           test -f "$UI_SRC/index.html"
           test -f THANKS.md
+          grep -q 'android:label="LuHm OS"' "$APP_DIR/app/src/main/AndroidManifest.xml"
 
           if git ls-files "$APP_DIR" | grep -Ei '(^|/)(donor|chrome[-_]?dev|chrome[-_]?canary|chromium[-_]?donor)(/|$)'; then
-            echo 'Donor/browser harness payload found inside KAI-owned APK source' >&2
+            echo 'Donor/browser harness payload found inside LuHm OS APK source' >&2
             exit 1
           fi
 
           if git ls-files "$APP_DIR" | grep -Ei '\.(apk|aar|jar|so)$'; then
-            echo 'Vendored binary payload found inside KAI-owned APK source' >&2
-            exit 1
-          fi
-
-          if grep -nE '^[[:space:]]+repository:[[:space:]]+.*vue-headless-cms|^[[:space:]]+DONOR_REPO:' .github/workflows/kai9000-ultima-apk.yml; then
-            echo 'Legacy donor checkout detected in active APK workflow' >&2
+            echo 'Vendored binary payload found inside LuHm OS APK source' >&2
             exit 1
           fi
 
           grep -q 'Chrome Dev and Chrome Canary are test/behavior harnesses only' AGENTS.md
           echo 'DONOR_PURGED_BEFORE_APK=true'
-          echo 'KAI_OWNED_SOURCE_GREEN'
+          echo 'LUHM_OS_SOURCE_GREEN'
 
-      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.14'
           cache: pip
@@ -116,24 +115,24 @@ jobs:
             echo 'Secret-like credential material detected' >&2
             exit 1
           fi
-          echo 'KAI_DOCTRINE_GREEN'
+          echo 'LUHM_OS_DOCTRINE_GREEN'
 
   apk:
-    name: KAI-owned native Cathedral APK
+    name: LuHm OS signed install APK
     needs: [doctrine]
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           persist-credentials: false
 
-      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961
         with:
           distribution: temurin
           java-version: '17'
 
-      - uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+      - uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c
         with:
           gradle-version: '8.13'
           cache-cleanup: on-success
@@ -146,7 +145,7 @@ jobs:
           yes | "$SDKMANAGER" --licenses >/dev/null || true
           "$SDKMANAGER" 'platform-tools' 'build-tools;36.1.0' 'platforms;android-36'
 
-      - name: Stage KAI-owned cockpit assets
+      - name: Stage LuHm OS cockpit assets
         shell: bash
         run: |
           set -euo pipefail
@@ -157,9 +156,9 @@ jobs:
           test -f "$DEST/index.html"
           test -f "$DEST/app.js"
           test -f "$DEST/style.css"
-          echo 'KAI_COCKPIT_ASSETS_GREEN'
+          echo 'LUHM_OS_COCKPIT_ASSETS_GREEN'
 
-      - name: Build KAI 9000 native APK
+      - name: Build LuHm OS signed install APK
         shell: bash
         run: |
           set -euo pipefail
@@ -169,7 +168,7 @@ jobs:
           mkdir -p build/android
           cp "$SRC" "build/android/$APK_NAME"
 
-      - name: Verify APK identity, signature, alignment, source boundary
+      - name: Verify APK identity, label, signature, alignment, source boundary
         shell: bash
         run: |
           set -euo pipefail
@@ -182,7 +181,9 @@ jobs:
           sha256sum "$APK" | tee build/android/sha256.txt
 
           grep -q "package: name='$PACKAGE_ID' versionCode='$VERSION_CODE' versionName='$VERSION_NAME'" build/android/badging.txt
+          grep -q "application-label:'$APP_LABEL'" build/android/badging.txt
           grep -q 'assets/cathedral/index.html' build/android/contents.txt
+          grep -q 'Verified using v2 scheme (APK Signature Scheme v2): true' build/android/signature.txt
 
           if grep -Ei '(^|/)(chrome[-_]?dev|chrome[-_]?canary|chromium[-_]?donor|donor)(/|$)' build/android/contents.txt; then
             echo 'Donor or Chrome harness payload detected in APK' >&2
@@ -191,12 +192,13 @@ jobs:
 
           printf '%s\n' 'DONOR_PURGED_BEFORE_APK=true' | tee build/android/donor-purge.txt
           echo 'APK_BUILD_GREEN'
-          echo 'ULTIMA_PENDING_DEVICE_VALIDATION'
+          echo 'SIGNED_INSTALL_READY'
+          echo 'DEVICE_VALIDATION_PENDING'
 
-      - name: Upload KAI 9000 APK
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+      - name: Upload LuHm OS APK
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
         with:
-          name: kai9000-native-cathedral-${{ github.run_number }}
+          name: luhm-os-android-${{ github.run_number }}
           path: |
             build/android/${{ env.APK_NAME }}
             build/android/sha256.txt

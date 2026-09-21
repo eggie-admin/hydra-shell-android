@@ -13,8 +13,8 @@ android {
         applicationId = "art.eggiebagelface.kai9000.dev"
         minSdk = 31
         targetSdk = 36
-        versionCode = 8
-        versionName = "0.8.0-dev"
+        versionCode = 9
+        versionName = "0.8.1-dev"
     }
 
     compileOptions {
