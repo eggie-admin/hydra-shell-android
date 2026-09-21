@@ -1,0 +1,129 @@
+{
+  "schema": "luhm-os.astra-custom-agent-mesh-seal.v1",
+  "seal_id": "LUHM_ASTRA_CUSTOM_AGENT_MESH_SEAL_20260921",
+  "date": "2026-09-21",
+  "state": "SEALED_CANDIDATE_ARCHITECTURE",
+  "canonical": false,
+  "crowned": false,
+  "project": "LuHm OS / Project Hydra / KAI 9000",
+  "repository": "eggie-admin/hydra-shell-android",
+  "canonical_branch": "luhmos-main",
+  "candidate_branch": "luhmos/astra-agent-mesh-redeploy-20260921",
+  "base_canonical_sha": "38c5b8c4264351fb500672b47f92ac9d21b4df0a",
+  "human_final_authority": "Professor",
+  "boss": {
+    "name": "Lum",
+    "kind": "custom_agent",
+    "single_boss": true,
+    "speaks_to": "Professor",
+    "self_approval": false
+  },
+  "architecture": {
+    "chain": [
+      "Professor",
+      "Custom Lum Agent",
+      "ASTRA routing/profile layer",
+      "OpenAI Agents SDK backend",
+      "Bounded Oni helper mesh",
+      "Deterministic Tool Executor",
+      "Crown Gate",
+      "Verification evidence"
+    ],
+    "astra": {
+      "role": "fast orchestration and routing profile",
+      "replaces_lum": false,
+      "is_model_identity": false,
+      "is_authority_source": false,
+      "may_self_approve": false
+    },
+    "agent_backend": {
+      "runtime": "OpenAI Agents SDK",
+      "current_reference_agent": "KAI9000-Lum-InApp",
+      "default_model": "gpt-5.6-luna",
+      "deep_model": "gpt-5.6-sol",
+      "credential_location": "server_side_only",
+      "tracing_default": "disabled"
+    },
+    "custom_agent_binding": {
+      "lum_personality_and_doctrine_remain_primary": true,
+      "astra_routes_tasks_for_lum": true,
+      "oni_helpers_report_only_to_lum": true,
+      "helper_consensus_grants_authority": false,
+      "tool_executor_is_agent": false
+    }
+  },
+  "oni_mesh": {
+    "default_roles": ["Context", "Build", "Research"],
+    "conditional_role": "Critic",
+    "max_parallel_helpers": 3,
+    "max_delegation_depth": 1,
+    "recursive_recruitment": false,
+    "parallel_writes": false,
+    "evidence_moves_by_reference": true,
+    "display_names_are_mutable": true,
+    "technical_roles_are_stable_contracts": true
+  },
+  "authority_boundary": {
+    "read_and_reason": true,
+    "parallel_read_helpers": true,
+    "propose_mutation": true,
+    "direct_unapproved_write": false,
+    "self_approval": false,
+    "arbitrary_shell": false,
+    "signing": false,
+    "install": false,
+    "canonical_merge": false,
+    "public_publish": false,
+    "deploy": false,
+    "release_promotion": false,
+    "crown": false
+  },
+  "mutation_contract": {
+    "single_writer": true,
+    "human_approval_required": true,
+    "checkpoint_before_write": true,
+    "preimage_sha_recheck": true,
+    "atomic_replace": true,
+    "postwrite_sha_verify": true,
+    "ai_output_direct_to_shell": false
+  },
+  "source_law": "AI proposes. Policy authorizes. CI proves. The human promotes.",
+  "evidence": [
+    {
+      "path": "ultima/ollama-ffmpeg-antenna-v3/lum_agent/agent.py",
+      "blob_sha": "184e1d1906043aba274cd650ce2a048af72f3f05",
+      "claim": "Current Lum runtime uses OpenAI Agents SDK Agent and Runner with gpt-5.6-luna default, server-side OPENAI_API_KEY check, parallel tool calls, and tracing disabled by default."
+    },
+    {
+      "path": "skills/luhm-fast-agent-mesh/SKILL.md",
+      "blob_sha": "b626b1a95949f609e9026c590c35cb8d5082544a",
+      "claim": "Fast mesh contract preserves a single parent, bounded read-only helpers, evidence-by-reference, single-writer mutation, and human approval gates."
+    },
+    {
+      "path": "project/hydra/doctrine/proposed-source-of-truth/KAI9000_PROPOSED_FAST_LUM_AGENT_MESH_20260917.json",
+      "blob_sha": "d7747b184b4279fc48933983ef40a30a830d0c58",
+      "claim": "Existing proposal defines Luna fast lane, Sol deep escalation, bounded mini helpers, and Agents SDK use where orchestration materially helps."
+    },
+    {
+      "path": "project/hydra/doctrine/proposed-source-of-truth/KAI9000_PROPOSED_OPENAI_LUM_AGENT_REDEPLOY_SEAL_20260917.json",
+      "blob_sha": "cd2bb8ea177919668aa03038a4a6e8969844ae30",
+      "claim": "Existing redeploy seal keeps KAI9000-Lum-InApp on OpenAI Agents SDK with human approval required for writes."
+    }
+  ],
+  "redeploy_status": {
+    "architecture_decision_saved": true,
+    "candidate_branch_created": true,
+    "runtime_code_mutated": false,
+    "tests_run": false,
+    "ci_run": false,
+    "merged_to_luhmos_main": false,
+    "runtime_deployed": false,
+    "device_verified": false
+  },
+  "promotion_gate": {
+    "runtime_mutation_required": true,
+    "focused_tests_required": true,
+    "exact_head_ci_required": true,
+    "professor_final_promotion_required": true
+  }
+}
