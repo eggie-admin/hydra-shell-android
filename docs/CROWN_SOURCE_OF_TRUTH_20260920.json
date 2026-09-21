@@ -1,10 +1,10 @@
 {
-  "schema": "luhm-os.crown-source-of-truth.v3",
+  "schema": "luhm-os.crown-source-of-truth.v4",
   "id": "CROWN_SOURCE_OF_TRUTH_20260920",
   "date": "2026-09-20",
   "updated": "2026-09-21",
-  "status": "CROWNED_GODOT3D_UPDATE_LANE_FORGE_GREEN_DEVICE_UPDATE_PENDING",
-  "scope": "LuHm OS SM-X400 self-contained Godot 3D package and persistent APK update-lane doctrine",
+  "status": "CROWNED_GODOT3D_GUI_SOURCE_TRUTH_SIGNED_DEVICE_UPDATE_PENDING",
+  "scope": "LuHm OS SM-X400 self-contained Godot 3D Cathedral cockpit, persistent APK update lane, and evidence-gated device validation doctrine",
   "supersedes": "docs/CROWN_SOURCE_OF_TRUTH_20260919.json",
   "authority": {
     "human_final_authority": "Professor",
@@ -109,6 +109,34 @@
       "native_project": "samsung-sm-x400/luhm-os"
     }
   },
+  "gui_contract": {
+    "status": "SOURCE_AND_FORGE_GREEN_DEVICE_VISUAL_PENDING",
+    "shell": "LuHm OS Cathedral cockpit",
+    "canonical_information_architecture": [
+      "Evidence Board",
+      "Authority",
+      "Art & Assets",
+      "3D",
+      "Roleplay Wall",
+      "Questforge",
+      "Self Audit",
+      "Truth Receipt"
+    ],
+    "evidence_board_first": true,
+    "truth_receipt_persistent": true,
+    "authority_contains": ["Crown", "Boss", "Device contract", "Runtime truth"],
+    "roleplay_wall_hard_separation": true,
+    "questforge_contains_iron_saint": true,
+    "questforge_launches_3d_game": true,
+    "gameplay_hud_is_child_mode_not_primary_information_architecture": true,
+    "three_d_runtime_state_separate_from_questforge_fiction": true,
+    "art_assets_rights_wall_required": true,
+    "self_audit_exposes_green_pending_receipts": true,
+    "safe_area_aware": true,
+    "adaptive_container_layout": true,
+    "absolute_pixel_cockpit_layout_allowed": false,
+    "sm_x400_visual_validation": "PENDING"
+  },
   "forge": {
     "environment": "github_actions_ubuntu_24_04",
     "gradle": "9.3.1",
@@ -124,26 +152,35 @@
     "debug_signing_allowed_for_isolated_testing": true,
     "persistent_update_lane_public_ci_output": "unsigned_release_only",
     "persistent_update_lane_private_signing_required": true,
+    "persistent_private_signer_created_outside_public_ci": true,
     "private_signing_material_in_repo": false,
     "private_signing_material_in_public_ci": false
   },
   "update_lane": {
-    "status": "FORGE_GREEN_PRIVATE_SIGNER_AND_DEVICE_UPDATE_PENDING",
+    "status": "SIGNED_BASE_AND_UPDATE_READY_DEVICE_TEST_PENDING",
     "package_id_stable": true,
     "base": {
       "version_name": "0.10.0-base",
       "version_code": 1000,
-      "public_forge_output": "unsigned"
+      "public_forge_output": "unsigned",
+      "private_signed_apk_sha256": "bc0adbed8e9c5088512a4cb5ce76b9e9fcd84330819886cc094897ba251f7552",
+      "drive_file_id": "1wG9YEE0NDSpHTlZMSygquADppy-LPRj3"
     },
     "first_update": {
       "version_name": "0.10.1-update",
       "version_code": 1001,
-      "public_forge_output": "unsigned"
+      "public_forge_output": "unsigned",
+      "private_signed_apk_sha256": "4f2f2d71eef7f71403aa43cd72e98bece8fb115e7e476ad0a815488e1753a0a3",
+      "drive_file_id": "18vspwVKGOtzinAjH60-_7J0b48ySwxV5"
     },
     "same_signing_certificate_required": true,
+    "same_signing_certificate_verified": true,
+    "signing_certificate_sha256": "bd90bc9e0d725476f7936ecb7ef8a71f3d2ac502cd3071022cf66864fd0c0a7f",
+    "signing_key_algorithm": "RSA-4096",
     "monotonic_version_code_required": true,
-    "persistent_private_signer_created": false,
-    "persistent_private_signer_backup_verified": false,
+    "persistent_private_signer_created": true,
+    "persistent_private_signer_backup_verified": true,
+    "private_signer_backup_hash_reverified_after_drive_download": true,
     "base_to_update_device_install_verified": false,
     "signature_conflict_uninstall_cycle_expected_after_base": false,
     "android_or_samsung_install_confirmation_can_be_bypassed_by_apk_signature_alone": false,
@@ -179,14 +216,27 @@
       "canonical_apk_assets_verified": 9,
       "sm_x400_3d_playtest": "PENDING"
     },
+    "cathedral_gui_source_truth_green": {
+      "status": "GREEN",
+      "forge_run_id": 35596600603,
+      "forge_run_number": 32,
+      "source_commit": "166c0934535ba56c2a2ac93c8b9c57a8cd26b42e",
+      "artifact_id": 10636827994,
+      "artifact_zip_sha256": "dee01ea750b774859f2ef291b90fd4da67422be91fd8e0ab6da557666fe1252d",
+      "canonical_section_order_audited": true,
+      "safe_area_contract_audited": true,
+      "adaptive_container_contract_audited": true,
+      "questforge_game_launch_separation_audited": true,
+      "sm_x400_visual_validation": "PENDING"
+    },
     "persistent_update_lane_forge_green": {
       "status": "GREEN",
-      "forge_run_id": 35566969631,
-      "forge_run_number": 29,
-      "source_commit": "37477ae1c8b2b3ad040e2350e2941124ed00ce1d",
-      "artifact_id": 10623339795,
-      "artifact_name": "luhm-os-persistent-update-lane-29",
-      "artifact_zip_sha256": "d0c377a3c5f41c5124ffeff3701b8f77dc77631221acc49dcc670c767a7ac5fd",
+      "forge_run_id": 35596600603,
+      "forge_run_number": 32,
+      "source_commit": "166c0934535ba56c2a2ac93c8b9c57a8cd26b42e",
+      "artifact_id": 10636827994,
+      "artifact_name": "luhm-os-persistent-update-lane-32",
+      "artifact_zip_sha256": "dee01ea750b774859f2ef291b90fd4da67422be91fd8e0ab6da557666fe1252d",
       "unsigned_base_build": "GREEN",
       "unsigned_update_build": "GREEN",
       "version_lineage": "GREEN",
@@ -194,7 +244,10 @@
       "portable_signing_toolkit": "GREEN",
       "portable_signing_toolkit_libcxx_included": true,
       "public_ci_secret_firewall": "GREEN",
-      "private_persistent_signer": "PENDING",
+      "private_persistent_signer": "GREEN",
+      "private_signer_backup": "GREEN",
+      "signed_base": "GREEN",
+      "signed_update": "GREEN",
       "base_to_update_device_test": "PENDING"
     },
     "cathedral_canonical_assets_green": {
@@ -206,14 +259,15 @@
     },
     "local_handoff_green": {
       "status": "GREEN",
-      "apk_sha256": "1c8f1b3364eef0e7c420e465e09104b033398e16d5878bf57c2b8668ae2da31c",
-      "artifact_zip_sha256": "a30cdeb2102f33b4da452d67b04a374780cd60e34df8d78b22c4a3e9e85f81f4",
-      "local_apk_bytes": 19550340,
-      "canonical_asset_count_rechecked_locally": 9
+      "legacy_apk_sha256": "1c8f1b3364eef0e7c420e465e09104b033398e16d5878bf57c2b8668ae2da31c",
+      "current_signed_base_apk_sha256": "bc0adbed8e9c5088512a4cb5ce76b9e9fcd84330819886cc094897ba251f7552",
+      "current_signed_update_apk_sha256": "4f2f2d71eef7f71403aa43cd72e98bece8fb115e7e476ad0a815488e1753a0a3",
+      "canonical_asset_count": 9
     },
     "sm_x400_device_validation": {
       "status": "PARTIAL",
       "legacy_baseline_install_launch_ui": "GREEN",
+      "source_truth_gui_device_visual": "PENDING",
       "godot3d_playtest": "PENDING",
       "persistent_base_to_update_test": "PENDING",
       "green_claimed": false
@@ -235,6 +289,7 @@
   "green_semantics": {
     "source_crowned_does_not_imply_runtime_green": true,
     "ci_build_green_does_not_imply_device_green": true,
+    "gui_source_green_does_not_imply_sm_x400_visual_green": true,
     "update_lane_forge_green_does_not_imply_same_signer_device_update_green": true,
     "godot3d_package_green_does_not_imply_godot3d_device_playtest_green": true,
     "persistent_update_lane_green_requires": [
@@ -245,6 +300,15 @@
       "base_1000_installed_on_physical_sm_x400",
       "update_1001_installed_over_base_without_uninstall",
       "post_update_launch_and_save_state_validation"
+    ],
+    "gui_device_green_requires": [
+      "physical_sm_x400_launch",
+      "canonical_cathedral_information_architecture_visible",
+      "safe_area_not_clipped",
+      "authority_assets_3d_roleplay_questforge_audit_navigation_usable",
+      "truth_receipt_visible",
+      "questforge_launches_3d_game",
+      "cathedral_return_path_works"
     ],
     "sm_x400_device_green_requires": [
       "physical_sm_x400_install",
