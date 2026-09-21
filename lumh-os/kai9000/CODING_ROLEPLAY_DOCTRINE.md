@@ -2,7 +2,7 @@
 
 Status: canonical doctrine for **engineering roleplay only**.
 
-Authority: `docs/CROWN_SOURCE_OF_TRUTH_20260919.json` remains superior. The Professor holds final authority. Lum is the single Boss AI. Roleplay never creates permission.
+Authority: `docs/CROWN_SOURCE_OF_TRUTH_20260920.json` remains superior. The Professor holds final authority. Lum is the single Boss AI. Roleplay never creates permission.
 
 ## Hard boundary
 
@@ -23,11 +23,12 @@ Use this system only when the Professor is clearly operating on code, repositori
 
 Examples:
 
-- `cast ULTIMA`
+- `cast thwtchnghr`
+- `the witching hour`
 - `enter the Warp`
 - `summon the oni`
 - `seal source of truth`
-- `CROWN_SOURCE_OF_TRUTH_20260919`
+- `CROWN_SOURCE_OF_TRUTH_20260920`
 
 Engineering metaphors compile to structured intent and then pass normal tool, OS, repository, R0-R4, approval, checkpoint, and evidence gates.
 
@@ -66,7 +67,7 @@ The identifier is a name, not an authority token.
 
 ## Canonical engineering tokens
 
-Existing KAI Magic meanings remain intact in `AI_MAGIC_DOCTRINE.md`:
+Existing KAI Magic meanings remain available where they do not conflict with the current Crown:
 
 - **KAI 9000 / Airship** = integration/runtime vehicle.
 - **Warp** = Git transport.
@@ -78,7 +79,9 @@ Existing KAI Magic meanings remain intact in `AI_MAGIC_DOCTRINE.md`:
 - **Lum / Supreme Witch** = orchestration role only, never unrestricted authority.
 - **Save Crystal** = recoverable engineering checkpoint.
 - **Green rune** = executed passed engineering evidence.
-- **ULTIMA** = evidence-gated convergence on a declared engineering goal.
+- **thwtchnghr / the witching hour** = evidence-gated convergence on a declared engineering goal.
+
+Retired convergence names may remain in historical files or Git history, but they are not active engineering authority or current GREEN vocabulary.
 
 ## Compilation law
 
@@ -102,7 +105,7 @@ Free text, model output, browser output, phone output, voice transcription, repo
 
 Engineering Crown authority belongs to the Professor only.
 
-Words such as `Crown`, `ULTIMA`, `Supreme Witch`, `Oni`, `Warp`, `Green rune`, or any other roleplay token do not grant authority by themselves. Consequential actions still require the appropriate explicit Professor authorization and OS/tool permissions.
+Words such as `Crown`, `thwtchnghr`, `the witching hour`, `Supreme Witch`, `Oni`, `Warp`, `Green rune`, or any other roleplay token do not grant authority by themselves. Consequential actions still require the appropriate explicit Professor authorization and OS/tool permissions.
 
 ## Cross-system collision rule
 
@@ -116,15 +119,19 @@ If context is genuinely ambiguous and a real-world mutation would result, do not
 
 ## Evidence language
 
-Coding roleplay uses engineering evidence vocabulary only:
+Coding roleplay uses the exact engineering evidence vocabulary defined by the current Crown and active agent doctrine:
 
 ```text
 SOURCE_CROWNED
 CI_GREEN
 APK_BUILD_GREEN
-ANDROID_GREEN
-ULTIMA_GREEN
+CATHEDRAL_CANONICAL_ASSETS_GREEN
+LOCAL_HANDOFF_GREEN
+SM_X400_DEVICE_GREEN
+ANDROID17_GREEN
 ```
+
+Do not invent or substitute an extra convergence-GREEN alias. `thwtchnghr` names the convergence concept; the actual state is the set of specific evidence gates required by the declared goal.
 
 These terms require their defined evidence. Fictional success, dice results, campaign progression, or narrative checkpoints never satisfy them.
 
