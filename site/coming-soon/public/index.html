@@ -4,15 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
-  <meta name="robots" content="noindex,nofollow,noarchive">
-  <meta name="description" content="Project Hydra / KAI 9000 is under construction at eggiebagelface.art.">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
-  <title>eggiebagelface.art · Coming Soon</title>
+  <meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noimageindex">
+  <meta name="description" content="LuHm OS is a local-first creator operating environment in private development at eggiebagelface.art.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+  <title>LuHm OS · Coming Soon</title>
   <style>
     :root {
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: #eef8ff;
-      background: #03070c;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #f3f7ff;
+      background: #05030a;
     }
     * { box-sizing: border-box; }
     html, body { min-height: 100%; margin: 0; }
@@ -21,101 +21,115 @@
       display: grid;
       place-items: center;
       padding: 24px;
+      overflow-x: hidden;
       background:
-        radial-gradient(circle at 50% 8%, rgba(78, 183, 255, .16), transparent 36rem),
-        radial-gradient(circle at 18% 82%, rgba(103, 255, 231, .08), transparent 28rem),
-        #03070c;
+        radial-gradient(circle at 50% -10%, rgba(0, 232, 255, .20), transparent 34rem),
+        radial-gradient(circle at 15% 90%, rgba(255, 34, 187, .13), transparent 28rem),
+        radial-gradient(circle at 90% 78%, rgba(130, 77, 255, .11), transparent 24rem),
+        #05030a;
     }
     main {
-      width: min(720px, 100%);
-      padding: clamp(28px, 7vw, 64px);
-      border: 1px solid rgba(150, 220, 255, .22);
-      border-radius: 28px;
-      background: linear-gradient(180deg, rgba(10, 20, 31, .94), rgba(4, 9, 15, .96));
-      box-shadow: 0 32px 90px rgba(0, 0, 0, .48);
+      position: relative;
+      width: min(820px, 100%);
+      padding: clamp(28px, 7vw, 72px);
+      border: 1px solid rgba(143, 231, 255, .24);
+      border-radius: 30px;
+      background:
+        linear-gradient(145deg, rgba(16, 17, 30, .96), rgba(5, 7, 14, .98));
+      box-shadow:
+        0 36px 110px rgba(0, 0, 0, .58),
+        inset 0 1px rgba(255,255,255,.04);
     }
-    .domain {
-      margin: 0 0 28px;
-      font: 700 .78rem/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      letter-spacing: .16em;
+    main::before {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      border: 1px solid rgba(255,255,255,.035);
+      border-radius: 22px;
+      pointer-events: none;
+    }
+    .eyebrow {
+      margin: 0 0 30px;
+      font: 800 .77rem/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      letter-spacing: .20em;
       text-transform: uppercase;
-      color: #7ee7ff;
+      color: #8cecff;
     }
     .status {
       display: inline-flex;
       align-items: center;
-      gap: 9px;
-      padding: 8px 12px;
-      border: 1px solid rgba(126, 231, 255, .26);
+      gap: 10px;
+      padding: 9px 13px;
+      border: 1px solid rgba(140, 236, 255, .25);
       border-radius: 999px;
+      color: #c7f5ff;
+      background: rgba(63, 203, 255, .07);
       font-size: .82rem;
-      color: #bdefff;
-      background: rgba(86, 195, 255, .07);
     }
     .status::before {
       content: "";
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: #73f6d5;
-      box-shadow: 0 0 18px rgba(115, 246, 213, .8);
+      background: #82f7d5;
+      box-shadow: 0 0 20px rgba(130, 247, 213, .86);
     }
     h1 {
-      max-width: 12ch;
-      margin: 24px 0 18px;
-      font-size: clamp(3rem, 10vw, 6.5rem);
-      line-height: .9;
-      letter-spacing: -.065em;
-      font-weight: 800;
+      margin: 26px 0 14px;
+      font-size: clamp(3.8rem, 13vw, 8.8rem);
+      line-height: .80;
+      letter-spacing: -.075em;
+      font-weight: 900;
+    }
+    h1 span {
+      display: block;
+      margin-top: .14em;
+      font-size: .43em;
+      letter-spacing: .10em;
+      color: #93ebff;
     }
     .lede {
-      max-width: 48ch;
-      margin: 0;
-      color: #b5c9d6;
-      font-size: clamp(1rem, 2.6vw, 1.18rem);
-      line-height: 1.65;
+      max-width: 54ch;
+      margin: 28px 0 0;
+      color: #b9c7d7;
+      font-size: clamp(1rem, 2.6vw, 1.2rem);
+      line-height: 1.7;
     }
-    .systems {
-      margin: 36px 0 0;
-      padding: 22px 0 0;
-      border-top: 1px solid rgba(150, 220, 255, .14);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 9px;
+    .seal {
+      margin: 38px 0 0;
+      padding: 20px 0 0;
+      border-top: 1px solid rgba(151, 218, 255, .13);
+      display: grid;
+      gap: 10px;
+      color: #8799aa;
+      font: 650 .76rem/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      letter-spacing: .045em;
     }
-    .systems span {
-      padding: 7px 10px;
-      border-radius: 9px;
-      background: rgba(255,255,255,.04);
-      color: #91a9b8;
-      font: 600 .74rem/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      letter-spacing: .04em;
-    }
+    .seal strong { color: #c9d6e3; font-weight: 800; }
     footer {
-      margin-top: 36px;
-      color: #637886;
-      font-size: .76rem;
-      line-height: 1.5;
+      margin-top: 38px;
+      color: #657687;
+      font-size: .75rem;
+      line-height: 1.6;
     }
   </style>
 </head>
 <body>
   <main aria-labelledby="coming-soon-title">
-    <p class="domain">eggiebagelface.art</p>
-    <div class="status">Private beta forge active</div>
-    <h1 id="coming-soon-title">Coming soon.</h1>
+    <p class="eyebrow">eggiebagelface.art / public face</p>
+    <div class="status">Private forge active</div>
+    <h1 id="coming-soon-title">LuHm<span>OS</span></h1>
     <p class="lede">
-      Project Hydra and KAI 9000 are being forged into a local-first Android, AI and media platform.
-      The public site and F-Droid distribution lane will open when the beta gates are green.
+      A local-first creator operating environment for AI, media, voice and tools is being forged behind closed gates.
+      The public build opens when its safety, provenance and release checks are green.
     </p>
-    <div class="systems" aria-label="Project systems">
-      <span>PROJECT HYDRA</span>
-      <span>KAI 9000</span>
-      <span>LuHm OS</span>
-      <span>ANDROID</span>
-      <span>F-DROID</span>
+    <div class="seal" aria-label="Public and private boundary">
+      <div><strong>PUBLIC:</strong> status only. No public API, console, installer or development surface is exposed here.</div>
+      <div><strong>PRIVATE:</strong> source, prompts, credentials, unreleased assets and operator controls remain access-gated.</div>
     </div>
-    <footer>Copyright © 2026 Eggie Bagelface. Project identity: eggiebagelface.art.</footer>
+    <footer>
+      Copyright © 2026 Eggie Bagelface. LuHm OS is unreleased. No license to private code, unreleased assets, model materials or internal services is granted by this page.
+    </footer>
   </main>
 </body>
 </html>

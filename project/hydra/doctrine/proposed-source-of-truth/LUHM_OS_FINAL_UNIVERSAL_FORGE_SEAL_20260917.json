@@ -1,0 +1,121 @@
+{
+  "schema": "luhm_os.final_universal_forge_seal.v1",
+  "seal_date": "2026-09-17",
+  "project": {
+    "name": "LuHm OS",
+    "machine_id": "luhm_os"
+  },
+  "repository": "eggie-admin/hydra-shell-android",
+  "branch": "luhmos/remote-build-fastpath-20260917",
+  "status": "SEALED_CANDIDATE_GREEN_NOT_CROWNED",
+  "scope": "candidate_source_ci_forge_artifact_evidence",
+  "evidence_head_sha": "d373fa54f9dc822438355a1ca6a45e9d1d2c8ce8",
+  "checks": {
+    "triggered": 8,
+    "completed": 8,
+    "successful": 8,
+    "all_green": true,
+    "names": [
+      "LuHm Universal Forge Gate",
+      "LuHm Source Vendor Gate",
+      "LuHm OS Fastpath Gate",
+      "LuHm Drive Avatar Candidate",
+      "Cathedral Android Gate",
+      "KAI9000 Cathedral CI",
+      "PR guardrails",
+      "LuHm OS Local CI"
+    ]
+  },
+  "wizard": {
+    "schema": "luhm_os.npm_compile_wizard.v1",
+    "flow": [
+      "start",
+      "options",
+      "test",
+      "dryrun",
+      "build",
+      "install"
+    ],
+    "audit_command": "npm test",
+    "dryrun_command": "npm run dryrun",
+    "remote_build_command": "npm run build",
+    "stage_install_command": "npm run install",
+    "explicit_apply_command": "npm run install -- --apply",
+    "ordinary_npm_install_device_mutation": false,
+    "install_default": "staged_only",
+    "production_package_rejected": true,
+    "candidate_package": "art.eggiebagelface.luhmos.candidate",
+    "production_package": "art.eggiebagelface.luhmos",
+    "exactly_one_adb_device_required_for_apply": true,
+    "wizard_tests": {
+      "passed": 5,
+      "failed": 0
+    },
+    "runtime_tests": {
+      "passed": 8,
+      "failed": 0
+    },
+    "offline_npm_ci": true,
+    "zero_dependency": true
+  },
+  "digests": {
+    "forge_contract_sha256": "da96320bbee36ee91ed9a82f4dbb611b2db8be255c5967e59882d1051624a2b6",
+    "forge_lock_sha256": "1764adf72012b5007520fac96238dfa835b4385de1d9d570fbaa22255f2ebab4",
+    "npm_lock_sha256": "5f55c0f7e60465dd578de511bce780a99aad2d9a1c92dfc326e06bc444246ca0",
+    "npm_wizard_sha256": "0f94df4c188cee5aa3de768ec3ff891a8b8df3cfdb7e0619ba5a9b0d136ed08d",
+    "universal_fingerprint_sha256": "3e99cd4a6ac4a22d7639b9cc00172b70d48d8506ba8ebe062a4b9390745d41a7",
+    "android_fingerprint_sha256": "dbc7c32e3000c68670d9908fc07c5c47e68a47bf77365035ba3dbdf7d8a82b10",
+    "candidate_apk_sha256": "6d9c344997e4793dc3e90bdcbf8a9ca6f75de27e7a1ba33a1566d4f8b2ef7ce2"
+  },
+  "artifacts": {
+    "universal_forge": {
+      "name": "luhmos-universal-forge-9",
+      "artifact_id": 10522584934,
+      "zip_sha256": "0d089604f86844b12a1dee165a3e65b961cf9925bea39659a08ac565fa64dae8"
+    },
+    "candidate_apk_bundle": {
+      "name": "luhmos-drive-avatar-1.0.10-37",
+      "artifact_id": 10522829732,
+      "zip_sha256": "dcb793401fe805f2eb95396d8942d1e4376c97e6caa27ab385e7a2d57130493e"
+    }
+  },
+  "android_candidate": {
+    "version_name": "1.0.10",
+    "version_code": 110,
+    "min_sdk": 24,
+    "target_sdk": 36,
+    "abi": "arm64-v8a",
+    "signing": "ephemeral_debug_candidate_only",
+    "signature_scheme_v2_verified": true,
+    "zip_alignment_verified": true,
+    "embedded_avatar_sha256_verified": true,
+    "forbidden_termux_run_command_absent": true,
+    "hard_verification_green": true,
+    "artifact_forge_binding_green": true
+  },
+  "diagnostics": {
+    "godot_export_nonfatal_diagnostics_observed": true,
+    "observed": [
+      "project icon was not explicitly specified during headless export",
+      "initial Godot scan reported missing legacy world_first.gd resource paths before packaged world assets were included",
+      "hosted CI runner had no adb device daemon available during export",
+      "Gradle reported deprecated features that will require cleanup before Gradle 9"
+    ],
+    "export_process_completed_successfully": true,
+    "final_apk_hard_verification_green": true,
+    "diagnostics_do_not_authorize_ignoring_future_regressions": true
+  },
+  "repository_governance": {
+    "feature_branch_protection": "NOT_ENABLED_EXTERNAL_REPO_GOVERNANCE",
+    "branch_protection_write_available_in_current_connector": false
+  },
+  "authority": {
+    "canonical_merge": "NOT_TRIGGERED",
+    "production_deploy": "NOT_TRIGGERED",
+    "public_release": "NOT_TRIGGERED",
+    "release_signing": "NOT_TRIGGERED",
+    "auto_merge": "NOT_TRIGGERED",
+    "crown": "NOT_TRIGGERED"
+  },
+  "meaning": "This seal records a green candidate evidence state. It does not authorize or perform canonical merge, production deploy, public release, production signing, auto-merge, or Crown."
+}

@@ -1,0 +1,135 @@
+name: LuHm Source Vendor Gate
+
+on:
+  pull_request:
+    branches:
+      - luhmos/public-private-boundary-20260917
+    paths:
+      - 'project/hydra/samsung/android/cathedral-game/**'
+      - '.github/workflows/luhmos-source-vendor-gate.yml'
+      - '.github/workflows/luhmos-universal-forge-gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: luhmos-source-vendor-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  GAME: project/hydra/samsung/android/cathedral-game
+  SOURCE_BUNDLE: luhmos-cathedral-source-1.0.10.tar.gz
+
+jobs:
+  source-vendor:
+    name: Validate source, languages and vendor boundary
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout proposal
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+
+      - name: Python 3.14 stable lane
+        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: '3.14'
+          cache: pip
+          cache-dependency-path: project/hydra/samsung/android/cathedral-game/python/pyproject.toml
+
+      - name: Java 17 source lane
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Validate reproducible source contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python --version
+          java -version
+          python -m pip install --disable-pip-version-check --quiet 'PyYAML==6.0.3'
+          python "$GAME/tools/validate-source.py" "$GAME"
+
+      - name: Parse YAML and language manifests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - "$GAME" <<'PY'
+          from pathlib import Path
+          import sys, tomllib, yaml
+          root=Path(sys.argv[1])
+          toolchain=yaml.safe_load((root/'source/toolchain-manifest.yaml').read_text())
+          config=yaml.safe_load((root/'config/luhm.example.yaml').read_text())
+          pyproject=tomllib.loads((root/'python/pyproject.toml').read_text())
+          assert toolchain['schema']=='luhm_os.toolchain.v1'
+          assert toolchain['python']['version']=='3.14.7'
+          assert toolchain['python']['build_backend']=='hatchling==1.32.3'
+          assert toolchain['java']['version']==17
+          assert toolchain['ai']['direct_shell_execution'] is False
+          assert config['security']['execution_posture']=='advisory_only'
+          assert config['security']['direct_shell_execution'] is False
+          assert pyproject['project']['requires-python']=='>=3.14,<3.15'
+          assert pyproject['build-system']['requires']==['hatchling==1.32.3']
+          print('LUHM_YAML_PYPROJECT_PARSE_GREEN')
+          PY
+
+      - name: Syntax-check Python and Java authority code
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/source/java-check
+          python -m compileall -q "$GAME/python/src"
+          javac --release 17 -d build/source/java-check \
+            "$GAME/java/src/main/java/art/eggiebagelface/luhm/AiPolicy.java"
+          test -s build/source/java-check/art/eggiebagelface/luhm/AiPolicy.class
+          grep -q 'com.openai:openai-java:4.63.3' "$GAME/java/build.gradle.kts"
+          grep -q 'com.google.genai:google-genai:1.72.0' "$GAME/java/build.gradle.kts"
+          grep -q 'org.snakeyaml:snakeyaml-engine:2.10' "$GAME/java/build.gradle.kts"
+          echo 'LUHM_PYTHON_JAVA_AI_SOURCE_GREEN'
+
+      - name: Build deterministic source bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/source
+          python "$GAME/tools/package-source.py" "$GAME" "build/source/$SOURCE_BUNDLE"
+          tar -tzf "build/source/$SOURCE_BUNDLE" > build/source/source-contents.txt
+          sha256sum "build/source/$SOURCE_BUNDLE" | tee build/source/source-sha256.txt
+          grep -q 'luhmos-cathedral-source/source/source-manifest.json' build/source/source-contents.txt
+          grep -q 'luhmos-cathedral-source/source/toolchain-manifest.yaml' build/source/source-contents.txt
+          grep -q 'luhmos-cathedral-source/forge/forge-lock.json' build/source/source-contents.txt
+          grep -q 'luhmos-cathedral-source/config/luhm.example.yaml' build/source/source-contents.txt
+          grep -q 'luhmos-cathedral-source/python/pyproject.toml' build/source/source-contents.txt
+          grep -q 'luhmos-cathedral-source/java/build.gradle.kts' build/source/source-contents.txt
+          grep -q 'luhmos-cathedral-source/vendor/vendor-catalog.json' build/source/source-contents.txt
+          cat > build/source/SOURCE_VENDOR_RECEIPT.txt <<EOF
+          LuHm OS Cathedral source/vendor candidate
+          Commit: ${GITHUB_SHA}
+          Runtime vendor CDN: FORBIDDEN
+          Default web vendor profile: minimal
+          Web catalog: jQuery 4.0.0; jQuery UI 1.14.2; Babylon.js ES6 Core 9.26.1
+          Python: CPython 3.14.7; Hatchling 1.32.3; PyYAML 6.0.3; OpenAI 3.14.1 optional; Google GenAI 2.24.0 optional
+          Java: 17; OpenAI Java 4.63.3 optional; Google GenAI Java 1.72.0 optional; SnakeYAML Engine 2.10
+          AI posture: advisory only; environment credentials only; direct shell execution forbidden
+          Vendor bytes: NOT ENABLED / NOT PACKAGED unless hash-locked in vendor-catalog.json
+          Universal forge lock: INCLUDED
+          Source bundle: ${SOURCE_BUNDLE}
+          Authority: candidate only; no merge, deploy, Crown or seal implied.
+          EOF
+          echo 'LUHM_SOURCE_BUNDLE_GATE_GREEN'
+
+      - name: Upload source bundle and proof
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: luhmos-source-${{ github.run_number }}
+          path: |
+            build/source/${{ env.SOURCE_BUNDLE }}
+            build/source/source-sha256.txt
+            build/source/source-contents.txt
+            build/source/SOURCE_VENDOR_RECEIPT.txt
+          if-no-files-found: error
+          retention-days: 14

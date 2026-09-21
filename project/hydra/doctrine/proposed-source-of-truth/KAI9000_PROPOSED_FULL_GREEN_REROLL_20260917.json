@@ -1,0 +1,100 @@
+{
+  "schema": "luhm-os.proposed-full-green-reroll.v1",
+  "manifest_id": "KAI9000_PROPOSED_FULL_GREEN_REROLL_20260917",
+  "date": "2026-09-17",
+  "state": "PROPOSED",
+  "seal_status": "PROPOSED_NOT_CROWNED",
+  "project": "LuHm OS / Project Hydra / KAI 9000",
+  "human_final_authority": "Professor",
+  "repository": "eggie-admin/hydra-shell-android",
+  "canonical_branch": "luhmos-main",
+  "proposal_branch": "luhmos/proposed-legacy-editor-bridge-purge-20260916",
+  "repair_basis": {
+    "canonical_head": "93ef0af6ca1ed9b03dfe5ee28a17e51546fd1bbb",
+    "pre_manifest_proposal_head": "5220570b099d7317dbfa192a3dfa78cfecf8c0ee",
+    "topology_status": "AHEAD",
+    "ahead_by": 19,
+    "behind_by": 0,
+    "merge_base": "93ef0af6ca1ed9b03dfe5ee28a17e51546fd1bbb",
+    "topology_repair": "PR_65_MERGED_LUHMOS_MAIN_INTO_PROPOSAL_ONLY"
+  },
+  "mutation_repairs": [
+    {
+      "path": "README.md",
+      "result": "ACTIVE_EDITOR_BRIDGE_TERMINOLOGY_REMOVED",
+      "historical_evidence_deleted": false
+    },
+    {
+      "path": "SUPPORT.md",
+      "result": "ACTIVE_SUPPORT_DEPENDENCY_REMOVED",
+      "historical_evidence_deleted": false
+    },
+    {
+      "path": "tools/hydra-full-green.sh",
+      "result": "ACTIVE_RUNTIME_REPLACED_BY_HUMAN_APPROVED_MUTATION_GATEWAY_8790",
+      "historical_evidence_deleted": false
+    },
+    {
+      "path": "tools/hydra_cockpit.py",
+      "result": "ACTIVE_STATUS_PROBE_REPLACED_BY_MUTATION_GATEWAY_8790",
+      "historical_evidence_deleted": false
+    },
+    {
+      "path": "backend/server.py",
+      "result": "ACTIVE_SERVICE_STATUS_REPLACED_BY_MUTATION_GATEWAY_8790",
+      "historical_evidence_deleted": false
+    },
+    {
+      "path": "backend/web/index.html",
+      "result": "ACTIVE_UI_STATUS_REPLACED_BY_MUTATION_GATEWAY_8790",
+      "historical_evidence_deleted": false
+    }
+  ],
+  "mutation_gateway_contract": {
+    "service": "backend/candidate_workflow.py",
+    "bind": "127.0.0.1",
+    "port": 8790,
+    "public_exposure": false,
+    "shell_execution": false,
+    "ai_output_direct_to_shell": false,
+    "human_approval_required": true,
+    "approval_phrase": "APPROVE",
+    "preimage_sha_recheck": true,
+    "checkpoint_before_write": true,
+    "atomic_write": true,
+    "postwrite_sha_verify": true
+  },
+  "ten_pass_reroll": [
+    {"pass": 1, "gate": "canonical_hierarchy_and_naming", "result": "GREEN"},
+    {"pass": 2, "gate": "branch_topology_and_enforcement", "result": "GREEN", "evidence": "proposal behind_by=0"},
+    {"pass": 3, "gate": "source_path_and_manifest_contracts", "result": "GREEN"},
+    {"pass": 4, "gate": "secret_and_signing_material_leakage", "result": "GREEN"},
+    {"pass": 5, "gate": "authority_boundaries_and_no_self_approval", "result": "GREEN"},
+    {"pass": 6, "gate": "ci_behavior_and_exact_head_receipt", "result": "PENDING_FINAL_EXACT_HEAD_CI"},
+    {"pass": 7, "gate": "android_crown_release_isolation_and_manual_publish", "result": "GREEN"},
+    {"pass": 8, "gate": "local_vs_cloud_lane_separation", "result": "GREEN"},
+    {"pass": 9, "gate": "stale_artifact_and_doctrine_drift", "result": "GREEN_AFTER_ACTIVE_SURFACE_MUTATION"},
+    {"pass": 10, "gate": "reproducibility_readback_and_human_crown", "result": "GREEN"}
+  ],
+  "promotion_gate": {
+    "proposal_only": true,
+    "final_exact_head_ci_required": true,
+    "requires_10_of_10_audit": true,
+    "requires_professor_final_crown_approval": true,
+    "automatic_merge": false,
+    "automatic_deploy": false,
+    "automatic_publish": false,
+    "automatic_crown": false,
+    "automatic_seal": false,
+    "current_result": "HOLD_UNTIL_FINAL_EXACT_HEAD_CI_GREEN"
+  },
+  "locks": {
+    "merge_to_luhmos_main": false,
+    "rewrite_history": false,
+    "delete_historical_evidence": false,
+    "apk_install": false,
+    "publish": false,
+    "crown": false,
+    "seal": false
+  }
+}

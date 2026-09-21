@@ -1,0 +1,70 @@
+{
+  "schema": "luhm_os.enterprise_distribution.v1",
+  "brand": {
+    "product": "LuHm OS",
+    "publisher": "Eggie Bagelface",
+    "support_label": "LuHm OS Control Center"
+  },
+  "android": {
+    "candidate_package": "art.eggiebagelface.luhmos.candidate",
+    "production_package": "art.eggiebagelface.luhmos",
+    "install_authority": "android_package_installer_user_confirmation",
+    "uninstall_authority": "android_package_manager_user_confirmation",
+    "silent_install": false,
+    "silent_uninstall": false
+  },
+  "release": {
+    "provider": "github_releases",
+    "repository": "eggie-admin/hydra-shell-android",
+    "release_page": "https://github.com/eggie-admin/hydra-shell-android/releases",
+    "api_base": "https://api.github.com/repos/eggie-admin/hydra-shell-android/releases",
+    "asset_host": "github.com",
+    "asset_path_prefix": "/eggie-admin/hydra-shell-android/releases/download/",
+    "manifest_asset": "luhmos-release.json",
+    "apk_asset_pattern": "^luhmos-[a-z0-9.-]+\\.apk$",
+    "channels": [
+      "testing",
+      "proposed",
+      "preview",
+      "beta",
+      "stable"
+    ],
+    "stable_tag_pattern": "^v[0-9]+\\.[0-9]+\\.[0-9]+$",
+    "prerelease_tag_patterns": [
+      "^v[0-9]+\\.[0-9]+\\.[0-9]+-testing\\.[0-9]+$",
+      "^v[0-9]+\\.[0-9]+\\.[0-9]+-proposed\\.[0-9]+$",
+      "^v[0-9]+\\.[0-9]+\\.[0-9]+-preview\\.[0-9]+$",
+      "^v[0-9]+\\.[0-9]+\\.[0-9]+-beta\\.[0-9]+$"
+    ],
+    "require_release_manifest_sha256": true,
+    "require_same_android_signer": true,
+    "reject_downgrade": true
+  },
+  "local_harness": {
+    "mode": "local_first",
+    "frontend": "packaged_appassets",
+    "backend_hosts": [
+      "127.0.0.1",
+      "localhost"
+    ],
+    "operator_lan_origin_source": "protected_local_config_only",
+    "committed_private_hostnames": false,
+    "public_backend_fallback": false,
+    "browser_secrets": false,
+    "health_path": "/health",
+    "api_path_prefix": "/api/",
+    "failure_mode": "offline_ui_with_explicit_local_backend_status",
+    "port": 8791,
+    "cockpit_path": "/cockpit",
+    "termux_role": "external_loopback_host_only",
+    "termux_run_command_permission_required": false,
+    "direct_shell_execution": false
+  },
+  "authority": {
+    "release_publish": "CROWN_GATED",
+    "production_signing": "CROWN_GATED",
+    "install": "USER_CONFIRMED",
+    "uninstall": "USER_CONFIRMED",
+    "backend_mutation": "LOCAL_POLICY_GATED"
+  }
+}

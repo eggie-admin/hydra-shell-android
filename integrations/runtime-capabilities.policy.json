@@ -1,0 +1,65 @@
+{
+  "schema": "luhm-os.runtime-capabilities.v1",
+  "project": "LuHm OS",
+  "logical_project_id": "luhm_os",
+  "privacy": {
+    "account_specific_plan_names_in_public_source": false,
+    "billing_amounts_in_public_source": false,
+    "credentials_in_public_source": false,
+    "policy": "prove_capabilities_at_runtime_without_publishing_personal_billing_metadata"
+  },
+  "providers": {
+    "openai": {
+      "runtime_proof": "OPENAI_API_KEY_present_and_live_responses_smoke_green",
+      "chat_subscription_is_not_api_billing": true,
+      "fast_model": "gpt-5.6-luna",
+      "deep_model": "gpt-5.6-sol",
+      "use_http_keepalive": true,
+      "use_previous_response_id_for_followups": true,
+      "paid_capability_policy": "use_best_verified_api_capability_within_operator_budget"
+    },
+    "google": {
+      "runtime_proof": "vertex_adc_or_api_key_live_probe_green",
+      "fast_model": "gemini-3.5-flash-lite",
+      "deep_model": "gemini-3.8-flash",
+      "paid_capabilities": [
+        "context_caching",
+        "batch_or_flex_for_offline_work",
+        "higher_rate_limits",
+        "advanced_models",
+        "search_grounding_when_task_requires_fresh_external_research"
+      ],
+      "cost_increasing_features_require_task_need": true,
+      "use_client_process_cache": true
+    },
+    "github": {
+      "runtime_proof": "authenticated_repo_access_and_exact_sha_ci",
+      "public_repository_standard_actions_are_preferred": true,
+      "larger_paid_runners_are_not_assumed": true,
+      "paid_plan_features_must_be_detected_before_use": true,
+      "context_policy": "resolve_evidence_by_reference_not_full_history_copy"
+    },
+    "cloudflare": {
+      "runtime_proof": "live_account_plan_and_token_scope_probe_green",
+      "paid_workers_features_may_be_used_when_verified": true,
+      "production_publish_still_requires": "YES",
+      "private_lan_exposure": false,
+      "router_port_forwarding": false
+    },
+    "hugging_face": {
+      "runtime_proof": "authenticated_account_plus_inference_token_or_job_entitlement_probe_green",
+      "critic_is_conditional": true,
+      "fast_model": "openai/gpt-oss-20b:fastest",
+      "gpu_or_paid_jobs_never_auto_launch": true,
+      "paid_plan_features_must_be_detected_before_use": true
+    }
+  },
+  "routing": {
+    "prefer_paid_capability_when_proven_and_task_relevant": true,
+    "do_not_spend_more_only_to_prove_entitlement": true,
+    "no_silent_cross_provider_failover": true,
+    "max_parallel_remote_helpers": 3,
+    "direct_questions_bypass_mesh": true,
+    "consequential_actions_remain_crown_gated": true
+  }
+}

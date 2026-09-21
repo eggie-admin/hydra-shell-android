@@ -45,7 +45,7 @@
       "observed_exceptions": [
         "hydra-shell-android repository currently public",
         "main currently unprotected",
-        "legacy Vercel status remains non-authoritative",
+        "legacy external hosting status remains non-authoritative",
         "post-hotfix physical device UI retest pending"
       ]
     }

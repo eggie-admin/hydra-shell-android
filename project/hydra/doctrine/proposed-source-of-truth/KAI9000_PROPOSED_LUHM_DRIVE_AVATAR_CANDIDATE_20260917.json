@@ -1,0 +1,45 @@
+{
+  "schema": "kai9000.proposed_luhm_drive_avatar_candidate.v1",
+  "date": "2026-09-17",
+  "status": "PROPOSAL_CANDIDATE_GREEN",
+  "repository": "eggie-admin/hydra-shell-android",
+  "canonical_branch": "luhmos-main",
+  "canonical_root": "35a47720d8646500fe7469b83f81bd3d113463dc",
+  "proposal_branch": "luhmos/proposed-toy-gui-mutation-20260917",
+  "validated_application_head": "de22cfd906a9f05f290263aad5fb212ea942b500",
+  "drive_source_of_truth": {
+    "file_id": "1xuA3wkyFeGkgH7LQIi7a679wnglXvQ7H",
+    "title": "KAI9000_LUM_AVATAR_ACTUAL_ANIMATED.mp4",
+    "manifest_seal": "KAI9000_LUM_AVATAR_ACTUAL_ANIMATED_GREEN_20260906",
+    "sha256": "1a20bd7bf495ee930d2cc9dab9342d7cb29d326ce0c7f433c206581ebdddad97",
+    "dimensions": [512, 640],
+    "fps": 8,
+    "runtime_policy": "packaged-local-bytes-only"
+  },
+  "candidate": {
+    "package": "art.eggiebagelface.luhmos.candidate",
+    "version_name": "1.0.10",
+    "version_code": 110,
+    "apk_sha256": "b41a93e0bfa3ff2160e2288bc5acd9fcf37820e2558d7314f40ff4c1e5a712b7",
+    "github_run_id": 35264175253,
+    "github_artifact_id": 10515379248,
+    "artifact_zip_sha256": "d0fa1bb69bd7e37d8ba40f0af38ed78f6caf55a70d72d132ee8fbd67ec262abe",
+    "drive_build_file_id": "1c1Y0HlK2uHuSdedCpS6pKsquf_WAh4xY"
+  },
+  "verification": {
+    "drive_source_sha_verified_before_packaging": true,
+    "avatar_extracted_from_apk_matches_drive_source_exactly": true,
+    "runtime_remote_drive_url_absent": true,
+    "candidate_signature_scheme_verification": "GREEN",
+    "inherited_pr_matrix": "11/11_SUCCESS_ON_VALIDATED_APPLICATION_HEAD"
+  },
+  "authority": {
+    "release_signing": "LOCKED",
+    "canonical_merge": "NOT_TRIGGERED",
+    "deploy": "NOT_TRIGGERED",
+    "public_release": "NOT_TRIGGERED",
+    "crown": "NOT_TRIGGERED",
+    "seal": "NOT_TRIGGERED",
+    "physical_install_1_0_10": "NOT_YET_PROVEN"
+  }
+}

@@ -1,0 +1,8 @@
+interface:
+  display_name: "LuHm Fast Agent Mesh"
+  short_description: "Fast source-bound Lum routing with read-only mini helpers"
+  brand_color: "#00695C"
+  default_prompt: "Resolve crowned source authority, use read-only helper agents for narrow evidence tasks, apply the smallest safe change, run existing validation, and report exact proof without inventing GREEN."
+policy:
+  products: [CHAT, CODEX]
+  allow_implicit_invocation: true

@@ -1,0 +1,91 @@
+{
+  "schema": "luhm-os.proposed-openai-lum-agent-redeploy-seal.v1",
+  "date": "2026-09-17",
+  "state": "PROPOSED",
+  "seal_status": "PROPOSED_NOT_CROWNED",
+  "project": "LuHm OS / Project Hydra / KAI 9000",
+  "human_final_authority": "Professor",
+  "proposal_may_self_approve": false,
+  "automatic_merge": false,
+  "automatic_publish": false,
+  "automatic_deploy": false,
+  "automatic_crown": false,
+  "automatic_seal": false,
+  "intent": "SAVE_SEAL_AND_REDEPLOY_OPENAI_LUM_AGENT_TO_DOCTRINE",
+  "canonical_doctrine_path": "project/hydra/doctrine/",
+  "proposal_path": "project/hydra/doctrine/proposed-source-of-truth/",
+  "repository": "eggie-admin/hydra-shell-android",
+  "canonical_branch": "luhmos-main",
+  "proposal_branch": "luhmos/proposed-legacy-editor-bridge-purge-20260916",
+  "agent_contract": {
+    "name": "KAI9000-Lum-InApp",
+    "runtime": "OpenAI Agents SDK",
+    "sdk_version": "0.22.0",
+    "default_model": "gpt-5.6-luna",
+    "heavy_reasoning_model": "gpt-5.6-sol",
+    "credential_env": "OPENAI_API_KEY",
+    "credential_location": "server_side_only",
+    "new_key_required": false,
+    "tracing_default": "disabled",
+    "store": false,
+    "default_reasoning_effort": "none",
+    "default_verbosity": "low",
+    "max_turns_default": 8
+  },
+  "boss_chain": [
+    "DOCTRINE",
+    "INSPECT",
+    "OUTLINE_OR_READ",
+    "DEBUG",
+    "COMPILE",
+    "PROPOSE",
+    "HUMAN_APPROVAL",
+    "EXECUTION_EVIDENCE"
+  ],
+  "authority_boundary": {
+    "read_and_reason": true,
+    "compile_and_test": true,
+    "propose_mutation": true,
+    "direct_mutation_without_application_gate": false,
+    "self_approval": false,
+    "in_app_ultima": false,
+    "human_approval_required_for_write": true,
+    "sha_or_checkpoint_protection_required_for_write": true
+  },
+  "secret_boundary": {
+    "credentials_in_git": false,
+    "credentials_in_android_assets": false,
+    "credentials_in_browser_client": false,
+    "credentials_in_logs": false,
+    "credentials_in_doctrine": false
+  },
+  "redeploy_posture": {
+    "doctrine_registration": "STAGED",
+    "runtime_redeploy": "AUTHORIZED_ONLY_AFTER_FINAL_GATE",
+    "public_release": "DISABLED",
+    "canonical_merge": "BLOCKED_UNTIL_10_OF_10_GREEN",
+    "final_sequence": [
+      "10_OF_10_GREEN",
+      "PROFESSOR_FINAL_CROWN_APPROVAL",
+      "DOCTRINE_SEAL"
+    ]
+  },
+  "evidence": {
+    "runtime_source": "ultima/ollama-ffmpeg-antenna-v3/lum_agent/agent.py",
+    "historical_doctrine": "docs/LUM_AGENT_DOCTRINE_20260907.md",
+    "historical_status": "docs/LUM_AGENT_STATUS_20260907.json",
+    "current_runtime_default_model_verified": "gpt-5.6-luna",
+    "current_runtime_missing_key_behavior": "DETERMINISTIC_MOCK_NOT_LIVE_GREEN",
+    "live_openai_request_with_reused_key": "NOT_PROVEN_BY_THIS_SEAL",
+    "latest_proposal_ci_head": "20627cee8dfa23569344de8cf532151fb6aedc7c",
+    "latest_proposal_ci_result": "6_OF_6_GREEN"
+  },
+  "locks": {
+    "merge_to_luhmos_main": false,
+    "publish": false,
+    "deploy_public": false,
+    "crown": false,
+    "seal": false,
+    "rewrite_historical_evidence": false
+  }
+}

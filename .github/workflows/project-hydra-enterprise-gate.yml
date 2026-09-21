@@ -1,0 +1,74 @@
+name: Project Hydra Enterprise Source Gate
+
+on:
+  push:
+    branches:
+      - luhmos/proposed-enterprise-operating-model-20260917
+    paths:
+      - 'project/hydra/runtime/enterprise.policy.json'
+      - 'project/hydra/runtime/performance.policy.json'
+      - 'project/hydra/project.manifest.json'
+      - 'docs/PROJECT_HYDRA_ENTERPRISE_OPERATING_MODEL.md'
+      - 'tools/project_hydra_enterprise_guard.py'
+      - '.github/CODEOWNERS'
+      - '.github/instructions/project-hydra-enterprise.instructions.md'
+      - '.github/workflows/project-hydra-enterprise-gate.yml'
+  pull_request:
+    branches:
+      - luhmos-main
+    paths:
+      - 'project/hydra/runtime/enterprise.policy.json'
+      - 'project/hydra/runtime/performance.policy.json'
+      - 'project/hydra/project.manifest.json'
+      - 'docs/PROJECT_HYDRA_ENTERPRISE_OPERATING_MODEL.md'
+      - 'tools/project_hydra_enterprise_guard.py'
+      - '.github/CODEOWNERS'
+      - '.github/instructions/project-hydra-enterprise.instructions.md'
+      - '.github/workflows/project-hydra-enterprise-gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: project-hydra-enterprise-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  enterprise-source-gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Parse enterprise contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m json.tool project/hydra/project.manifest.json >/dev/null
+          python3 -m json.tool project/hydra/runtime/performance.policy.json >/dev/null
+          python3 -m json.tool project/hydra/runtime/enterprise.policy.json >/dev/null
+
+      - name: Compile deterministic enterprise guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile tools/project_hydra_enterprise_guard.py
+
+      - name: Enforce enterprise source contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/project_hydra_enterprise_guard.py
+
+      - name: Verify read-only workflow posture
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q '^permissions:$' .github/workflows/project-hydra-enterprise-gate.yml
+          grep -q '^  contents: read$' .github/workflows/project-hydra-enterprise-gate.yml
+          ! grep -Eq 'contents: write|packages: write|id-token: write|pull-requests: write' .github/workflows/project-hydra-enterprise-gate.yml
+          echo PROJECT_HYDRA_ENTERPRISE_WORKFLOW_READ_ONLY_GREEN

@@ -1,0 +1,46 @@
+name: LuHm Release Signing Lock Guard
+
+on:
+  pull_request:
+    branches:
+      - luhmos-main
+    paths:
+      - '.github/workflows/luhmos-world-first-apk.yml'
+      - '.github/workflows/luhmos-crown-gate-apk.yml'
+      - '.github/workflows/luhmos-release-signing-lock-guard.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  signing-lock:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Prove production signing is manual-only and secret-free
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILES=(
+            .github/workflows/luhmos-world-first-apk.yml
+            .github/workflows/luhmos-crown-gate-apk.yml
+          )
+
+          for file in "${FILES[@]}"; do
+            test -f "$file"
+            grep -q 'workflow_dispatch:' "$file"
+            ! grep -qE '^[[:space:]]+push:' "$file"
+            ! grep -q 'LUHMOS_ANDROID_KEYSTORE_B64' "$file"
+            ! grep -q 'LUHMOS_ANDROID_KEYSTORE_PASSWORD' "$file"
+            ! grep -q 'LUHMOS_ANDROID_KEY_PASSWORD' "$file"
+            ! grep -q 'secrets\.' "$file"
+            ! grep -q -- '--export-release' "$file"
+            ! grep -qE '\b(apksigner|jarsigner|keytool)\b' "$file"
+            ! grep -qE '\b(gh release create|git push|firebase|fastlane|gradle publish)\b' "$file"
+          done
+
+          echo 'LUHMOS_RELEASE_SIGNING_LOCK_GUARD_GREEN'
+          echo 'Production signing remains a separate explicit human-authorized lane.'

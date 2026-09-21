@@ -1,0 +1,612 @@
+name: LuHm Working Demo Candidate
+
+on:
+  push:
+    branches:
+      - luhmos/demo-working-candidate-20260918
+    paths:
+      - 'project/hydra/samsung/android/cathedral-game/**'
+      - 'project/hydra/doctrine/proposed-source-of-truth/LUHM_OS_PROPOSED_REMOTE_BUILD_FASTPATH_20260917.json'
+      - '.github/workflows/luhmos-working-demo-candidate.yml'
+      - '.github/workflows/luhmos-universal-forge-gate.yml'
+  pull_request:
+    branches:
+      - luhmos-main
+    paths:
+      - 'project/hydra/samsung/android/cathedral-game/**'
+      - 'project/hydra/doctrine/proposed-source-of-truth/LUHM_OS_PROPOSED_REMOTE_BUILD_FASTPATH_20260917.json'
+      - '.github/workflows/luhmos-working-demo-candidate.yml'
+      - '.github/workflows/luhmos-universal-forge-gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: luhmos-working-demo-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  DONOR_REPO: eggie-admin/vue-headless-cms
+  DONOR_REF: dd9b3e68e14ce7a559b7b13aebfe10c630fa171b
+  RELEASE_PACKAGE_ID: art.eggiebagelface.luhmos
+  PACKAGE_ID: art.eggiebagelface.luhmos.demo
+  VERSION_NAME: '1.0.11'
+  VERSION_CODE: '111'
+  APK_NAME: luhmos-working-demo-1.0.11.apk
+  LUM_AVATAR_NAME: lum-avatar-actual-animated.mp4
+  LUM_AVATAR_DRIVE_FILE_ID: 1xuA3wkyFeGkgH7LQIi7a679wnglXvQ7H
+  LUM_AVATAR_SHA256: 1a20bd7bf495ee930d2cc9dab9342d7cb29d326ce0c7f433c206581ebdddad97
+  GODOT_RELEASE: 4.7.2-stable
+  GODOT_TEMPLATE_VERSION: 4.7.2.stable
+  GODOT_EDITOR_SHA256: cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4
+  GODOT_TEMPLATES_SHA256: f298490b8d44d934be425a5a65a51bf15f422428b229a06a6e11d9ffea248011
+  ANDROID_GRADLE_VERSION: 8.11.1
+  ANDROID_GRADLE_SHA256: f397b287023acdba1e9f6fc5ea72d22dd63669d59ed4a289a29b1a76eee151c6
+  PLUGIN_GRADLE_VERSION: '8.13'
+  PLUGIN_GRADLE_SHA256: 20f1b1176237254a6fc204d8434196fa11a4cfb387567519c61556e8710aed78
+  GRADLE_OPTS: >-
+    -Dorg.gradle.caching=true
+    -Dorg.gradle.parallel=true
+    -Dorg.gradle.workers.max=4
+
+jobs:
+  candidate:
+    name: Crown Cathedral working demo
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout proposal
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+
+      - name: Checkout pinned Android updater forge
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: ${{ env.DONOR_REPO }}
+          ref: ${{ env.DONOR_REF }}
+          path: _forge/luhmos-android
+          persist-credentials: false
+
+      - name: Java 17 Android lane
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Node 24 validation lane
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: '24'
+          package-manager-cache: false
+
+      - name: Cache Gradle dependency and local build state
+        id: gradle-cache
+        uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/notifications
+          key: ${{ runner.os }}-${{ runner.arch }}-luhmos-gradle-${{ env.PLUGIN_GRADLE_VERSION }}-${{ env.DONOR_REF }}-${{ hashFiles('_forge/luhmos-android/godot/android-plugin/**/*.gradle*', '_forge/luhmos-android/godot/android-plugin/gradle.properties') }}-v1
+
+      - name: Cache verified Godot and Gradle forge
+        uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8
+        with:
+          path: |
+            ~/.cache/luhmos/godot-4.7.2
+            ~/.local/share/godot/export_templates/4.7.2.stable
+          key: ${{ runner.os }}-${{ runner.arch }}-luhmos-forge-${{ env.GODOT_EDITOR_SHA256 }}-${{ env.GODOT_TEMPLATES_SHA256 }}-android-gradle-${{ env.ANDROID_GRADLE_SHA256 }}-plugin-gradle-${{ env.PLUGIN_GRADLE_SHA256 }}-v3
+
+      - name: Verify remote build iron and hosted kernel
+        shell: bash
+        run: |
+          set -euo pipefail
+          ARCH="$(uname -m)"
+          CPU="$(nproc)"
+          MEM_KIB="$(awk '/MemTotal:/ {print $2}' /proc/meminfo)"
+          ROOT_FREE_KIB="$(df -Pk / | awk 'NR==2 {print $4}')"
+          test "$ARCH" = x86_64
+          test "$CPU" -ge 4
+          test "$MEM_KIB" -ge 14680064
+          test "$ROOT_FREE_KIB" -ge 8388608
+          java -version
+          node --version
+          uname -srvm
+          printf 'arch=%s\ncpus=%s\nmem_kib=%s\nroot_free_kib=%s\n' "$ARCH" "$CPU" "$MEM_KIB" "$ROOT_FREE_KIB"
+          echo 'LUHM_REMOTE_BUILD_IRON_GREEN'
+
+      - name: Verify branded runtime and local harness contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          GAME='project/hydra/samsung/android/cathedral-game'
+          JS="$GAME/apk-install-gui.js"
+          CSS="$GAME/apk-install-gui.css"
+          TEST="$GAME/tests/apk-install-gui.test.mjs"
+          ENTERPRISE_JS="$GAME/enterprise-distribution.js"
+          ENTERPRISE_TEST="$GAME/tests/enterprise-distribution.test.mjs"
+          DIST="$GAME/distribution/enterprise-distribution.json"
+          PATCH="$GAME/tools/patch-enterprise-android.py"
+          RELEASE_BUILDER="$GAME/tools/make-release-manifest.py"
+          HARNESS="$GAME/python/src/luhm_core/local_harness.py"
+          SHELL_JS="$GAME/system-shell.js"
+          SHELL_CSS="$GAME/system-shell.css"
+          SHELL_TEST="$GAME/tests/system-shell.test.mjs"
+          SHELL_MANIFEST="$GAME/SYSTEM_SHELL_MANIFEST.json"
+          test -s "$JS" && test -s "$CSS" && test -s "$TEST"
+          test -s "$ENTERPRISE_JS" && test -s "$ENTERPRISE_TEST" && test -s "$DIST"
+          test -s "$PATCH" && test -s "$RELEASE_BUILDER" && test -s "$HARNESS"
+          test -s "$SHELL_JS" && test -s "$SHELL_CSS" && test -s "$SHELL_TEST" && test -s "$SHELL_MANIFEST"
+          grep -q 'LUHM_AVATAR_SOURCE_OF_TRUTH_V1' "$JS"
+          grep -q 'LUHM_OS_ENTERPRISE_DISTRIBUTION_V1' "$ENTERPRISE_JS"
+          grep -q 'luhmos-release.json' "$ENTERPRISE_JS"
+          grep -q 'app.uninstall.open' "$ENTERPRISE_JS"
+          grep -q 'http://127.0.0.1' "$ENTERPRISE_JS"
+          grep -q 'http://localhost' "$ENTERPRISE_JS"
+          ! grep -n '\.lan' "$ENTERPRISE_JS" "$ENTERPRISE_TEST" "$DIST" "$HARNESS"
+          grep -q 'luhm-avatar-video' "$CSS"
+          ! grep -nE 'drive\.google|drive\.usercontent|googleusercontent' "$JS"
+          ! grep -nE '\beval\s*\(|new Function|child_process|OS\.execute' "$JS" "$ENTERPRISE_JS"
+          node --check "$JS"
+          node --check "$ENTERPRISE_JS"
+          node --test "$TEST"
+          node --test "$ENTERPRISE_TEST"
+          node --check "$SHELL_JS"
+          node --test "$SHELL_TEST"
+          grep -q 'http://127.0.0.1:8791' "$SHELL_JS" "$ENTERPRISE_JS"
+          grep -q 'app.window.immersive' "$SHELL_JS" "$PATCH"
+          grep -q 'app.quit' "$SHELL_JS" "$PATCH"
+          grep -q 'finishAndRemoveTask' "$PATCH"
+          python3 -m py_compile "$PATCH" "$RELEASE_BUILDER" "$HARNESS"
+          grep -q 'PAIR_FAILURE_LIMIT = 5' "$HARNESS"
+          grep -q 'PAIR_LOCKOUT_SECONDS = 60' "$HARNESS"
+          grep -q 'X-LuHm-Request' "$HARNESS" "$SHELL_JS"
+          grep -q 'memory_only' "$HARNESS"
+          python3 - "$DIST" <<'PY'
+          import json,sys
+          d=json.load(open(sys.argv[1],encoding='utf-8'))
+          assert d['schema']=='luhm_os.enterprise_distribution.v1'
+          assert d['release']['repository']=='eggie-admin/hydra-shell-android'
+          assert d['release']['provider']=='github_releases'
+          assert d['release']['manifest_asset']=='luhmos-release.json'
+          assert d['local_harness']['backend_hosts']==['127.0.0.1','localhost']
+          assert d['local_harness']['port']==8791
+          assert d['local_harness']['cockpit_path']=='/cockpit'
+          assert d['local_harness']['termux_run_command_permission_required'] is False
+          assert d['local_harness']['direct_shell_execution'] is False
+          assert d['local_harness']['operator_lan_origin_source']=='protected_local_config_only'
+          assert d['local_harness']['committed_private_hostnames'] is False
+          assert d['local_harness']['public_backend_fallback'] is False
+          assert d['android']['silent_install'] is False
+          assert d['android']['silent_uninstall'] is False
+          print('LUHM_ENTERPRISE_DISTRIBUTION_SOURCE_GREEN')
+          PY
+          test -s "$GAME/crown-cathedral.css"
+          test -s "$GAME/crown-cathedral.js"
+          test -s "$GAME/CROWN_CATHEDRAL_DEMO_MANIFEST.json"
+          grep -q 'LUHM_CROWN_CATHEDRAL_DEMO_V1' "$GAME/crown-cathedral.css"
+          grep -q 'LUHM_CROWN_CATHEDRAL_DEMO_V1' "$GAME/crown-cathedral.js"
+          grep -q 'godot-world/assets/lum_world_sprite.svg' "$GAME/index.html"
+          grep -q 'godot-world/assets/lum_hud_icon.svg' "$GAME/index.html"
+          node --check "$GAME/crown-cathedral.js"
+          echo 'LUHM_CROWN_CATHEDRAL_SOURCE_GREEN'
+          echo 'LUHM_BRANDED_RUNTIME_CONTRACT_GREEN'
+
+      - name: Fetch and verify authoritative Drive avatar
+        shell: bash
+        run: |
+          set -euo pipefail
+          AVATAR="$RUNNER_TEMP/$LUM_AVATAR_NAME"
+          curl --fail --location --retry 5 --retry-all-errors \
+            -o "$AVATAR" \
+            "https://drive.usercontent.google.com/download?id=${LUM_AVATAR_DRIVE_FILE_ID}&export=download&confirm=t"
+          echo "${LUM_AVATAR_SHA256}  $AVATAR" | sha256sum --check --strict
+          python3 - "$AVATAR" <<'PY'
+          from pathlib import Path
+          import sys
+          p=Path(sys.argv[1]); data=p.read_bytes()
+          assert len(data)==510676, len(data)
+          assert b'ftyp' in data[:64], 'not an MP4 container'
+          print('LUHM_DRIVE_AVATAR_BYTES_GREEN')
+          PY
+          echo "LUM_AVATAR_SOURCE=$AVATAR" >> "$GITHUB_ENV"
+
+      - name: Remove retired Termux capability from candidate forge
+        shell: bash
+        run: |
+          set -euo pipefail
+          MANIFEST='_forge/luhmos-android/godot/android-plugin/plugin/src/main/AndroidManifest.xml'
+          python3 - "$MANIFEST" <<'PY'
+          from pathlib import Path
+          import sys
+          import xml.etree.ElementTree as ET
+          p=Path(sys.argv[1]); tree=ET.parse(p); root=tree.getroot()
+          name_key='{http://schemas.android.com/apk/res/android}name'
+          for parent in root.iter():
+              for child in list(parent):
+                  if child.attrib.get(name_key,'') in {'com.termux.permission.RUN_COMMAND','com.termux'}:
+                      parent.remove(child)
+          ET.register_namespace('android','http://schemas.android.com/apk/res/android')
+          tree.write(p,encoding='utf-8',xml_declaration=True)
+          PY
+          grep -q 'android.permission.REQUEST_INSTALL_PACKAGES' "$MANIFEST"
+          ! grep -q 'com.termux.permission.RUN_COMMAND' "$MANIFEST"
+
+      - name: Apply enterprise Android distribution hardening
+        shell: bash
+        run: |
+          set -euo pipefail
+          GAME="$GITHUB_WORKSPACE/project/hydra/samsung/android/cathedral-game"
+          PLUGIN='_forge/luhmos-android/godot/android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralAndroidPlugin.kt'
+          python3 "$GAME/tools/patch-enterprise-android.py" "$PLUGIN"
+          grep -q 'LUHM_ENTERPRISE_DISTRIBUTION_NATIVE_V1' "$PLUGIN"
+          grep -q 'RELEASE_HOST = "github.com"' "$PLUGIN"
+          grep -q 'expectedSha256' "$PLUGIN"
+          grep -q 'Intent.ACTION_DELETE' "$PLUGIN"
+          grep -q 'app.window.immersive' "$PLUGIN"
+          grep -q 'app.window.system_bars' "$PLUGIN"
+          grep -q 'finishAndRemoveTask' "$PLUGIN"
+          grep -q 'uri.port == 8791' "$PLUGIN"
+          grep -q '/eggie-admin/hydra-shell-android/releases/download/' "$PLUGIN"
+          echo 'LUHM_ENTERPRISE_ANDROID_PATCH_GREEN'
+
+      - name: Verify preloaded Android SDK 36 or install fallback
+        shell: bash
+        run: |
+          set -euo pipefail
+          NEED_SDK=0
+          test -x "$ANDROID_HOME/build-tools/36.1.0/apksigner" || NEED_SDK=1
+          test -x "$ANDROID_HOME/build-tools/36.1.0/aapt" || NEED_SDK=1
+          test -f "$ANDROID_HOME/platforms/android-36/android.jar" || NEED_SDK=1
+          test -x "$ANDROID_HOME/platform-tools/adb" || NEED_SDK=1
+          if [ "$NEED_SDK" -eq 1 ]; then
+            SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+            yes | "$SDKMANAGER" --licenses >/dev/null || true
+            "$SDKMANAGER" 'platform-tools' 'build-tools;36.1.0' 'platforms;android-36'
+            echo 'LUHM_ANDROID_SDK_FALLBACK_INSTALL'
+          else
+            echo 'LUHM_ANDROID_SDK_PRELOADED_FASTPATH'
+          fi
+          test -x "$ANDROID_HOME/build-tools/36.1.0/apksigner"
+          test -f "$ANDROID_HOME/platforms/android-36/android.jar"
+
+      - name: Prepare verified cached Godot and Gradle forge
+        shell: bash
+        run: |
+          set -euo pipefail
+          CACHE="$HOME/.cache/luhmos/godot-4.7.2"
+          WORK="$RUNNER_TEMP/luhmos-forge"
+          TEMPLATE_DIR="$HOME/.local/share/godot/export_templates/${GODOT_TEMPLATE_VERSION}"
+          SENTINEL="$TEMPLATE_DIR/.luhmos-fastpath-v3"
+          mkdir -p "$CACHE" "$WORK" "$TEMPLATE_DIR"
+
+          if [ ! -s "$CACHE/godot.zip" ]; then
+            curl --fail --location --retry 5 --retry-all-errors -o "$CACHE/godot.zip" \
+              "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v4.7.2-stable_linux.x86_64.zip"
+          fi
+          echo "${GODOT_EDITOR_SHA256}  $CACHE/godot.zip" | sha256sum --check --strict
+
+          if [ ! -s "$CACHE/export_templates.tpz" ]; then
+            curl --fail --location --retry 5 --retry-all-errors -o "$CACHE/export_templates.tpz" \
+              "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v4.7.2-stable_export_templates.tpz"
+          fi
+          echo "${GODOT_TEMPLATES_SHA256}  $CACHE/export_templates.tpz" | sha256sum --check --strict
+
+          ANDROID_GRADLE_ZIP="$CACHE/gradle-${ANDROID_GRADLE_VERSION}-bin.zip"
+          if [ ! -s "$ANDROID_GRADLE_ZIP" ]; then
+            curl --fail --location --retry 5 --retry-all-errors -o "$ANDROID_GRADLE_ZIP" \
+              "https://services.gradle.org/distributions/gradle-${ANDROID_GRADLE_VERSION}-bin.zip"
+          fi
+          echo "${ANDROID_GRADLE_SHA256}  $ANDROID_GRADLE_ZIP" | sha256sum --check --strict
+
+          PLUGIN_GRADLE_ZIP="$CACHE/gradle-${PLUGIN_GRADLE_VERSION}-bin.zip"
+          if [ ! -s "$PLUGIN_GRADLE_ZIP" ]; then
+            curl --fail --location --retry 5 --retry-all-errors -o "$PLUGIN_GRADLE_ZIP" \
+              "https://services.gradle.org/distributions/gradle-${PLUGIN_GRADLE_VERSION}-bin.zip"
+          fi
+          echo "${PLUGIN_GRADLE_SHA256}  $PLUGIN_GRADLE_ZIP" | sha256sum --check --strict
+
+          rm -rf "$WORK/editor" "$WORK/plugin-gradle"
+          mkdir -p "$WORK/editor" "$WORK/plugin-gradle"
+          unzip -q -o "$CACHE/godot.zip" -d "$WORK/editor"
+          unzip -q -o "$PLUGIN_GRADLE_ZIP" -d "$WORK/plugin-gradle"
+          chmod +x "$WORK/editor/Godot_v4.7.2-stable_linux.x86_64"
+          PLUGIN_GRADLE_BIN="$WORK/plugin-gradle/gradle-${PLUGIN_GRADLE_VERSION}/bin/gradle"
+          test -x "$PLUGIN_GRADLE_BIN"
+          "$PLUGIN_GRADLE_BIN" --version | grep -q "Gradle ${PLUGIN_GRADLE_VERSION}"
+          echo "GODOT_BIN=$WORK/editor/Godot_v4.7.2-stable_linux.x86_64" >> "$GITHUB_ENV"
+          echo "PLUGIN_GRADLE_BIN=$PLUGIN_GRADLE_BIN" >> "$GITHUB_ENV"
+
+          if [ ! -f "$SENTINEL" ] || [ ! -s "$TEMPLATE_DIR/android_source.zip" ]; then
+            rm -rf "$WORK/templates" "$TEMPLATE_DIR"
+            mkdir -p "$WORK/templates" "$TEMPLATE_DIR"
+            unzip -q -o "$CACHE/export_templates.tpz" -d "$WORK/templates"
+            cp -a "$WORK/templates/templates/." "$TEMPLATE_DIR/"
+
+            PATCH_DIR="$WORK/android-source-patched"
+            rm -rf "$PATCH_DIR" && mkdir -p "$PATCH_DIR"
+            unzip -q "$TEMPLATE_DIR/android_source.zip" -d "$PATCH_DIR"
+            WRAPPER_PROPS="$(find "$PATCH_DIR" -type f -path '*/gradle/wrapper/gradle-wrapper.properties' -print -quit)"
+            test -n "$WRAPPER_PROPS"
+            python3 - "$WRAPPER_PROPS" "$ANDROID_GRADLE_ZIP" "$ANDROID_GRADLE_SHA256" <<'PY'
+          from pathlib import Path
+          import sys
+          p=Path(sys.argv[1]); uri=Path(sys.argv[2]).resolve().as_uri(); digest=sys.argv[3]
+          lines=p.read_text().splitlines(); out=[]; saw_url=False; saw_sha=False
+          for line in lines:
+              if line.startswith('distributionUrl='):
+                  out.append('distributionUrl='+uri); saw_url=True
+              elif line.startswith('distributionSha256Sum='):
+                  out.append('distributionSha256Sum='+digest); saw_sha=True
+              else:
+                  out.append(line)
+          if not saw_url: raise SystemExit('missing Gradle distributionUrl')
+          if not saw_sha: out.append('distributionSha256Sum='+digest)
+          p.write_text('\n'.join(out)+'\n')
+          PY
+            (cd "$PATCH_DIR" && zip -q -r "$TEMPLATE_DIR/android_source.zip.new" .)
+            mv "$TEMPLATE_DIR/android_source.zip.new" "$TEMPLATE_DIR/android_source.zip"
+            printf '%s\n%s\n%s\n%s\n' "$GODOT_EDITOR_SHA256" "$GODOT_TEMPLATES_SHA256" "$ANDROID_GRADLE_SHA256" "$PLUGIN_GRADLE_SHA256" > "$SENTINEL"
+            echo 'LUHM_GODOT_TEMPLATE_CACHE_PREPARED'
+          else
+            echo 'LUHM_GODOT_TEMPLATE_CACHE_HIT'
+          fi
+          test -s "$TEMPLATE_DIR/android_debug.apk"
+          test -s "$TEMPLATE_DIR/android_source.zip"
+
+      - name: Compose branded Cathedral with authoritative local Lum avatar
+        shell: bash
+        run: |
+          set -euo pipefail
+          GAME="$GITHUB_WORKSPACE/project/hydra/samsung/android/cathedral-game"
+          CMS='_forge/luhmos-android/godot/android-plugin/plugin/src/main/assets/cms'
+          PRESET='_forge/luhmos-android/godot/export_presets.cfg'
+          rm -rf "$CMS" && mkdir -p "$CMS"
+          cp -a "$GAME"/. "$CMS"/
+          cp "$LUM_AVATAR_SOURCE" "$CMS/$LUM_AVATAR_NAME"
+          echo "${LUM_AVATAR_SHA256}  $CMS/$LUM_AVATAR_NAME" | sha256sum --check --strict
+
+          python3 - "$CMS/index.html" <<'PY'
+          from pathlib import Path
+          import sys
+          p=Path(sys.argv[1]); text=p.read_text(encoding='utf-8')
+          links=[
+            '<link rel="stylesheet" href="final-form.css">',
+            '<link rel="stylesheet" href="apk-install-gui.css">',
+            '<script defer src="final-form.js"></script>',
+            '<script defer src="apk-install-gui.js"></script>',
+            '<script defer src="enterprise-distribution.js"></script>',
+          ]
+          missing=[x for x in links if x not in text]
+          if missing: text=text.replace('</head>','\n'.join(missing)+'\n</head>',1)
+          p.write_text(text,encoding='utf-8')
+          PY
+          grep -q "$LUM_AVATAR_NAME" "$CMS/apk-install-gui.js"
+          grep -q 'LUHM_OS_ENTERPRISE_DISTRIBUTION_V1' "$CMS/enterprise-distribution.js"
+          ! grep -q 'drive.google' "$CMS/apk-install-gui.js"
+
+          python3 - "$CMS/apk-install-gui.js" "$RELEASE_PACKAGE_ID" "$PACKAGE_ID" <<'PY'
+          from pathlib import Path
+          import sys
+          p=Path(sys.argv[1]); release_id=sys.argv[2]; candidate_id=sys.argv[3]
+          text=p.read_text(encoding='utf-8').replace(release_id,candidate_id)
+          p.write_text(text,encoding='utf-8')
+          PY
+
+          python3 - "$PRESET" "$VERSION_CODE" "$VERSION_NAME" "$PACKAGE_ID" <<'PY'
+          from pathlib import Path
+          import re,sys
+          p=Path(sys.argv[1]); code,name,package_id=sys.argv[2],sys.argv[3],sys.argv[4]; t=p.read_text()
+          t=re.sub(r'(?m)^version/code=\d+$',f'version/code={code}',t)
+          t=re.sub(r'(?m)^version/name="[^"]*"$',f'version/name="{name}"',t)
+          t=re.sub(r'(?m)^package/unique_name="[^"]*"$',f'package/unique_name="{package_id}"',t)
+          t=re.sub(r'(?m)^package/name="[^"]*"$','package/name="LuHm OS Demo"',t)
+          t=re.sub(r'(?m)^export_path="[^"]*"$',f'export_path="../build/android/luhmos-demo-{name}.apk"',t,count=1)
+          t=re.sub(r'(?m)^gradle_build/min_sdk="[^"]*"$','gradle_build/min_sdk="24"',t)
+          t=re.sub(r'(?m)^gradle_build/target_sdk="[^"]*"$','gradle_build/target_sdk="36"',t)
+          p.write_text(t)
+          PY
+          grep -q 'version/code=111' "$PRESET"
+          grep -q 'version/name="1.0.11"' "$PRESET"
+          grep -q 'package/unique_name="art.eggiebagelface.luhmos.demo"' "$PRESET"
+
+      - name: Compile native updater plugin debug variant
+        shell: bash
+        env:
+          GRADLE_CACHE_HIT: ${{ steps.gradle-cache.outputs.cache-hit }}
+        run: |
+          set -euo pipefail
+          EXTRA_GRADLE_ARGS=()
+          if [ "$GRADLE_CACHE_HIT" = true ]; then
+            EXTRA_GRADLE_ARGS+=(--offline)
+            echo 'LUHM_PLUGIN_GRADLE_OFFLINE_HOTPATH'
+          fi
+          "$PLUGIN_GRADLE_BIN" --build-cache --parallel "${EXTRA_GRADLE_ARGS[@]}" \
+            -p _forge/luhmos-android/godot/android-plugin :plugin:assembleDebug
+          test -s _forge/luhmos-android/godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-debug.aar
+          rm -rf _forge/luhmos-android/godot/addons/CathedralAndroid
+          mkdir -p _forge/luhmos-android/godot/addons/CathedralAndroid/bin/debug
+          cp -a _forge/luhmos-android/godot/android-plugin/plugin/export_scripts_template/. _forge/luhmos-android/godot/addons/CathedralAndroid/
+          cp _forge/luhmos-android/godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-debug.aar _forge/luhmos-android/godot/addons/CathedralAndroid/bin/debug/
+
+      - name: Configure ephemeral candidate signer
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.config/godot" build/android
+          cat > "$HOME/.config/godot/editor_settings-4.tres" <<EOF
+          [gd_resource type="EditorSettings" format=3]
+
+          [resource]
+          export/android/android_sdk_path = "$ANDROID_HOME"
+          export/android/java_sdk_path = "$JAVA_HOME"
+          EOF
+          KEYSTORE="$RUNNER_TEMP/luhmos-candidate.keystore"
+          keytool -genkeypair -keystore "$KEYSTORE" -storepass android \
+            -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 \
+            -validity 10000 -dname 'CN=LuHm OS Working Demo,O=Eggie Bagelface Art,C=US'
+          echo "GODOT_ANDROID_KEYSTORE_DEBUG_PATH=$KEYSTORE" >> "$GITHUB_ENV"
+          echo 'GODOT_ANDROID_KEYSTORE_DEBUG_USER=androiddebugkey' >> "$GITHUB_ENV"
+          echo 'GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD=android' >> "$GITHUB_ENV"
+
+      - name: Export branded candidate APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$GODOT_BIN" --headless --editor --path _forge/luhmos-android/godot --quit
+          "$GODOT_BIN" --headless --path _forge/luhmos-android/godot \
+            --install-android-build-template \
+            --export-debug 'Android Release' \
+            "$GITHUB_WORKSPACE/build/android/$APK_NAME"
+          test -s "build/android/$APK_NAME"
+
+      - name: Hard verify branded APK and enterprise runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="build/android/$APK_NAME"
+          BT="$ANDROID_HOME/build-tools/36.1.0"
+          "$BT/apksigner" verify --verbose --print-certs "$APK" | tee build/android/signature.txt
+          "$BT/zipalign" -c -P 16 -v 4 "$APK" | tee build/android/zipalign.txt
+          "$BT/aapt" dump badging "$APK" | tee build/android/badging.txt
+          "$BT/aapt" dump permissions "$APK" | tee build/android/permissions.txt
+          unzip -l "$APK" | tee build/android/contents.txt
+          sha256sum "$APK" | tee build/android/sha256.txt
+          grep -q "package: name='${PACKAGE_ID}'" build/android/badging.txt
+          grep -q "versionCode='${VERSION_CODE}'" build/android/badging.txt
+          grep -q "versionName='${VERSION_NAME}'" build/android/badging.txt
+          grep -q "targetSdkVersion:'36'" build/android/badging.txt
+          grep -q "assets/cms/${LUM_AVATAR_NAME}" build/android/contents.txt
+          grep -q 'assets/cms/apk-install-gui.js' build/android/contents.txt
+          grep -q 'assets/cms/enterprise-distribution.js' build/android/contents.txt
+          grep -q 'assets/cms/crown-cathedral.css' build/android/contents.txt
+          grep -q 'assets/cms/crown-cathedral.js' build/android/contents.txt
+          grep -q 'assets/cms/CROWN_CATHEDRAL_DEMO_MANIFEST.json' build/android/contents.txt
+          grep -q 'assets/cms/system-shell.css' build/android/contents.txt
+          grep -q 'assets/cms/system-shell.js' build/android/contents.txt
+          grep -q 'assets/cms/SYSTEM_SHELL_MANIFEST.json' build/android/contents.txt
+          grep -q 'assets/cms/godot-world/assets/lum_world_sprite.svg' build/android/contents.txt
+          grep -q 'assets/cms/godot-world/assets/lum_hud_icon.svg' build/android/contents.txt
+          grep -q 'assets/cms/godot-world/WORLD_FIRST_MANIFEST.json' build/android/contents.txt
+          grep -q 'assets/cms/godot4-cleared/secondary-motion-profile.json' build/android/contents.txt
+          grep -q 'assets/cms/distribution/enterprise-distribution.json' build/android/contents.txt
+          grep -q 'android.permission.REQUEST_INSTALL_PACKAGES' build/android/permissions.txt
+          ! grep -q 'com.termux.permission.RUN_COMMAND' build/android/permissions.txt
+          grep -Eq 'Verified using v(2|3|4) scheme .*: true' build/android/signature.txt
+          unzip -p "$APK" "assets/cms/${LUM_AVATAR_NAME}" > build/android/embedded-lum-avatar.mp4
+          echo "${LUM_AVATAR_SHA256}  build/android/embedded-lum-avatar.mp4" | sha256sum --check --strict
+          unzip -p "$APK" assets/cms/apk-install-gui.js > build/android/embedded-apk-install-gui.js
+          unzip -p "$APK" assets/cms/enterprise-distribution.js > build/android/embedded-enterprise-distribution.js
+          unzip -p "$APK" assets/cms/distribution/enterprise-distribution.json > build/android/embedded-enterprise-distribution.json
+          grep -q "$LUM_AVATAR_NAME" build/android/embedded-apk-install-gui.js
+          ! grep -Eq 'drive\.google|drive\.usercontent|googleusercontent' build/android/embedded-apk-install-gui.js
+          grep -q 'LUHM_OS_ENTERPRISE_DISTRIBUTION_V1' build/android/embedded-enterprise-distribution.js
+          grep -q 'eggie-admin/hydra-shell-android/releases/download/' build/android/embedded-enterprise-distribution.js
+          grep -q 'app.uninstall.open' build/android/embedded-enterprise-distribution.js
+          ! grep -q '\.lan' build/android/embedded-enterprise-distribution.js
+          python3 - build/android/embedded-enterprise-distribution.json <<'PY'
+          import json,sys
+          d=json.load(open(sys.argv[1],encoding='utf-8'))
+          assert d['release']['repository']=='eggie-admin/hydra-shell-android'
+          assert d['release']['manifest_asset']=='luhmos-release.json'
+          assert d['local_harness']['backend_hosts']==['127.0.0.1','localhost']
+          assert d['local_harness']['committed_private_hostnames'] is False
+          assert d['local_harness']['public_backend_fallback'] is False
+          assert d['android']['silent_install'] is False
+          assert d['android']['silent_uninstall'] is False
+          print('LUHM_EMBEDDED_ENTERPRISE_DISTRIBUTION_GREEN')
+          PY
+          cat > build/android/AVATAR_SOURCE_RECEIPT.txt <<EOF
+          Drive source-of-truth file ID: ${LUM_AVATAR_DRIVE_FILE_ID}
+          Embedded filename: ${LUM_AVATAR_NAME}
+          SHA-256: ${LUM_AVATAR_SHA256}
+          Manifest seal: KAI9000_LUM_AVATAR_ACTUAL_ANIMATED_GREEN_20260906
+          Runtime policy: packaged local bytes only; no Drive/network fetch.
+          EOF
+          cat > build/android/CANDIDATE_AUTHORITY.txt <<EOF
+          COLLISION-FREE WORKING DEMO ONLY.
+          Package: ${PACKAGE_ID}
+          Production package remains: ${RELEASE_PACKAGE_ID}
+          Ephemeral signer. No release signing authority.
+          Updates are eligible only from the LuHm GitHub Releases lane and require a release-manifest SHA-256.
+          Android user confirmation remains mandatory for install/update and uninstall.
+          Local backend default is loopback-only; optional LAN origin belongs in protected local config.
+          No deployment, release publication, canonical merge, Crown, or seal is implied by this artifact.
+          EOF
+          echo 'LUHM_BRANDED_ENTERPRISE_CANDIDATE_GREEN'
+
+      - name: Bind artifact and demo proof
+        shell: bash
+        env:
+          LUHM_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          GAME="$GITHUB_WORKSPACE/project/hydra/samsung/android/cathedral-game"
+          APK="build/android/$APK_NAME"
+          python3 "$GAME/tools/forge-fingerprint.py" "$GAME" build/android/FORGE_FINGERPRINT.json
+          sha256sum "$GAME/forge/forge-lock.json" | tee build/android/forge-lock-sha256.txt
+          sha256sum build/android/FORGE_FINGERPRINT.json | tee build/android/forge-fingerprint-sha256.txt
+          python3 - "$APK" "$GAME/forge/forge-lock.json" build/android/FORGE_FINGERPRINT.json build/android/ARTIFACT_MANIFEST.json build/android/DEMO_ARTIFACT_RECEIPT.json <<'PY'
+          from pathlib import Path
+          import hashlib,json,os,sys
+          apk,lock_path,fingerprint_path,artifact_out,demo_out=map(Path,sys.argv[1:])
+          fingerprint=json.loads(fingerprint_path.read_text())
+          sha=hashlib.sha256(apk.read_bytes()).hexdigest()
+          artifact={
+            'schema':'luhm_os.artifact_manifest.v1',
+            'source_sha':os.environ['LUHM_SOURCE_SHA'],
+            'artifact':{'name':apk.name,'sha256':sha},
+            'forge_lock_sha256':hashlib.sha256(lock_path.read_bytes()).hexdigest(),
+            'forge_contract_sha256':fingerprint['contract_sha256'],
+            'distribution':{'mode':'demo_artifact_only','publish':'NOT_TRIGGERED'},
+            'authority':{'merge':'NOT_TRIGGERED','deploy':'NOT_TRIGGERED','release_signing':'NOT_TRIGGERED','release_publish':'NOT_TRIGGERED','crown':'NOT_TRIGGERED'},
+          }
+          receipt={
+            'schema':'luhm_os.crown_cathedral.demo_artifact.v1',
+            'source_sha':os.environ['LUHM_SOURCE_SHA'],
+            'package_id':'art.eggiebagelface.luhmos.demo',
+            'version_name':'1.0.11',
+            'version_code':111,
+            'apk':{'name':apk.name,'sha256':sha},
+            'signer':'EPHEMERAL_DEBUG_CANDIDATE',
+            'install':'ANDROID_USER_CONFIRMATION_REQUIRED',
+            'public_publish':False,
+            'release_promotion':False,
+            'persistent_signing':False,
+            'physical_install_proof':'PENDING_USER_DEVICE',
+          }
+          artifact_out.write_text(json.dumps(artifact,indent=2,sort_keys=True)+'\n')
+          demo_out.write_text(json.dumps(receipt,indent=2,sort_keys=True)+'\n')
+          print('LUHM_CROWN_CATHEDRAL_ARTIFACT_BINDING_GREEN')
+          PY
+          cp "$GAME/distribution/enterprise-distribution.json" build/android/ENTERPRISE_DISTRIBUTION.json
+          cp "$GAME/CROWN_CATHEDRAL_DEMO_MANIFEST.json" build/android/CROWN_CATHEDRAL_DEMO_MANIFEST.json
+          grep -q '"release_signing": "NOT_TRIGGERED"' build/android/ARTIFACT_MANIFEST.json
+          grep -q '"release_publish": "NOT_TRIGGERED"' build/android/ARTIFACT_MANIFEST.json
+          grep -q '"package_id": "art.eggiebagelface.luhmos.demo"' build/android/DEMO_ARTIFACT_RECEIPT.json
+          echo 'LUHM_DEMO_RELEASE_PUBLISH_NOT_TRIGGERED'
+
+      - name: Upload branded candidate and release proof
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: luhmos-working-demo-${{ env.VERSION_NAME }}-${{ github.run_number }}
+          path: |
+            build/android/${{ env.APK_NAME }}
+            build/android/ENTERPRISE_DISTRIBUTION.json
+            build/android/CROWN_CATHEDRAL_DEMO_MANIFEST.json
+            build/android/DEMO_ARTIFACT_RECEIPT.json
+            build/android/sha256.txt
+            build/android/signature.txt
+            build/android/zipalign.txt
+            build/android/badging.txt
+            build/android/permissions.txt
+            build/android/contents.txt
+            build/android/AVATAR_SOURCE_RECEIPT.txt
+            build/android/CANDIDATE_AUTHORITY.txt
+            build/android/FORGE_FINGERPRINT.json
+            build/android/forge-lock-sha256.txt
+            build/android/forge-fingerprint-sha256.txt
+            build/android/ARTIFACT_MANIFEST.json
+          if-no-files-found: error
+          retention-days: 14
