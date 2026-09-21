@@ -5,6 +5,7 @@ from typing import Any
 
 from agents import Agent, Runner, set_tracing_disabled
 
+from .astra import astra_manager_instructions, astra_status, build_astra_tools
 from .doctrine import build_agent_instructions, list_skills
 from .tools import LUM_TOOLS
 
@@ -17,10 +18,15 @@ LUM_MAX_TURNS = min(max(int(os.environ.get("LUM_AGENT_MAX_TURNS", "8")), 1), 16)
 set_tracing_disabled(os.environ.get("LUM_OPENAI_TRACING", "0") != "1")
 
 
-def build_lum_agent() -> Agent[Any]:
+def build_lum_agent(message: str = "") -> Agent[Any]:
+    astra_tools = build_astra_tools(message)
     return Agent(
         name=LUM_AGENT_NAME,
-        instructions=build_agent_instructions(),
+        instructions=(
+            build_agent_instructions()
+            + "\n\n"
+            + astra_manager_instructions(message)
+        ),
         model=LUM_MODEL,
         model_settings={
             "reasoning": {"effort": "none"},
@@ -29,11 +35,12 @@ def build_lum_agent() -> Agent[Any]:
             "max_tokens": 2000,
             "parallel_tool_calls": True,
         },
-        tools=LUM_TOOLS,
+        tools=[*LUM_TOOLS, *astra_tools],
     )
 
 
 def run_lum(message: str) -> dict[str, Any]:
+    route = astra_status(message)
     if not os.environ.get("OPENAI_API_KEY"):
         return {
             "ok": True,
@@ -46,11 +53,15 @@ def run_lum(message: str) -> dict[str, Any]:
                 "but no OpenAI model call was made."
             ),
             "skills": [item["name"] for item in list_skills()],
+            "astra": route,
+            "single_boss": True,
             "execution": "NOT_EXECUTED",
         }
 
-    agent = build_lum_agent()
+    agent = build_lum_agent(message)
     result = Runner.run_sync(agent, message, max_turns=LUM_MAX_TURNS)
+    if result.last_agent.name != LUM_AGENT_NAME:
+        raise RuntimeError("Lum single-Boss invariant violated")
     return {
         "ok": True,
         "mode": "openai_agents_sdk",
@@ -59,5 +70,7 @@ def run_lum(message: str) -> dict[str, Any]:
         "assistant": str(result.final_output or "").strip(),
         "last_agent": result.last_agent.name,
         "skills": [item["name"] for item in list_skills()],
+        "astra": route,
+        "single_boss": True,
         "execution": "AGENT_COMPLETED",
     }
