@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
-import org.json.JSONObject;
 
 public final class EngineService extends Service {
     public final class LocalBinder extends Binder {
@@ -20,26 +19,21 @@ public final class EngineService extends Service {
     }
 
     public String status() {
-        return new JSONObject()
-                .put("engine", "app-owned-native-service")
-                .put("deviceTarget", "SM-X400")
-                .put("targetApi", 37)
-                .put("runtimeApi", Build.VERSION.SDK_INT)
-                .put("termuxRequired", false)
-                .put("bashInstallerRequired", false)
-                .put("externalDaemonRequired", false)
-                .put("shellExecution", false)
-                .put("crossProfileLoopback", false)
-                .toString();
+        return "{\"engine\":\"app-owned-native-service\","
+                + "\"deviceTarget\":\"SM-X400\",\"targetApi\":37,"
+                + "\"runtimeApi\":" + Build.VERSION.SDK_INT + ","
+                + "\"termuxRequired\":false,\"bashInstallerRequired\":false,"
+                + "\"externalDaemonRequired\":false,\"shellExecution\":false,"
+                + "\"crossProfileLoopback\":false}";
     }
 
     public String runTyped(String action) {
-        JSONObject out = new JSONObject().put("action", action);
+        if (action == null) return "{\"ok\":false,\"error\":\"ACTION_NOT_ALLOWLISTED\"}";
         return switch (action) {
-            case "self_test" -> out.put("ok", true).put("result", "LUHM_ENGINE_SELF_TEST_GREEN").toString();
+            case "self_test" -> "{\"action\":\"self_test\",\"ok\":true,\"result\":\"LUHM_ENGINE_SELF_TEST_GREEN\"}";
             case "runtime_status" -> status();
-            case "asset_inventory" -> out.put("ok", true).put("publicAssets", 3).put("privateArtIndexed", 22).put("threeDSourceRegistry", 20).toString();
-            default -> out.put("ok", false).put("error", "ACTION_NOT_ALLOWLISTED").toString();
+            case "asset_inventory" -> "{\"action\":\"asset_inventory\",\"ok\":true,\"publicAssets\":3,\"privateArtIndexed\":22,\"threeDSourceRegistry\":20}";
+            default -> "{\"ok\":false,\"error\":\"ACTION_NOT_ALLOWLISTED\"}";
         };
     }
 }
