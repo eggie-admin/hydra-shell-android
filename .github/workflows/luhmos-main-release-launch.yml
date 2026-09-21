@@ -1,32 +1,32 @@
-name: LuHm OS Main Release Launch
+name: LuHm OS Main Release Launch Guard
 
 on:
-  push:
-    branches:
-      - luhmos-main
-    paths:
-      - 'release/LUHMOS_RELEASE_INTENT_1.0.0.json'
+  workflow_dispatch:
+    inputs:
+      acknowledge_public_release_locked:
+        description: Acknowledge that public release remains locked
+        required: true
+        type: boolean
+        default: false
 
 permissions:
-  actions: write
   contents: read
 
-concurrency:
-  group: luhmos-main-release-launch-v1.0.0
-  cancel-in-progress: false
-
 jobs:
-  dispatch-public-release:
+  guard:
+    name: Public release launcher remains OFF
     runs-on: ubuntu-24.04
     steps:
-      - name: Dispatch signed public release from canonical branch
+      - name: Enforce manual public-release authority
         shell: bash
         env:
-          GH_TOKEN: ${{ github.token }}
+          ACK: ${{ inputs.acknowledge_public_release_locked }}
         run: |
           set -euo pipefail
-          gh workflow run luhmos-fdroid-public-release.yml \
-            --repo "$GITHUB_REPOSITORY" \
-            --ref luhmos-main \
-            -f publish_public_mirror=true
-          echo 'LUHMOS_PUBLIC_RELEASE_DISPATCHED'
+          echo 'LUHMOS_PUBLIC_RELEASE_LAUNCH=OFF'
+          echo 'Normal pushes and merges cannot dispatch a public release.'
+          echo 'This guard has no actions:write permission and dispatches no workflow.'
+          if [ "$ACK" = "true" ]; then
+            echo 'Acknowledged: public release is still a separate Crown-gated authority step.'
+          fi
+          echo 'LUHMOS_MAIN_RELEASE_LAUNCH_GUARD_GREEN'

@@ -18,12 +18,14 @@
       "mutation_requires_server_approval_gate": true
     },
     "github_remote": {
+      "project_label": "LuHm OS",
       "repo": "eggie-admin/hydra-shell-android",
-      "branch": "main",
+      "branch": "luhmos-main",
       "update": "git_pull_ff_only",
       "runtime_ai": false
     },
     "google_drive_backup": {
+      "project_label": "LuHm OS",
       "role": "sealed_recovery_and_artifact_mirror",
       "secrets": false
     }

@@ -1,0 +1,126 @@
+{
+  "schema": "luhm-os.m1.signed-secure-webview-socket.v1",
+  "seal": "LUHM_M1_SIGNED_SECURE_WEBVIEW_SOCKET_20260916",
+  "date": "2026-09-16",
+  "status": "SEALED_SOURCE_CONTRACT_GREEN",
+  "human_authority": "Professor",
+  "repository": "eggie-admin/hydra-shell-android",
+  "branch": "luhmos-main",
+  "parent_commit": "a02c3d19aac9043c54901d8bc31a54c5d6e709b2",
+  "scope": "M1 source architecture and security contract only",
+  "target": {
+    "platform": "Samsung Android",
+    "device": "SM-S721U1",
+    "android": 16,
+    "application_id": "art.eggiebagelface.luhmos",
+    "root_required": false
+  },
+  "webview_boundary": {
+    "bundled_assets_only": true,
+    "persistent_release_signer_required_for_future_release_build": true,
+    "asset_hash_manifest_required": true,
+    "direct_secret_access": false,
+    "direct_shell_authority": false,
+    "direct_socket_authority": false,
+    "arbitrary_destination_authority": false,
+    "bridge": "Kotlin typed allowlisted bridge"
+  },
+  "socket_broker": {
+    "mode": "headless LuHm Socket Broker",
+    "typed_requests_only": true,
+    "allowlisted_destinations_only": true,
+    "arbitrary_shell": false,
+    "fail_closed": true
+  },
+  "transport_contracts": {
+    "tls": {
+      "implementation": "OpenSSL",
+      "minimum": "TLS 1.3",
+      "certificate_verification_required": true,
+      "hostname_verification_required": true,
+      "downgrade_allowed": false,
+      "invalid_certificate_rejection_test_required": true
+    },
+    "ssh": {
+      "implementation": "OpenSSH",
+      "authentication": "Ed25519 public key",
+      "password_authentication": false,
+      "root_login": false,
+      "known_hosts_verification_required": true,
+      "host_key_mismatch_rejection_test_required": true
+    },
+    "openvpn": {
+      "identity": "certificate",
+      "aead_required": true,
+      "tls_crypt_required": true,
+      "embedded_credentials": false,
+      "credential_isolation_required": true,
+      "fail_closed": true
+    }
+  },
+  "antenna_contract": {
+    "remote_direction": "outbound_only",
+    "remote_transport": "wss:// over TLS 443",
+    "local_ollama_endpoint": "http://127.0.0.1:11434",
+    "remote_shell": false,
+    "direct_remote_ollama_access": false,
+    "messages": "typed proposals only",
+    "zero_trust_edge": true,
+    "protected_origin": true,
+    "strict_tls": true,
+    "future_runtime_controls": [
+      "short_lived_oidc_or_jwt",
+      "nonce",
+      "request_id",
+      "expiry",
+      "schema_validation",
+      "message_size_limit",
+      "redaction",
+      "kill_switch"
+    ]
+  },
+  "firewall_boundary": {
+    "game_lane": "non_admin",
+    "admin_lane": "explicitly_separated",
+    "game_to_admin_implicit_escalation": false
+  },
+  "required_gates_before_runtime_green": [
+    "typed_kotlin_bridge_implementation",
+    "headless_socket_broker_implementation",
+    "transport_rejection_tests",
+    "secret_scan",
+    "bundled_asset_hash_verification",
+    "persistent_signer_verification",
+    "signed_apk_build",
+    "physical_samsung_proof",
+    "live_wss_identity_reconnect_and_reboot_proof"
+  ],
+  "authority": {
+    "source_contract_green_grants_release_authority": false,
+    "ci_success_grants_release_authority": false,
+    "stable_release_requires_professor_approval": true,
+    "physical_device_proof_required_before_release": true
+  },
+  "mutation_guardrails": {
+    "compile_dispatched_by_this_seal": false,
+    "apk_published_by_this_seal": false,
+    "release_promoted_by_this_seal": false,
+    "termux_mutated_by_this_seal": false,
+    "secrets_in_repo": false,
+    "signing_keys_in_repo": false,
+    "chrome_dev_canary_source_ingest": false
+  },
+  "green_now": [
+    "architecture_design",
+    "source_security_contract",
+    "source_of_truth_seal"
+  ],
+  "not_yet_green": [
+    "runtime_implementation",
+    "signed_apk",
+    "physical_samsung_validation",
+    "live_wss_reconnect_reboot_validation"
+  ],
+  "next_mutation": "Implement the typed Kotlin allowlisted bridge and headless LuHm Socket Broker against this sealed contract without widening WebView authority.",
+  "resume_phrase": "continue KAI 9000 from LUHM M1 signed secure WebView socket seal"
+}

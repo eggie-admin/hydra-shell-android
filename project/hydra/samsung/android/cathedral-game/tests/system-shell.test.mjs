@@ -1,0 +1,13 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+const source=fs.readFileSync(new URL('../system-shell.js',import.meta.url),'utf8');
+const sandbox={URL,console,setTimeout,clearTimeout,AbortController,globalThis:null,__LUHM_TEST__:true,fetch:async()=>{throw new Error('unexpected network')}};
+sandbox.globalThis=sandbox;vm.createContext(sandbox);vm.runInContext(source,sandbox,{filename:'system-shell.js'});
+const core=sandbox.LuHmSystemShell;
+test('two-tier minimize is deterministic',()=>{assert.equal(core.nextLevel(0),1);assert.equal(core.nextLevel(1),2);assert.equal(core.nextLevel(2),0)});
+test('native shell actions are explicit bridge messages',()=>{const sent=[];const win={CathedralBridge:{postMessage:v=>sent.push(JSON.parse(v))}};assert.equal(core.bridge(win,'app.window.immersive').ok,true);assert.equal(sent[0].type,'app.window.immersive')});
+test('local harness is fixed to loopback port 8791',async()=>{const seen=[];const out=await core.probe(async url=>{seen.push(String(url));return {ok:true,status:200}});assert.equal(out.origin,'http://127.0.0.1:8791');assert.deepEqual(seen,['http://127.0.0.1:8791/health'])});
+test('pairing is six digit and returns only ephemeral session data',async()=>{const seen=[];const fetchImpl=async(url,opt)=>{seen.push([String(url),JSON.parse(opt.body)]);return {ok:true,json:async()=>({schema:core.PAIR_SCHEMA,token:'ephemeral',expires_at:9999999999})}};const out=await core.pair('123456',fetchImpl);assert.equal(out.ok,true);assert.equal(out.token,'ephemeral');assert.equal(seen[0][0],'http://127.0.0.1:8791/auth/pair');assert.equal((await core.pair('abc',fetchImpl)).ok,false)});
+test('no direct shell or persistent credential primitives exist',()=>{assert.equal(/child_process|OS\.execute|RUN_COMMAND|eval\s*\(|new Function|localStorage\.setItem\([^)]*token/i.test(source),false)});

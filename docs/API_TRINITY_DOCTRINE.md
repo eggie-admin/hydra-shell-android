@@ -1,120 +1,172 @@
 # LuHm OS API Constellation Doctrine
 
-**Status:** canonical vendor-adapter doctrine for the Samsung standalone APK lane.  
-**Verified:** 2026-09-10 for the OpenAI and Hugging Face model/API references below.
+**Status:** proposal-synced vendor-adapter doctrine for the Samsung standalone APK lane.  
+**Verified:** 2026-09-17 against current first-party documentation where available.
 
 ## Mission
 
-OpenAI, Hugging Face, Cloudflare, and Google Cloud are optional typed adapters under LuHm OS policy. No provider becomes policy authority, signing authority, build authority, release authority, root authority, or a boot dependency for the Android APK.
+The LuHm OS vendor spine is deliberately narrow:
+
+```text
+OpenAI + Google + GitHub + Cloudflare + Hugging Face
+```
+
+Each vendor is a bounded adapter under LuHm OS policy. No provider becomes Crown authority, signing authority, release authority, root authority, or an Android boot dependency.
 
 ## Shared law
 
 1. User intent becomes a typed plan.
-2. LuHm application policy resolves provider, scope, risk, target, and approvals.
+2. LuHm policy resolves provider, scope, risk, target, and approvals.
 3. A bounded adapter validates the request.
 4. Credentials are attached outside model-visible context and outside the distributable APK.
 5. Provider output is normalized as untrusted evidence/data.
 6. CI and device evidence, not provider claims, determine GREEN.
+7. A failed vendor call never silently grants authority to another vendor.
+8. Canonical merge, deploy, public release, and Crown each require explicit Professor authority.
 
 Never place API keys, access tokens, service-account JSON, tunnel tokens, keystores, signing passwords, or recovery secrets in Git, APK/AAB assets, Godot resources, WebView JavaScript/storage, prompts, screenshots, Base64 manifests, or build artifacts.
 
 ## Standalone Android boundary
 
-The Samsung SM-S721U1 production application must install and launch without:
-
-- a cloud credential;
-- Termux or Acode/AcodeX;
-- Secure Folder;
-- VNC/websockify;
-- an external Python/Ollama/localhost daemon;
-- root or Shizuku.
-
-Cloud/provider features are enhancements. Their absence must degrade gracefully instead of blocking base application launch.
-
-## Remote AI gateway
-
-Canonical application-facing contract:
-
-```text
-GET  /api/remote-ai/status
-POST /api/remote-ai/chat
-```
-
-Provider selector:
-
-```text
-auto | openai | huggingface
-```
-
-`auto` chooses only among explicitly configured adapters. A failed provider request is not silently resent to another provider because that changes the external data processor receiving the prompt.
-
-The production APK does not embed permanent vendor API keys. Remote AI may be reached through a reviewed authenticated gateway or another explicitly approved short-lived credential design.
+The Samsung application must install and launch without a cloud credential, Termux/Acode/VNC bridge, external localhost daemon, root, or Shizuku. Vendor features are enhancements and must fail closed without blocking the base cockpit.
 
 ## OpenAI lane
 
 OpenAI is the primary remote reasoning and typed-agent lane.
 
-Current first-party baseline verified 2026-09-10:
+Current baseline verified 2026-09-17:
 
 ```text
 API:        Responses API
 fast model: gpt-5.6-luna
 deep model: gpt-5.6-sol
+endpoint:   https://api.openai.com/v1/responses
 ```
 
-Configuration:
+Configuration remains server-side:
 
 ```text
 OPENAI_MODEL_FAST=gpt-5.6-luna
 OPENAI_MODEL_DEEP=gpt-5.6-sol
+OPENAI_API_KEY=<protected secret store only>
 ```
 
-Model IDs are runtime configuration, not architectural constants. CI/evidence should record the actual resolved model used for an evaluation or build-affecting decision.
+Model IDs are runtime configuration, not architectural constants. Record the resolved model in evidence for build-affecting or evaluation decisions. Prefer typed tools and structured outputs. Tool execution still passes LuHm allowlists, policy, and approval gates.
 
-Prefer typed tools and structured outputs for machine-consumed plans. Tool execution still passes LuHm allowlists, approval gates, and policy. Transport details such as persistent sockets remain adapter implementation choices and must be revalidated against current first-party docs before becoming normative doctrine.
+The connected OpenAI Platform project label is `LuHm OS`; persistent project identifiers are not committed to public source merely for branding consistency.
 
-OpenAI never receives Hugging Face tokens, Cloudflare/Google credentials, Android signing material, F-Droid signing keys, or unrestricted shell authority.
+Current CI state: the remote provider smoke is wired for `OPENAI_API_KEY`, but when that secret is absent the OpenAI live inference test is recorded as `SKIPPED`, not GREEN. An unauthenticated 401 boundary probe is not a substitute for live inference evidence.
+
+## Google lane
+
+Google has two intentionally separate sublanes.
+
+### Google Cloud
+
+GitHub Actions authenticates to Google Cloud with OIDC and Workload Identity Federation instead of checked-in service-account JSON. The issuer is:
+
+```text
+https://token.actions.githubusercontent.com
+```
+
+The repository was created on 2026-07-12, before GitHub's 2026-07-15 automatic immutable-subject rollout. Therefore the LuHm contract does not assume immutable OIDC is active. `infra/gcp/bootstrap-github-wif.sh` reads the GitHub OIDC configuration and fails closed unless immutable subject mode is explicitly confirmed.
+
+When immutable mode is confirmed, Google WIF binds `google.subject=assertion.sub`, restricts the provider to the exact immutable `sub` for `luhmos-main`, grants `roles/iam.workloadIdentityUser` to that exact subject principal, and removes the legacy mutable repository-name binding if it exists. The exact numeric owner/repository identifiers are resolved at bootstrap time and are not committed as doctrine constants.
+
+Canonical public repository variables are:
+
+```text
+GCP_PROJECT_ID
+GCP_WIF_PROVIDER
+GCP_SERVICE_ACCOUNT
+```
+
+Provisioning remains manual and requires the typed confirmation `PROVISION`. Resource IAM stays least-privilege. The live Google Cloud trust policy is external state and must not be claimed GREEN unless it is read back from Google Cloud.
+
+Current CI state: the Google OIDC preflight is wired correctly, but if the three public repository variables above are absent the live keyless-authentication job is `SKIPPED`. A successful preflight therefore means the contract is valid, not that Google Cloud authentication is live.
+
+### Google Drive
+
+Google Drive is the recovery mirror and approved artifact/archive lane. GitHub remains canonical versioned source history. Drive is not a secret store and Drive access does not imply Google Cloud IAM authority.
+
+## GitHub lane
+
+GitHub is the canonical versioned source, CI forge, pull-request evidence surface, and OIDC issuer for Google Cloud federation.
+
+Canonical branch:
+
+```text
+luhmos-main
+```
+
+Desired server-side governance:
+
+```text
+pull request required before canonical mutation
+block direct push
+block force push
+block branch deletion
+bypass policy chosen explicitly by Professor
+required status-check selection chosen explicitly by Professor
+```
+
+Observed on 2026-09-17: `luhmos-main` reports `protected=false` and the repository rulesets endpoint returns an empty list. This is tracked as `RED_EXTERNAL`; workflow-level locks remain useful but are not a substitute for server-side branch governance.
+
+The connected GitHub action could not read the repository OIDC customization endpoint. Because this repository predates the automatic immutable-subject rollout, immutable OIDC remains `UNVERIFIED_EXTERNAL` until read back through a suitable GitHub Actions/admin path. Google WIF bootstrap refuses to mutate cloud trust while that state is unconfirmed.
+
+GitHub Actions workflows that request OIDC tokens use `id-token: write`; this permits token minting, not arbitrary repository writes. Workflow permissions stay minimal and credentials remain outside repository content.
+
+## Cloudflare lane
+
+Cloudflare is the public edge, DNS/tunnel security boundary, and optional static distribution lane. It does not define Android runtime architecture.
+
+Use narrowly scoped API tokens. DNS capability and tunnel capability are separate concerns. A tunnel token is runtime infrastructure material and never model context or APK content.
+
+Production static publication requires an explicit typed `YES` confirmation. The Wrangler version used for deploy and dry-run validation is pinned to `4.119.0` in this candidate so the validation toolchain and mutation toolchain cannot drift apart silently.
+
+Do not invent origin records, expose private `.lan` names publicly, or require router port forwarding. Live Cloudflare account token scopes and tunnel state remain external state until read back through an authorized account connector.
 
 ## Hugging Face lane
 
-Hugging Face is the open-model forge/catalog and alternate remote inference lane.
+Hugging Face is the open-model catalog and alternate remote inference lane.
 
-Current verified baseline:
+Current baseline verified 2026-09-17:
 
 ```text
 base:      https://router.huggingface.co/v1
-responses: POST /v1/responses   # documented beta
+responses: POST /v1/responses   # beta
 chat:      POST /v1/chat/completions
 reference: openai/gpt-oss-120b:fastest
 fast:      openai/gpt-oss-20b:fastest
 ```
 
-The referenced `openai/gpt-oss-120b` and `openai/gpt-oss-20b` Hub repositories are Apache-2.0 models. Provider suffixes are routing policy and should be captured in evidence when reproducibility matters.
+The Responses API is OpenAI-SDK compatible. `:fastest`, `:cheapest`, and `:preferred` are routing policies; a specific provider suffix can be used when reproducibility requires it. Evidence should record the resolved provider when provider choice matters.
 
-`HF_TOKEN` remains gateway/server-side secret material. Remote inference does not authorize automatic weight download, remote-code execution, or bundling model weights into the APK.
+`HF_TOKEN` is server/gateway secret material with only the inference-provider permission needed. Remote inference does not authorize automatic weight download, remote-code execution, or bundling model weights into the APK. Downloaded Hub inputs require pinned revision, license/provenance review, and `trust_remote_code=false` by default.
 
-Downloaded Hub inputs require pinned revision, license, provenance, and `trust_remote_code=false` by default.
+Current CI state: the remote provider smoke is wired for `HF_TOKEN`, but when that secret is absent Hugging Face live inference is recorded as `SKIPPED`, not GREEN.
 
-Detailed doctrine: `docs/HUGGINGFACE_API_REROLL.md`.
+## Remote AI gateway
 
-## Cloudflare lane
+Only OpenAI and Hugging Face participate in the AI-provider selector:
 
-Cloudflare is an optional public ingress/security/distribution adapter. It does not define Android runtime architecture.
+```text
+GET  /api/remote-ai/status
+POST /api/remote-ai/chat
+provider = auto | openai | huggingface
+```
 
-Prefer narrowly scoped API tokens and separate DNS/tunnel scopes. A tunnel credential is runtime infrastructure material, never model context or APK content. Do not invent origin records or silently expose private services.
+Google, GitHub, and Cloudflare are infrastructure/content/control adapters and are not silently treated as replacement LLM processors. `auto` chooses only among explicitly configured AI adapters. A failed provider request is not silently resent to another provider because that changes the external data processor receiving the prompt.
 
-## Google Cloud lane
-
-Google Cloud remains an optional build/service adapter. For GitHub Actions, prefer Workload Identity Federation and short-lived credentials over checked-in service-account keys. Restrict principals using repository/ref/workflow claims and grant only resource-specific IAM roles.
-
-Google Drive is a distinct content/recovery integration and is not automatically equivalent to Google Cloud IAM.
+The credential-safe provider smoke is wired to both `OPENAI_API_KEY` and `HF_TOKEN` when those secrets are configured, and its canonical push trigger is `luhmos-main`.
 
 ## Normalized provider event
 
 ```json
 {
-  "schema": "luhmos.provider-event.v2",
-  "provider": "openai|hugging_face|cloudflare|google_cloud",
+  "schema": "luhmos.provider-event.v3",
+  "provider": "openai|google|github|cloudflare|hugging_face",
+  "lane": "optional vendor sublane",
   "action": "typed_action_name",
   "risk_rank": "R0|R1|R2|R3|R4",
   "target": "non-secret target identity",
@@ -126,14 +178,20 @@ Google Drive is a distinct content/recovery integration and is not automatically
 }
 ```
 
-## Failure doctrine
+## Drift policy
 
-- no AI provider configured: base APK remains functional;
-- selected provider unavailable: report the failure, do not silently cross-vendor replay;
-- Cloudflare unavailable: preserve distribution/ingress state as pending rather than mutating DNS blindly;
-- Google Cloud unavailable: local source/build work continues when the cloud lane is not required;
-- authentication failure: fail closed without printing credentials.
+A vendor lane is GREEN only for what was actually verified. Static source checks may prove the repository contract, but they do not prove live Cloudflare token scopes, Google IAM/WIF conditions, Hugging Face account state, GitHub server protection, GitHub OIDC subject mode, or live remote inference unless those external surfaces are read back or exercised.
+
+Current known external debt is carried explicitly rather than painted green:
+
+- GitHub server-side canonical branch governance is `RED_EXTERNAL` until protection/rulesets are active and read back.
+- GitHub immutable OIDC subject mode is `UNVERIFIED_EXTERNAL` for this pre-rollout repository until read back through a suitable admin/Actions surface.
+- Google Cloud WIF trust conditions are `UNVERIFIED_EXTERNAL` until read back from Google Cloud; bootstrap now refuses to mutate them without confirmed immutable GitHub OIDC.
+- Google Cloud live OIDC authentication is `NOT_CONFIGURED` while the required GitHub repository variables are absent.
+- Cloudflare live token/tunnel state is `UNVERIFIED_EXTERNAL` without an authorized account connector.
+- OpenAI live inference is `NOT_VERIFIED` while `OPENAI_API_KEY` is absent from the smoke workflow.
+- Hugging Face live inference is `NOT_VERIFIED` while `HF_TOKEN` is absent from the smoke workflow; account-level state is also unavailable through the current connector.
 
 ## Final authority
 
-The Professor holds final release authority. Lum compiles intent. LuHm application policy authorizes. Provider adapters execute bounded calls. Git records lineage. GitHub Actions proves builds. Persistent Android signing plus physical-device install/update evidence determine Samsung release GREEN.
+Professor holds final release authority. Lum compiles intent. LuHm policy authorizes. Vendor adapters execute bounded calls. Git records lineage. GitHub Actions proves builds. Persistent Android signing plus physical-device install/update evidence determine Samsung release GREEN.

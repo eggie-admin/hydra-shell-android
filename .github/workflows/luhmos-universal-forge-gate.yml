@@ -1,0 +1,130 @@
+name: LuHm Universal Forge Gate
+
+on:
+  pull_request:
+    branches:
+      - luhmos/public-private-boundary-20260917
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tools/luhm-compile-wizard.mjs'
+      - 'tools/luhm-compile-wizard.test.mjs'
+      - 'project/hydra/samsung/android/cathedral-game/**'
+      - 'project/hydra/doctrine/proposed-source-of-truth/LUHM_OS_FINAL_UNIVERSAL_FORGE_SEAL_20260917.json'
+      - '.github/workflows/luhmos-drive-avatar-candidate.yml'
+      - '.github/workflows/luhmos-source-vendor-gate.yml'
+      - '.github/workflows/luhmos-universal-forge-gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: luhmos-universal-forge-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  GAME: project/hydra/samsung/android/cathedral-game
+
+jobs:
+  universal-forge:
+    name: Validate immutable universal remote forge
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout proposal
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+
+      - name: Python 3.14 forge lane
+        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: '3.14'
+
+      - name: Java 17 forge lane
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Node 24 forge lane
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: '24'
+          package-manager-cache: false
+
+      - name: Validate npm compile wizard offline
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/forge
+          npm ci --ignore-scripts --offline --no-audit --no-fund
+          npm test | tee build/forge/npm-wizard-test.txt
+          npm run dryrun | tee build/forge/npm-wizard-dryrun.txt
+          echo 'LUHM_NPM_COMPILE_WIZARD_GREEN'
+
+      - name: Validate immutable forge contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$GAME/tools/validate-forge.py" "$GAME"
+          python -m compileall -q "$GAME/tools" "$GAME/python/src"
+          git diff --check
+          echo 'LUHM_UNIVERSAL_FORGE_STATIC_GREEN'
+
+      - name: Capture secret-free runner fingerprint
+        shell: bash
+        env:
+          LUHM_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p build/forge
+          python "$GAME/tools/forge-fingerprint.py" "$GAME" build/forge/FORGE_FINGERPRINT.json
+          sha256sum "$GAME/forge/forge-lock.json" | tee build/forge/forge-lock-sha256.txt
+          sha256sum package-lock.json | tee build/forge/npm-lock-sha256.txt
+          sha256sum tools/luhm-compile-wizard.mjs | tee build/forge/npm-wizard-sha256.txt
+          sha256sum build/forge/FORGE_FINGERPRINT.json | tee build/forge/forge-fingerprint-sha256.txt
+          python - "$GAME" build/forge/FORGE_FINGERPRINT.json build/forge/FORGE_STATE.txt <<'PY'
+          from pathlib import Path
+          import json,sys
+          game=Path(sys.argv[1]); fp=json.loads(Path(sys.argv[2]).read_text()); out=Path(sys.argv[3])
+          lock=json.loads((game/'forge/forge-lock.json').read_text())
+          lines=[
+            'LuHm OS Universal Remote Forge',
+            f"source_sha={fp['source_sha']}",
+            f"contract_sha256={fp['contract_sha256']}",
+            f"runner={fp['runner']['system']}/{fp['runner']['machine']}",
+            f"cpu_threads={fp['runner']['cpu_threads']}",
+            f"memory_kib={fp['runner']['memory_kib']}",
+            f"kernel_policy={lock['runner']['kernel_policy']}",
+            'npm_wizard=GREEN',
+            'npm_dependencies=ZERO',
+            'npm_install_lifecycle_device_mutation=FORBIDDEN',
+            'candidate_install_requires_explicit_apply=true',
+            'cache_restore=exact_key_only',
+            'workflow_permissions=contents_read_only',
+            'merge=NOT_TRIGGERED',
+            'deploy=NOT_TRIGGERED',
+            'release_signing=NOT_TRIGGERED',
+            'crown=NOT_TRIGGERED',
+          ]
+          out.write_text('\n'.join(lines)+'\n')
+          print('LUHM_UNIVERSAL_FORGE_FINGERPRINT_GREEN')
+          PY
+
+      - name: Upload forge state receipt
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: luhmos-universal-forge-${{ github.run_number }}
+          path: |
+            build/forge/FORGE_FINGERPRINT.json
+            build/forge/forge-lock-sha256.txt
+            build/forge/npm-lock-sha256.txt
+            build/forge/npm-wizard-sha256.txt
+            build/forge/forge-fingerprint-sha256.txt
+            build/forge/npm-wizard-test.txt
+            build/forge/npm-wizard-dryrun.txt
+            build/forge/FORGE_STATE.txt
+          if-no-files-found: error
+          retention-days: 14

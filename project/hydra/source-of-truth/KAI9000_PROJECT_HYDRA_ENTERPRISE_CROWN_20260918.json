@@ -1,0 +1,116 @@
+{
+  "schema": "luhm-os.project-hydra.enterprise-crown.v1",
+  "manifest_id": "KAI9000_PROJECT_HYDRA_ENTERPRISE_CROWN_20260918",
+  "status": "SEALED_ENTERPRISE_SOURCE_GOVERNANCE_CROWN",
+  "date_local": "2026-09-18",
+  "project": "Project Hydra",
+  "parent_os": "LuHm OS",
+  "repository": "eggie-admin/hydra-shell-android",
+  "canonical_branch": "luhmos-main",
+  "human_authority": "Professor",
+  "authorization": "EXPLICIT_CURRENT_USER_CONTINUE_TO_CROWN",
+  "source_law": "AI proposes. Policy authorizes. CI proves. The human promotes.",
+  "lineage": {
+    "superseded_pr": 84,
+    "reconciliation_pr": 88,
+    "audited_candidate": "3e207a2ba21927a4a9276827bdeee51072469d87",
+    "exact_head_ci": "10/10_SUCCESS",
+    "source_merge_commit": "c533bebdbdaad06d8286337e6237c096caef4105"
+  },
+  "exact_head_workflows": [
+    [
+      "LuHm OS Local CI",
+      35286622352,
+      "success"
+    ],
+    [
+      "Project Hydra Enterprise Source Gate",
+      35286622377,
+      "success"
+    ],
+    [
+      "LuHm OS Fastpath Gate",
+      35286622364,
+      "success"
+    ],
+    [
+      "PR guardrails",
+      35286622363,
+      "success"
+    ],
+    [
+      "LuHm OS lane gates",
+      35286622367,
+      "success"
+    ],
+    [
+      "LuHm Vendor Purge Guard",
+      35286622345,
+      "success"
+    ],
+    [
+      "LuHm OS Android Release Contract",
+      35286622439,
+      "success"
+    ],
+    [
+      "Cathedral Android Gate",
+      35286622389,
+      "success"
+    ],
+    [
+      "LuHm OS ULTIMA Debug Contract",
+      35286622425,
+      "success"
+    ],
+    [
+      "KAI9000 Cathedral CI",
+      35286622376,
+      "success"
+    ]
+  ],
+  "governance_evidence": {
+    "repository_rulesets_observed": 0,
+    "branch_protection_endpoint_visibility": "NOT_ACCESSIBLE_TO_INTEGRATION",
+    "codeowners_present": true,
+    "exact_head_ci_required": true,
+    "direct_canonical_write_default": false,
+    "history_rewrite_default": false
+  },
+  "promoted_contracts": {
+    "enterprise_policy": "project/hydra/runtime/enterprise.policy.json",
+    "performance_policy": "project/hydra/runtime/performance.policy.json",
+    "enterprise_operating_model": "docs/PROJECT_HYDRA_ENTERPRISE_OPERATING_MODEL.md",
+    "enterprise_guard": "tools/project_hydra_enterprise_guard.py",
+    "codeowners": ".github/CODEOWNERS"
+  },
+  "enterprise_full_green": false,
+  "open_gates": [
+    "SERVER_SIDE_BRANCH_PROTECTION_OR_RULESET",
+    "RUNTIME_BENCHMARK_RECEIPT",
+    "RELEASE_CANDIDATE_SBOM_AND_PROVENANCE_BINDING",
+    "BACKUP_RESTORE_DRILL_EVIDENCE",
+    "PERSISTENT_RELEASE_SIGNER"
+  ],
+  "release_boundaries": {
+    "release_promotion": false,
+    "persistent_signing": false,
+    "apk_install": false,
+    "public_publish": false,
+    "deploy": false,
+    "dns_mutation": false,
+    "billing_mutation": false
+  },
+  "result": "SOURCE_GOVERNANCE_CROWNED_RUNTIME_AND_EXTERNAL_ENTERPRISE_GATES_OPEN",
+  "private_drive": {
+    "document_id": "18lvC_M8KB-FeiEAh7sNAKEs5xhg3RmDFKv_-mNL144I",
+    "title": "PRIVATE_CANONICAL_LUHM_OS_CROWN_DOCTRINE_20260916",
+    "final_append_revision": "ANLCKQlhoGsISYPFe5kcT0WybTyAMHfUDD-52wFZ5T_XQKoY3zqJVjm-bT6pcB11lmTPfZPMYAnHKGvyzeoZvbYEK3YyKGc4YFzY7J41Lg",
+    "final_heading": "FINAL ENTERPRISE SOURCE-GOVERNANCE CROWN · KAI9000_PROJECT_HYDRA_ENTERPRISE_CROWN_20260918",
+    "append_only": true,
+    "shared": false,
+    "owner_only_observed": true,
+    "history_preserved": true
+  },
+  "drive_sync_state": "GREEN_APPEND_ONLY_OWNER_ONLY"
+}

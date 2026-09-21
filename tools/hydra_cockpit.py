@@ -16,6 +16,7 @@ HOST = os.environ.get("HYDRA_COCKPIT_HOST", "127.0.0.1")
 PORT = int(os.environ.get("HYDRA_COCKPIT_PORT", "8787"))
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://127.0.0.1:11434").rstrip("/")
 DEFAULT_MODEL = os.environ.get("OLLAMA_MODEL", "qwen3.5:2b-q4_K_M")
+MUTATION_PORT = int(os.environ.get("LUHM_MUTATION_PORT", "8790"))
 MAX_BODY_BYTES = 256 * 1024
 MAX_HISTORY_MESSAGES = 24
 
@@ -121,7 +122,7 @@ class Handler(BaseHTTPRequestHandler):
                 "default_model": DEFAULT_MODEL,
                 "models": names,
                 "services": {
-                    "axs": port_open(8767),
+                    "mutation": port_open(MUTATION_PORT),
                     "vnc": port_open(5901),
                     "websocket": port_open(6080),
                     "video_forge": port_open(8798),
@@ -168,7 +169,7 @@ class Handler(BaseHTTPRequestHandler):
             )
             upstream = urllib.request.urlopen(request, timeout=600)
         except (ValueError, json.JSONDecodeError) as exc:
-            return self.send_json(400, {"error": str(exc)})
+            return self.send_json(400, {"error": str(exc)}), 400
         except urllib.error.HTTPError as exc:
             return self.send_json(502, {"error": f"Ollama HTTP {exc.code}"})
         except (OSError, urllib.error.URLError) as exc:
@@ -224,7 +225,7 @@ header{display:flex;align-items:center;gap:11px}.sigil{width:48px;height:48px;bo
 @media(min-width:700px){.shell{padding-left:24px;padding-right:24px}.chat{padding:24px}.msg{max-width:78%}}
 </style>''' + capture + r'''</head><body><main class="shell">
 <header><div class="sigil">H//L</div><div class="title"><b>LUM COCKPIT</b><small>Local oni companion // Knox loopback</small></div><div class="live"><i class="dot"></i>LOCAL</div></header>
-<div class="status" id="status"><span class="chip">Gateway…</span><span class="chip">Ollama…</span><span class="chip">AXS…</span><span class="chip">VNC…</span></div>
+<div class="status" id="status"><span class="chip">Gateway…</span><span class="chip">Ollama…</span><span class="chip">Mutation…</span><span class="chip">VNC…</span></div>
 <section class="chat" id="chat"><article class="msg lum"><div class="who">LUM</div>Professor. The cathedral doors are open. I’m local, smug, and waiting for you to say something clever. ⚡</article></section>
 <section class="controls"><div class="toolbar"><select id="model" aria-label="Ollama model"><option>qwen3.5:2b-q4_K_M</option></select><button class="iconbtn on" id="voice" title="Speak replies">VOICE</button><button class="iconbtn" id="tune" title="Voice tuning">TUNE</button></div>
 <div class="toolbar" id="tuner" hidden><select id="voiceList" aria-label="TTS voice"></select><label>Rate <input id="rate" type="range" min="0.7" max="1.35" step="0.05" value="1.02"></label><label>Pitch <input id="pitch" type="range" min="0.7" max="1.4" step="0.05" value="1.14"></label></div>
@@ -238,7 +239,7 @@ function voices(){const list=speechSynthesis.getVoices();const old=voiceList.val
 if('speechSynthesis' in window){voices();speechSynthesis.onvoiceschanged=voices}else voiceBtn.disabled=true;
 function speak(text){if(!speaking||!('speechSynthesis' in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);const vs=speechSynthesis.getVoices();u.voice=vs[+voiceList.value]||vs.find(v=>v.localService)||vs[0];u.rate=+document.querySelector('#rate').value;u.pitch=+document.querySelector('#pitch').value;speechSynthesis.speak(u)}
 voiceBtn.onclick=()=>{speaking=!speaking;voiceBtn.classList.toggle('on',speaking);if(!speaking)speechSynthesis.cancel()};tuneBtn.onclick=()=>{tuner.hidden=!tuner.hidden;tuneBtn.classList.toggle('on',!tuner.hidden)};
-async function health(){try{const r=await fetch('/health'),j=await r.json();const pairs=[['Gateway',j.gateway],['Ollama',j.ollama],['AXS',j.services?.axs],['VNC',j.services?.vnc],['WS',j.services?.websocket]];document.querySelector('#status').innerHTML=pairs.map(([n,v])=>`<span class="chip ${v?'good':'bad'}">${n} ${v?'GREEN':'DOWN'}</span>`).join('');if(j.models?.length){model.innerHTML='';j.models.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;o.selected=n===j.default_model;model.appendChild(o)})}}catch(e){document.querySelector('#status').innerHTML='<span class="chip bad">Gateway DOWN</span>'}}
+async function health(){try{const r=await fetch('/health'),j=await r.json();const pairs=[['Gateway',j.gateway],['Ollama',j.ollama],['Mutation',j.services?.mutation],['VNC',j.services?.vnc],['WS',j.services?.websocket]];document.querySelector('#status').innerHTML=pairs.map(([n,v])=>`<span class="chip ${v?'good':'bad'}">${n} ${v?'GREEN':'DOWN'}</span>`).join('');if(j.models?.length){model.innerHTML='';j.models.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;o.selected=n===j.default_model;model.appendChild(o)})}}catch(e){document.querySelector('#status').innerHTML='<span class="chip bad">Gateway DOWN</span>'}}
 health();setInterval(health,15000);
 function setMicState(state){mic.dataset.state=state;mic.textContent=state==='listening'?'LISTENING':state==='sending'?'SENDING':'MIC';mic.classList.toggle('on',state==='listening')}
 async function submitMessage(){if(busy)return false;const message=promptEl.value.trim();if(!message)return false;busy=true;send.disabled=true;mic.disabled=true;setMicState('sending');promptEl.value='';add('user',message);const lum=add('assistant','',true),span=lum.querySelector('span');let answer='';try{const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message,model:model.value,history})});if(!r.ok){const j=await r.json();throw new Error(j.error||r.statusText)}const reader=r.body.getReader(),decoder=new TextDecoder();let pending='';while(true){const {value,done}=await reader.read();if(done)break;pending+=decoder.decode(value,{stream:true});const lines=pending.split('\n');pending=lines.pop();for(const line of lines){if(!line.trim())continue;const j=JSON.parse(line);if(j.error)throw new Error(j.error);answer+=j.delta||'';span.textContent=answer;chat.scrollTop=chat.scrollHeight}}lum.classList.remove('thinking');history.push({role:'user',content:message},{role:'assistant',content:answer});history=history.slice(-24);speak(answer);return true}catch(err){lum.classList.remove('thinking');span.textContent='Cockpit error: '+err.message;return false}finally{busy=false;send.disabled=false;mic.disabled=false;setMicState('idle');promptEl.focus()}}

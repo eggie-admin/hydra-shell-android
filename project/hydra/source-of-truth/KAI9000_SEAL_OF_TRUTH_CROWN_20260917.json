@@ -1,0 +1,51 @@
+{
+  "schema": "luhm-os.kai9000.seal-of-truth-crown.v1",
+  "manifest_id": "KAI9000_SEAL_OF_TRUTH_CROWN_20260917",
+  "status": "SEALED_SOURCE_OF_TRUTH",
+  "date_local": "2026-09-17",
+  "project": "LuHm OS / KAI 9000 / Project Hydra",
+  "repository": "eggie-admin/hydra-shell-android",
+  "canonical_branch": "luhmos-main",
+  "human_authority": "Professor",
+  "crown_authorization": "EXPLICIT_USER_CROWN",
+  "proposal_pr": 64,
+  "audited_proposal_head": "402b8d41c327c26ff2f50c772c84bc319dd6aa45",
+  "crown_merge_commit": "546b002ba4920a7ce239c839aee3d0c2e6dafb96",
+  "audit": {
+    "doctrine_10_pass": "10/10_GREEN",
+    "exact_head_ci": "7/7_SUCCESS",
+    "topology_before_crown": {
+      "ahead_by": 20,
+      "behind_by": 0,
+      "merge_base": "93ef0af6ca1ed9b03dfe5ee28a17e51546fd1bbb"
+    },
+    "retired_editor_bridge_active_drift": "RESOLVED",
+    "historical_evidence": "PRESERVED"
+  },
+  "active_mutation_contract": {
+    "gateway": "backend/candidate_workflow.py",
+    "bind": "127.0.0.1",
+    "default_port": 8790,
+    "shell_execution": false,
+    "ai_output_direct_to_shell": false,
+    "human_approval_required": true,
+    "checkpoint_before_write": true,
+    "preimage_sha_recheck": true,
+    "atomic_replace": true,
+    "postwrite_sha_verify": true
+  },
+  "authority_boundaries": {
+    "canonical_merge_authorized": true,
+    "doctrine_crown_authorized": true,
+    "doctrine_seal_authorized": true,
+    "apk_install_authorized": false,
+    "public_publish_authorized": false,
+    "deploy_authorized": false,
+    "release_promotion_authorized": false,
+    "signing_authorized": false,
+    "dns_mutation_authorized": false,
+    "billing_mutation_authorized": false
+  },
+  "source_law": "AI proposes. Policy authorizes. CI proves. The human promotes.",
+  "result": "CROWNED_AND_SEALED"
+}

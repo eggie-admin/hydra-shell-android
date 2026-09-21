@@ -15,7 +15,7 @@ APK = HYDRA / "samsung" / "android" / "apk" / "app.reference.json"
 
 
 def fail(message: str) -> None:
-    print(f"PROJECT HYDRA STRUCTURE RED: {message}", file=sys.stderr)
+    print(f"LUHM OS COMPATIBILITY STRUCTURE RED: {message}", file=sys.stderr)
     raise SystemExit(1)
 
 
@@ -45,15 +45,15 @@ def main() -> None:
     hf = load(HF)
     apk = load(APK)
 
-    eq(project.get("canonical_root"), "project/hydra", "canonical project root")
+    eq(project.get("canonical_root"), "project/hydra", "compatibility project root")
     eq(project.get("parent_os"), "LuHm OS", "parent OS")
     eq(project.get("branch_authority"), "luhmos-main", "branch authority")
     eq(project.get("migration", {}).get("strategy"), "reference_not_copy", "migration strategy")
     eq(project.get("migration", {}).get("destructive_move_allowed"), False, "destructive move policy")
     eq(project.get("platforms", {}).get("samsung_s24fe_stock"), "project/hydra/samsung/android/apk/app.reference.json", "Samsung APK path")
 
-    eq(directory.get("project_namespace"), "project", "singular project namespace")
-    eq(directory.get("project_slug"), "hydra", "project slug")
+    eq(directory.get("project_namespace"), "project", "singular compatibility namespace")
+    eq(directory.get("project_slug"), "hydra", "compatibility slug")
     eq(directory.get("canonical_root"), "project/hydra", "directory root")
     eq(directory.get("os_name"), "LuHm OS", "directory OS name")
     eq(directory.get("branch_is_os"), "luhmos-main", "directory branch authority")
@@ -67,7 +67,7 @@ def main() -> None:
     eq(runtime.get("rules", {}).get("runtime_copy_under_project_hydra"), False, "KAI copy policy")
     eq(runtime.get("services", {}).get("ollama"), "http://127.0.0.1:11434", "Ollama loopback endpoint")
 
-    eq(hf.get("role"), "forge_and_model_catalog", "Hugging Face role")
+    eq(hf.get("role"), "forge_and_model_catalog", "Hugging Face compatibility role")
     eq(hf.get("runtime_authority"), False, "Hugging Face runtime authority")
     eq(hf.get("auto_download"), False, "Hugging Face auto-download")
     eq(hf.get("revision_pin_required"), True, "Hugging Face revision pin")
@@ -96,7 +96,7 @@ def main() -> None:
         if not local_ref.exists():
             fail(f"referenced compatibility source missing: {local_ref.relative_to(ROOT)}")
 
-    print("PROJECT HYDRA STRUCTURE GREEN")
+    print("LUHM OS COMPATIBILITY STRUCTURE GREEN")
 
 
 if __name__ == "__main__":

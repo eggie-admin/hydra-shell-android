@@ -7,7 +7,9 @@
   "directory_doctrine": "project/hydra/doctrine/directory-structure.json",
   "runtime": {
     "kai9000_reference": "project/hydra/runtime/kai9000.reference.json",
-    "android_external_runtime_required": false
+    "performance_policy": "project/hydra/runtime/performance.policy.json",
+    "android_external_runtime_required": false,
+    "enterprise_policy": "project/hydra/runtime/enterprise.policy.json"
   },
   "forge": {
     "hugging_face": "project/hydra/forge/hugging-face/reference.json"
@@ -25,11 +27,15 @@
     "canonical_doctrine": "docs/LUHMOS_CANONICAL_DOCTRINE.md",
     "ai_stack": "docs/AI_STACK.md",
     "api_doctrine": "docs/API_TRINITY_DOCTRINE.md",
+    "performance_policy": "project/hydra/runtime/performance.policy.json",
     "samsung_apk_reference": "project/hydra/samsung/android/apk/app.reference.json",
     "fdroid_goal": "fdroid/final-goal.manifest.json",
     "fdroid_publication": "fdroid/publication.manifest.json",
     "izzy_publication": "docs/IZZYONDROID_PUBLICATION_AND_HUMAN_CODE_MONETIZATION_20260911.md",
-    "izzy_metadata": "fdroid/metadata/art.eggiebagelface.luhmos.yml"
+    "izzy_metadata": "fdroid/metadata/art.eggiebagelface.luhmos.yml",
+    "enterprise_policy": "project/hydra/runtime/enterprise.policy.json",
+    "foundation": "project/hydra/source-of-truth/KAI9000_CROWN_CATHEDRAL_FOUNDATION_SEAL_20260918.json",
+    "coding_roleplay": "project/hydra/source-of-truth/LUHM_CODING_ROLEPLAY_THWTCHNGHR_GREEN_RECONCILIATION_20260918.json"
   },
   "platforms": {
     "samsung_s24fe_stock": "project/hydra/samsung/android/apk/app.reference.json",
@@ -99,6 +105,19 @@
     "huggingface_reference_model": "openai/gpt-oss-120b:fastest",
     "model_ids_are_runtime_configurable": true
   },
+  "performance_goal": {
+    "policy": "project/hydra/runtime/performance.policy.json",
+    "resolve_authority_once_per_exact_head": true,
+    "default_helpers": 0,
+    "max_parallel_read_only_helpers": 2,
+    "max_delegation_depth": 1,
+    "max_ai_rounds": 3,
+    "parallel_writes": false,
+    "focused_tests_before_full_ci": true,
+    "base_launch_network_independent": true,
+    "speed_claim_requires_measurement": true,
+    "authority_or_security_shortcuts_for_speed": false
+  },
   "migration": {
     "strategy": "reference_not_copy",
     "legacy_paths_remain_compatible": true,
@@ -115,5 +134,29 @@
     "third_party_code_requires_provenance": true,
     "documentation_claims_do_not_equal_green": true,
     "physical_device_proof_required_for_final_android_green": true
+  },
+  "enterprise_goal": {
+    "policy": "project/hydra/runtime/enterprise.policy.json",
+    "status": "SEALED_ACTIVE_CANONICAL",
+    "build_once_promote_by_digest": true,
+    "exact_head_ci_required": true,
+    "codeowners_required": true,
+    "server_side_branch_protection_required_for_enterprise_green": true,
+    "release_candidate_sbom_required": true,
+    "release_candidate_provenance_required": true,
+    "backup_restore_drill_required": true,
+    "runtime_benchmark_receipt_required": true,
+    "compliance_certification_claimed": false,
+    "crown_manifest": "project/hydra/source-of-truth/KAI9000_PROJECT_HYDRA_ENTERPRISE_CROWN_20260918.json",
+    "enterprise_full_green": false
+  },
+  "foundation": {
+    "status": "CROWN_CATHEDRAL_FOUNDATION",
+    "canonical_branch": "luhmos-main",
+    "seal": "project/hydra/source-of-truth/KAI9000_CROWN_CATHEDRAL_FOUNDATION_SEAL_20260918.json",
+    "promotion_rule": "PR_EXACT_HEAD_CI_GREEN_THEN_HUMAN_MERGE",
+    "future_development_rule": "BRANCH_FROM_CANONICAL_FOUNDATION_AND_PRESERVE_AUTHORITY_BOUNDARIES",
+    "direct_canonical_write_default": false,
+    "history_rewrite_default": false
   }
 }

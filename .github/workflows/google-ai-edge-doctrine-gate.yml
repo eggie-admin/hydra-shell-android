@@ -1,0 +1,102 @@
+name: Google AI Edge Doctrine Gate
+
+on:
+  push:
+    branches:
+      - luhmos/perf-google-ai-edge-doctrine-20260917
+    paths:
+      - 'project/hydra/doctrine/proposed-source-of-truth/KAI9000_PROPOSED_GOOGLE_AI_EDGE_LOW_LATENCY_DOCTRINE_20260917.json'
+      - '.github/instructions/google-ai-edge-gallery.instructions.md'
+      - '.github/instructions/luhm-fast-agent.instructions.md'
+      - '.github/agents/lum-fast.md'
+      - '.github/copilot-instructions.md'
+      - 'skills/google-ai-edge-gallery/**'
+      - 'skills/luhm-fast-agent-mesh/**'
+      - 'docs/GOOGLE_AI_EDGE_GALLERY.md'
+      - '.github/workflows/google-ai-edge-doctrine-gate.yml'
+  pull_request:
+    branches:
+      - luhmos-main
+    paths:
+      - 'project/hydra/doctrine/proposed-source-of-truth/KAI9000_PROPOSED_GOOGLE_AI_EDGE_LOW_LATENCY_DOCTRINE_20260917.json'
+      - '.github/instructions/google-ai-edge-gallery.instructions.md'
+      - '.github/instructions/luhm-fast-agent.instructions.md'
+      - '.github/agents/lum-fast.md'
+      - '.github/copilot-instructions.md'
+      - 'skills/google-ai-edge-gallery/**'
+      - 'skills/luhm-fast-agent-mesh/**'
+      - 'docs/GOOGLE_AI_EDGE_GALLERY.md'
+      - '.github/workflows/google-ai-edge-doctrine-gate.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  doctrine-gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Validate proposed doctrine JSON
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILE='project/hydra/doctrine/proposed-source-of-truth/KAI9000_PROPOSED_GOOGLE_AI_EDGE_LOW_LATENCY_DOCTRINE_20260917.json'
+          python3 - "$FILE" <<'PY'
+          import json, sys
+          p = sys.argv[1]
+          d = json.load(open(p, encoding='utf-8'))
+          assert d['status'] == 'PROPOSED_NOT_CROWNED'
+          assert d['edge_gallery_lane']['deployment_mode'] == 'LOCAL_TEST_ONLY'
+          assert d['edge_gallery_lane']['public_publish'] is False
+          assert d['edge_gallery_lane']['silent_install'] is False
+          assert d['edge_gallery_lane']['source_of_truth_authority'] is False
+          assert d['edge_gallery_lane']['mutation_authority'] is False
+          assert d['edge_gallery_lane']['shell_authority'] is False
+          assert d['edge_gallery_lane']['signing_authority'] is False
+          assert d['edge_gallery_lane']['release_authority'] is False
+          assert d['mutation_boundary']['ai_output_direct_to_shell'] is False
+          assert d['mutation_boundary']['human_approval_required'] is True
+          print('GOOGLE_AI_EDGE_DOCTRINE_JSON_GREEN')
+          PY
+
+      - name: Validate fast-lane boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'DETERMINISTIC_LOCAL' .github/copilot-instructions.md
+          grep -q 'ON_DEVICE_BOUNDED_HELPER_IF_PROVEN' .github/instructions/luhm-fast-agent.instructions.md
+          grep -q 'Google AI Edge Gallery' .github/agents/lum-fast.md
+          grep -q 'READ_ONLY_EVALUATION' skills/google-ai-edge-gallery/SKILL.md
+          grep -q 'PROPOSED / LOCAL TEST ONLY' docs/GOOGLE_AI_EDGE_GALLERY.md
+          grep -q 'google-ai-edge/gallery' docs/GOOGLE_AI_EDGE_GALLERY.md
+          echo 'GOOGLE_AI_EDGE_FAST_LANE_BOUNDARIES_GREEN'
+
+      - name: Prohibit executable authority in Edge lane
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILES=(
+            '.github/instructions/google-ai-edge-gallery.instructions.md'
+            'skills/google-ai-edge-gallery/SKILL.md'
+            'docs/GOOGLE_AI_EDGE_GALLERY.md'
+            'project/hydra/doctrine/proposed-source-of-truth/KAI9000_PROPOSED_GOOGLE_AI_EDGE_LOW_LATENCY_DOCTRINE_20260917.json'
+          )
+          ! grep -R -nE '(OS\.execute|subprocess\.(run|Popen)|Runtime\.getRuntime\(\)\.exec|ProcessBuilder\()' "${FILES[@]}"
+          echo 'GOOGLE_AI_EDGE_NO_EXEC_AUTHORITY_GREEN'
+
+      - name: Basic secret-shape scan
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILES=(
+            '.github/instructions/google-ai-edge-gallery.instructions.md'
+            'skills/google-ai-edge-gallery/SKILL.md'
+            'docs/GOOGLE_AI_EDGE_GALLERY.md'
+            'project/hydra/doctrine/proposed-source-of-truth/KAI9000_PROPOSED_GOOGLE_AI_EDGE_LOW_LATENCY_DOCTRINE_20260917.json'
+          )
+          ! grep -R -nE '(sk-[A-Za-z0-9_-]{20,}|AIza[0-9A-Za-z_-]{20,}|gh[pousr]_[A-Za-z0-9_]{20,}|BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY)' "${FILES[@]}"
+          echo 'GOOGLE_AI_EDGE_SECRET_SHAPE_SCAN_GREEN'

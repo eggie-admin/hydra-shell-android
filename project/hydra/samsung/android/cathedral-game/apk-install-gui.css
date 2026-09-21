@@ -1,0 +1,118 @@
+/* LUHMOS_APK_INSTALL_GUI_STYLE_V2
+   KAI9000_TOY_GUI_MUTATION_V1
+   LUHM_AVATAR_SOURCE_OF_TRUTH_STYLE_V1
+   Visual-only mutation. Installer authority and human confirmation are unchanged. */
+
+.avatar{position:relative;overflow:hidden;isolation:isolate}
+.luhm-avatar-video{
+  display:block;
+  width:min(88vw,420px);
+  max-width:100%;
+  aspect-ratio:4/5;
+  max-height:520px;
+  object-fit:cover;
+  object-position:center center;
+  border-radius:30px;
+  border:1px solid rgba(197,108,255,.34);
+  background:#080710;
+  box-shadow:0 28px 70px rgba(0,0,0,.58),0 0 44px rgba(170,63,255,.15),inset 0 1px rgba(255,255,255,.08);
+  filter:saturate(1.06) contrast(1.03);
+}
+.luhm-avatar-ready:after{
+  content:"LUHM // SOURCE AVATAR";
+  position:absolute;
+  left:50%;
+  bottom:12px;
+  transform:translateX(-50%);
+  z-index:3;
+  padding:5px 9px;
+  border-radius:999px;
+  border:1px solid rgba(105,229,255,.22);
+  background:rgba(4,5,13,.72);
+  color:#9cefff;
+  font:750 8px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.12em;
+  white-space:nowrap;
+  pointer-events:none;
+}
+.luhm-avatar-fallback-hidden{display:none!important}
+
+.luhm-apk-dock{
+  position:fixed;
+  right:max(14px,env(safe-area-inset-right));
+  bottom:max(14px,env(safe-area-inset-bottom));
+  z-index:2147483000;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:#eef8ff;
+}
+
+.luhm-apk-toggle,
+.luhm-apk-panel button{
+  border:1px solid rgba(126,226,255,.48);
+  color:#f7f2ff;
+  border-radius:16px;
+  font:850 12px/1.2 inherit;
+  letter-spacing:.07em;
+}
+
+.luhm-apk-toggle{
+  position:relative;
+  overflow:hidden;
+  min-width:190px;
+  padding:14px 18px;
+  background:
+    linear-gradient(135deg,rgba(5,43,63,.96),rgba(14,16,39,.97) 56%,rgba(64,22,96,.96));
+  box-shadow:inset 0 1px rgba(255,255,255,.11),0 12px 34px rgba(0,0,0,.52),0 0 28px rgba(89,229,255,.08);
+  backdrop-filter:blur(16px);
+  text-shadow:0 0 16px rgba(125,229,255,.14);
+}
+.luhm-apk-toggle:before{content:"⇩";display:inline-grid;place-items:center;width:24px;height:24px;margin-right:9px;border-radius:50%;color:#7cecff;border:1px solid rgba(113,235,255,.35);background:rgba(104,225,255,.07);box-shadow:0 0 18px rgba(89,229,255,.12);vertical-align:middle}
+.luhm-apk-toggle:after{content:"LOCAL BUILD · HUMAN GATE";display:block;margin-top:5px;color:#8ea6bd;font-size:8px;font-weight:700;letter-spacing:.13em}
+.luhm-apk-toggle:active{transform:translateY(1px);filter:brightness(1.12)}
+
+.luhm-apk-panel{
+  width:min(460px,calc(100vw - 28px));
+  max-height:min(72vh,650px);
+  overflow:auto;
+  overscroll-behavior:contain;
+  margin-bottom:9px;
+  padding:15px;
+  border:1px solid rgba(151,114,255,.35);
+  border-radius:22px;
+  background:
+    radial-gradient(circle at 100% 0,rgba(139,72,255,.12),transparent 34%),
+    linear-gradient(180deg,rgba(10,8,20,.985),rgba(4,5,11,.99));
+  box-shadow:0 24px 70px rgba(0,0,0,.66),0 0 36px rgba(156,75,255,.10),inset 0 1px rgba(255,255,255,.05);
+  backdrop-filter:blur(18px);
+}
+
+.luhm-apk-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.08)}
+.luhm-apk-head strong{font-size:15px;letter-spacing:.08em;color:#f3eaff}.luhm-apk-head strong:before{content:"APK // ";color:#78e9ff;text-shadow:0 0 12px rgba(89,229,255,.25)}
+.luhm-apk-head button{width:36px;height:36px;padding:0;font-size:20px;background:rgba(255,255,255,.05)}
+
+.luhm-apk-copy{margin:11px 0;color:#b7afc4;font-size:12px;line-height:1.5}
+.luhm-apk-label{display:block;margin-bottom:6px;font-size:10px;color:#7fe7ff;text-transform:uppercase;letter-spacing:.12em}
+.luhm-apk-input{box-sizing:border-box;width:100%;min-height:46px;padding:11px 12px;border-radius:12px;border:1px solid rgba(188,129,255,.20);background:#040711;color:#fff;font:13px/1.3 ui-monospace,SFMono-Regular,Consolas,monospace;outline:none;box-shadow:inset 0 0 18px rgba(113,68,255,.03)}
+.luhm-apk-input:focus{border-color:#75e8ff;box-shadow:0 0 0 2px rgba(117,232,255,.10),0 0 20px rgba(89,229,255,.06)}
+
+.luhm-apk-actions{display:grid;grid-template-columns:1fr auto;gap:9px;margin-top:11px}
+.luhm-apk-actions button{min-height:44px;padding:10px 13px;background:linear-gradient(145deg,#2a1f3d,#15101f);box-shadow:inset 0 1px rgba(255,255,255,.07)}
+.luhm-apk-primary{background:linear-gradient(135deg,#0d536a,#213b79 58%,#623796)!important;border-color:rgba(118,225,255,.55)!important;box-shadow:0 0 22px rgba(89,229,255,.08)!important}
+.luhm-apk-actions button:disabled{opacity:.5;filter:saturate(.55)}
+
+.luhm-apk-contract{display:grid;grid-template-columns:auto 1fr;gap:5px 11px;margin:13px 0;padding:11px;border-radius:13px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.06);font-size:10px}
+.luhm-apk-contract span{color:#7f92a2}.luhm-apk-contract b{color:#dff9ff;overflow-wrap:anywhere}
+.luhm-apk-status{display:block;min-height:38px;padding:10px 11px;border-radius:12px;border:1px solid rgba(95,224,255,.12);background:linear-gradient(90deg,#04101a,#070917);color:#aeefff;font-size:11px;line-height:1.4}
+
+/* Mobile: document flow, never cover game cards or the draggable LuHm toy. */
+@media(max-width:560px){
+  .luhm-avatar-video{width:min(92vw,430px);max-height:540px;border-radius:26px}
+  .luhm-apk-dock{position:relative;inset:auto;z-index:20;box-sizing:border-box;width:auto;margin:14px max(14px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left))}
+  .luhm-apk-toggle{float:none;width:100%;min-height:52px;min-block-size:70px;padding:14px 86px 12px 18px;text-align:center;border-radius:20px;font-size:15px;background:linear-gradient(110deg,#06364c,#0c172c 54%,#35145e);border-color:rgba(107,231,255,.56);box-shadow:inset 0 1px rgba(255,255,255,.10),0 12px 34px rgba(0,0,0,.42),0 0 28px rgba(96,111,255,.08)}
+  .luhm-apk-toggle:before{width:28px;height:28px;font-size:18px}.luhm-apk-toggle:after{font-size:8px;margin-top:6px;color:#9aa8bc}
+  .luhm-apk-panel{box-sizing:border-box;width:100%;max-height:min(68vh,620px);margin:9px 0 0;border-radius:20px}
+  .luhm-apk-actions{grid-template-columns:1fr}
+}
+
+@media(max-width:380px){.luhm-apk-toggle{padding-right:74px;font-size:14px}.luhm-avatar-video{width:94vw;border-radius:22px}}
+@media(prefers-reduced-motion:reduce){.luhm-apk-dock *{scroll-behavior:auto!important;transition:none!important;animation:none!important}.luhm-avatar-video{filter:none}}

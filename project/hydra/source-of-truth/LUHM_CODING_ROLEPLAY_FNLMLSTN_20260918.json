@@ -1,0 +1,108 @@
+{
+  "schema": "luhm-os.coding-roleplay.fnlmlstn.v1",
+  "manifest_id": "LUHM_CODING_ROLEPLAY_FNLMLSTN_20260918",
+  "artifact_id": "fnlmlstn",
+  "artifact_phrase": "final milestone",
+  "naming_rule": "VOWEL_RIP",
+  "date_local": "2026-09-18",
+  "status": "SEALED_FINAL_MILESTONE_ON_CANONICAL_MERGE",
+  "project": "LuHm OS / KAI 9000 / Project Hydra",
+  "repository": "eggie-admin/hydra-shell-android",
+  "canonical_branch": "luhmos-main",
+  "human_final_authority": "Professor",
+  "promotion_authorization": "EXPLICIT_CURRENT_USER_CONTINUE_TO_FINAL_MILESTONE",
+  "source_law": "AI proposes. Policy authorizes. CI proves. The human promotes.",
+  "lineage": {
+    "foundation": "project/hydra/source-of-truth/KAI9000_CROWN_CATHEDRAL_FOUNDATION_SEAL_20260918.json",
+    "roleplay_crown": "project/hydra/source-of-truth/LUHM_CODING_ROLEPLAY_THWTCHNGHR_CROWN_20260917.json",
+    "green_reconciliation": "project/hydra/source-of-truth/LUHM_CODING_ROLEPLAY_THWTCHNGHR_GREEN_RECONCILIATION_20260918.json",
+    "prior_canonical_head": "cffed19ed3f6fcc40ad8309ce98243d0fda54fe6",
+    "green_reconciliation_pr": 95,
+    "green_reconciliation_candidate": "5151383341624b1d72c707292ded152ad199ede6",
+    "green_reconciliation_merge": "cffed19ed3f6fcc40ad8309ce98243d0fda54fe6",
+    "green_reconciliation_merge_signature_verified": true,
+    "green_reconciliation_merge_signature_reason": "valid",
+    "history_preserved": true,
+    "history_rewrite": false
+  },
+  "green_reconciliation_exact_head_ci": {
+    "head": "5151383341624b1d72c707292ded152ad199ede6",
+    "result": "11/11_SUCCESS",
+    "runs": [
+      {"name": "Project Hydra Enterprise Source Gate", "run_id": 35381616118, "run_number": 17, "conclusion": "success"},
+      {"name": "LuHm OS Fastpath Gate", "run_id": 35381615983, "run_number": 173, "conclusion": "success"},
+      {"name": "LuHm Vendor Purge Guard", "run_id": 35381616007, "run_number": 166, "conclusion": "success"},
+      {"name": "PR guardrails", "run_id": 35381616093, "run_number": 496, "conclusion": "success"},
+      {"name": "LuHm OS ULTIMA Debug Contract", "run_id": 35381615992, "run_number": 269, "conclusion": "success"},
+      {"name": "KAI9000 Cathedral CI", "run_id": 35381616091, "run_number": 451, "conclusion": "success"},
+      {"name": "Google AI Edge Doctrine Gate", "run_id": 35381615982, "run_number": 9, "conclusion": "success"},
+      {"name": "LuHm Modular Cockpit Source Gate", "run_id": 35381616119, "run_number": 146, "conclusion": "success"},
+      {"name": "LuHm OS Android Release Contract", "run_id": 35381615952, "run_number": 258, "conclusion": "success"},
+      {"name": "Cathedral Android Gate", "run_id": 35381615903, "run_number": 493, "conclusion": "success"},
+      {"name": "LuHm OS lane gates", "run_id": 35381615963, "run_number": 361, "conclusion": "success"}
+    ]
+  },
+  "final_milestone_contract": {
+    "active_roleplay_namespace": "thwtchnghr",
+    "active_roleplay_phrase": "the witching hour",
+    "thwtchnghr_effect": "READINESS_AUDIT_ONLY",
+    "final_milestone_artifact": "fnlmlstn",
+    "fnlmlstn_is_execution_verb": false,
+    "fnlmlstn_grants_authority": false,
+    "vowel_rip_canonical": true,
+    "default_helpers": 0,
+    "max_parallel_read_only_helpers": 2,
+    "max_delegation_depth": 1,
+    "parallel_writes": false,
+    "recursive_recruiting": false,
+    "helper_consensus_grants_authority": false,
+    "single_parent_writer": true,
+    "tiers": ["WHISPER", "CROSSING", "RECKONING"],
+    "future_reckoning_requires_fresh_exact_professor_authorization": true,
+    "prior_pr87_authorization": "CONSUMED_HISTORICAL_RECEIPT"
+  },
+  "persona_lineage": {
+    "persona_2_3_usage": "HIGH_LEVEL_INSPIRATION_ONLY",
+    "retained_patterns": [
+      "occult investigation atmosphere",
+      "contact and negotiation",
+      "fusion and lineage",
+      "compendium discovery",
+      "inherited traits",
+      "grim ritual tension",
+      "battle-talk presentation",
+      "mask and identity themes",
+      "rumor and consequence across linked stories"
+    ],
+    "protected_franchise_assets_copied": false,
+    "persona_3_dark_hour_imported": false,
+    "witching_hour_is_luhm_owned_lineage": true
+  },
+  "hard_laws": [
+    "AI proposes. Policy authorizes. CI proves. The human promotes.",
+    "POWER LEVEL != PERMISSION LEVEL.",
+    "Roleplay may decorate truth but may not replace contradict hide or authorize it.",
+    "No helper consensus grants authority.",
+    "No arbitrary model-authored shell authority.",
+    "GAME state never grants ADMIN authority.",
+    "Technical evidence outranks theatrical status language."
+  ],
+  "release_and_external_boundaries": {
+    "public_publish": false,
+    "release_promotion": false,
+    "persistent_signing": false,
+    "apk_install": false,
+    "deploy": false,
+    "dns_mutation": false,
+    "billing_mutation": false,
+    "secret_print": false,
+    "destructive_purge": false,
+    "retired_external_status_residue": "NONBLOCKING_EXTERNAL_INTEGRATION_DEBT"
+  },
+  "final_gate": {
+    "exact_head_ci_required_before_merge": true,
+    "canonical_base_must_not_advance_before_merge": true,
+    "activation": "This final milestone becomes canonical only when this exact candidate passes required exact-head checks and is merged into luhmos-main.",
+    "result_on_activation": "THWTCHNGHR_FNLMLSTN_SEALED_GREEN"
+  }
+}

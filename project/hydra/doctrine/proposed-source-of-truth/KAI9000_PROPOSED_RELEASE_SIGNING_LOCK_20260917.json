@@ -1,0 +1,50 @@
+{
+  "schema": "kai9000.proposed_release_signing_lock.v1",
+  "date": "2026-09-17",
+  "state": "PROPOSED",
+  "seal_status": "PROPOSED_NOT_CROWNED",
+  "human_final_authority": "Professor",
+  "repository": "eggie-admin/hydra-shell-android",
+  "canonical_branch": "luhmos-main",
+  "canonical_parent": "6a7983406b148f0cfbf79b08ff89b0111abd4003",
+  "proposal_branch": "luhmos/proposed-release-signing-lock-20260917",
+  "finding": {
+    "severity": "AUTHORITY_DRIFT",
+    "summary": "Two luhmos-main push workflows could restore persistent production signing secrets and export release-signed APKs without a separate release-signing authorization.",
+    "affected_workflows": [
+      ".github/workflows/luhmos-world-first-apk.yml",
+      ".github/workflows/luhmos-crown-gate-apk.yml"
+    ]
+  },
+  "mutation": {
+    "mode": "PROPOSAL_ONLY",
+    "automatic_release_signing": false,
+    "normal_push_signing": false,
+    "normal_merge_signing": false,
+    "keystore_secret_reference_in_guarded_workflows": false,
+    "release_export_in_guarded_workflows": false,
+    "deploy": false,
+    "public_publish": false,
+    "crown": false,
+    "seal": false
+  },
+  "guard": {
+    "path": ".github/workflows/luhmos-release-signing-lock-guard.yml",
+    "requires_manual_only_guarded_workflows": true,
+    "rejects_signing_secret_references": true,
+    "rejects_export_release": true,
+    "rejects_publish_commands": true
+  },
+  "authority_sequence": [
+    "proposal CI green",
+    "Professor explicit release-signing authorization",
+    "separately reviewed signer workflow",
+    "signing evidence",
+    "separate deployment/public-release authorization if ever requested"
+  ],
+  "secrets": {
+    "stored_in_manifest": false,
+    "printed": false,
+    "committed": false
+  }
+}

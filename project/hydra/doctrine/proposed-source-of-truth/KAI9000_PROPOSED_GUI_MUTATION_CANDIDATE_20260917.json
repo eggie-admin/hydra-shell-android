@@ -1,0 +1,68 @@
+{
+  "schema": "luhm-os.proposed-gui-mutation-candidate.v1",
+  "date": "2026-09-17",
+  "state": "PROPOSED",
+  "seal_status": "PROPOSED_NOT_CROWNED",
+  "project": "LuHm OS / Project Hydra / KAI 9000",
+  "human_final_authority": "Professor",
+  "intent": "CANDIDATE_BUILD_GUI_UI_WORKABLE_MUTATION_WORKFLOW",
+  "repository": "eggie-admin/hydra-shell-android",
+  "canonical_branch": "luhmos-main",
+  "proposal_branch": "luhmos/proposed-legacy-editor-bridge-purge-20260916",
+  "candidate": {
+    "service": "backend/candidate_workflow.py",
+    "ui": "backend/web/mutation-candidate.html",
+    "tests": "backend/tests/test_candidate_workflow.py",
+    "bind": "127.0.0.1",
+    "default_port": 8790,
+    "public_exposure": false,
+    "write_primitive": "UTF8_FILE_REPLACE_ONLY",
+    "shell_execution": false,
+    "ai_output_direct_to_shell": false,
+    "arbitrary_command_field": false
+  },
+  "workflow": [
+    "STAGE",
+    "AUDIT_PREVIEW_AND_HASHES",
+    "HUMAN_TYPES_APPROVE",
+    "APPROVAL_TOKEN_VERIFICATION",
+    "PREIMAGE_SHA_RECHECK",
+    "CHECKPOINT",
+    "ATOMIC_WRITE",
+    "POSTWRITE_SHA_VERIFY",
+    "EXECUTION_EVIDENCE"
+  ],
+  "safety_contract": {
+    "repo_relative_paths_only": true,
+    "path_traversal_rejected": true,
+    "git_metadata_writes_rejected": true,
+    "secret_paths_rejected": true,
+    "max_payload_bytes": 1048576,
+    "preimage_sha_bound_at_stage": true,
+    "preimage_change_blocks_execution": true,
+    "human_approval_required": true,
+    "approval_phrase": "APPROVE",
+    "single_use_stage_execution": true,
+    "checkpoint_before_write": true,
+    "atomic_replace": true,
+    "postwrite_sha_required": true
+  },
+  "architecture": {
+    "legacy_editor_bridge_8767_required": false,
+    "acodex_authority_required": false,
+    "openai_lum_agent_may_propose": true,
+    "openai_lum_agent_may_self_approve": false,
+    "mutation_gateway_owns_write_authority": true,
+    "ultima_in_app": false
+  },
+  "promotion_gate": {
+    "candidate_only": true,
+    "merge_to_luhmos_main": false,
+    "deploy_public": false,
+    "crown": false,
+    "seal": false,
+    "requires_ci_green": true,
+    "requires_10_of_10_audit": true,
+    "requires_professor_final_crown_approval": true
+  }
+}
