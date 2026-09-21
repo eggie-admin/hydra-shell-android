@@ -110,6 +110,7 @@ jobs:
           "$ANDROID_CLI" --sdk="$ANDROID_HOME" sdk install --canary platforms/android-37.0 build-tools/37.0.0 platform-tools
           test -f "$ANDROID_HOME/platforms/android-37.0/android.jar"
           test -f "$ANDROID_HOME/build-tools/37.0.0/lib/apksigner.jar"
+          test -f "$ANDROID_HOME/build-tools/37.0.0/lib64/libc++.so"
           echo ANDROID17_PREVIEW_SDK_BOOTSTRAP_GREEN
 
       - name: Build unsigned persistent-signer base
@@ -121,7 +122,7 @@ jobs:
             -PluhmVersionName="$BASE_VERSION_NAME"
           SRC="$APP_DIR/app/build/outputs/apk/release/app-release-unsigned.apk"
           test -s "$SRC"
-          mkdir -p build/android build/signing-tools/lib
+          mkdir -p build/android build/signing-tools/lib build/signing-tools/lib64
           cp "$SRC" "build/android/$BASE_APK"
 
       - name: Build unsigned first update proof
@@ -135,16 +136,39 @@ jobs:
           test -s "$SRC"
           cp "$SRC" "build/android/$UPDATE_APK"
 
-      - name: Export official private-signing tools
+      - name: Export and self-test portable private-signing tools
         shell: bash
         run: |
           set -euo pipefail
           TOOLS="$ANDROID_HOME/build-tools/37.0.0"
           cp "$TOOLS/lib/apksigner.jar" build/signing-tools/lib/apksigner.jar
+          cp "$TOOLS/lib64/libc++.so" build/signing-tools/lib64/libc++.so
           cp "$TOOLS/zipalign" build/signing-tools/zipalign
           cp "$TOOLS/aapt2" build/signing-tools/aapt2
           chmod 0755 build/signing-tools/zipalign build/signing-tools/aapt2
-          sha256sum build/signing-tools/lib/apksigner.jar build/signing-tools/zipalign build/signing-tools/aapt2 > build/signing-tools/sha256.txt
+          cat > build/signing-tools/zipalign-portable <<'EOF'
+          #!/usr/bin/env bash
+          set -euo pipefail
+          HERE="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+          export LD_LIBRARY_PATH="$HERE/lib64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+          exec "$HERE/zipalign" "$@"
+          EOF
+          chmod 0755 build/signing-tools/zipalign-portable
+          set +e
+          build/signing-tools/zipalign-portable -h > build/signing-tools/zipalign-help.txt 2>&1
+          rc=$?
+          set -e
+          grep -qiE 'zipalign|alignment|usage' build/signing-tools/zipalign-help.txt
+          test "$rc" -eq 0 -o "$rc" -eq 1 -o "$rc" -eq 2
+          java -jar build/signing-tools/lib/apksigner.jar version | tee build/signing-tools/apksigner-version.txt
+          sha256sum \
+            build/signing-tools/lib/apksigner.jar \
+            build/signing-tools/lib64/libc++.so \
+            build/signing-tools/zipalign \
+            build/signing-tools/aapt2 \
+            build/signing-tools/zipalign-portable \
+            > build/signing-tools/sha256.txt
+          echo PORTABLE_SIGNING_TOOLKIT_GREEN
 
       - name: Verify unsigned base/update lineage and Cathedral cargo
         shell: bash
@@ -168,7 +192,7 @@ jobs:
             grep -q 'assets/main.tscn' "build/android/${prefix}-contents.txt"
             grep -q 'assets/main.gd' "build/android/${prefix}-contents.txt"
             grep -Eq 'lib/arm64-v8a/libgodot_android\.so' "build/android/${prefix}-contents.txt"
-            if grep -Eqi 'lib/(armeabi-v7a|x86|x86_64)/libgodot_android\.so' "build/android/${prefix}-contents.txt"; then
+            if grep -Eqi 'lib/(armeabi-v7a|x86|x86_64)/libgodot_android\.so' "build/android/${prefix}-contents.txt;" then
               echo "NON_SM_X400_GODOT_ABI_RED $apk" >&2
               exit 1
             fi
@@ -199,10 +223,12 @@ jobs:
           PRIVATE_PERSISTENT_SIGNER_REQUIRED=true
           SAME_SIGNER_REQUIRED=true
           MONOTONIC_VERSION_CODE_REQUIRED=true
+          PORTABLE_SIGNING_TOOLKIT_GREEN=true
           EOF
           echo LUHM_UPDATE_LANE_FORGE_GREEN
           echo PUBLIC_FORGE_SIGNING=UNSIGNED_ONLY
           echo PRIVATE_PERSISTENT_SIGNER_REQUIRED=true
+          echo PORTABLE_SIGNING_TOOLKIT_GREEN=true
 
       - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
         with:
@@ -220,8 +246,12 @@ jobs:
             build/android/update-contents.txt
             build/android/update-lane-receipt.txt
             build/signing-tools/lib/apksigner.jar
+            build/signing-tools/lib64/libc++.so
             build/signing-tools/zipalign
+            build/signing-tools/zipalign-portable
+            build/signing-tools/zipalign-help.txt
             build/signing-tools/aapt2
+            build/signing-tools/apksigner-version.txt
             build/signing-tools/sha256.txt
             build/canonical-assets.sha256
             samsung-sm-x400/luhm-os/web-build-receipt.json
