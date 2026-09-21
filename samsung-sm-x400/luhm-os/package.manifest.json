@@ -1,17 +1,31 @@
 {
-  "schema": "luhm-os.sm-x400-package.v1",
-  "id": "LUHM_OS_SM_X400_API37_PACKAGE_20260920",
+  "schema": "luhm-os.sm-x400-package.v2",
+  "id": "LUHM_OS_IRON_SAINT_GODOT3D_SM_X400_API37_20260921",
   "source_of_truth": "docs/CROWN_SOURCE_OF_TRUTH_20260920.json",
+  "candidate_branch": "build/iron-saint-playable-20260921",
   "app": {
     "label": "LuHm OS",
     "package_id": "art.eggiebagelface.kai9000.dev",
-    "version_name": "0.9.0-dev",
-    "version_code": 9
+    "version_name": "0.10.0-dev",
+    "version_code": 10
   },
   "device": {"manufacturer":"Samsung","model":"SM-X400","abi":"arm64-v8a"},
   "android": {"min_sdk":31,"compile_sdk":37,"target_sdk":37},
+  "game": {
+    "title": "The Iron Saint",
+    "engine": "Godot 4.7.2 stable",
+    "rendering": "real Node3D / OpenGL compatibility",
+    "vertical_slice": "Before the Cathedral Door -> Witness Altar",
+    "player": "Professor Eggie",
+    "touch_controls": true,
+    "keyboard_controls": true,
+    "collision": true,
+    "persistent_save": true,
+    "questforge_engineering_authority": false
+  },
   "runtime": {
-    "architecture":"app_owned_native_service_plus_bundled_webview_assets",
+    "architecture":"embedded_godot_android_library_plus_bundled_godot_project_and_cathedral_assets",
+    "webview_primary_runtime":false,
     "termux":false,
     "bash_installer":false,
     "external_daemon":false,
@@ -26,14 +40,14 @@
     "jdk":17,
     "android_sdk":37,
     "build_tools":"37.0.0",
+    "godot_android_aar":"org.godotengine:godot:4.7.2.stable",
     "node":24,
-    "python":"3.14",
-    "npm":"build-time-only",
-    "pip":"build-time-only-if-needed"
+    "python":"3.14"
   },
   "signing": {
     "testing":"android-debug-signature",
     "production":"external-secret-keystore-required",
     "private_key_in_repo":false
-  }
+  },
+  "status": "CANDIDATE_NOT_GREEN_UNTIL_CI_AND_DEVICE_PLAYTEST"
 }

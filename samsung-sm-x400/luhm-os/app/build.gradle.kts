@@ -11,8 +11,11 @@ android {
         applicationId = "art.eggiebagelface.kai9000.dev"
         minSdk = 31
         targetSdk = 37
-        versionCode = 9
-        versionName = "0.9.0-dev"
+        versionCode = 10
+        versionName = "0.10.0-dev"
+        ndk {
+            abiFilters += listOf("arm64-v8a")
+        }
     }
 
     buildFeatures {
@@ -30,5 +33,5 @@ android {
 }
 
 dependencies {
-    implementation("androidx.webkit:webkit:1.17.0")
+    implementation("org.godotengine:godot:4.7.2.stable")
 }

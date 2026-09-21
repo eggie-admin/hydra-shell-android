@@ -1,36 +1,35 @@
-name: LuHm OS SM-X400 API37 Forge
+name: LuHm OS Iron Saint Godot3D Forge
 
 on:
   workflow_dispatch:
   push:
     branches:
-      - build/sm-x400-android17-final-20260920
+      - build/iron-saint-playable-20260921
       - testing/luhm-os-android
     paths:
       - 'samsung-sm-x400/luhm-os/**'
       - 'docs/CROWN_SOURCE_OF_TRUTH_20260920.json'
       - 'tools/luhm_sm_x400_android17_audit.py'
-      - 'project/hydra/samsung/android/apk/**'
       - '.github/workflows/luhm-os-sm-x400-api37.yml'
 
 permissions:
   contents: read
 
 concurrency:
-  group: luhm-sm-x400-api37-${{ github.ref }}
+  group: luhm-iron-saint-godot3d-${{ github.ref }}
   cancel-in-progress: true
 
 env:
   APP_DIR: samsung-sm-x400/luhm-os
   PACKAGE_ID: art.eggiebagelface.kai9000.dev
-  VERSION_NAME: 0.9.0-dev
-  VERSION_CODE: '9'
-  APK_NAME: luhm-os-sm-x400-api37-dev.apk
+  VERSION_NAME: 0.10.0-dev
+  VERSION_CODE: '10'
+  APK_NAME: luhm-os-iron-saint-godot3d-sm-x400-dev.apk
 
 jobs:
   forge:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
@@ -40,7 +39,7 @@ jobs:
         with:
           python-version: '3.14'
 
-      - name: Source-of-truth audit
+      - name: Source and real-3D audit
         run: python tools/luhm_sm_x400_android17_audit.py
 
       - name: Stage canonical Cathedral assets from Drive
@@ -75,13 +74,13 @@ jobs:
           fetch_drive '1yPhZgEeHPEhIe0ncDRhfuScKIvRpg0wo' 'CURRENT_LUM_ANIMATED_REEL.mp4' '1a20bd7bf495ee930d2cc9dab9342d7cb29d326ce0c7f433c206581ebdddad97'
           fetch_drive '1_6cgTXU2tgH15OZOuLmABGloKqhtfYJU' 'KAI9000_LUM_AVATAR_ACTUAL_ANIMATED.gif' 'a9df1d2b5c63d5740be8c476b59f389171b99609a14cd02fc8ae7568d27b2aba'
           fetch_drive '1Uq29nL8iM2hQn7hgLmzxcO7PC7_SC49L' 'KAI9000_LUM_AVATAR_ACTUAL_ANIMATED.manifest.json' '6b95f05e2532464022fa363c1d067755c3358600cfced0d791fd9fd7b95e2742'
-          echo 'CATHEDRAL_DRIVE_CARGO_GREEN'
+          echo CATHEDRAL_DRIVE_CARGO_GREEN
 
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '24'
 
-      - name: Headless web forge
+      - name: Canonical asset receipt
         working-directory: samsung-sm-x400/luhm-os/web
         run: npm run build
 
@@ -95,7 +94,7 @@ jobs:
           gradle-version: '9.3.1'
           cache-cleanup: on-success
 
-      - name: Bootstrap Android CLI and Android 17 preview SDK
+      - name: Bootstrap Android 17 preview SDK
         shell: bash
         run: |
           set -euo pipefail
@@ -108,10 +107,9 @@ jobs:
           grep -q 'platforms/android-37.0' build-android-sdk-catalog.txt
           "$ANDROID_CLI" --sdk="$ANDROID_HOME" sdk install --canary platforms/android-37.0 build-tools/37.0.0 platform-tools
           test -f "$ANDROID_HOME/platforms/android-37.0/android.jar"
-          test -x "$ANDROID_HOME/build-tools/37.0.0/apksigner"
-          echo 'ANDROID17_PREVIEW_SDK_BOOTSTRAP_GREEN'
+          echo ANDROID17_PREVIEW_SDK_BOOTSTRAP_GREEN
 
-      - name: Build signed install candidate
+      - name: Build Godot 3D install candidate
         shell: bash
         run: |
           set -euo pipefail
@@ -121,7 +119,7 @@ jobs:
           mkdir -p build/android
           cp "$SRC" "build/android/$APK_NAME"
 
-      - name: Verify APK and canonical Cathedral cargo
+      - name: Verify signed APK, Godot runtime, and Cathedral cargo
         shell: bash
         run: |
           set -euo pipefail
@@ -135,6 +133,14 @@ jobs:
           grep -q "package: name='$PACKAGE_ID' versionCode='$VERSION_CODE' versionName='$VERSION_NAME'" build/android/badging.txt
           grep -q "targetSdkVersion:'37'" build/android/badging.txt
           grep -q "application-label:'LuHm OS'" build/android/badging.txt
+          grep -q 'assets/project.godot' build/android/contents.txt
+          grep -q 'assets/main.tscn' build/android/contents.txt
+          grep -q 'assets/main.gd' build/android/contents.txt
+          grep -Eq 'lib/arm64-v8a/libgodot_android\.so' build/android/contents.txt
+          if grep -Eqi 'lib/(armeabi-v7a|x86|x86_64)/libgodot_android\.so' build/android/contents.txt; then
+            echo 'NON_SM_X400_GODOT_ABI_RED' >&2
+            exit 1
+          fi
           check_asset() { local path="$1" expected="$2" got; got="$(unzip -p "$APK" "assets/$path" | sha256sum | awk '{print $1}')"; test "$got" = "$expected" || { echo "APK_ASSET_HASH_RED $path" >&2; exit 1; }; }
           check_asset 'cathedral/CURRENT_LUM_MIDNIGHT_1996_MODEL_SHEET.png' '60a84012d60965c3cfb02c2f94aaeca11401f0965c85595fc9ebcc79a0961ce0'
           check_asset 'cathedral/CURRENT_KAI9000_GAME_WORLD_BIBLE.png' 'fe6cbd614e5078c21b7de4896eaff2c600329ab1cb969694d45669ad8b1c7175'
@@ -145,18 +151,21 @@ jobs:
           check_asset 'brand/icon.svg' 'fdc62c4d21922a3b2101d70d9400e3df598d1498baa36354b887afb4e2df1b57'
           check_asset 'brand/logo-dark.svg' 'cdfda5be645e54b0925405dbd1169e56a919f17af20acaaabdf8d7a7a1da2a09'
           check_asset 'brand/logo-light.svg' '83880741355c39fffd62dd804b6b8db576de7b7fc6ff514e89151811b9ff6010'
-          if grep -Eqi 'com\.termux|termux-api|/bin/bash|processbuilder|127\.0\.0\.1' build/android/contents.txt; then echo 'Forbidden external-runtime payload detected' >&2; exit 1; fi
-          echo 'LUHM_APK_BUILD_GREEN'
-          echo 'CATHEDRAL_CANONICAL_ASSETS_GREEN'
-          echo 'CANONICAL_APK_ASSETS_VERIFIED=9'
-          echo 'TERMUX_DEPENDENCY=false'
-          echo 'BASH_INSTALLER=false'
-          echo 'SM_X400_DEVICE_VALIDATION_PENDING'
-          echo 'ANDROID17_RUNTIME_VALIDATION_PENDING'
+          if grep -Eqi 'com\.termux|termux-api|/bin/bash|processbuilder|127\.0\.0\.1' build/android/contents.txt; then
+            echo 'FORBIDDEN_EXTERNAL_RUNTIME_PAYLOAD' >&2
+            exit 1
+          fi
+          echo LUHM_APK_BUILD_GREEN
+          echo LUHM_GODOT3D_PACKAGE_GREEN
+          echo IRON_SAINT_3D_CANDIDATE_GREEN
+          echo CATHEDRAL_CANONICAL_ASSETS_GREEN
+          echo CANONICAL_APK_ASSETS_VERIFIED=9
+          echo GODOT_VERSION=4.7.2.stable
+          echo SM_X400_3D_DEVICE_PLAYTEST_PENDING
 
       - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
         with:
-          name: luhm-os-sm-x400-api37-cathedral-${{ github.run_number }}
+          name: luhm-os-iron-saint-godot3d-${{ github.run_number }}
           path: |
             build/android/${{ env.APK_NAME }}
             build/android/sha256.txt
@@ -167,6 +176,9 @@ jobs:
             build/canonical-assets.sha256
             samsung-sm-x400/luhm-os/web-build-receipt.json
             samsung-sm-x400/luhm-os/app/src/main/assets/cathedral-assets.json
+            samsung-sm-x400/luhm-os/app/src/main/assets/project.godot
+            samsung-sm-x400/luhm-os/app/src/main/assets/main.tscn
+            samsung-sm-x400/luhm-os/app/src/main/assets/main.gd
             build-android-cli-version.txt
             build-android-sdk-catalog.txt
           if-no-files-found: error
