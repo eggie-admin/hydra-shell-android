@@ -61,13 +61,25 @@ jobs:
           gradle-version: '9.3.1'
           cache-cleanup: on-success
 
-      - name: Install Android 17 preview SDK
+      - name: Bootstrap Android CLI and Android 17 preview SDK
         shell: bash
         run: |
           set -euo pipefail
-          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
-          yes | "$SDKMANAGER" --licenses >/dev/null || true
-          "$SDKMANAGER" --channel=3 'platform-tools' 'platforms;android-37' 'build-tools;37.0.0'
+          mkdir -p "$RUNNER_TEMP/android-cli"
+          curl --fail --silent --show-error --location \
+            https://dl.google.com/android/cli/latest/linux_x86_64/android \
+            --output "$RUNNER_TEMP/android-cli/android"
+          chmod 0755 "$RUNNER_TEMP/android-cli/android"
+          ANDROID_CLI="$RUNNER_TEMP/android-cli/android"
+          "$ANDROID_CLI" --version | tee build-android-cli-version.txt
+          "$ANDROID_CLI" --sdk="$ANDROID_HOME" sdk list 'platforms/android-37|build-tools/37.*|platform-tools' --all --all-versions --canary \
+            | tee build-android-sdk-catalog.txt
+          grep -q 'platforms/android-37' build-android-sdk-catalog.txt
+          "$ANDROID_CLI" --sdk="$ANDROID_HOME" sdk install --canary \
+            platforms/android-37 build-tools/37.0.0 platform-tools
+          test -f "$ANDROID_HOME/platforms/android-37/android.jar"
+          test -x "$ANDROID_HOME/build-tools/37.0.0/apksigner"
+          echo 'ANDROID17_PREVIEW_SDK_BOOTSTRAP_GREEN'
 
       - name: Build signed install candidate
         shell: bash
@@ -115,5 +127,7 @@ jobs:
             build/android/badging.txt
             build/android/contents.txt
             samsung-sm-x400/luhm-os/web-build-receipt.json
+            build-android-cli-version.txt
+            build-android-sdk-catalog.txt
           if-no-files-found: error
           retention-days: 7
