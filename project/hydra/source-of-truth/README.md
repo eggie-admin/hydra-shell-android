@@ -1,21 +1,63 @@
 # Source of Truth
 
-This directory is the **crowned GitHub seal lane** for LuHm OS. The stable repository path remains `project/hydra/source-of-truth` for compatibility and historical lineage; that path does not make Project Hydra the current product identity.
+This directory is the **crowned GitHub seal lane** for **LuHm OS**. The stable repository path remains `project/hydra/source-of-truth` for compatibility and historical lineage; that path does not make Project Hydra the current product identity.
 
 GitHub owns software lineage, source, CI, and provenance. Owner-only Google Drive holds private recovery/source-of-truth documentation and staged private artifacts.
 
-## Current identity and naming crown
+## Current crown
 
-- Canonical product: **LuHm OS**
-- Canonical first-party machine namespace: `lhms`
-- Naming law: **VOWEL_RIP**, with the readable human phrase kept adjacent to the machine identifier
-- Current identity/naming crown: `LUHM_OS_UNIFIED_NAMING_CANON_CROWN_20260921.json`
-- KAI 9000: donor/reference/archaeology only; it is not the active runtime, dependency, product name, or naming authority
-- Project Hydra: historical compatibility/repository lineage only; stable paths may remain without becoming current product identity
-- Operator-facing local endpoints use names, not literal network addresses; the Edge Gallery Antenna canonical local name is `dggllryntnn.localhost`
-- Normal admin is the default identity; privileged elevation is one exact Crown-approved operation only, followed by immediate return to normal admin
+Current authority: `LUHM_OS_PIPELINE_UNIFICATION_CROWN_20260921.json`
 
-Stable provider resource names may remain compatibility bindings when renaming them would break lineage, links, workflows, or recovery. A compatibility binding never outranks the current LuHm OS identity crown.
+- Canonical product name: **LuHm OS**
+- Established internal project identifier: `luhm_os`
+- One logical project spans the OpenAI, Google, GitHub, Cloudflare, and Hugging Face transport bindings.
+- OpenAI organization: **Pirate Daddy Film**
+- Canonical OpenAI project: **LuHm OS**
+- Legacy OpenAI **Project Hydra**: compatibility only; do not target it for new keys or new work.
+- GitHub source binding: `eggie-admin/hydra-shell-android`, canonical branch `luhmos-main`.
+- Google Drive human-facing project root: **LuHm OS**.
+- Cloudflare public zone: `eggiebagelface.art`.
+- Hugging Face account binding: `eggiebagelface`.
+- KAI 9000: donor/reference/archaeology only; not current runtime authority, dependency authority, product name, or naming authority.
+- Project Hydra: historical compatibility/repository lineage only.
+
+## Naming doctrine
+
+**VOWEL_RIP is a coding convention, not a product/platform naming law.**
+
+It may be used for shortened internal Python3 identifiers, Python3 helper/stub names, and coding-doctrine artifact IDs when shortening is useful.
+
+It does **not** rename LuHm OS, API project labels, organizations, Google Drive roots, GitHub owners/repos/branches, FQDNs/DNS zones, public release names, human-facing service names, or vendor transport identifiers.
+
+The earlier `LUHM_OS_UNIFIED_NAMING_CANON_CROWN_20260921.json` is superseded because it incorrectly expanded VOWEL_RIP beyond the coding/stub scope.
+
+## Vendor/API pipeline seal
+
+The current crown preserves the already-proven pipeline contract rather than replacing it:
+
+- `integrations/vendor-apis.manifest.json`
+- `docs/API_TRINITY_DOCTRINE.md`
+- `tools/vendor_api_pipeline_audit.py`
+- `.github/workflows/luhmos-vendor-api-pipeline-audit.yml`
+
+Historical proof receipts preserved by reference:
+
+- `LUHM_OS_VENDOR_API_PIPELINE_SYNC_20260917.json`: source pipeline GREEN with `17/17` exact-head internal CI.
+- `LUHM_OS_UNIFIED_PROJECT_20260917.json`: unified-project and vendor-pipeline guards GREEN with `18/18` exact-head internal CI.
+- `LUHM_OS_SOURCE_OF_TRUTH_AUDIT_20260918.json`: LuHm OS identity and vendor bindings reconciled while keeping external provider debt explicit.
+
+Historical CI proof remains historical evidence. A source-of-truth crown does not invent a fresh CI run or silently promote unverified live-provider state to GREEN.
+
+## Authority and privilege
+
+- Professor is final human authority.
+- Lum is Boss.
+- Oni helpers are bounded, cannot recursively recruit, and cannot self-approve.
+- Consequential actions remain Crown-gated.
+- Normal admin is the default operating identity.
+- Root is never a persistent login or agent identity.
+- Privilege escalation is one exact Crown-approved operation for the minimum required duration, followed by immediate return to normal admin.
+- Operator-facing doctrine uses names rather than literal network addresses.
 
 ## Crown rule
 
@@ -29,11 +71,12 @@ A proposed manifest has **zero automatic promotion authority**. It must never ov
 
 ## Evidence boundaries
 
-- Source-contract GREEN is not build GREEN.
+- Source-contract GREEN is not fresh runtime GREEN.
+- Historical exact-head CI proof remains valid historical evidence but is not a fresh run for a later head.
 - Build/CI GREEN is not release authority.
 - Release/build proof is not physical-device GREEN.
 - Fresh physical evidence owns exact hardware/runtime claims.
 - Historical cryptographic receipts remain historical evidence and are not rewritten during doctrine cleanup.
-- External provider, DNS, repository, billing, deploy, signing, install, or release changes must not be inferred from a naming/source-contract crown.
+- External provider, DNS, repository, billing, deploy, signing, install, or release changes must not be inferred from a source-contract crown.
 
 Do not place serial numbers, IMEI/MEID, phone numbers, account identifiers, API keys, signing material, private keys, or private third-party payloads here.
