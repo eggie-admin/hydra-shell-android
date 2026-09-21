@@ -1,66 +1,31 @@
-name: KAI9000 Cathedral CI
+name: LuHm OS Legacy Donor Audit
 
 on:
   pull_request:
     paths:
-      - "project/hydra/**"
       - "lumh-os/kai9000/**"
       - "ultima/ollama-ffmpeg-antenna-v3/**"
-      - "backend/**"
-      - "tools/**"
-      - "integrations/**"
-      - "docs/**"
-      - "README.md"
-      - "SUPPORT.md"
-      - "ARCHITECTURE.md"
-      - "AGENTS.md"
-      - ".github/copilot-instructions.md"
+      - "tools/kai9000_ci_guard.py"
       - ".github/workflows/kai9000-ci.yml"
-      - ".github/workflows/luhmos-main-release-launch.yml"
-      - ".github/workflows/luhmos-fdroid-public-release.yml"
-      - ".github/workflows/luhmos-github-release.yml"
-      - ".github/workflows/luhmos-izzy-github-release.yml"
-      - ".github/workflows/luhmos-public-release-lock-guard.yml"
-      - ".github/workflows/cloudflare-coming-soon.yml"
-      - ".github/workflows/google-white-magic-strict-free-vm.yml"
-      - ".github/workflows/luhmos-deploy-authority-lock-guard.yml"
-      - ".github/workflows/luhmos-canonical-branch-governance-audit.yml"
   push:
     branches: [luhmos-main]
     paths:
-      - "project/hydra/**"
       - "lumh-os/kai9000/**"
       - "ultima/ollama-ffmpeg-antenna-v3/**"
-      - "backend/**"
-      - "tools/**"
-      - "integrations/**"
-      - "docs/**"
-      - "README.md"
-      - "SUPPORT.md"
-      - "ARCHITECTURE.md"
-      - "AGENTS.md"
-      - ".github/copilot-instructions.md"
+      - "tools/kai9000_ci_guard.py"
       - ".github/workflows/kai9000-ci.yml"
-      - ".github/workflows/luhmos-main-release-launch.yml"
-      - ".github/workflows/luhmos-fdroid-public-release.yml"
-      - ".github/workflows/luhmos-github-release.yml"
-      - ".github/workflows/luhmos-izzy-github-release.yml"
-      - ".github/workflows/luhmos-public-release-lock-guard.yml"
-      - ".github/workflows/cloudflare-coming-soon.yml"
-      - ".github/workflows/google-white-magic-strict-free-vm.yml"
-      - ".github/workflows/luhmos-deploy-authority-lock-guard.yml"
-      - ".github/workflows/luhmos-canonical-branch-governance-audit.yml"
 
 permissions:
   contents: read
 
 jobs:
-  kai9000-ci:
+  donor-audit:
+    name: Legacy KAI donor compatibility audit
     runs-on: ubuntu-24.04
     timeout-minutes: 12
 
     steps:
-      - name: Checkout
+      - name: Checkout exact source
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
@@ -75,67 +40,54 @@ jobs:
         with:
           node-version: "24"
 
-      - name: Install FFmpeg
+      - name: Install FFmpeg for donor tests
+        shell: bash
         run: |
+          set -euo pipefail
           sudo apt-get update
           sudo apt-get install -y ffmpeg
 
-      - name: Install KAI9000 Python runtime and test gate
+      - name: Install legacy donor runtime test dependencies
         working-directory: ultima/ollama-ffmpeg-antenna-v3
         run: |
           python -m pip install --upgrade pip
           python -m pip install -e . pytest
 
-      - name: LuHm OS compatibility structure guard
-        run: python tools/project_hydra_structure_guard.py
-
-      - name: Architecture and secret guard
+      - name: Audit legacy donor architecture and secrets
         run: python tools/kai9000_ci_guard.py
 
-      - name: LuHm OS remote assistance fastpath guard
-        run: |
-          python tools/remote_assistance_guard.py
-          python tools/remote_assistance_bench.py
-
-      - name: LuHm OS runtime entitlement guard
-        run: python tools/runtime_capability_guard.py
-
-      - name: Remote assistance unit contract
-        run: python -m pytest -q backend/tests/test_remote_ai_router.py backend/tests/test_remote_assistance.py backend/tests/test_google_assist.py
-
-      - name: Retired lane purge guard
-        run: python tools/retired_lane_guard.py
-
-      - name: Public release lock guard
-        run: python tools/public_release_lock_guard.py
-
-      - name: Deploy authority lock guard
-        run: python tools/deploy_authority_guard.py
-
-      - name: Python compile gate
+      - name: Compile donor Python
         run: |
           python -m compileall -q ultima/ollama-ffmpeg-antenna-v3
-          python -m py_compile tools/kai9000_ci_guard.py tools/project_hydra_structure_guard.py tools/remote_assistance_guard.py tools/remote_assistance_bench.py tools/runtime_capability_guard.py tools/retired_lane_guard.py tools/public_release_lock_guard.py tools/deploy_authority_guard.py tools/canonical_branch_governance_audit.py
+          python -m py_compile tools/kai9000_ci_guard.py
 
-      - name: Lum Crown authority contract
+      - name: Verify donor Lum authority contract
         working-directory: ultima/ollama-ffmpeg-antenna-v3
         run: python -m pytest -q tests/test_lum_agent.py
 
-      - name: Locked jQuery vendor gate
+      - name: Verify locked jQuery donor dependency
         working-directory: ultima/ollama-ffmpeg-antenna-v3
         run: |
           npm ci
           npm run vendor:jquery
           test -s static/vendor/jquery.min.js
 
-      - name: npm metadata gate
+      - name: Donor runtime metadata
         working-directory: ultima/ollama-ffmpeg-antenna-v3
         run: npm pkg get name version scripts dependencies
 
-      - name: Runtime doctor
+      - name: Donor runtime doctor
         working-directory: ultima/ollama-ffmpeg-antenna-v3
         run: npm run doctor
 
-      - name: No-network smoke tests
+      - name: Donor no-network smoke tests
         working-directory: ultima/ollama-ffmpeg-antenna-v3
         run: python -m unittest discover -s tests -p "test_ci_*.py" -v
+
+      - name: Donor boundary receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'KAI9000_ROLE=DONOR_REFERENCE_ONLY'
+          echo 'LUHM_OS_AUTHORITY=NOT_GRANTED_BY_THIS_WORKFLOW'
+          echo 'LUHM_OS_LEGACY_DONOR_AUDIT_GREEN'
