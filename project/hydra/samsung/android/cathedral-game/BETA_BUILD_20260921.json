@@ -1,0 +1,12 @@
+{
+  "schema": "luhm-os.beta-build-provenance.v1",
+  "channel": "beta",
+  "date": "2026-09-21",
+  "source_head": "181772c9418d80a3115d494f810daf8043d04b29",
+  "package_id": "art.eggiebagelface.luhmos.candidate",
+  "version_name": "1.0.9",
+  "version_code": 109,
+  "publication": false,
+  "canonical_promotion": false,
+  "purpose": "Trigger the existing collision-free LuHm OS beta APK forge from the verified candidate head."
+}
