@@ -1,0 +1,57 @@
+{
+  "schema": "luhm-os.public-beta-candidate.v1",
+  "date": "2026-09-21",
+  "project": "LuHm OS",
+  "status": "STAGED_NOT_SIGNED_NOT_PUBLISHED",
+  "channel": "beta",
+  "source": {
+    "branch": "luhmos/beta",
+    "commit": "496bb93854bc6742f2b319aa06e3e0f8ca2c7398",
+    "tree": "1c0b72fef785064bfd359dc83b945470efa1f11c",
+    "exact_tree_promoted_from_testing_and_proposed": true
+  },
+  "android": {
+    "package": "art.eggiebagelface.luhmos",
+    "version_name": "1.0.1-beta.1",
+    "version_code": 101,
+    "tag": "v1.0.1-beta.1",
+    "target_sdk": 36,
+    "abi": "arm64-v8a",
+    "release_signing_alias": "luhmos-release"
+  },
+  "lineage": {
+    "published_baseline_tag": "v1.0.0",
+    "same_signer_required": true,
+    "existing_published_baseline_has_signed_apk": true,
+    "new_signer_rotation_allowed": false
+  },
+  "enterprise_release": {
+    "candidate_forge_manual_only": true,
+    "candidate_forge_may_publish": false,
+    "publisher_separate_from_signer": true,
+    "publisher_manual_only": true,
+    "publisher_may_read_signing_secrets": false,
+    "immutable_source_sha_required": true,
+    "artifact_sha256_required": true,
+    "signer_fingerprint_required": true,
+    "existing_release_tag_must_not_be_overwritten": true,
+    "github_release_prerelease": true
+  },
+  "evidence": {
+    "testing_full_ci_green": true,
+    "proposed_full_ci_green": true,
+    "beta_full_ci_green": true,
+    "github_verified_beta_merge": true,
+    "signed_beta_artifact_green": false,
+    "physical_install_green": false,
+    "public_release_green": false
+  },
+  "known_release_blockers": [
+    "Signed beta candidate has not yet been produced from the current beta SHA.",
+    "Current signing secret availability has not been proven by a fresh signing run.",
+    "Android entrypoint still contains historical KAI9000 and Project Hydra human-facing labels that must be reconciled before signing.",
+    "GitHub release branches are not protected by repository branch protection/rulesets.",
+    "Physical Samsung install and same-signer upgrade proof remain required before stable, not before beta publication."
+  ],
+  "stable_release_authority": "NOT_GRANTED_BY_THIS_CANDIDATE"
+}
