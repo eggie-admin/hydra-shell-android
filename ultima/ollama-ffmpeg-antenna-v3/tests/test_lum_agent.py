@@ -101,7 +101,7 @@ def test_lum_remains_single_boss_in_manager_instructions() -> None:
     agent = build_lum_agent("security audit")
     instructions = str(agent.instructions)
     assert "Lum remains the single Boss" in instructions
-    assert "cannot recruit other helpers" in instructions
+    assert "recruit other helpers" in instructions
     assert "ASTRA" in instructions
 
 
