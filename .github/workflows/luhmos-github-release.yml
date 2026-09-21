@@ -1,32 +1,210 @@
-name: LuHm OS GitHub Release Publisher Guard
+name: LuHm OS GitHub Beta Publisher
 
 on:
   workflow_dispatch:
     inputs:
-      acknowledge_public_release_locked:
-        description: Acknowledge that GitHub publication remains locked
+      source_run_id:
+        description: Successful LuHm OS Signed Beta Candidate workflow run ID
+        required: true
+        type: string
+      artifact_name:
+        description: Exact signed-candidate artifact name
+        required: true
+        type: string
+      release_sha:
+        description: Exact luhmos/beta source SHA embedded in the candidate
+        required: true
+        type: string
+      version_name:
+        description: Android beta version name
+        required: true
+        type: string
+        default: 1.0.1-beta.1
+      tag_name:
+        description: New GitHub prerelease tag
+        required: true
+        type: string
+        default: v1.0.1-beta.1
+      acknowledge_public_beta_release:
+        description: Publish this verified signed candidate as a public GitHub prerelease
         required: true
         type: boolean
         default: false
 
 permissions:
-  contents: read
+  actions: read
+  contents: write
+
+concurrency:
+  group: luhmos-public-beta-publisher
+  cancel-in-progress: false
 
 jobs:
-  guard:
-    name: GitHub release publishing remains OFF
+  publish-beta:
+    name: Verify candidate and publish immutable prerelease
     runs-on: ubuntu-24.04
     steps:
-      - name: Enforce publication lock
+      - name: Enforce publisher Crown boundary
         shell: bash
         env:
-          ACK: ${{ inputs.acknowledge_public_release_locked }}
+          ACK: ${{ inputs.acknowledge_public_beta_release }}
         run: |
           set -euo pipefail
-          echo 'LUHMOS_GITHUB_RELEASE_PUBLISH=OFF'
-          echo 'This workflow has no contents:write permission and creates or uploads no release.'
-          echo 'A future GitHub release requires a separately reviewed and explicitly Crown-authorized publisher workflow.'
-          if [ "$ACK" = "true" ]; then
-            echo 'Acknowledged: publication remains locked.'
+          test "$GITHUB_REF" = 'refs/heads/luhmos-main' || {
+            echo 'Publisher may only be dispatched from canonical luhmos-main workflow code.' >&2
+            exit 1
+          }
+          test "$ACK" = 'true' || {
+            echo 'Explicit public-beta release acknowledgement required.' >&2
+            exit 1
+          }
+          echo 'LUHMOS_PUBLISHER_SIGNING_SECRETS=NONE'
+          echo 'LUHMOS_PUBLIC_BETA_AUTHORITY=EXPLICIT'
+
+      - name: Checkout publisher policy only
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Validate immutable release inputs and beta head
+        shell: bash
+        env:
+          RELEASE_SHA: ${{ inputs.release_sha }}
+          VERSION_NAME: ${{ inputs.version_name }}
+          TAG_NAME: ${{ inputs.tag_name }}
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$VERSION_NAME" =~ ^[0-9]+\.[0-9]+\.[0-9]+-beta\.[0-9]+$ ]]
+          test "$TAG_NAME" = "v$VERSION_NAME"
+          git fetch --no-tags origin refs/heads/luhmos/beta:refs/remotes/origin/luhmos/beta
+          test "$(git rev-parse refs/remotes/origin/luhmos/beta)" = "$RELEASE_SHA" || {
+            echo 'Requested release SHA is not the current beta head.' >&2
+            exit 1
+          }
+
+      - name: Prove source signer workflow run
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ inputs.source_run_id }}
+        run: |
+          set -euo pipefail
+          [[ "$RUN_ID" =~ ^[0-9]+$ ]]
+          RUN_JSON="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID")"
+          test "$(jq -r '.name' <<<"$RUN_JSON")" = 'LuHm OS Signed Beta Candidate'
+          test "$(jq -r '.event' <<<"$RUN_JSON")" = 'workflow_dispatch'
+          test "$(jq -r '.conclusion' <<<"$RUN_JSON")" = 'success'
+          test "$(jq -r '.head_branch' <<<"$RUN_JSON")" = 'luhmos-main'
+          echo 'LUHMOS_SIGNER_RUN_GREEN'
+
+      - name: Download exact signed candidate artifact
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ inputs.source_run_id }}
+          ARTIFACT_NAME: ${{ inputs.artifact_name }}
+        run: |
+          set -euo pipefail
+          rm -rf build/candidate
+          mkdir -p build/candidate
+          gh run download "$RUN_ID" --repo "$GITHUB_REPOSITORY" --name "$ARTIFACT_NAME" --dir build/candidate
+          test -s build/candidate/release-manifest.json
+
+      - name: Verify signed candidate manifest, APK hash and signer lineage
+        shell: bash
+        env:
+          RELEASE_SHA: ${{ inputs.release_sha }}
+          VERSION_NAME: ${{ inputs.version_name }}
+          TAG_NAME: ${{ inputs.tag_name }}
+          EXPECTED_APK_FP: ${{ vars.LUHMOS_ANDROID_CERT_SHA256 }}
+        run: |
+          set -euo pipefail
+          test -n "$EXPECTED_APK_FP" || { echo 'Missing LUHMOS_ANDROID_CERT_SHA256 repository variable.' >&2; exit 1; }
+          MANIFEST=build/candidate/release-manifest.json
+          python -m json.tool "$MANIFEST" >/dev/null
+          test "$(jq -r '.source_sha' "$MANIFEST")" = "$RELEASE_SHA"
+          test "$(jq -r '.tag' "$MANIFEST")" = "$TAG_NAME"
+          test "$(jq -r '.version_name' "$MANIFEST")" = "$VERSION_NAME"
+          test "$(jq -r '.package' "$MANIFEST")" = 'art.eggiebagelface.luhmos'
+          test "$(jq -r '.public_publish_authority' "$MANIFEST")" = 'false'
+          APK_NAME="$(jq -r '.apk_name' "$MANIFEST")"
+          APK_SHA="$(jq -r '.apk_sha256' "$MANIFEST")"
+          APK_FP="$(jq -r '.signer_sha256' "$MANIFEST" | tr -d ':[:space:]' | tr '[:lower:]' '[:upper:]')"
+          WANT_FP="$(printf '%s' "$EXPECTED_APK_FP" | tr -d ':[:space:]' | tr '[:lower:]' '[:upper:]')"
+          test "$APK_FP" = "$WANT_FP"
+          test -s "build/candidate/$APK_NAME"
+          test "$(sha256sum "build/candidate/$APK_NAME" | awk '{print $1}')" = "$APK_SHA"
+          test -s build/candidate/signature.txt
+          test -s build/candidate/zipalign.txt
+          test -s build/candidate/badging.txt
+          echo "APK_NAME=$APK_NAME" >> "$GITHUB_ENV"
+          echo "APK_SHA=$APK_SHA" >> "$GITHUB_ENV"
+          echo "APK_FP=$APK_FP" >> "$GITHUB_ENV"
+          echo 'LUHMOS_SIGNED_ARTIFACT_EVIDENCE_GREEN'
+
+      - name: Refuse tag or release replacement
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ inputs.tag_name }}
+        run: |
+          set -euo pipefail
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG_NAME" >/dev/null 2>&1; then
+            echo "Tag already exists: $TAG_NAME" >&2
+            exit 1
           fi
-          echo 'LUHMOS_GITHUB_RELEASE_GUARD_GREEN'
+          if gh release view "$TAG_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release already exists: $TAG_NAME" >&2
+            exit 1
+          fi
+          echo 'LUHMOS_RELEASE_NAMESPACE_CLEAR'
+
+      - name: Create public beta release notes
+        shell: bash
+        env:
+          RELEASE_SHA: ${{ inputs.release_sha }}
+          VERSION_NAME: ${{ inputs.version_name }}
+          TAG_NAME: ${{ inputs.tag_name }}
+        run: |
+          set -euo pipefail
+          cat > build/candidate/release-notes.md <<EOF
+          # LuHm OS $VERSION_NAME
+
+          Public Android beta prerelease.
+
+          - Package: \`art.eggiebagelface.luhmos\`
+          - Source channel: \`luhmos/beta\`
+          - Source SHA: \`$RELEASE_SHA\`
+          - APK SHA-256: \`$APK_SHA\`
+          - Android signer SHA-256: \`$APK_FP\`
+          - Target: Samsung/Android, arm64-v8a, target SDK 36
+
+          This beta preserves the existing LuHm OS Android signing identity. Stable promotion remains separately gated by physical Samsung install/launch and same-signer upgrade proof.
+          EOF
+
+      - name: Publish immutable GitHub prerelease
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_SHA: ${{ inputs.release_sha }}
+          VERSION_NAME: ${{ inputs.version_name }}
+          TAG_NAME: ${{ inputs.tag_name }}
+        run: |
+          set -euo pipefail
+          gh release create "$TAG_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$RELEASE_SHA" \
+            --title "LuHm OS $VERSION_NAME" \
+            --notes-file build/candidate/release-notes.md \
+            --prerelease \
+            "build/candidate/$APK_NAME#LuHm OS Android APK" \
+            "build/candidate/release-manifest.json#Signed beta release manifest" \
+            "build/candidate/sha256.txt#APK SHA-256 receipt" \
+            "build/candidate/signature.txt#Android signature receipt" \
+            "build/candidate/zipalign.txt#16 KiB alignment receipt" \
+            "build/candidate/badging.txt#Android package identity receipt" \
+            "build/candidate/android-signer-sha256.txt#Android signer fingerprint"
+          gh release view "$TAG_NAME" --repo "$GITHUB_REPOSITORY" --json tagName,isPrerelease,targetCommitish,url
+          echo 'LUHMOS_PUBLIC_BETA_GITHUB_RELEASE_GREEN'
