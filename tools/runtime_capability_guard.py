@@ -53,8 +53,11 @@ def main() -> None:
     require(google.get("use_client_process_cache") is True, "Google client cache disabled")
     paid_google = set(google.get("paid_capabilities", []))
     require({"context_caching", "batch_or_flex_for_offline_work", "higher_rate_limits", "advanced_models"}.issubset(paid_google), "Google paid-capability registry drift")
-    require("_CLIENT_LOCK" in google_assist and "_CLIENT_SIGNATURE" in google_assist, "Google credential-aware process cache missing")
-    require("def _client()" in google_assist and "gateway._google_client()" in google_assist, "Google process client reuse missing")
+    require("_CLIENT_LOCK = threading.Lock()" in google_assist, "Google process cache lock missing")
+    require("_CLIENT_SIGNATURE" in google_assist, "Google credential-aware process cache signature missing")
+    require("def _client() -> Any:" in google_assist, "Google process client helper missing")
+    require("_CLIENT = gateway._google_client()" in google_assist, "Google process client construction missing")
+    require("if _CLIENT is not None and signature == _CLIENT_SIGNATURE" in google_assist, "Google process client reuse missing")
     require("GOOGLE_FAST_TIMEOUT_MS" in google_assist and "GOOGLE_DEEP_TIMEOUT_MS" in google_assist, "Google profile timeout contract missing")
     require("process_reuse" in google_assist and "implicit_context_cache" in google_assist, "Google reuse/cache receipt missing")
 
