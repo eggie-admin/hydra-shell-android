@@ -43,6 +43,40 @@ jobs:
       - name: Source-of-truth audit
         run: python tools/luhm_sm_x400_android17_audit.py
 
+      - name: Stage canonical Cathedral assets from Drive
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEST="$APP_DIR/app/src/main/assets/cathedral"
+          mkdir -p "$DEST" build
+          : > build/canonical-assets.sha256
+          fetch_drive() {
+            local id="$1" name="$2" expected="$3"
+            local out="$DEST/$name" tmp="$RUNNER_TEMP/$name"
+            rm -f "$tmp" "$out"
+            for url in \
+              "https://drive.usercontent.google.com/download?id=${id}&export=download&confirm=t" \
+              "https://drive.google.com/uc?export=download&id=${id}&confirm=t"; do
+              if curl --fail --location --retry 3 --retry-delay 2 --silent --show-error "$url" --output "$tmp"; then
+                if printf '%s  %s\n' "$expected" "$tmp" | sha256sum --check --status; then
+                  mv "$tmp" "$out"
+                  printf '%s  %s\n' "$expected" "$name" >> build/canonical-assets.sha256
+                  return 0
+                fi
+              fi
+              rm -f "$tmp"
+            done
+            echo "CANONICAL_DRIVE_ASSET_RED $name" >&2
+            return 1
+          }
+          fetch_drive '1pd8Ow4bxcVg5vf0JIkIcdvzYURRhXujW' 'CURRENT_LUM_MIDNIGHT_1996_MODEL_SHEET.png' '60a84012d60965c3cfb02c2f94aaeca11401f0965c85595fc9ebcc79a0961ce0'
+          fetch_drive '1gjrEfS1tK1YdRCpMB1QOqSXK0WQ2-_4z' 'CURRENT_KAI9000_GAME_WORLD_BIBLE.png' 'fe6cbd614e5078c21b7de4896eaff2c600329ab1cb969694d45669ad8b1c7175'
+          fetch_drive '1efXJVIApFVvDmgL5_1Czju-XzpgI_-oL' 'CURRENT_KAI9000_CATHEDRAL_POSTER.png' '02a7b16dd88c6574d9f230c45335736fdebe9098002ea1fb42c7001497aaf794'
+          fetch_drive '1yPhZgEeHPEhIe0ncDRhfuScKIvRpg0wo' 'CURRENT_LUM_ANIMATED_REEL.mp4' '1a20bd7bf495ee930d2cc9dab9342d7cb29d326ce0c7f433c206581ebdddad97'
+          fetch_drive '1_6cgTXU2tgH15OZOuLmABGloKqhtfYJU' 'KAI9000_LUM_AVATAR_ACTUAL_ANIMATED.gif' 'a9df1d2b5c63d5740be8c476b59f389171b99609a14cd02fc8ae7568d27b2aba'
+          fetch_drive '1Uq29nL8iM2hQn7hgLmzxcO7PC7_SC49L' 'KAI9000_LUM_AVATAR_ACTUAL_ANIMATED.manifest.json' '6b95f05e2532464022fa363c1d067755c3358600cfced0d791fd9fd7b95e2742'
+          echo 'CATHEDRAL_DRIVE_CARGO_GREEN'
+
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '24'
@@ -66,17 +100,13 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/android-cli"
-          curl --fail --silent --show-error --location \
-            https://dl.google.com/android/cli/latest/linux_x86_64/android \
-            --output "$RUNNER_TEMP/android-cli/android"
+          curl --fail --silent --show-error --location https://dl.google.com/android/cli/latest/linux_x86_64/android --output "$RUNNER_TEMP/android-cli/android"
           chmod 0755 "$RUNNER_TEMP/android-cli/android"
           ANDROID_CLI="$RUNNER_TEMP/android-cli/android"
           "$ANDROID_CLI" --version | tee build-android-cli-version.txt
-          "$ANDROID_CLI" --sdk="$ANDROID_HOME" sdk list 'platforms/android-37.*|build-tools/37.*|platform-tools' --all --all-versions --canary \
-            | tee build-android-sdk-catalog.txt
+          "$ANDROID_CLI" --sdk="$ANDROID_HOME" sdk list 'platforms/android-37.*|build-tools/37.*|platform-tools' --all --all-versions --canary | tee build-android-sdk-catalog.txt
           grep -q 'platforms/android-37.0' build-android-sdk-catalog.txt
-          "$ANDROID_CLI" --sdk="$ANDROID_HOME" sdk install --canary \
-            platforms/android-37.0 build-tools/37.0.0 platform-tools
+          "$ANDROID_CLI" --sdk="$ANDROID_HOME" sdk install --canary platforms/android-37.0 build-tools/37.0.0 platform-tools
           test -f "$ANDROID_HOME/platforms/android-37.0/android.jar"
           test -x "$ANDROID_HOME/build-tools/37.0.0/apksigner"
           echo 'ANDROID17_PREVIEW_SDK_BOOTSTRAP_GREEN'
@@ -91,7 +121,7 @@ jobs:
           mkdir -p build/android
           cp "$SRC" "build/android/$APK_NAME"
 
-      - name: Verify APK
+      - name: Verify APK and canonical Cathedral cargo
         shell: bash
         run: |
           set -euo pipefail
@@ -105,12 +135,20 @@ jobs:
           grep -q "package: name='$PACKAGE_ID' versionCode='$VERSION_CODE' versionName='$VERSION_NAME'" build/android/badging.txt
           grep -q "targetSdkVersion:'37'" build/android/badging.txt
           grep -q "application-label:'LuHm OS'" build/android/badging.txt
-          grep -q 'assets/index.html' build/android/contents.txt
-          if grep -Eqi 'com\.termux|termux-api|/bin/bash|processbuilder|127\.0\.0\.1' build/android/contents.txt; then
-            echo 'Forbidden external-runtime payload detected' >&2
-            exit 1
-          fi
+          check_asset() { local path="$1" expected="$2" got; got="$(unzip -p "$APK" "assets/$path" | sha256sum | awk '{print $1}')"; test "$got" = "$expected" || { echo "APK_ASSET_HASH_RED $path" >&2; exit 1; }; }
+          check_asset 'cathedral/CURRENT_LUM_MIDNIGHT_1996_MODEL_SHEET.png' '60a84012d60965c3cfb02c2f94aaeca11401f0965c85595fc9ebcc79a0961ce0'
+          check_asset 'cathedral/CURRENT_KAI9000_GAME_WORLD_BIBLE.png' 'fe6cbd614e5078c21b7de4896eaff2c600329ab1cb969694d45669ad8b1c7175'
+          check_asset 'cathedral/CURRENT_KAI9000_CATHEDRAL_POSTER.png' '02a7b16dd88c6574d9f230c45335736fdebe9098002ea1fb42c7001497aaf794'
+          check_asset 'cathedral/CURRENT_LUM_ANIMATED_REEL.mp4' '1a20bd7bf495ee930d2cc9dab9342d7cb29d326ce0c7f433c206581ebdddad97'
+          check_asset 'cathedral/KAI9000_LUM_AVATAR_ACTUAL_ANIMATED.gif' 'a9df1d2b5c63d5740be8c476b59f389171b99609a14cd02fc8ae7568d27b2aba'
+          check_asset 'cathedral/KAI9000_LUM_AVATAR_ACTUAL_ANIMATED.manifest.json' '6b95f05e2532464022fa363c1d067755c3358600cfced0d791fd9fd7b95e2742'
+          check_asset 'brand/icon.svg' 'fdc62c4d21922a3b2101d70d9400e3df598d1498baa36354b887afb4e2df1b57'
+          check_asset 'brand/logo-dark.svg' 'cdfda5be645e54b0925405dbd1169e56a919f17af20acaaabdf8d7a7a1da2a09'
+          check_asset 'brand/logo-light.svg' '83880741355c39fffd62dd804b6b8db576de7b7fc6ff514e89151811b9ff6010'
+          if grep -Eqi 'com\.termux|termux-api|/bin/bash|processbuilder|127\.0\.0\.1' build/android/contents.txt; then echo 'Forbidden external-runtime payload detected' >&2; exit 1; fi
           echo 'LUHM_APK_BUILD_GREEN'
+          echo 'CATHEDRAL_CANONICAL_ASSETS_GREEN'
+          echo 'CANONICAL_APK_ASSETS_VERIFIED=9'
           echo 'TERMUX_DEPENDENCY=false'
           echo 'BASH_INSTALLER=false'
           echo 'SM_X400_DEVICE_VALIDATION_PENDING'
@@ -118,7 +156,7 @@ jobs:
 
       - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
         with:
-          name: luhm-os-sm-x400-api37-${{ github.run_number }}
+          name: luhm-os-sm-x400-api37-cathedral-${{ github.run_number }}
           path: |
             build/android/${{ env.APK_NAME }}
             build/android/sha256.txt
@@ -126,7 +164,9 @@ jobs:
             build/android/zipalign.txt
             build/android/badging.txt
             build/android/contents.txt
+            build/canonical-assets.sha256
             samsung-sm-x400/luhm-os/web-build-receipt.json
+            samsung-sm-x400/luhm-os/app/src/main/assets/cathedral-assets.json
             build-android-cli-version.txt
             build-android-sdk-catalog.txt
           if-no-files-found: error
