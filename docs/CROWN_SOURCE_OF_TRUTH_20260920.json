@@ -147,6 +147,15 @@
       "green_claimed": false
     }
   },
+  "supporting_doctrine_alignment": {
+    "agents_md_current_crown": "docs/CROWN_SOURCE_OF_TRUTH_20260920.json",
+    "agents_md_sm_x400_api37_contract": true,
+    "coding_roleplay_current_crown": "docs/CROWN_SOURCE_OF_TRUTH_20260920.json",
+    "coding_roleplay_convergence_artifact": "thwtchnghr",
+    "coding_roleplay_convergence_phrase": "the witching hour",
+    "retired_convergence_name_active_authority": false,
+    "questforge_engineering_authority": false
+  },
   "green_semantics": {
     "source_crowned_does_not_imply_runtime_green": true,
     "ci_build_green_does_not_imply_device_green": true,
