@@ -1,0 +1,237 @@
+name: LuHm OS Public Release Readiness
+
+on:
+  pull_request:
+    branches:
+      - luhmos-main
+    paths:
+      - 'admin/release/release-channels.json'
+      - 'project/hydra/LUHMOS_BRANCH_TOPOLOGY.json'
+      - 'project/hydra/runtime/enterprise.policy.json'
+      - 'fdroid/**'
+      - 'tools/public_release_readiness.py'
+      - 'tools/remote_assistance_bench.py'
+      - '.github/workflows/luhmos-public-release-readiness.yml'
+  workflow_dispatch:
+    inputs:
+      strict:
+        description: Fail unless every public-release gate is proven
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: luhmos-public-release-readiness-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  enterprise-preflight:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Python 3.12
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.12'
+
+      - name: Parse release contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m json.tool admin/release/release-channels.json >/dev/null
+          python3 -m json.tool project/hydra/LUHMOS_BRANCH_TOPOLOGY.json >/dev/null
+          python3 -m json.tool project/hydra/runtime/enterprise.policy.json >/dev/null
+          python3 -m json.tool fdroid/publication.manifest.json >/dev/null
+          python3 -m py_compile tools/public_release_readiness.py
+
+      - name: Generate source SBOM preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p release-evidence
+          python3 - <<'PY'
+          import datetime, json, os, re, tomllib
+          from pathlib import Path
+
+          root = Path('.')
+          packages = []
+          seen = set()
+
+          lock = root / 'package-lock.json'
+          if lock.is_file():
+              data = json.loads(lock.read_text(encoding='utf-8'))
+              for key, item in sorted((data.get('packages') or {}).items()):
+                  if not key or not isinstance(item, dict):
+                      continue
+                  name = item.get('name') or Path(key).name
+                  version = str(item.get('version') or 'NOASSERTION')
+                  ident = (name, version, 'npm')
+                  if ident in seen:
+                      continue
+                  seen.add(ident)
+                  packages.append((name, version, 'npm'))
+
+          for pyproject in root.rglob('pyproject.toml'):
+              if any(part in {'.git', 'node_modules', '.venv'} for part in pyproject.parts):
+                  continue
+              try:
+                  project = tomllib.loads(pyproject.read_text(encoding='utf-8')).get('project', {})
+              except Exception:
+                  continue
+              for dep in project.get('dependencies') or []:
+                  token = re.split(r'[<>=!~; ]', str(dep), maxsplit=1)[0].strip()
+                  if token:
+                      ident = (token, 'DECLARED', 'pypi')
+                      if ident not in seen:
+                          seen.add(ident); packages.append(ident)
+
+          def spdx_id(index, name):
+              safe = re.sub(r'[^A-Za-z0-9.-]+', '-', name).strip('-') or 'package'
+              return f'SPDXRef-Package-{index}-{safe}'
+
+          doc = {
+              'spdxVersion': 'SPDX-2.3',
+              'dataLicense': 'CC0-1.0',
+              'SPDXID': 'SPDXRef-DOCUMENT',
+              'name': 'LuHm-OS-source-preflight',
+              'documentNamespace': f"https://eggiebagelface.art/spdx/luhm-os/{os.environ.get('GITHUB_SHA','unknown')}",
+              'creationInfo': {
+                  'created': datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0).isoformat().replace('+00:00','Z'),
+                  'creators': ['Tool: LuHm OS source SBOM preflight v1']
+              },
+              'packages': [
+                  {
+                      'name': name,
+                      'SPDXID': spdx_id(i, name),
+                      'versionInfo': version,
+                      'downloadLocation': 'NOASSERTION',
+                      'filesAnalyzed': False,
+                      'licenseConcluded': 'NOASSERTION',
+                      'licenseDeclared': 'NOASSERTION',
+                      'externalRefs': [{
+                          'referenceCategory': 'PACKAGE-MANAGER',
+                          'referenceType': 'purl',
+                          'referenceLocator': f'pkg:{ecosystem}/{name}@{version}' if version not in {'DECLARED','NOASSERTION'} else f'pkg:{ecosystem}/{name}'
+                      }]
+                  }
+                  for i, (name, version, ecosystem) in enumerate(packages, 1)
+              ]
+          }
+          Path('release-evidence/source-sbom.spdx.json').write_text(json.dumps(doc, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          if not doc['packages']:
+              raise SystemExit('SOURCE_SBOM_RED: no dependency declarations found')
+          print(f"SOURCE_SBOM_PREFLIGHT_GREEN packages={len(doc['packages'])}")
+          PY
+
+      - name: Git backup restore drill
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p release-evidence "$RUNNER_TEMP/luhmos-restore"
+          git archive --format=tar HEAD > "$RUNNER_TEMP/luhmos-source.tar"
+          tar -xf "$RUNNER_TEMP/luhmos-source.tar" -C "$RUNNER_TEMP/luhmos-restore"
+          python3 - "$RUNNER_TEMP/luhmos-restore" <<'PY'
+          from pathlib import Path
+          import hashlib, json, subprocess, sys
+
+          restored = Path(sys.argv[1])
+          files = subprocess.check_output(['git', 'ls-files', '-z']).split(b'\0')
+          checked = 0
+          for raw in files:
+              if not raw:
+                  continue
+              rel = raw.decode('utf-8')
+              src = Path(rel)
+              dst = restored / rel
+              if src.is_file():
+                  if not dst.is_file():
+                      raise SystemExit(f'GIT_RESTORE_RED missing={rel}')
+                  if hashlib.sha256(src.read_bytes()).digest() != hashlib.sha256(dst.read_bytes()).digest():
+                      raise SystemExit(f'GIT_RESTORE_RED mismatch={rel}')
+                  checked += 1
+          receipt = {'schema':'luhm-os.git-restore-drill.v1','tracked_files_verified':checked,'status':'GREEN'}
+          Path('release-evidence/git-restore-drill.json').write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
+          print(f'GIT_RESTORE_DRILL_GREEN files={checked}')
+          PY
+
+      - name: Install bounded benchmark runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check -q -e ultima/ollama-ffmpeg-antenna-v3
+
+      - name: Run deterministic routing benchmark
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/remote_assistance_bench.py
+          mv luhmos-remote-assistance-bench.json release-evidence/
+          python3 - <<'PY'
+          import json
+          r=json.load(open('release-evidence/luhmos-remote-assistance-bench.json', encoding='utf-8'))
+          assert r['status']=='GREEN'
+          print('ROUTING_BENCHMARK_GREEN')
+          PY
+
+      - name: Observe governance and signer readiness without exposing secrets
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          KEYSTORE_B64: ${{ secrets.LUHMOS_RELEASE_KEYSTORE_B64 }}
+          KEYSTORE_PASS: ${{ secrets.LUHMOS_RELEASE_KEYSTORE_PASS }}
+          KEY_ALIAS: ${{ secrets.LUHMOS_RELEASE_KEY_ALIAS }}
+          KEY_PASS: ${{ secrets.LUHMOS_RELEASE_KEY_PASS }}
+          SIGNER_SHA256: ${{ secrets.LUHMOS_RELEASE_SIGNER_SHA256 }}
+        run: |
+          set -euo pipefail
+          RULESET_JSON="$RUNNER_TEMP/rulesets.json"
+          if curl --fail --silent --show-error \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H 'Accept: application/vnd.github+json' \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/rulesets" > "$RULESET_JSON"; then
+            RULESET_COUNT="$(python3 -c 'import json,sys; print(len(json.load(open(sys.argv[1]))))' "$RULESET_JSON")"
+          else
+            RULESET_COUNT=0
+          fi
+          SIGNER_READY=false
+          if [ -n "$KEYSTORE_B64" ] && [ -n "$KEYSTORE_PASS" ] && [ -n "$KEY_ALIAS" ] && [ -n "$KEY_PASS" ] && [ -n "$SIGNER_SHA256" ]; then
+            SIGNER_READY=true
+          fi
+          echo "RULESET_COUNT=$RULESET_COUNT" >> "$GITHUB_ENV"
+          echo "SIGNER_READY=$SIGNER_READY" >> "$GITHUB_ENV"
+          echo "GOVERNANCE_RULESET_COUNT=$RULESET_COUNT"
+          echo "RELEASE_SIGNER_SECRET_SET_COMPLETE=$SIGNER_READY"
+
+      - name: Write bounded enterprise readiness receipt
+        shell: bash
+        env:
+          STRICT_INPUT: ${{ inputs.strict }}
+        run: |
+          set -euo pipefail
+          STRICT_ARG=''
+          if [ "${STRICT_INPUT:-false}" = 'true' ]; then STRICT_ARG='--strict'; fi
+          python3 tools/public_release_readiness.py \
+            --ruleset-count "${RULESET_COUNT:-0}" \
+            --signer-secrets-ready "${SIGNER_READY:-false}" \
+            --git-restore-green true \
+            --source-sbom-green true \
+            --benchmark-green true \
+            $STRICT_ARG \
+            --output release-evidence/LUHM_OS_PUBLIC_RELEASE_READINESS.json
+
+      - name: Upload enterprise preflight evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: luhmos-public-release-readiness-${{ github.run_number }}
+          path: release-evidence/**
+          if-no-files-found: error
+          retention-days: 30
