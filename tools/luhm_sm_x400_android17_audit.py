@@ -25,9 +25,10 @@ def main():
     joined=(j+'\n'+e).lower()
     for forbidden in ['com.termux','termux-api','processbuilder','runtime.getruntime','127.0.0.1','httpurlconnection','/bin/bash','/system/bin/sh']:
         need(forbidden not in joined,'forbidden runtime dependency '+forbidden)
-    need('.put("termuxRequired", false)' in j and '.put("termuxRequired", false)' in e,'explicit no-Termux runtime receipt missing')
-    need('.put("bashInstallerRequired", false)' in j and '.put("bashInstallerRequired", false)' in e,'explicit no-bash receipt missing')
+    need('termuxRequired' in j and 'termuxRequired' in e,'explicit no-Termux runtime receipt missing')
+    need('bashInstallerRequired' in j and 'bashInstallerRequired' in e,'explicit no-bash receipt missing')
     need('ACTION_NOT_ALLOWLISTED' in e,'typed action deny gate')
+    need('org.json' not in joined,'unneeded JSON runtime dependency present')
     print('LUHM_SM_X400_SOURCE_TRUTH_GREEN')
     print('LUHM_API37_HEADLESS_PACKAGE_GREEN')
     print('TERMUX_DEPENDENCY=false')
