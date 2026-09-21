@@ -1,1 +1,65 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LuHm OS</title><link rel="stylesheet" href="style.css"></head><body><main><header><img src="brand/icon.svg" alt="LuHm OS"><div><h1>LuHm OS</h1><p>SM-X400 · Android 17 / API 37 target · self-contained package</p></div></header><section class="grid"><article><h2>Package</h2><pre id="platform">loading…</pre></article><article><h2>Engine</h2><pre id="engine">binding…</pre></article><article><h2>Self test</h2><button id="test">Run typed self-test</button><pre id="result">ready</pre></article><article><h2>Contract</h2><ul><li>No Termux</li><li>No bash installer</li><li>No external localhost daemon</li><li>No shell execution surface</li><li>App-owned Android service</li></ul></article></section></main><script src="app.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07090d">
+<title>LuHm OS Cathedral</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="shell">
+<header class="topbar">
+  <div class="brand"><img src="brand/logo-dark.svg" alt="LuHm OS"><div><h1>LuHm OS</h1><p>Cathedral · SM-X400 · Android 17 / API 37</p></div></div>
+  <div class="runes"><span>👑 CROWN</span><span class="green">CANONICAL ASSETS</span><span class="amber">DEVICE TEST PENDING</span></div>
+</header>
+
+<nav class="tabs">
+  <button class="tab active" data-tab="cathedral">Cathedral</button>
+  <button class="tab" data-tab="lum">Lum</button>
+  <button class="tab" data-tab="world">World</button>
+  <button class="tab" data-tab="engine">Engine</button>
+  <button class="tab" data-tab="doctrine">Doctrine</button>
+  <button class="tab" data-tab="audit">Audit</button>
+</nav>
+
+<main>
+<section id="cathedral" class="view active">
+  <div class="hero">
+    <img src="cathedral/CURRENT_KAI9000_CATHEDRAL_POSTER.png" alt="KAI 9000 Cathedral poster">
+    <div class="hero-copy"><div class="eyebrow">THE CATHEDRAL IS LOCAL</div><h2>One package. No terminal ritual.</h2><p>Native Android shell, app-owned engine, bundled Cathedral media, and deterministic authority gates. No Termux. No bash installer. No external daemon.</p><div class="actions"><button class="primary" data-jump="lum">Meet Lum</button><button data-jump="engine">Engine status</button></div></div>
+  </div>
+  <div class="stats"><article><b>6</b><span>canonical Drive artifacts</span></article><article><b>3</b><span>LuHm brand assets</span></article><article><b>37</b><span>target API</span></article><article><b>0</b><span>Termux dependencies</span></article></div>
+</section>
+
+<section id="lum" class="view">
+  <div class="split">
+    <article class="panel media"><h2>Current Lum model sheet</h2><img src="cathedral/CURRENT_LUM_MIDNIGHT_1996_MODEL_SHEET.png" alt="Current Lum Midnight 1996 model sheet"></article>
+    <article class="panel"><h2>Animated Lum</h2><video src="cathedral/CURRENT_LUM_ANIMATED_REEL.mp4" autoplay muted loop playsinline controls></video><p class="muted">Current production reel. The sealed animated-avatar GIF is bundled as a second verified representation.</p><img class="gif" src="cathedral/KAI9000_LUM_AVATAR_ACTUAL_ANIMATED.gif" alt="Animated Lum avatar"></article>
+  </div>
+</section>
+
+<section id="world" class="view">
+  <article class="panel media"><h2>KAI 9000 game-world bible</h2><img src="cathedral/CURRENT_KAI9000_GAME_WORLD_BIBLE.png" alt="Current KAI 9000 game world bible"></article>
+</section>
+
+<section id="engine" class="view">
+  <div class="cardgrid"><article class="panel"><h2>Package receipt</h2><pre id="platform">bridge loading…</pre></article><article class="panel"><h2>Native engine</h2><pre id="engineStatus">service binding…</pre></article><article class="panel"><h2>Typed self-test</h2><button id="selfTest" class="primary">Run self-test</button><pre id="selfResult">ready</pre></article><article class="panel"><h2>Asset inventory</h2><button id="assetTest">Ask engine</button><pre id="assetResult">ready</pre></article></div>
+</section>
+
+<section id="doctrine" class="view">
+  <div class="wall"><article class="panel"><h2>⚙ Engineering DSL</h2><p>May express engineering intent, but still passes Crown, OS, rights, and evidence gates.</p></article><div class="barrier">║</div><article class="panel"><h2>🎲 Questforge</h2><p>Fictional tabletop state only. No Git, shell, Android, account, publishing, or engineering authority.</p></article></div>
+  <article class="panel crown"><h2>👑 Crown law</h2><p>Professor is final human authority. Lum is Boss AI. No AI self-approval for consequential actions. Evidence comes before GREEN.</p></article>
+</section>
+
+<section id="audit" class="view">
+  <div class="cardgrid"><article class="panel"><h2>Canonical cargo</h2><div id="cargo" class="cargo"></div></article><article class="panel"><h2>Rights wall</h2><p class="green">IN: current production anchors, sealed LuHm-original animation, public LuHm branding.</p><p class="amber">OUT: AI_GENERATED_DEMO_ONLY prototypes, third-party private references, unreviewed community binaries.</p></article></div>
+  <article class="panel"><h2>Local audit</h2><button id="localAudit" class="primary">Run Cathedral audit</button><pre id="auditResult">ready</pre></article>
+</section>
+</main>
+<footer>LuHm OS Cathedral · self-contained install candidate · private authority remains human</footer>
+</div>
+<script id="cathedral-assets" type="application/json">{"manifest":"cathedral-assets.json","expectedDriveAssets":6,"expectedBrandAssets":3,"device":"SM-X400","targetApi":37}</script>
+<script src="app.js"></script>
+</body>
+</html>
