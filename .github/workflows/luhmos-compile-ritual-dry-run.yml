@@ -1,0 +1,74 @@
+name: LuHm OS Lum Oni Compile Ritual Dry Run
+
+on:
+  pull_request:
+    branches:
+      - luhmos-main
+    paths:
+      - 'tools/luhmos_compile_ritual.py'
+      - 'tools/luhmos_compile_ritual_test.py'
+      - 'project/hydra/doctrine/proposed-source-of-truth/LUHM_OS_LUM_ONI_COMPILE_RITUAL_20260921.json'
+      - 'project/hydra/doctrine/proposed-source-of-truth/LUHM_OS_COMPILE_AUDIT_20260921.json'
+      - '.github/workflows/luhmos-compile-ritual-dry-run.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: luhmos-compile-ritual-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  ritual-dry-run:
+    name: Lum + mini oni deterministic compile gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout exact proposal
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+
+      - name: Python 3.14
+        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: '3.14'
+
+      - name: Compile ritual source
+        run: python -m py_compile tools/luhmos_compile_ritual.py tools/luhmos_compile_ritual_test.py
+
+      - name: Run fail-closed ritual unit contract
+        run: python -m unittest tools/luhmos_compile_ritual_test.py -v
+
+      - name: Dry-run current audit evidence
+        run: |
+          set -euo pipefail
+          mkdir -p build/compile-ritual
+          python tools/luhmos_compile_ritual.py \
+            --evidence project/hydra/doctrine/proposed-source-of-truth/LUHM_OS_COMPILE_AUDIT_20260921.json \
+            --output build/compile-ritual/LUHM_OS_COMPILE_RITUAL_DRY_RUN.json
+
+      - name: Prove current audit stops at source-truth freshness gate
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('build/compile-ritual/LUHM_OS_COMPILE_RITUAL_DRY_RUN.json')
+          data=json.loads(p.read_text())
+          assert data['verdict']=='AMBER', data
+          assert data['state']=='SOURCE_TRUTH_SYNC_REQUIRED', data
+          assert data['build_dispatched'] is False, data
+          assert data['apk_uploaded'] is False, data
+          assert data['dry_run'] is None, data
+          assert data['next_gate'].startswith('SYNC_SOURCE_TRUTH_TO_38c5b8c4'), data
+          print('LUHM_ONI_CURRENT_GATE_FAIL_CLOSED_GREEN')
+          PY
+
+      - name: Upload dry-run evidence
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: luhmos-lum-oni-compile-dry-run-${{ github.run_number }}
+          path: build/compile-ritual/LUHM_OS_COMPILE_RITUAL_DRY_RUN.json
+          if-no-files-found: error
+          retention-days: 14
