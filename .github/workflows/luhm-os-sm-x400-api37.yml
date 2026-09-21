@@ -192,7 +192,7 @@ jobs:
             grep -q 'assets/main.tscn' "build/android/${prefix}-contents.txt"
             grep -q 'assets/main.gd' "build/android/${prefix}-contents.txt"
             grep -Eq 'lib/arm64-v8a/libgodot_android\.so' "build/android/${prefix}-contents.txt"
-            if grep -Eqi 'lib/(armeabi-v7a|x86|x86_64)/libgodot_android\.so' "build/android/${prefix}-contents.txt;" then
+            if grep -Eqi 'lib/(armeabi-v7a|x86|x86_64)/libgodot_android\.so' "build/android/${prefix}-contents.txt"; then
               echo "NON_SM_X400_GODOT_ABI_RED $apk" >&2
               exit 1
             fi
