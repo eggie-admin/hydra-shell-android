@@ -24,9 +24,11 @@ EXPECTED = {
     'KAI9000_LUM_AVATAR_ACTUAL_ANIMATED.manifest.json': '6b95f05e2532464022fa363c1d067755c3358600cfced0d791fd9fd7b95e2742'
 }
 
+
 def need(value, message):
     if not value:
         raise SystemExit('LUHM_AUDIT_RED: ' + message)
+
 
 def main():
     c = json.loads(CROWN.read_text())
@@ -91,6 +93,35 @@ def main():
     need('CURRENT_KAI9000_CATHEDRAL_POSTER.png' in script, 'canonical Cathedral poster not used in 3D world')
     need('CURRENT_LUM_MIDNIGHT_1996_MODEL_SHEET.png' in script, 'canonical Lum model sheet not used in 3D world')
 
+    gui_order = [
+        'nav.add_child(_label("Evidence Board"',
+        'nav.add_child(_nav_button("Authority", "authority"))',
+        'nav.add_child(_nav_button("Art & Assets", "assets"))',
+        'nav.add_child(_nav_button("3D", "models"))',
+        'nav.add_child(_nav_button("Roleplay Wall", "roleplay"))',
+        'nav.add_child(_nav_button("Questforge", "questforge"))',
+        'nav.add_child(_nav_button("Self Audit", "audit"))',
+        'receipt.add_child(_label("Truth Receipt"'
+    ]
+    gui_positions = [script.find(token) for token in gui_order]
+    need(all(pos >= 0 for pos in gui_positions), 'Cathedral source-of-truth GUI section missing')
+    need(gui_positions == sorted(gui_positions), 'Cathedral source-of-truth GUI section order drifted')
+    for token in [
+        'DisplayServer.get_display_safe_area()',
+        'MarginContainer.new()',
+        'VBoxContainer.new()',
+        'HBoxContainer.new()',
+        'Questforge · The Iron Saint',
+        'ENGINEERING_DSL',
+        'FICTIONAL_TABLETOP',
+        'SM-X400 3D PLAYTEST',
+        'Evidence before GREEN',
+        'ENTER 3D · THE IRON SAINT'
+    ]:
+        need(token in script, 'Cathedral GUI contract missing: ' + token)
+    need('cockpit.visible = false' in script and 'game_hud.visible = true' in script, 'Questforge game launch separation missing')
+    need('game_hud.visible = false' in script and 'cockpit.visible = true' in script, 'Cathedral return path missing')
+
     need(a['id'] == 'LUHM_OS_CATHEDRAL_CANONICAL_ASSETS_20260921', 'canonical asset manifest id')
     got = {x['name']: x['sha256'] for x in a['drive_assets']}
     need(got == EXPECTED, 'canonical Drive cargo or hashes drifted')
@@ -119,6 +150,7 @@ def main():
     print('LUHM_API37_HEADLESS_PACKAGE_GREEN')
     print('LUHM_GODOT3D_SOURCE_GREEN')
     print('IRON_SAINT_PLAYABLE_SOURCE_GREEN')
+    print('LUHM_CATHEDRAL_GUI_SOURCE_TRUTH_GREEN')
     print('LUHM_UPDATE_LANE_SOURCE_GREEN')
     print('PUBLIC_FORGE_SIGNING=UNSIGNED_ONLY')
     print('BASE_VERSION_CODE=1000')
@@ -127,6 +159,7 @@ def main():
     print('TERMUX_DEPENDENCY=false')
     print('BASH_INSTALLER=false')
     print('EXTERNAL_DAEMON=false')
+
 
 if __name__ == '__main__':
     main()
