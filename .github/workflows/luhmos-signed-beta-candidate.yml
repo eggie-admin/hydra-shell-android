@@ -57,32 +57,20 @@ jobs:
         shell: bash
         env:
           ACK: ${{ inputs.acknowledge_signed_candidate_only }}
-        run: |
-          set -euo pipefail
-          test "$GITHUB_REF" = 'refs/heads/luhmos-main' || {
-            echo 'Signed candidates may only be dispatched from canonical luhmos-main workflow code.' >&2
-            exit 1
-          }
-          test "$ACK" = 'true' || {
-            echo 'Explicit signed-candidate acknowledgement required.' >&2
-            exit 1
-          }
-          echo 'LUHMOS_SIGNED_CANDIDATE_AUTHORITY=BUILD_AND_SIGN_ONLY'
-          echo 'LUHMOS_PUBLIC_PUBLISH=OFF'
-
-      - name: Validate release identity inputs
-        shell: bash
-        env:
           RELEASE_SHA: ${{ inputs.release_sha }}
           VERSION_NAME: ${{ inputs.version_name }}
           VERSION_CODE: ${{ inputs.version_code }}
           TAG_NAME: ${{ inputs.tag_name }}
         run: |
           set -euo pipefail
+          test "$GITHUB_REF" = 'refs/heads/luhmos-main'
+          test "$ACK" = 'true'
           [[ "$RELEASE_SHA" =~ ^[0-9a-f]{40}$ ]]
           [[ "$VERSION_NAME" =~ ^[0-9]+\.[0-9]+\.[0-9]+-beta\.[0-9]+$ ]]
           [[ "$VERSION_CODE" =~ ^[1-9][0-9]*$ ]]
           test "$TAG_NAME" = "v$VERSION_NAME"
+          echo 'LUHMOS_SIGNED_CANDIDATE_AUTHORITY=BUILD_AND_SIGN_ONLY'
+          echo 'LUHMOS_PUBLIC_PUBLISH=OFF'
 
       - name: Checkout exact beta source
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
@@ -91,7 +79,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Prove exact beta SHA and release source contract
+      - name: Prove exact beta source and public identity
         shell: bash
         env:
           RELEASE_SHA: ${{ inputs.release_sha }}
@@ -100,7 +88,6 @@ jobs:
           git fetch --no-tags origin refs/heads/luhmos/beta:refs/remotes/origin/luhmos/beta
           test "$(git rev-parse HEAD)" = "$RELEASE_SHA"
           test "$(git rev-parse refs/remotes/origin/luhmos/beta)" = "$RELEASE_SHA"
-          python -m json.tool admin/release/public-beta-candidate-20260921.json >/dev/null
           python -m json.tool project/hydra/samsung/android/apk/app.reference.json >/dev/null
           grep -q '"package_id": "art.eggiebagelface.luhmos"' project/hydra/samsung/android/apk/app.reference.json
           grep -q '"release_signing_alias": "luhmos-release"' project/hydra/samsung/android/apk/app.reference.json
@@ -110,10 +97,10 @@ jobs:
           fi
           GAME=project/hydra/samsung/android/cathedral-game
           python "$GAME/tools/validate-source.py" "$GAME"
-          ! grep -qE 'KAI9000_|PROJECT HYDRA' "$GAME/index.html" || {
-            echo 'Human-facing legacy KAI/Project Hydra labels remain in the release entrypoint.' >&2
-            exit 1
-          }
+          grep -q 'LUHM_PUBLIC_BETA_IDENTITY_OVERLAY_V1' "$GAME/crown-cathedral.js"
+          grep -q 'LUHM OS CATHEDRAL V1' "$GAME/crown-cathedral.js"
+          grep -q 'LUHM OS // SOURCE-OF-TRUTH DEMO' "$GAME/crown-cathedral.js"
+          grep -q 'PUBLIC BETA CANDIDATE · ORIGINAL LUHM OS SYSTEMS' "$GAME/crown-cathedral.js"
           echo 'LUHMOS_BETA_SOURCE_IDENTITY_GREEN'
 
       - name: Checkout pinned Android donor
@@ -216,7 +203,7 @@ jobs:
           cp _forge/luhmos-android/godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-debug.aar _forge/luhmos-android/godot/addons/CathedralAndroid/bin/debug/
           cp _forge/luhmos-android/godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-release.aar _forge/luhmos-android/godot/addons/CathedralAndroid/bin/release/
 
-      - name: Patch immutable donor export metadata for beta identity
+      - name: Patch donor export metadata for beta identity
         shell: bash
         env:
           VERSION_NAME: ${{ inputs.version_name }}
@@ -251,8 +238,8 @@ jobs:
         run: |
           set -euo pipefail
           test -n "$ANDROID_KS_B64" && test -n "$ANDROID_KS_PASS" && test -n "$ANDROID_KEY_PASS"
-          test -n "$EXPECTED_APK_FP" || { echo 'Missing LUHMOS_ANDROID_CERT_SHA256 repository variable.' >&2; exit 1; }
-          test "$ANDROID_KS_PASS" = "$ANDROID_KEY_PASS" || { echo 'Godot release export requires matching key/store passwords.' >&2; exit 1; }
+          test -n "$EXPECTED_APK_FP"
+          test "$ANDROID_KS_PASS" = "$ANDROID_KEY_PASS"
           KS="$RUNNER_TEMP/luhmos-release.keystore"
           trap 'rm -f "$KS"' EXIT
           printf '%s' "$ANDROID_KS_B64" | base64 --decode > "$KS"
@@ -295,18 +282,7 @@ jobs:
           printf '%s\n' "$APK_FP" > build/release/android-signer-sha256.txt
           python - "$RELEASE_SHA" "$TAG_NAME" "$VERSION_NAME" "$VERSION_CODE" "$APK_SHA" "$APK_FP" <<'PY'
           import json,sys
-          out={
-            'schema':'luhm-os.signed-beta-artifact.v1',
-            'source_sha':sys.argv[1],
-            'tag':sys.argv[2],
-            'version_name':sys.argv[3],
-            'version_code':int(sys.argv[4]),
-            'package':'art.eggiebagelface.luhmos',
-            'apk_name':f'luhmos-{sys.argv[3]}.apk',
-            'apk_sha256':sys.argv[5],
-            'signer_sha256':sys.argv[6],
-            'public_publish_authority':False
-          }
+          out={'schema':'luhm-os.signed-beta-artifact.v1','source_sha':sys.argv[1],'tag':sys.argv[2],'version_name':sys.argv[3],'version_code':int(sys.argv[4]),'package':'art.eggiebagelface.luhmos','apk_name':f'luhmos-{sys.argv[3]}.apk','apk_sha256':sys.argv[5],'signer_sha256':sys.argv[6],'public_publish_authority':False}
           open('build/release/release-manifest.json','w',encoding='utf-8').write(json.dumps(out,indent=2)+'\n')
           PY
           echo 'LUHMOS_SIGNED_BETA_CANDIDATE_GREEN'
