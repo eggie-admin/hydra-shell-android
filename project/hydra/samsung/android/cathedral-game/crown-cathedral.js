@@ -1,6 +1,13 @@
 /* LUHM_CROWN_CATHEDRAL_DEMO_V1
-   Local-only game presentation. No shell, network, mutation, signing, or release authority. */
+   Local-only game presentation. No shell, network, mutation, signing, or release authority.
+   LUHM_PUBLIC_BETA_IDENTITY_OVERLAY_V1 keeps historical save/runtime identifiers compatible while presenting canonical LuHm OS identity. */
 (()=>{'use strict';
+const identity={
+ '.brand small':'LUHM OS CATHEDRAL V1 · local-first Samsung build',
+ '.crown-copy small':'LUHM OS // SOURCE-OF-TRUTH DEMO',
+ '.foot':'PUBLIC BETA CANDIDATE · ORIGINAL LUHM OS SYSTEMS · NO COPIED FRANCHISE ASSETS OR DIALOGUE'
+};
+for(const [selector,text] of Object.entries(identity)){const el=document.querySelector(selector);if(el)el.textContent=text}
 const root=document.getElementById('crownCathedral'); if(!root)return;
 const line=document.getElementById('crownLine');
 const state=document.getElementById('crownState');
