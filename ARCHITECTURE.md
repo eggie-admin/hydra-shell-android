@@ -6,7 +6,7 @@ Node/npm is a build-time tool only. The Android APK must not embed a Node runtim
 
 ## Rule one
 
-The Samsung production APK must be a normal self-contained Android application. It must install through Android package installation and launch from the Android launcher without requiring Termux, Acode/AcodeX, TigerVNC, websockify, Secure Folder, or another separately launched local daemon.
+The Samsung production APK must be a normal self-contained Android application. It must install through Android package installation and launch from the Android launcher without requiring Termux, an external development editor, TigerVNC, websockify, Secure Folder, or another separately launched local daemon.
 
 Optional external providers may augment capabilities, but the base application must still launch and expose its core UI when they are absent.
 

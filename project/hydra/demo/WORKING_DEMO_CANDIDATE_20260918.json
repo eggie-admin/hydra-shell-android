@@ -1,0 +1,21 @@
+{
+  "schema": "luhm-os.working-demo-candidate.v1",
+  "status": "BUILD_REQUESTED_NOT_YET_PROVEN",
+  "date_local": "2026-09-18",
+  "project": "Project Hydra",
+  "parent_os": "LuHm OS",
+  "source_base": "84dd75d82d1e74033735bb3933fb9f0d378b6aa1",
+  "branch": "luhmos/demo-working-candidate-20260918",
+  "package_id": "art.eggiebagelface.luhmos.demo",
+  "version_name": "1.0.11",
+  "version_code": 111,
+  "artifact_name": "luhmos-working-demo-1.0.11.apk",
+  "signer": "EPHEMERAL_DEBUG_CANDIDATE",
+  "install_mode": "USER_CONFIRMED_SIDE_BY_SIDE",
+  "public_publish": false,
+  "release_promotion": false,
+  "persistent_signing": false,
+  "silent_install": false,
+  "physical_device_proof": "PENDING_USER_INSTALL",
+  "intent": "Working demo candidate only. Preserve production package and release authority boundaries."
+}

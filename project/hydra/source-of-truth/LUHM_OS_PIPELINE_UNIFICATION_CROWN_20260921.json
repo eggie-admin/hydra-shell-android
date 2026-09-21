@@ -1,0 +1,214 @@
+{
+  "schema": "luhm-os.pipeline-unification-crown.v1",
+  "manifest_id": "LUHM_OS_PIPELINE_UNIFICATION_CROWN_20260921",
+  "status": "CROWNED_SOURCE_CONTRACT",
+  "date": "2026-09-21",
+  "human_final_authority": "Professor",
+  "purpose": "Preserve the proven LuHm OS vendor/API pipeline unification, correct the overbroad VOWEL_RIP scope, and keep historical evidence without rewriting it.",
+  "source_law": "AI proposes. Policy authorizes. CI proves. The human promotes.",
+
+  "canonical_identity": {
+    "display_name": "LuHm OS",
+    "internal_project_id": "luhm_os",
+    "single_logical_project": true,
+    "product_brand_is_vowel_ripped": false,
+    "kai9000": {
+      "status": "DONOR_REFERENCE_ARCHAEOLOGY_ONLY",
+      "active_runtime_authority": false,
+      "active_dependency_authority": false,
+      "naming_authority": false
+    },
+    "project_hydra": {
+      "status": "HISTORICAL_COMPATIBILITY_AND_REPOSITORY_LINEAGE",
+      "independent_current_product": false,
+      "may_remain_in_stable_paths_and_history": true
+    }
+  },
+
+  "naming_scope": {
+    "vowel_rip": {
+      "status": "CODING_CONVENTION_ONLY",
+      "applies_to": [
+        "shortened_internal_python3_identifiers",
+        "python3_helper_and_stub_names",
+        "coding_doctrine_artifact_ids_when_shortening_is_desired"
+      ],
+      "does_not_apply_to": [
+        "LuHm OS product name",
+        "OpenAI organization names",
+        "OpenAI API project labels",
+        "Google project display names",
+        "Google Drive roots",
+        "GitHub owner names",
+        "GitHub repository names",
+        "GitHub branch names",
+        "FQDNs and DNS zones",
+        "public release names",
+        "human-facing service names",
+        "vendor transport identifiers"
+      ],
+      "mandatory_for_all_code": false,
+      "shortening_only": true
+    },
+    "human_facing_rule": "Use readable canonical names. Do not transform a vendor/project/domain/repository name merely to satisfy coding shorthand.",
+    "endpoint_rule": "Use named endpoints in operator-facing doctrine. Do not promote literal network addresses into canonical names."
+  },
+
+  "unified_vendor_project": {
+    "policy": "one_logical_project_many_vendor_transport_bindings",
+    "canonical_project_label": "LuHm OS",
+    "canonical_internal_project_id": "luhm_os",
+    "vendor_spine": [
+      "openai",
+      "google",
+      "github",
+      "cloudflare",
+      "hugging_face"
+    ],
+    "bindings": {
+      "openai": {
+        "organization": "Pirate Daddy Film",
+        "canonical_project": "LuHm OS",
+        "legacy_project": "Project Hydra",
+        "legacy_policy": "DO_NOT_TARGET_FOR_NEW_KEYS_OR_NEW_WORK",
+        "current_target_list_verified_2026_09_21": true,
+        "live_inference_green_claimed": false
+      },
+      "google": {
+        "canonical_project_label": "LuHm OS",
+        "drive_root": "LuHm OS",
+        "gcp_project_id_role": "TRANSPORT_IDENTIFIER",
+        "live_wif_green_claimed": false
+      },
+      "github": {
+        "repository": "eggie-admin/hydra-shell-android",
+        "repository_role": "STABLE_TRANSPORT_AND_SOURCE_BINDING",
+        "canonical_branch": "luhmos-main",
+        "product_label": "LuHm OS",
+        "repository_rename_performed": false
+      },
+      "cloudflare": {
+        "project_label": "LuHm OS",
+        "zone": "eggiebagelface.art",
+        "live_account_green_claimed": false
+      },
+      "hugging_face": {
+        "project_label": "LuHm OS",
+        "account": "eggiebagelface",
+        "account_role": "TRANSPORT_IDENTITY",
+        "live_inference_green_claimed": false
+      }
+    }
+  },
+
+  "pipeline_seal": {
+    "canonical_manifest": "integrations/vendor-apis.manifest.json",
+    "canonical_doctrine": "docs/API_TRINITY_DOCTRINE.md",
+    "deterministic_guard": "tools/vendor_api_pipeline_audit.py",
+    "guard_workflow": ".github/workflows/luhmos-vendor-api-pipeline-audit.yml",
+    "guard_scope": "FIVE_VENDOR_DETERMINISTIC_DRIFT_GATE",
+    "prior_proof_receipts": [
+      {
+        "artifact": "LUHM_OS_VENDOR_API_PIPELINE_SYNC_20260917.json",
+        "proof": "SOURCE_PIPELINE_GREEN_17_OF_17_INTERNAL_CI",
+        "authority_at_time": "NOT_CROWNED"
+      },
+      {
+        "artifact": "LUHM_OS_UNIFIED_PROJECT_20260917.json",
+        "proof": "UNIFIED_PROJECT_GUARD_GREEN_VENDOR_PIPELINE_AUDIT_GREEN_18_OF_18_INTERNAL_CI",
+        "authority_at_time": "PROPOSED_FULL_GREEN_NOT_CROWNED"
+      },
+      {
+        "artifact": "LUHM_OS_SOURCE_OF_TRUTH_AUDIT_20260918.json",
+        "proof": "IDENTITY_VENDOR_MANIFEST_RUNTIME_POLICY_RECONCILED_WITH_EXTERNAL_DEBT_EXPLICIT",
+        "authority_at_time": "PROPOSED_NOT_CROWNED"
+      }
+    ],
+    "current_repository_observation_2026_09_21": {
+      "manifest_present": true,
+      "guard_present": true,
+      "workflow_present": true,
+      "workflow_name": "LuHm Vendor API Pipeline Audit",
+      "fresh_ci_run_for_this_crown_observed": false
+    },
+    "proof_boundary": "Historical exact-head CI receipts remain valid historical evidence. This crown does not invent a fresh CI run for the current head."
+  },
+
+  "agent_and_local_tool_chain": {
+    "boss": "Lum",
+    "human_authority": "Professor",
+    "helpers": "BOUNDED_ONI_SPECIALISTS",
+    "recursive_recruitment": false,
+    "direct_questions_bypass_mesh": true,
+    "parallel_remote_helpers_max": 3,
+    "local_gateway": "Edge Gallery Antenna",
+    "executor": "Deterministic Tool Executor",
+    "remote_raw_shell": false,
+    "provider_output_is_advisory": true,
+    "consequential_actions_are_crown_gated": true
+  },
+
+  "privilege_law": {
+    "default_identity": "NORMAL_ADMIN",
+    "persistent_root_login": false,
+    "persistent_root_shell": false,
+    "remote_root": false,
+    "model_issued_raw_sudo": false,
+    "privileged_operation_requires_crown": true,
+    "sudo_scope": "ONE_EXACT_APPROVED_OPERATION",
+    "sudo_duration": "MINIMUM_REQUIRED",
+    "return_after_operation": "IMMEDIATE_NORMAL_ADMIN"
+  },
+
+  "evidence_law": {
+    "evidence_before_green": true,
+    "no_execution_claim_without_receipt": true,
+    "source_ci_green_is_not_live_vendor_green": true,
+    "historical_receipts_preserved": true,
+    "unverified_external_state_stays_unverified": true,
+    "no_history_rewrite": true
+  },
+
+  "ten_pass_audit": [
+    {"pass": "PRODUCT_IDENTITY", "result": "PASS", "finding": "LuHm OS remains the readable canonical product name; luhm_os remains the established internal project identifier."},
+    {"pass": "VOWEL_RIP_SCOPE", "result": "PASS_CORRECTED", "finding": "VOWEL_RIP is limited to shortened Python3/coding/stub identifiers and is not a platform-wide naming law."},
+    {"pass": "OPENAI_UNIFICATION", "result": "PASS_CURRENTLY_OBSERVED", "finding": "Pirate Daddy Film contains canonical LuHm OS and legacy Project Hydra projects; new canonical work targets LuHm OS."},
+    {"pass": "VENDOR_SPINE", "result": "PASS_SOURCE_CONTRACT", "finding": "OpenAI, Google, GitHub, Cloudflare, and Hugging Face remain transport bindings of one LuHm OS logical project."},
+    {"pass": "PIPELINE_GUARD", "result": "PASS_PRESENT", "finding": "Vendor manifest, deterministic Python3 audit guard, and GitHub workflow are present on luhmos-main."},
+    {"pass": "PIPELINE_PROOF", "result": "PASS_HISTORICAL_RECEIPTS", "finding": "Prior exact-head receipts record 17/17 then 18/18 internal CI success; no fresh CI run is fabricated for the current head."},
+    {"pass": "KAI_HYDRA_BOUNDARY", "result": "PASS", "finding": "KAI 9000 is donor/reference only; Project Hydra is compatibility/history and cannot become a new vendor target."},
+    {"pass": "PRIVILEGE", "result": "PASS", "finding": "Normal admin by default; one exact Crown-approved sudo operation; immediate return to normal admin; no persistent root."},
+    {"pass": "EVIDENCE_BOUNDARY", "result": "PASS", "finding": "Source/CI proof and live-provider proof remain separate; external debt is not silently promoted to GREEN."},
+    {"pass": "SOURCE_OF_TRUTH", "result": "PASS_CROWNED_SOURCE_CONTRACT", "finding": "This crown supersedes the overbroad 2026-09-21 naming crown while preserving prior pipeline/unification receipts and historical evidence."}
+  ],
+
+  "supersession": {
+    "supersedes": [
+      "project/hydra/source-of-truth/LUHM_OS_UNIFIED_NAMING_CANON_CROWN_20260921.json"
+    ],
+    "reason": "The superseded crown incorrectly applied VOWEL_RIP to the LuHm OS product identity, provider bindings, FQDN naming, and general machine namespace.",
+    "does_not_supersede": [
+      "LUHM_OS_VENDOR_API_PIPELINE_SYNC_20260917.json",
+      "LUHM_OS_UNIFIED_PROJECT_20260917.json",
+      "LUHM_OS_SOURCE_OF_TRUTH_AUDIT_20260918.json",
+      "historical CI receipts",
+      "historical cryptographic or release evidence"
+    ]
+  },
+
+  "external_debt_preserved": [
+    "No fresh OpenAI live-inference smoke is claimed by this crown.",
+    "Google WIF live auth remains evidence-dependent and is not auto-promoted.",
+    "GitHub branch protection and repository rulesets remain separate governance evidence.",
+    "Cloudflare live account/token/tunnel state remains separately verifiable.",
+    "Hugging Face live inference remains separately verifiable."
+  ],
+
+  "final_crowned_goal": {
+    "summary": "One readable LuHm OS identity across API projects, vendor bindings, documentation, GitHub lineage, Drive recovery, and public infrastructure. Internal Python3/stub shorthand may use VOWEL_RIP when useful, but the brand and provider names do not. The five-vendor pipeline remains guarded by deterministic source contracts and historical CI proof. Professor is final authority, Lum is Boss, Oni helpers are bounded, local execution is Crown-gated and evidence-backed, normal admin is the default, and root is only a temporary operation context.",
+    "result": "LUHM_OS_PIPELINE_UNIFICATION_SOURCE_CONTRACT_CROWNED",
+    "source_contract_green": true,
+    "fresh_runtime_green_claimed": false,
+    "fresh_live_vendor_green_claimed": false
+  }
+}

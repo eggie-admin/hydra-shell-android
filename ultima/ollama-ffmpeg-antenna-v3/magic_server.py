@@ -4,19 +4,30 @@ import os
 
 import uvicorn
 
+# Compatibility modules read provider defaults at import time. Keep them
+# aligned with the unified LuHm OS fast/deep assistance contract before any
+# provider module is imported.
+os.environ.setdefault("OPENAI_FAST_MODEL", "gpt-5.6-luna")
+os.environ.setdefault("OPENAI_MODEL", "gpt-5.6-sol")
+os.environ.setdefault("KAI_GOOGLE_FAST_TEXT_MODEL", "gemini-3.5-flash-lite")
+os.environ.setdefault("KAI_GOOGLE_DEEP_TEXT_MODEL", "gemini-3.8-flash")
+os.environ.setdefault("KAI_GEMINI_LIVE_API_MODEL", "gemini-3.8-live")
+
 from ai_feed.router import ROUTER as AI_FEED_ROUTER
+from assistance import ROUTER as ASSISTANCE_ROUTER
 from gateway import ROUTER as GATEWAY_ROUTER
 from lum_agent.router import ROUTER as LUM_AGENT_ROUTER
 from magic_chat import ROUTER as MAGIC_ROUTER
 from main import APP
 from remote_ai import ROUTER as REMOTE_AI_ROUTER
 
-APP.title = "KAI9000 jQuery Python3 Magic Cockpit"
-APP.version = "3.4.0"
+APP.title = "LuHm OS Remote Assistance Cockpit"
+APP.version = "3.5.0"
 APP.include_router(MAGIC_ROUTER)
 APP.include_router(LUM_AGENT_ROUTER)
 APP.include_router(AI_FEED_ROUTER)
 APP.include_router(REMOTE_AI_ROUTER)
+APP.include_router(ASSISTANCE_ROUTER)
 APP.include_router(GATEWAY_ROUTER)
 
 

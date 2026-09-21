@@ -1,0 +1,35 @@
+{
+  "id": "KAI9000_PROPOSED_CANONICAL_BRANCH_GOVERNANCE_LOCK_20260917",
+  "state": "PROPOSED",
+  "canonical_branch": "luhmos-main",
+  "observed_canonical_head": "9fdc2dcbf3e3da7630a2c81b383a025f77f94fea",
+  "finding": {
+    "branch_protected": false,
+    "repository_rulesets": [],
+    "risk": "A direct push to luhmos-main can bypass the PR/Crown workflow discipline even though signing, publication, deploy, and Crown workflows are individually locked."
+  },
+  "required_server_side_contract": {
+    "pull_request_required_before_canonical_mutation": true,
+    "direct_push_to_canonical_blocked": true,
+    "force_push_blocked": true,
+    "branch_deletion_blocked": true,
+    "bypass_policy": "REQUIRES_SEPARATE_PROFESSOR_DECISION",
+    "required_status_check_selection": "REQUIRES_SEPARATE_PROFESSOR_DECISION"
+  },
+  "proposal_scope": {
+    "adds_read_only_audit": true,
+    "changes_repository_settings": false,
+    "changes_deploy_authority": false,
+    "changes_public_release_authority": false,
+    "changes_signing_authority": false,
+    "changes_crown_authority": false
+  },
+  "authority": {
+    "CANONICAL_BRANCH_SERVER_LOCK": "PENDING_EXTERNAL_REPOSITORY_SETTING",
+    "CANONICAL_MERGE": "NOT_AUTHORIZED",
+    "DEPLOY": "NOT_TRIGGERED",
+    "PUBLIC_RELEASE": "NOT_TRIGGERED",
+    "CROWN": "NOT_TRIGGERED"
+  },
+  "secrets": "NONE_STORED"
+}

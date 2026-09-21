@@ -1,0 +1,252 @@
+{
+  "schema": "luhm-os.proposed-seal-of-truth-doctrine-mutation-stale-artifact-audit.v1",
+  "manifest_id": "KAI9000_PROPOSED_SEAL_OF_TRUTH_DOCTRINE_MUTATION_STALE_ARTIFACT_AUDIT_20260916",
+  "status": "PROPOSED_NOT_CROWNED",
+  "date_local": "2026-09-16",
+  "generated_local": "2026-09-16T22:55:59.129695-04:00",
+  "generated_utc": "2026-09-17T02:55:59.129695+00:00",
+  "project": "LuHm OS / KAI 9000 / Project Hydra",
+  "human_authority": "Professor",
+  "ai_author": "Lum",
+  "purpose": "Proposed seal-of-truth doctrine mutation that reconciles the current LuHm OS canonical source anchor, the Samsung ChatGPT no-root companion sibling milestone, prior proposal manifests, and a fail-closed stale-artifact audit doctrine. This artifact is proposal evidence only and performs no crown, merge, compile, signing, install, publish, delete, purge, billing, DNS, or secret mutation.",
+  "authority_precedence": [
+    "explicit_current_professor_instruction",
+    "latest_crowned_source_of_truth_contract",
+    "current_luhmos_main_repository_state_and_verified_ci_evidence",
+    "private_canonical_drive_doctrine",
+    "current_project_manifests_and_verified_artifact_hashes",
+    "proposed_mutations_and_source_candidates",
+    "historical_evidence_and_compatibility_artifacts"
+  ],
+  "source_of_truth_contract": {
+    "git_role": "canonical_versioned_source_history",
+    "drive_role": "private_recovery_and_proposal_mirror",
+    "proposal_is_not_crown": true,
+    "proposal_may_not_override_current_crown": true,
+    "human_crown_required": true,
+    "automatic_crown": false,
+    "automatic_merge": false,
+    "automatic_publish": false
+  },
+  "observed_anchor": {
+    "repository": "eggie-admin/hydra-shell-android",
+    "canonical_branch": "luhmos-main",
+    "canonical_head": "7bae9d515c4295bb8ab07f1003a95e1edcae2f33",
+    "canonical_head_message": "doctrine: harden proposed stale-artifact and source boundaries",
+    "canonical_head_observed_utc": "2026-09-17T02:51:10Z",
+    "canonical_branch_protected": false,
+    "proposal_storage_path": "project/hydra/doctrine/proposed-source-of-truth/",
+    "proposal_drive_folder": {
+      "title": "PROPOSED_SOURCE_OF_TRUTH_MUTATION",
+      "folder_id": "144bWMydQzPJCBIz2HtYuvJzaV6kFGElp"
+    }
+  },
+  "prior_proposal_evidence": [
+    {
+      "artifact": "KAI9000_PROPOSED_SEAL_DOCTRINE_MUTATION_AUDIT_20260916.json",
+      "role": "parent_proposal_evidence",
+      "authority": "non_canonical_until_explicitly_crowned",
+      "retention": "preserve"
+    },
+    {
+      "artifact": "KAI9000_PROPOSED_STALE_ARTIFACT_DOCTRINE_MUTATION_AUDIT_20260916.json",
+      "role": "parent_stale_artifact_policy_evidence",
+      "authority": "non_canonical_until_explicitly_crowned",
+      "retention": "preserve"
+    },
+    {
+      "artifact": "KAI9000_PROPOSED_SOURCE_OF_TRUTH_AI_MANIFEST_20260916.json",
+      "role": "parent_ai_reconciliation_evidence",
+      "proposal_branch": "luhmos/proposed-sot-ai-manifest-20260916",
+      "proposal_branch_observed_head": "3ca7e11ef08b9f83331c1328cb79f6e3f0aaea3b",
+      "authority": "superseded_for_live_anchor_resolution_by_newer_luhmos_main_head",
+      "retention": "preserve_read_only"
+    }
+  ],
+  "sibling_android_contracts": {
+    "luhm_os": {
+      "repository": "eggie-admin/hydra-shell-android",
+      "package_id": "art.eggiebagelface.luhmos",
+      "role": "standalone_luhm_os_android_product",
+      "current_source_anchor": "luhmos-main@7bae9d515c4295bb8ab07f1003a95e1edcae2f33"
+    },
+    "chatgpt_no_root_companion": {
+      "repository": "eggie-admin/3d-chat-interface",
+      "branch": "chatgpt-inapp-samsung-no-root",
+      "milestone": "KAI9000_CHATGPT_SAMSUNG_NO_ROOT_GREEN_20260910",
+      "seal_commit": "c433fc75c58413a4a63723d39b2870a51d0d8858",
+      "verified_apk_source_commit": "3b94382935a6e50a3aa711dba8be61688ab0718d",
+      "package_id": "art.eggiebagelface.kai9000",
+      "label": "KAI 9000 ChatGPT Companion",
+      "version_name": "1.0.0",
+      "version_code": 100,
+      "target_sdk": 36,
+      "abi": "arm64-v8a",
+      "alignment_16kb_verified": true,
+      "permissions": [
+        "android.permission.INTERNET"
+      ],
+      "apk_sha256": "872907408ba410389b9f9b01eabdaf14ca2970bcf27561a115569a8992986653",
+      "signing": "ephemeral_testing_signer",
+      "production_ready": false,
+      "front_door": "official ChatGPT Android app",
+      "relationship_to_chatgpt": "separate_companion_app",
+      "root_required": false,
+      "shizuku_required": false,
+      "termux_runtime_required": false,
+      "adb_required": false,
+      "hidden_api_required": false,
+      "localhost_daemon_required": false,
+      "app_injection": false
+    },
+    "package_identity_rule": {
+      "distinct_package_ids_required": true,
+      "package_collision_forbidden": true,
+      "signature_collision_or_replacement_forbidden": true,
+      "sibling_contract_does_not_imply_runtime_dependency": true
+    }
+  },
+  "stale_artifact_doctrine": {
+    "definition": "An artifact is stale when its active operational claims conflict with higher-precedence current doctrine or verified source state. Age alone never makes an artifact stale.",
+    "stale_does_not_equal_delete": true,
+    "historical_evidence_preserved": true,
+    "provenance_and_license_receipts_preserved": true,
+    "hash_and_signature_evidence_preserved": true,
+    "security_drift_priority": "highest",
+    "active_executable_drift_priority": "high",
+    "docs_only_drift_priority": "normal",
+    "automatic_delete": false,
+    "automatic_purge": false,
+    "automatic_rewrite_of_crowned_history": false,
+    "delete_requires_explicit_professor_authorization": true,
+    "purge_requires_explicit_professor_authorization": true,
+    "retirement_requires_reference_graph_check": true,
+    "retirement_requires_replacement_green_evidence": true
+  },
+  "artifact_classification": {
+    "CURRENT_CANONICAL": "Active authority at the highest applicable precedence.",
+    "CURRENT_TESTING": "Verified testing evidence that is valid only inside its testing boundary.",
+    "PROPOSED": "Candidate doctrine or source state with no crown authority.",
+    "ACTIVE_DRIFTED": "Still referenced or executable but conflicts with current authority.",
+    "SUPERSEDED": "Replaced for active guidance but retained for provenance and historical evidence.",
+    "HISTORICAL_EVIDENCE": "Immutable proof, hash, signature, build, workflow, or decision evidence.",
+    "QUARANTINE": "Artifact with security, permission, identity, or provenance concerns that must not be authoritative.",
+    "RETIREMENT_CANDIDATE": "No longer required for active operation and safe to retire only after dependency/reference proof.",
+    "DELETE_CANDIDATE": "May be considered for deletion only after explicit Professor authorization and proof that retention is unnecessary."
+  },
+  "stale_audit_algorithm": [
+    "resolve highest-precedence current authority",
+    "resolve exact repository branch commit package identity and signer when applicable",
+    "find active references from workflows manifests docs scripts release templates and operator entrypoints",
+    "compare operational claims against current authority",
+    "classify drift by security execution identity provider routing release signing and documentation impact",
+    "preserve historical evidence hashes signatures provenance licenses and rollback coordinates",
+    "require replacement GREEN evidence before retiring active executable artifacts",
+    "mark retirement candidates without deleting or purging",
+    "require explicit Professor authorization for delete purge crown stable promotion signing install or publish"
+  ],
+  "current_reconciliation_audit": [
+    {
+      "id": "R01",
+      "subject": "luhmos-main@7bae9d515c4295bb8ab07f1003a95e1edcae2f33",
+      "classification": "CURRENT_CANONICAL",
+      "result": "GREEN_SOURCE_ANCHOR",
+      "note": "Newest observed canonical source anchor for this proposal."
+    },
+    {
+      "id": "R02",
+      "subject": "luhmos/proposed-sot-ai-manifest-20260916@3ca7e11ef08b9f83331c1328cb79f6e3f0aaea3b",
+      "classification": "HISTORICAL_EVIDENCE",
+      "result": "PRESERVE",
+      "note": "Useful proposal evidence, but its live anchor predates the current luhmos-main head."
+    },
+    {
+      "id": "R03",
+      "subject": "KAI9000_CHATGPT_SAMSUNG_NO_ROOT_GREEN_20260910",
+      "classification": "CURRENT_TESTING",
+      "result": "GREEN_WITH_PRODUCTION_SIGNING_GATE",
+      "note": "Sibling package remains valid testing evidence and must not replace LuHm OS package identity."
+    },
+    {
+      "id": "R04",
+      "subject": "ephemeral testing signers",
+      "classification": "CURRENT_TESTING",
+      "result": "STALE_IF_USED_FOR_PRODUCTION",
+      "note": "Testing signer evidence remains valid for testing but cannot satisfy production signing."
+    },
+    {
+      "id": "R05",
+      "subject": "automatic stale artifact deletion",
+      "classification": "QUARANTINE",
+      "result": "FORBIDDEN_BY_PROPOSAL",
+      "note": "Stale classification may never be treated as permission to delete or purge."
+    },
+    {
+      "id": "R06",
+      "subject": "unprotected luhmos-main branch",
+      "classification": "ACTIVE_DRIFTED",
+      "result": "AMBER_GOVERNANCE",
+      "note": "Observed source branch is not protected. This is a governance hardening item, not permission to alter branch policy automatically."
+    }
+  ],
+  "ten_pass_audit": [
+    {"pass": 1, "name": "authority_precedence", "result": "GREEN"},
+    {"pass": 2, "name": "live_canonical_head_pinning", "result": "GREEN"},
+    {"pass": 3, "name": "proposal_isolation", "result": "GREEN"},
+    {"pass": 4, "name": "chatgpt_companion_sibling_identity", "result": "GREEN"},
+    {"pass": 5, "name": "no_root_no_shizuku_no_termux_companion_boundary", "result": "GREEN"},
+    {"pass": 6, "name": "testing_vs_production_signing_boundary", "result": "AMBER_EXPECTED_GATE"},
+    {"pass": 7, "name": "stale_does_not_equal_delete", "result": "GREEN"},
+    {"pass": 8, "name": "historical_evidence_preservation", "result": "GREEN"},
+    {"pass": 9, "name": "branch_governance", "result": "AMBER_UNPROTECTED"},
+    {"pass": 10, "name": "automatic_crown_publish_delete_purge_locks", "result": "GREEN"}
+  ],
+  "proposed_mutation_sequence": [
+    "store this manifest in the proposed source-of-truth path and private Drive proposal mirror",
+    "treat prior proposal manifests as preserved parent evidence",
+    "use luhmos-main@7bae9d515c4295bb8ab07f1003a95e1edcae2f33 as the live source anchor for subsequent audits",
+    "retain ChatGPT no-root companion as a separate testing sibling package",
+    "scan active workflows scripts manifests release templates and docs for stale branch package signer runtime and security claims",
+    "patch active executable drift before docs-only cleanup",
+    "prove replacement behavior before marking any active executable RETIREMENT_CANDIDATE",
+    "never delete purge crown sign install publish or stable-promote without explicit Professor authorization"
+  ],
+  "promotion_gates": {
+    "json_valid": true,
+    "proposal_only": true,
+    "current_crown_unchanged": true,
+    "automatic_crown": false,
+    "automatic_merge": false,
+    "automatic_compile": false,
+    "automatic_sign": false,
+    "automatic_install": false,
+    "automatic_publish": false,
+    "automatic_delete": false,
+    "automatic_purge": false,
+    "requires_professor_authorization_for_crown": true,
+    "requires_professor_authorization_for_production_signing": true,
+    "requires_professor_authorization_for_stable_promotion": true
+  },
+  "locks": {
+    "compile": false,
+    "sign": false,
+    "install_apk": false,
+    "merge": false,
+    "publish": false,
+    "dns_mutation": false,
+    "billing_mutation": false,
+    "delete": false,
+    "purge": false,
+    "crown": false,
+    "secret_print": false
+  },
+  "audit_verdict": "PROPOSED_GREEN_STRUCTURE_WITH_EXPECTED_PRODUCTION_SIGNING_AND_BRANCH_GOVERNANCE_GATES",
+  "proposed_seal_name_if_later_approved": "KAI9000_SEAL_OF_TRUTH_STALE_ARTIFACT_DOCTRINE_20260916",
+  "resume_phrase": "continue KAI 9000 from proposed seal-of-truth stale-artifact doctrine audit",
+  "signature_meaning": "AI-authored proposal and audit manifest only. This is not Professor crown approval.",
+  "integrity": {
+    "algorithm": "sha256",
+    "scope": "canonical_json_without_integrity_field",
+    "payload_sha256": "8770e4c2ee1605e5b7fe8a8a7c49e97830858ec9d0a9e93c9ad045aa76b46e82"
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "schema": "luhm_os.cathedral_source.v1",
+  "project": "LuHm OS // Cathedral",
+  "runtime_root": ".",
+  "entrypoint": "index.html",
+  "default_vendor_profile": "minimal",
+  "toolchain_manifest": "source/toolchain-manifest.yaml",
+  "forge_lock": "forge/forge-lock.json",
+  "runtime_assets": [
+    "index.html",
+    "final-form.css",
+    "final-form.js",
+    "modular-cockpit.css",
+    "apk-install-gui.css",
+    "apk-install-gui.js",
+    "enterprise-distribution.js",
+    "update-channel.json",
+    "crown-cathedral.css",
+    "crown-cathedral.js",
+    "CROWN_CATHEDRAL_DEMO_MANIFEST.json",
+    "godot-world/assets/lum_world_sprite.svg",
+    "godot-world/assets/lum_hud_icon.svg",
+    "godot4-cleared/secondary-motion-profile.json",
+    "system-shell.css",
+    "system-shell.js",
+    "SYSTEM_SHELL_MANIFEST.json"
+  ],
+  "templates": [
+    "source/templates/cathedral-shell.html",
+    "source/templates/plugin-panel.html"
+  ],
+  "language_lanes": {
+    "python": "python/pyproject.toml",
+    "java": "java/build.gradle.kts",
+    "yaml": "config/luhm.example.yaml"
+  },
+  "vendor_catalog": "vendor/vendor-catalog.json",
+  "vendor_profiles": {
+    "minimal": [],
+    "cockpit": [
+      "jquery",
+      "jquery-ui"
+    ],
+    "3d": [
+      "jquery",
+      "jquery-ui",
+      "babylonjs-core"
+    ]
+  },
+  "bundle": {
+    "include": [
+      "index.html",
+      "final-form.css",
+      "final-form.js",
+      "modular-cockpit.css",
+      "apk-install-gui.css",
+      "apk-install-gui.js",
+      "enterprise-distribution.js",
+      "update-channel.json",
+      "distribution",
+      "tests",
+      "source",
+      "vendor",
+      "tools",
+      "config",
+      "python",
+      "java",
+      "forge",
+      "godot-world",
+      "godot4-cleared",
+      "tools/run-local-harness-termux.sh"
+    ],
+    "exclude_globs": [
+      "**/__pycache__/**",
+      "**/*.pyc",
+      "**/.venv/**",
+      "**/.gradle/**",
+      "**/build/**",
+      "vendor/dist/**",
+      "vendor/cache/**"
+    ]
+  },
+  "policy": {
+    "runtime_vendor_cdn": false,
+    "runtime_vendor_bytes_local_only": true,
+    "vendor_integrity_required_when_enabled": true,
+    "unresolved_optional_vendor_may_remain_catalog_only": true,
+    "generated_build_output_is_source": false,
+    "ai_provider_calls_are_advisory_by_default": true,
+    "ai_output_may_execute_shell_directly": false,
+    "secrets_may_be_committed": false,
+    "forge_actions_must_be_immutable": true,
+    "forge_contract_fingerprint_required": true,
+    "forge_cache_restore_exact_key_only": true,
+    "runtime_updates_from_github_releases_only": true,
+    "runtime_update_manifest_sha256_required": true,
+    "local_backend_public_fallback": false,
+    "install_uninstall_require_android_user_confirmation": true
+  }
+}

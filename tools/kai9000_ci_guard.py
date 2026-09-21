@@ -13,9 +13,6 @@ RUNTIME = ROOT / "ultima" / "ollama-ffmpeg-antenna-v3"
 RUNTIME_MANIFEST = RUNTIME / "KAI9000_ULTIMA_OLLAMA_FFMPEG_ANTENNA_V3.manifest.json"
 MAIN_PY = RUNTIME / "main.py"
 
-# Exact fake credentials intentionally used by tests that verify prompt-secret
-# rejection. Only these literal values at these literal paths are scrubbed from
-# the scanner input. Any other secret-shaped value in the same file still fails.
 SYNTHETIC_SECRET_FIXTURES = {
     Path("backend/tests/test_remote_ai_router.py"): (
         "hf_" + "abcdefghijklmnopqrstuvwxyz1234567890",
@@ -45,25 +42,26 @@ def architecture_checks() -> None:
     runtime = load_json(RUNTIME_MANIFEST)
     hf = load_json(HF_DOCTRINE)
 
+    assert_equal(project.get("name"), "LuHm OS", "project display name")
+    assert_equal(project.get("project_id"), "luhm_os", "project identity")
     assert_equal(project.get("source_path"), "ultima/ollama-ffmpeg-antenna-v3", "source_path")
     assert_equal(project.get("ingestion", {}).get("strategy"), "reference_not_copy", "ingestion strategy")
     assert_equal(project.get("ingestion", {}).get("remote_shell"), False, "remote shell policy")
     assert_equal(project.get("ingestion", {}).get("public_ollama_exposure"), False, "public Ollama policy")
     assert_equal(project.get("runtime", {}).get("ollama"), "http://127.0.0.1:11434", "Ollama endpoint")
     assert_equal(project.get("runtime", {}).get("antenna"), "http://127.0.0.1:8797", "antenna endpoint")
-    assert_equal(project.get("remote", {}).get("github", {}).get("branch"), "main", "GitHub canonical branch")
+    assert_equal(project.get("remote", {}).get("github", {}).get("branch"), "luhmos-main", "GitHub canonical branch")
     assert_equal(project.get("remote", {}).get("google_drive", {}).get("secrets_allowed"), False, "Drive secret policy")
 
     project_hf = project.get("remote", {}).get("hugging_face", {})
-    assert_equal(project_hf.get("role"), "forge_and_model_catalog", "Hugging Face role")
+    assert_equal(project_hf.get("role"), "open model catalog and alternate remote inference lane", "Hugging Face project role")
     assert_equal(project_hf.get("runtime_authority"), False, "Hugging Face runtime authority")
     assert_equal(project_hf.get("secret_store"), False, "Hugging Face secret-store policy")
     assert_equal(project_hf.get("auto_download"), False, "Hugging Face auto-download policy")
     assert_equal(project_hf.get("auto_execute_remote_code"), False, "Hugging Face remote-code execution policy")
     assert_equal(project_hf.get("revision_pin_required"), True, "Hugging Face revision pin policy")
-    assert_equal(project_hf.get("doctrine"), "lumh-os/kai9000/huggingface.doctrine.json", "Hugging Face doctrine path")
 
-    assert_equal(hf.get("role"), "forge_and_model_catalog", "HF doctrine role")
+    assert_equal(hf.get("role"), "forge_and_model_catalog", "HF artifact doctrine role")
     assert_equal(hf.get("runtime_authority"), False, "HF doctrine runtime authority")
     assert_equal(hf.get("auto_download"), False, "HF doctrine auto-download")
     assert_equal(hf.get("auto_execute_remote_code"), False, "HF doctrine auto-execute")
@@ -76,8 +74,10 @@ def architecture_checks() -> None:
     assert_equal(hf.get("promotion", {}).get("operator_approval"), True, "HF model promotion approval")
     assert_equal(hf.get("offline", {}).get("existing_local_models_continue_working"), True, "HF offline doctrine")
 
-    assert_equal(runtime.get("planes", {}).get("github_remote", {}).get("branch"), "main", "runtime GitHub branch")
+    assert_equal(runtime.get("planes", {}).get("github_remote", {}).get("project_label"), "LuHm OS", "runtime GitHub project label")
+    assert_equal(runtime.get("planes", {}).get("github_remote", {}).get("branch"), "luhmos-main", "runtime GitHub branch")
     assert_equal(runtime.get("planes", {}).get("github_remote", {}).get("runtime_ai"), False, "GitHub runtime AI policy")
+    assert_equal(runtime.get("planes", {}).get("google_drive_backup", {}).get("project_label"), "LuHm OS", "runtime Drive project label")
     assert_equal(runtime.get("planes", {}).get("google_drive_backup", {}).get("secrets"), False, "runtime Drive secret policy")
 
     if not RUNTIME.is_dir():
@@ -124,6 +124,7 @@ def main() -> None:
     architecture_checks()
     secret_scan()
     print("KAI9000 CI GUARD GREEN")
+    print("UNIFIED_PROJECT=LuHm OS")
 
 
 if __name__ == "__main__":

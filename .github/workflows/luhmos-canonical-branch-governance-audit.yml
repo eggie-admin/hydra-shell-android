@@ -1,0 +1,26 @@
+name: LuHm Canonical Branch Governance Audit
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: Audit canonical branch server-side protection
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compile governance audit
+        run: python -m py_compile tools/canonical_branch_governance_audit.py
+
+      - name: Read GitHub governance state
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python tools/canonical_branch_governance_audit.py --repo eggie-admin/hydra-shell-android --branch luhmos-main
