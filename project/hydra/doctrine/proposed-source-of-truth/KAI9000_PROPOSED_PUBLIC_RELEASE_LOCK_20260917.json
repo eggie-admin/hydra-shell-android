@@ -1,0 +1,31 @@
+{
+  "schema": "kai9000.proposed-public-release-lock.v1",
+  "date": "2026-09-17",
+  "base_branch": "luhmos-main",
+  "base_head": "e91e1528ce21e1bc826033831e1ae5fbed70421e",
+  "proposal_branch": "luhmos/proposed-public-release-lock-20260917",
+  "finding": {
+    "automatic_public_release_dispatch_present": true,
+    "github_release_publisher_present": true,
+    "izzy_publisher_present": true,
+    "fdroid_gate_currently_publishes": false,
+    "cloudflare_deploy_lane_changed_by_this_proposal": false
+  },
+  "repairs": [
+    "replace luhmos-main-release-launch automatic dispatcher with a manual read-only guard",
+    "replace luhmos-github-release automatic publisher with a manual read-only guard",
+    "replace luhmos-izzy-github-release publisher with a manual read-only guard",
+    "add a deterministic public-release lock regression workflow"
+  ],
+  "authority": {
+    "release_signing_canonical_lock": "GREEN",
+    "public_release": "NOT_TRIGGERED",
+    "deploy": "NOT_TRIGGERED",
+    "crown": "NOT_TRIGGERED",
+    "canonical_merge_of_this_proposal": "NOT_AUTHORIZED"
+  },
+  "preservation": {
+    "historical_release_evidence": "PRESERVED_IN_GIT_HISTORY",
+    "cloudflare_manual_deploy_workflow": "UNCHANGED_SEPARATE_GATE"
+  }
+}

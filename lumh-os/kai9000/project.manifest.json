@@ -1,50 +1,88 @@
 {
-  "schema": "lumh-os.kai9000.project.v3",
-  "name": "KAI 9000",
-  "role": "local-first AI and media subsystem",
+  "schema": "luhm-os.project.v4",
+  "name": "LuHm OS",
+  "project_id": "luhm_os",
+  "role": "single local-first creator OS and vendor API project",
   "source_path": "ultima/ollama-ffmpeg-antenna-v3",
   "identity": {
+    "canonical_display_name": "LuHm OS",
+    "canonical_machine_id": "luhm_os",
     "business_domain": "eggiebagelface.art",
     "fdroid_host": "fdroid.eggiebagelface.art",
-    "fdroid_repo_url": "https://fdroid.eggiebagelface.art/fdroid/repo/"
+    "fdroid_repo_url": "https://fdroid.eggiebagelface.art/fdroid/repo/",
+    "legacy_aliases": ["Project Hydra", "KAI 9000", "Hydra"],
+    "legacy_alias_policy": "component_or_history_only_not_independent_vendor_project"
+  },
+  "components": {
+    "kai9000": {
+      "display_name": "LuHm OS / KAI9000",
+      "role": "local AI, media and deterministic execution subsystem",
+      "is_independent_vendor_project": false
+    },
+    "hydra": {
+      "display_name": "LuHm OS / Hydra",
+      "role": "legacy source and architecture alias",
+      "is_independent_vendor_project": false
+    },
+    "cathedral": {
+      "display_name": "LuHm OS / Cathedral",
+      "role": "cockpit and Android toy UI",
+      "is_independent_vendor_project": false
+    }
+  },
+  "vendor_project": {
+    "canonical_name": "LuHm OS",
+    "canonical_id": "luhm_os",
+    "policy": "one_logical_project_many_transport_bindings",
+    "openai": {
+      "project_label": "LuHm OS",
+      "observed_legacy_project": "Project Hydra",
+      "legacy_project_policy": "do_not_target_for_new_keys_or_new_work",
+      "live_consolidation_state": "LEGACY_PROJECT_PRESENT_EXTERNAL_ARCHIVE_NOT_EXPOSED_BY_CONNECTOR"
+    },
+    "google": {
+      "project_label": "LuHm OS",
+      "drive_root": "LuHm OS",
+      "gcp_project_id_source": "GCP_PROJECT_ID",
+      "gcp_project_id_is_transport_identifier": true,
+      "live_display_name_state": "UNVERIFIED"
+    },
+    "github": {
+      "project_label": "LuHm OS",
+      "repository": "eggie-admin/hydra-shell-android",
+      "repository_slug_is_transport_identifier": true,
+      "canonical_branch": "luhmos-main"
+    },
+    "cloudflare": {
+      "project_label": "LuHm OS",
+      "zone": "eggiebagelface.art",
+      "worker_service_name": "eggiebagelface-art-coming-soon",
+      "worker_service_name_is_transport_identifier": true,
+      "live_display_name_state": "UNVERIFIED"
+    },
+    "hugging_face": {
+      "project_label": "LuHm OS",
+      "account": "eggiebagelface",
+      "account_is_transport_identity": true,
+      "organization": null,
+      "live_repo_project_state": "READ_ONLY_CONNECTOR_NO_PROJECT_MUTATION_SURFACE"
+    }
   },
   "magic": {
-    "blue": {
-      "ecosystem": "GitHub",
-      "role": "versioned source of truth, collaboration, CI and release-source evidence"
-    },
-    "black": {
-      "ecosystem": "F-Droid",
-      "role": "Android forge, reproducible APK build, package metadata, signing/distribution and install artifact evidence"
-    },
-    "white": {
-      "ecosystem": "Google",
-      "role": "Google Cloud services, approved APIs, Drive recovery/artifact mirror and explicitly authorized Google AI integrations"
-    },
-    "red": {
-      "ecosystem": "Meta",
-      "role": "Meta ecosystem media, AI and explicitly authorized service/publishing integrations"
-    },
-    "green": {
-      "ecosystem": "TikTok",
-      "role": "TikTok media, export and explicitly authorized publishing integrations"
-    },
+    "blue": {"ecosystem": "GitHub", "role": "versioned source of truth, collaboration and CI evidence"},
+    "black": {"ecosystem": "F-Droid", "role": "Android forge and reproducible install artifact evidence"},
+    "white": {"ecosystem": "Google", "role": "Google Cloud services, Drive recovery and approved Google AI integrations"},
+    "red": {"ecosystem": "Meta", "role": "optional explicitly authorized media integrations"},
+    "green": {"ecosystem": "TikTok", "role": "optional explicitly authorized media integrations"},
     "color_is_risk_rank": false
   },
   "ultima": {
     "mode": "full_spectrum_goal_convergence",
-    "meaning": "all required magic colors converge through vendor APIs, AI routing, RSS/events and Base64+JSON manifests toward one verified final goal",
+    "meaning": "required lanes converge through vendor APIs and deterministic manifests toward one verified final goal",
     "all_colors_capable": true,
     "every_cast_requires_every_vendor": false,
     "unused_lane_status": "not_required",
-    "pipeline": [
-      "vendor_api_adapters",
-      "ai_normalization_router",
-      "rss_event_feed",
-      "base64_json_envelope",
-      "goal_manifest",
-      "final_verified_outcome"
-    ],
+    "pipeline": ["vendor_api_adapters", "ai_normalization_router", "goal_manifest", "final_verified_outcome"],
     "event_schema": "kai9000.ultima.event.v1",
     "provider_event_schema": "kai9000.provider-event.v1",
     "envelope_schema": "kai9000.ultima.envelope.v1",
@@ -71,14 +109,7 @@
     "execution_evidence_required_for_green": true,
     "ultima_green_requires_verified_final_goal": true,
     "android_goal_requires_installable_apk": true,
-    "external_hosting_status_is_authoritative": false,
-    "android_green_authority": [
-      "repository_ci",
-      "reproducible_android_build",
-      "installable_apk_evidence",
-      "package_identity_evidence",
-      "device_or_emulator_validation"
-    ]
+    "external_hosting_status_is_authoritative": false
   },
   "runtime": {
     "orchestrator": "python3",
@@ -95,51 +126,50 @@
   },
   "remote": {
     "github": {
+      "project_label": "LuHm OS",
       "repository": "eggie-admin/hydra-shell-android",
-      "branch": "main",
+      "branch": "luhmos-main",
       "role": "versioned_source_of_truth_and_ci_evidence"
     },
     "openai": {
-      "role": "primary_spell_compiler_coding_reasoning_and_typed_tool_requester",
-      "magic_color": null,
+      "project_label": "LuHm OS",
+      "role": "primary_remote_reasoning_and_typed_tool_requester",
       "api": "responses",
       "endpoint": "https://api.openai.com/v1/responses",
-      "default_model": "gpt-6-astra",
+      "fast_model": "gpt-5.6-luna",
+      "default_model": "gpt-5.6-sol",
       "credential_env": "OPENAI_API_KEY",
       "store_default": false,
       "typed_tools_only": true,
       "credentials_visible_to_model": false
     },
     "hugging_face": {
-      "role": "forge_and_model_catalog",
-      "remote_inference_role": "alternate_remote_inference_lane",
-      "magic_color": null,
+      "project_label": "LuHm OS",
+      "role": "open model catalog and alternate remote inference lane",
       "api_base": "https://router.huggingface.co/v1",
       "responses_endpoint": "https://router.huggingface.co/v1/responses",
       "chat_endpoint": "https://router.huggingface.co/v1/chat/completions",
       "default_model": "openai/gpt-oss-120b:fastest",
       "lower_latency_candidate": "openai/gpt-oss-20b:fastest",
       "credential_env": "HF_TOKEN",
-      "credential_strategy": "fine_grained_inference_provider_token_or_ci_trusted_publisher",
       "runtime_authority": false,
       "secret_store": false,
       "auto_download": false,
       "auto_execute_remote_code": false,
       "revision_pin_required": true,
-      "doctrine": "lumh-os/kai9000/huggingface.doctrine.json",
       "credentials_visible_to_model": false
     },
     "cloudflare": {
-      "role": "public_dns_https_and_tunnel_gate",
+      "project_label": "LuHm OS",
+      "role": "public DNS, HTTPS and tunnel gate",
       "zone": "eggiebagelface.art",
-      "fdroid_hostname": "fdroid.eggiebagelface.art",
       "credential_strategy": "least_privilege_api_tokens",
-      "durable_ci_preference": "account_owned_api_token_when_supported",
       "global_api_key_automation": false,
       "credentials_visible_to_model": false
     },
     "google_cloud": {
-      "role": "white_magic_cloud_service_lane",
+      "project_label": "LuHm OS",
+      "role": "cloud service lane",
       "github_auth": "workload_identity_federation_oidc",
       "preferred_access": "direct_resource_access",
       "service_account_impersonation": "only_when_required",
@@ -148,7 +178,9 @@
       "credentials_visible_to_model": false
     },
     "google_drive": {
-      "role": "sealed_recovery_and_artifact_mirror",
+      "project_label": "LuHm OS",
+      "root": "LuHm OS",
+      "role": "sealed recovery and approved artifact mirror",
       "secrets_allowed": false,
       "iam_equivalent_to_google_cloud": false
     }
@@ -162,11 +194,12 @@
   },
   "authority": {
     "final": "Professor",
-    "local_ai_boss": "Ollama",
-    "openai_agent_role": "primary_remote_spell_compiler_and_typed_tool_requester",
-    "hugging_face_role": "forge_catalog_and_alternate_remote_inference_not_policy_authority",
-    "cloudflare_role": "dns_https_tunnel_gate_not_policy_authority",
-    "google_cloud_role": "white_magic_provider_not_policy_authority",
+    "project_identity": "LuHm OS",
+    "local_ai_boss": "Lum",
+    "openai_agent_role": "primary_remote_reasoning_and_typed_tool_requester",
+    "hugging_face_role": "catalog_and_alternate_remote_inference_not_policy_authority",
+    "cloudflare_role": "edge_gate_not_policy_authority",
+    "google_cloud_role": "cloud_provider_not_policy_authority",
     "policy_registry_role": "capability_risk_provider_routing_and_approval_authority"
   }
 }

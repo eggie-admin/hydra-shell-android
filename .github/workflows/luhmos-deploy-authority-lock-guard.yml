@@ -1,0 +1,43 @@
+name: LuHm Deploy Authority Lock Guard
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - luhmos-main
+    paths:
+      - '.github/workflows/cloudflare-coming-soon.yml'
+      - '.github/workflows/google-white-magic-strict-free-vm.yml'
+      - '.github/workflows/luhmos-deploy-authority-lock-guard.yml'
+      - 'tools/deploy_authority_guard.py'
+  push:
+    branches:
+      - luhmos-main
+    paths:
+      - '.github/workflows/cloudflare-coming-soon.yml'
+      - '.github/workflows/google-white-magic-strict-free-vm.yml'
+      - '.github/workflows/luhmos-deploy-authority-lock-guard.yml'
+      - 'tools/deploy_authority_guard.py'
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-authority-lock:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Compile deterministic guard
+        run: python -m py_compile tools/deploy_authority_guard.py
+
+      - name: Assert deploy authority remains explicit and manual
+        run: python tools/deploy_authority_guard.py

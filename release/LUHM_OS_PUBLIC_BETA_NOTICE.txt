@@ -1,0 +1,47 @@
+LuHm OS PUBLIC BETA NOTICE
+Copyright © 2026 Eggie Bagelface
+Public identity: eggiebagelface.art
+
+STATUS
+LuHm OS is entering public beta as an actively developed, evidence-gated system. Beta means the project is public for testing, review, contribution, and feedback. It does not mean every runtime, provider, platform, or distribution lane is production GREEN.
+
+CURRENT PRODUCT IDENTITY
+Product: LuHm OS
+Android package: art.eggiebagelface.luhmos
+Canonical integration branch: luhmos-main
+KAI 9000: donor/reference/archaeology only
+Project Hydra: historical compatibility and repository lineage only
+
+SAFETY AND AUTHORITY
+Professor remains final human authority for canonical promotion, signing, destructive actions, external publication, and other consequential changes.
+Lum is the user-facing Boss agent. Helper agents are bounded and cannot self-approve.
+No model receives unrestricted shell, persistent root, signing keys, or automatic publication authority.
+Normal administrator context is the default. Privileged operations are exact, temporary, explicitly authorized, and immediately return to normal administration.
+
+EVIDENCE LAW
+Documentation intent is not runtime proof.
+Historical exact-head CI receipts remain valid historical evidence but are not silently promoted to a later head.
+A signed APK is not install GREEN until package identity, signer, hash, architecture, compatibility, clean install, launcher start, and update continuity are verified where required.
+Live provider state remains unverified until exercised and receipted.
+
+DISTRIBUTION
+The source repository is public.
+A public signed Android beta requires the separately reviewed release/signing path.
+GitHub Release, IzzyOnDroid publication, F-Droid distribution, app-store publication, DNS changes, and production deployment remain separate Crown-gated actions unless explicit evidence shows they were completed.
+
+LICENSING
+This repository contains multiple license classes.
+Material governed by the repository root GNU GPLv3 license remains GPLv3.
+Third-party code, libraries, models, fonts, media, SDKs, and other external works remain governed by their respective copyright holders and licenses.
+Separately owned branding, artwork, characters, authored documentation, release materials, and other original material retain the rights and license terms identified in COPYRIGHT.md and applicable component notices.
+Nothing in this beta notice narrows rights already granted by an open-source or third-party license.
+
+AI-ASSISTED DEVELOPMENT
+AI tools may assist with research, review, coding, testing, organization, and documentation. Human authorship, approval, provenance, and evidence boundaries remain explicit. AI output does not create release authority by itself.
+
+REPORTING
+Security-sensitive information, secrets, signing material, private user data, and exploitable details must not be posted in public issues. Follow SECURITY.md.
+General beta feedback should include the exact branch/commit, platform, reproduction steps, and sanitized evidence.
+
+PUBLIC BETA PRINCIPLE
+AI proposes. Policy authorizes. CI proves. The human promotes.

@@ -22,8 +22,8 @@ FAST_MODEL = os.environ.get("HYDRA_FAST_MODEL", "qwen3:0.6b")
 DEEP_MODEL = os.environ.get("HYDRA_DEEP_MODEL", "qwen2.5:3b")
 MAX_HISTORY = int(os.environ.get("HYDRA_MAX_HISTORY", "24"))
 REQUEST_TIMEOUT = float(os.environ.get("HYDRA_OLLAMA_TIMEOUT", "120"))
-AXS_HOST = os.environ.get("HYDRA_AXS_HOST", "127.0.0.1")
-AXS_PORT = int(os.environ.get("HYDRA_AXS_PORT", "8767"))
+MUTATION_HOST = "127.0.0.1"
+MUTATION_PORT = int(os.environ.get("LUHM_MUTATION_PORT", "8790"))
 VNC_HOST = os.environ.get("HYDRA_VNC_HOST", "127.0.0.1")
 VNC_PORT = int(os.environ.get("HYDRA_VNC_PORT", "5901"))
 
@@ -63,32 +63,16 @@ def tcp_probe(host: str, port: int, timeout: float = 0.5) -> bool:
         return False
 
 
-def axs_probe() -> dict[str, Any]:
-    online = tcp_probe(AXS_HOST, AXS_PORT)
-    result: dict[str, Any] = {
-        "online": online,
-        "host": AXS_HOST,
-        "port": AXS_PORT,
-        "role": "AcodeX terminal backend",
-    }
-    if not online:
-        return result
-    try:
-        req = urllib.request.Request(f"http://{AXS_HOST}:{AXS_PORT}/")
-        with urllib.request.urlopen(req, timeout=1.0) as response:
-            result["http_status"] = response.status
-            result["http_ok"] = 200 <= response.status < 400
-    except Exception as exc:
-        result["http_ok"] = False
-        result["detail"] = str(exc)
-    return result
-
-
 def service_status() -> dict[str, Any]:
     return {
         "hydra": {"online": True, "host": HOST, "port": PORT},
         "ollama": {"online": ollama_alive(), "host": "127.0.0.1", "port": 11434},
-        "axs": axs_probe(),
+        "mutation": {
+            "online": tcp_probe(MUTATION_HOST, MUTATION_PORT),
+            "host": MUTATION_HOST,
+            "port": MUTATION_PORT,
+            "role": "human-approved file mutation gateway",
+        },
         "vnc": {
             "online": tcp_probe(VNC_HOST, VNC_PORT),
             "host": VNC_HOST,
@@ -129,7 +113,7 @@ TOOLS = [
         "type": "function",
         "function": {
             "name": "get_service_status",
-            "description": "Get verified localhost status for Hydra, Ollama, AcodeX/AXS, VNC and TTS.",
+            "description": "Get verified localhost status for Hydra, Ollama, mutation gateway, VNC and TTS.",
             "parameters": {"type": "object", "properties": {}, "required": []},
         },
     },

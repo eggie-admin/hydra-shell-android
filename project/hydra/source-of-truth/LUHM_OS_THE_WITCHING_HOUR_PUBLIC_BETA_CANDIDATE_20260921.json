@@ -1,0 +1,114 @@
+{
+  "schema": "luhm-os.public-beta-candidate.v1",
+  "manifest_id": "LUHM_OS_THE_WITCHING_HOUR_PUBLIC_BETA_CANDIDATE_20260921",
+  "release_name": "The Witching Hour",
+  "release_form": "Final Form",
+  "status": "SEALED_PUBLIC_BETA_CANDIDATE",
+  "date": "2026-09-21",
+  "human_final_authority": "Professor",
+  "authorization": "EXPLICIT_PUBLIC_BETA_PROMOTION_AUTHORITY_20260921",
+  "canonical_product": "LuHm OS",
+  "canonical_internal_project_id": "luhm_os",
+  "candidate_branch": "luhmos/the-witching-hour-public-beta",
+  "target_branch": "luhmos-main",
+  "public_repository": "eggie-admin/hydra-shell-android",
+
+  "identity": {
+    "kai9000": "DONOR_REFERENCE_ARCHAEOLOGY_ONLY",
+    "project_hydra": "HISTORICAL_COMPATIBILITY_AND_REPOSITORY_LINEAGE_ONLY",
+    "vowel_rip_scope": "SHORTENED_INTERNAL_PYTHON3_HELPERS_STUBS_AND_CODING_DOCTRINE_ONLY"
+  },
+
+  "public_beta_package": {
+    "readme": "README.md",
+    "notice": "release/LUHM_OS_PUBLIC_BETA_NOTICE.txt",
+    "security_policy": "SECURITY.md",
+    "support_policy": "SUPPORT.md",
+    "pipeline_crown": "project/hydra/source-of-truth/LUHM_OS_PIPELINE_UNIFICATION_CROWN_20260921.json",
+    "vendor_manifest": "integrations/vendor-apis.manifest.json",
+    "vendor_guard": "tools/vendor_api_pipeline_audit.py",
+    "vendor_workflow": ".github/workflows/luhmos-vendor-api-pipeline-audit.yml",
+    "android_reference": "project/hydra/samsung/android/apk/app.reference.json",
+    "publication_manifest": "fdroid/publication.manifest.json"
+  },
+
+  "proven_evidence": {
+    "source_repository_public": true,
+    "source_of_truth_pipeline_crowned": true,
+    "openai_target_map_refreshed_2026_09_21": true,
+    "openai_canonical_organization": "Pirate Daddy Film",
+    "openai_canonical_project": "LuHm OS",
+    "openai_legacy_project": "Project Hydra",
+    "historical_vendor_pipeline_receipt": "17_OF_17_EXACT_HEAD_INTERNAL_CI",
+    "historical_unified_project_receipt": "18_OF_18_EXACT_HEAD_INTERNAL_CI",
+    "current_vendor_manifest_present": true,
+    "current_vendor_guard_present": true,
+    "current_vendor_workflow_present": true,
+    "release_guard_is_fail_closed": true,
+    "izzy_guard_is_fail_closed": true
+  },
+
+  "android_publication_target": {
+    "package_id": "art.eggiebagelface.luhmos",
+    "release_signing_alias": "luhmos-release",
+    "baseline_version": "1.0.0",
+    "baseline_version_code": 100,
+    "target_sdk": 36,
+    "primary_abi": "arm64-v8a",
+    "preferred_public_distribution": "IzzyOnDroid",
+    "upstream_binary_source": "GitHub Releases"
+  },
+
+  "release_gates": {
+    "source_beta_pr": "READY_TO_OPEN",
+    "fresh_exact_head_ci": "REQUIRED_BEFORE_MERGE",
+    "release_apk_signed": "NOT_PROVEN",
+    "release_signer_persistence": "NOT_PROVEN",
+    "artifact_sha256": "NOT_PROVEN",
+    "package_identity": "NOT_PROVEN_FOR_PUBLIC_RELEASE_ASSET",
+    "arm64_and_native_compatibility": "NOT_PROVEN_FOR_PUBLIC_RELEASE_ASSET",
+    "physical_clean_install": "NOT_PROVEN_FOR_PUBLIC_RELEASE_ASSET",
+    "launcher_start": "NOT_PROVEN_FOR_PUBLIC_RELEASE_ASSET",
+    "same_signer_upgrade": "NOT_PROVEN",
+    "github_release_asset_published": "NOT_PERFORMED",
+    "izzyondroid_accepted": "EXTERNAL_NOT_PERFORMED"
+  },
+
+  "publication_policy": {
+    "source_beta_may_be_public": true,
+    "signed_android_beta_may_publish_without_signer_proof": false,
+    "unsigned_or_debug_artifact_may_be_called_release_beta": false,
+    "missing_evidence_fails_closed": true,
+    "secrets_in_repo": false,
+    "automatic_publish_on_merge": false,
+    "human_release_authority_required": true
+  },
+
+  "privilege_law": {
+    "default": "NORMAL_ADMIN",
+    "persistent_root": false,
+    "remote_root": false,
+    "sudo": "ONE_EXACT_CROWN_APPROVED_OPERATION_THEN_IMMEDIATE_RETURN_TO_NORMAL_ADMIN"
+  },
+
+  "promotion_sequence": [
+    "open public beta candidate pull request",
+    "run fresh exact-head CI and deterministic guards",
+    "review changed public-facing identity security support and beta notice",
+    "human merge after evidence is green",
+    "build release APK through separately reviewed release-signing path",
+    "verify signer package identity artifact hash architecture and compatibility",
+    "verify clean install and launcher start where claimed",
+    "publish immutable GitHub Release only after release evidence passes",
+    "submit or update IzzyOnDroid lane",
+    "prove same-signer update continuity before final Android public-install green"
+  ],
+
+  "candidate_result": {
+    "source_public_beta_candidate": true,
+    "signed_android_public_beta_claimed": false,
+    "runtime_green_claimed": false,
+    "live_provider_green_claimed": false,
+    "final_state": "THE_WITCHING_HOUR_PUBLIC_BETA_CANDIDATE_SEALED"
+  }
+}

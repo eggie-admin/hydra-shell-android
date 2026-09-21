@@ -1,0 +1,52 @@
+{
+  "schema": "kai9000.proposal.v1",
+  "state": "PROPOSED_NOT_CROWNED",
+  "proposal": "LUHMOS_TOY_GUI_MUTATION",
+  "date": "2026-09-17",
+  "repository": "eggie-admin/hydra-shell-android",
+  "canonical_branch": "luhmos-main",
+  "canonical_head": "35a47720d8646500fe7469b83f81bd3d113463dc",
+  "branch": "luhmos/proposed-toy-gui-mutation-20260917",
+  "source_of_truth": {
+    "game_root": "project/hydra/samsung/android/cathedral-game",
+    "layout": "index.html",
+    "game_logic": "index.html inline runtime",
+    "toy_skin": "final-form.css",
+    "apk_install_skin": "apk-install-gui.css",
+    "mascot": "existing inline original LuHm oni SVG and existing LuHm pet bubble",
+    "external_visual_assets_added": false
+  },
+  "mutation": {
+    "visual_only": true,
+    "game_actions_rewired": false,
+    "local_save_contract_changed": false,
+    "network_assets_added": false,
+    "shell_bridge_added": false,
+    "installer_authority_changed": false,
+    "mobile_pet_size": "approximately 50 percent larger than prior mobile bubble",
+    "features": [
+      "neon cathedral toy cockpit skin",
+      "tactile two-column action tiles",
+      "stat icon and meter polish",
+      "contact card polish",
+      "system-feed styling",
+      "larger draggable LuHm pet",
+      "integrated APK install dock",
+      "reduced-motion support"
+    ]
+  },
+  "guard": {
+    "tool": "tools/toy_gui_guard.py",
+    "workflow": ".github/workflows/luhmos-toy-gui-guard.yml",
+    "expected": "LUHMOS_TOY_GUI_GUARD_GREEN"
+  },
+  "authority": {
+    "canonical_merge": "NOT_AUTHORIZED_BY_THIS_PROPOSAL",
+    "deploy": "NOT_TRIGGERED",
+    "public_release": "NOT_TRIGGERED",
+    "crown": "NOT_TRIGGERED",
+    "seal": "NOT_TRIGGERED",
+    "canonical_branch_server_lock": "RED_EXTERNAL"
+  },
+  "next_gate": "EXACT_HEAD_CI_AND_FRESH_COLLISION_FREE_APK_CANDIDATE"
+}
