@@ -1,14 +1,12 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "project": "LuHm OS",
   "platform_scope": "samsung-android-only",
   "package": "art.eggiebagelface.luhmos",
   "canonical_product_branch": "luhmos-main",
-  "paid_pro_development_branch": "luhmos/dev/samsung-android-paid-pro",
   "promotion_order": [
     "testing",
     "proposed",
-    "preview",
     "beta",
     "stable"
   ],
@@ -23,19 +21,13 @@
       "branch": "luhmos/proposed",
       "tag_pattern": "vX.Y.Z-proposed.N",
       "github_release": "draft_prerelease",
-      "requires": ["testing_receipt", "artifact_hash", "review_candidate"]
-    },
-    "preview": {
-      "branch": "luhmos/preview",
-      "tag_pattern": "vX.Y.Z-preview.N",
-      "github_release": "prerelease",
-      "requires": ["proposed_receipt", "controlled_tester_ready"]
+      "requires": ["testing_receipt", "exact_tree_receipt", "review_candidate"]
     },
     "beta": {
       "branch": "luhmos/beta",
       "tag_pattern": "vX.Y.Z-beta.N",
       "github_release": "prerelease",
-      "requires": ["preview_receipt", "broader_test_ready", "signer_fingerprint"]
+      "requires": ["proposed_receipt", "exact_tree_receipt", "broader_test_ready", "artifact_sha256", "signer_fingerprint"]
     },
     "stable": {
       "branch": "luhmos/stable",
@@ -44,10 +36,26 @@
       "requires": ["beta_receipt", "physical_samsung_proof", "artifact_sha256", "signer_fingerprint", "professor_release_approval"]
     }
   },
+  "retired_channels": {
+    "preview": {
+      "branch": "luhmos/preview",
+      "status": "historical_only",
+      "reason": "Not present in the enforced LuHm OS branch topology. Preserved for repository history and old channel pointers only."
+    }
+  },
   "authority": {
     "ci_success_grants_release_authority": false,
     "paid_service_status_grants_release_authority": false,
+    "beta_publish_requires_explicit_crown_chain": true,
     "stable_publish_requires_human_approval": true
+  },
+  "enterprise_release": {
+    "signed_candidate_and_publisher_separated": true,
+    "signed_candidate_repo_permission": "contents_read",
+    "publisher_has_signing_secrets": false,
+    "publisher_requires_exact_beta_sha": true,
+    "publisher_requires_signed_candidate_manifest": true,
+    "release_asset_may_not_be_overwritten": true
   },
   "security": {
     "secrets_in_repo": false,
