@@ -15,7 +15,6 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import androidx.webkit.WebViewAssetLoader;
-import org.json.JSONObject;
 
 public final class MainActivity extends Activity {
     private WebView webView;
@@ -79,22 +78,17 @@ public final class MainActivity extends Activity {
 
     private final class LuhmBridge {
         @JavascriptInterface public String platform() {
-            return new JSONObject()
-                    .put("app", "LuHm OS")
-                    .put("package", getPackageName())
-                    .put("deviceTarget", "SM-X400")
-                    .put("targetApi", 37)
-                    .put("installModel", "single-standard-android-apk")
-                    .put("termuxRequired", false)
-                    .put("bashInstallerRequired", false)
-                    .put("networkPermission", false)
-                    .toString();
+            return "{\"app\":\"LuHm OS\",\"package\":\"" + getPackageName()
+                    + "\",\"deviceTarget\":\"SM-X400\",\"targetApi\":37,"
+                    + "\"installModel\":\"single-standard-android-apk\","
+                    + "\"termuxRequired\":false,\"bashInstallerRequired\":false,"
+                    + "\"networkPermission\":false}";
         }
         @JavascriptInterface public String engineStatus() {
-            return bound && engine != null ? engine.status() : new JSONObject().put("engine", "binding").put("ok", false).toString();
+            return bound && engine != null ? engine.status() : "{\"engine\":\"binding\",\"ok\":false}";
         }
         @JavascriptInterface public String runTyped(String action) {
-            return bound && engine != null ? engine.runTyped(action) : new JSONObject().put("ok", false).put("error", "ENGINE_NOT_BOUND").toString();
+            return bound && engine != null ? engine.runTyped(action) : "{\"ok\":false,\"error\":\"ENGINE_NOT_BOUND\"}";
         }
     }
 }
