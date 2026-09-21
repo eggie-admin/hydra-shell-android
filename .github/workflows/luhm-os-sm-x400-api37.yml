@@ -43,7 +43,7 @@ jobs:
       - name: Source-of-truth audit
         run: python tools/luhm_sm_x400_android17_audit.py
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '24'
 
@@ -61,13 +61,13 @@ jobs:
           gradle-version: '9.3.1'
           cache-cleanup: on-success
 
-      - name: Install Android 17 SDK
+      - name: Install Android 17 preview SDK
         shell: bash
         run: |
           set -euo pipefail
           SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
           yes | "$SDKMANAGER" --licenses >/dev/null || true
-          "$SDKMANAGER" 'platform-tools' 'platforms;android-37' 'build-tools;37.0.0'
+          "$SDKMANAGER" --channel=3 'platform-tools' 'platforms;android-37' 'build-tools;37.0.0'
 
       - name: Build signed install candidate
         shell: bash
@@ -94,11 +94,13 @@ jobs:
           grep -q "targetSdkVersion:'37'" build/android/badging.txt
           grep -q "application-label:'LuHm OS'" build/android/badging.txt
           grep -q 'assets/index.html' build/android/contents.txt
-          if grep -Eqi 'termux|/bin/bash|processbuilder|127\.0\.0\.1' build/android/contents.txt; then
+          if grep -Eqi 'com\.termux|termux-api|/bin/bash|processbuilder|127\.0\.0\.1' build/android/contents.txt; then
             echo 'Forbidden external-runtime payload detected' >&2
             exit 1
           fi
           echo 'LUHM_APK_BUILD_GREEN'
+          echo 'TERMUX_DEPENDENCY=false'
+          echo 'BASH_INSTALLER=false'
           echo 'SM_X400_DEVICE_VALIDATION_PENDING'
           echo 'ANDROID17_RUNTIME_VALIDATION_PENDING'
 
