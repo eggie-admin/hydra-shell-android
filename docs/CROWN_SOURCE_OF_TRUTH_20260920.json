@@ -1,10 +1,10 @@
 {
-  "schema": "luhm-os.crown-source-of-truth.v2",
+  "schema": "luhm-os.crown-source-of-truth.v3",
   "id": "CROWN_SOURCE_OF_TRUTH_20260920",
   "date": "2026-09-20",
   "updated": "2026-09-21",
-  "status": "CROWNED_BUILD_GREEN_DEVICE_PENDING",
-  "scope": "LuHm OS SM-X400 Android 17 self-contained package doctrine",
+  "status": "CROWNED_GODOT3D_UPDATE_LANE_FORGE_GREEN_DEVICE_UPDATE_PENDING",
+  "scope": "LuHm OS SM-X400 self-contained Godot 3D package and persistent APK update-lane doctrine",
   "supersedes": "docs/CROWN_SOURCE_OF_TRUTH_20260919.json",
   "authority": {
     "human_final_authority": "Professor",
@@ -59,8 +59,8 @@
   "android": {
     "product_name": "LuHm OS",
     "package_id": "art.eggiebagelface.kai9000.dev",
-    "version_name": "0.9.0-dev",
-    "version_code": 9,
+    "current_candidate_version_name": "0.10.0-base",
+    "current_candidate_version_code": 1000,
     "hardware_target": {
       "manufacturer": "Samsung",
       "model": "SM-X400",
@@ -74,8 +74,25 @@
       "target_sdk": 37,
       "min_sdk": 31
     },
-    "install_model": "single_standard_android_apk",
-    "runtime_architecture": "app_owned_native_service_plus_bundled_webview_assets",
+    "install_model": "single_standard_android_apk_with_same_signer_monotonic_update_lane",
+    "runtime_architecture": "embedded_godot_android_library_plus_bundled_godot_project_and_cathedral_assets",
+    "godot": {
+      "version": "4.7.2.stable",
+      "renderer": "gl_compatibility",
+      "primary_scene": "res://main.tscn",
+      "real_node3d_runtime": true
+    },
+    "verified_installed_baseline": {
+      "version_name": "0.9.0-dev",
+      "version_code": 9,
+      "runtime_architecture": "app_owned_native_service_plus_bundled_webview_assets",
+      "physical_sm_x400_install_seen": true,
+      "launch_seen": true,
+      "cathedral_ui_seen": true,
+      "bundled_visual_assets_seen": true,
+      "engine_self_test_seen": false,
+      "godot3d_playtest_seen": false
+    },
     "termux_runtime_dependency": false,
     "termux_install_required": false,
     "bash_install_required": false,
@@ -86,9 +103,10 @@
     "secure_folder_role": "optional_isolation_only_not_runtime_transport",
     "active_source": {
       "repository": "eggie-admin/hydra-shell-android",
-      "branch": "testing/luhm-os-android",
-      "native_project": "samsung-sm-x400/luhm-os",
-      "web_source": "samsung-sm-x400/luhm-os/web"
+      "baseline_branch": "testing/luhm-os-android",
+      "game_candidate_branch": "build/iron-saint-playable-20260921",
+      "update_lane_branch": "build/luhm-update-lane-20260921",
+      "native_project": "samsung-sm-x400/luhm-os"
     }
   },
   "forge": {
@@ -103,12 +121,36 @@
     "python": "3.14",
     "pip": "build_time_only_if_pinned_requirements_exist",
     "device_toolchain_install": false,
-    "debug_signing_allowed_for_testing": true,
-    "production_signing_requires_external_secret_keystore": true,
-    "private_signing_material_in_repo": false
+    "debug_signing_allowed_for_isolated_testing": true,
+    "persistent_update_lane_public_ci_output": "unsigned_release_only",
+    "persistent_update_lane_private_signing_required": true,
+    "private_signing_material_in_repo": false,
+    "private_signing_material_in_public_ci": false
+  },
+  "update_lane": {
+    "status": "FORGE_GREEN_PRIVATE_SIGNER_AND_DEVICE_UPDATE_PENDING",
+    "package_id_stable": true,
+    "base": {
+      "version_name": "0.10.0-base",
+      "version_code": 1000,
+      "public_forge_output": "unsigned"
+    },
+    "first_update": {
+      "version_name": "0.10.1-update",
+      "version_code": 1001,
+      "public_forge_output": "unsigned"
+    },
+    "same_signing_certificate_required": true,
+    "monotonic_version_code_required": true,
+    "persistent_private_signer_created": false,
+    "persistent_private_signer_backup_verified": false,
+    "base_to_update_device_install_verified": false,
+    "signature_conflict_uninstall_cycle_expected_after_base": false,
+    "android_or_samsung_install_confirmation_can_be_bypassed_by_apk_signature_alone": false,
+    "auto_blocker_bypass_claimed": false
   },
   "validation_state": {
-    "apk_build_green": {
+    "legacy_cathedral_apk_build_green": {
       "status": "GREEN",
       "testing_branch_run_id": 35560945301,
       "candidate_run_id": 35560737127,
@@ -123,6 +165,37 @@
       "termux_dependency": false,
       "bash_installer": false,
       "external_daemon_dependency": false
+    },
+    "godot3d_package_green": {
+      "status": "GREEN",
+      "forge_run_id": 35563595262,
+      "source_commit": "a354e9ec52f637b4d0125ef2756d879bc825e59e",
+      "version_name": "0.10.0-dev",
+      "version_code": 10,
+      "godot_version": "4.7.2.stable",
+      "libgodot_android_present": true,
+      "project_godot_present": true,
+      "node3d_scene_present": true,
+      "canonical_apk_assets_verified": 9,
+      "sm_x400_3d_playtest": "PENDING"
+    },
+    "persistent_update_lane_forge_green": {
+      "status": "GREEN",
+      "forge_run_id": 35566969631,
+      "forge_run_number": 29,
+      "source_commit": "37477ae1c8b2b3ad040e2350e2941124ed00ce1d",
+      "artifact_id": 10623339795,
+      "artifact_name": "luhm-os-persistent-update-lane-29",
+      "artifact_zip_sha256": "d0c377a3c5f41c5124ffeff3701b8f77dc77631221acc49dcc670c767a7ac5fd",
+      "unsigned_base_build": "GREEN",
+      "unsigned_update_build": "GREEN",
+      "version_lineage": "GREEN",
+      "canonical_assets_both_apks": "GREEN",
+      "portable_signing_toolkit": "GREEN",
+      "portable_signing_toolkit_libcxx_included": true,
+      "public_ci_secret_firewall": "GREEN",
+      "private_persistent_signer": "PENDING",
+      "base_to_update_device_test": "PENDING"
     },
     "cathedral_canonical_assets_green": {
       "status": "GREEN",
@@ -139,7 +212,10 @@
       "canonical_asset_count_rechecked_locally": 9
     },
     "sm_x400_device_validation": {
-      "status": "PENDING",
+      "status": "PARTIAL",
+      "legacy_baseline_install_launch_ui": "GREEN",
+      "godot3d_playtest": "PENDING",
+      "persistent_base_to_update_test": "PENDING",
       "green_claimed": false
     },
     "android17_runtime_validation": {
@@ -159,25 +235,24 @@
   "green_semantics": {
     "source_crowned_does_not_imply_runtime_green": true,
     "ci_build_green_does_not_imply_device_green": true,
-    "apk_build_green_requires": [
-      "source_truth_audit",
-      "frontend_build",
-      "gradle_build",
-      "installable_apk",
-      "app_label",
-      "package_identity",
-      "target_sdk_37",
-      "signature",
-      "sha256",
-      "zipalign_16k",
-      "no_termux_dependency",
-      "no_shell_execution_surface"
+    "update_lane_forge_green_does_not_imply_same_signer_device_update_green": true,
+    "godot3d_package_green_does_not_imply_godot3d_device_playtest_green": true,
+    "persistent_update_lane_green_requires": [
+      "private_persistent_signer_created_outside_public_git_and_ci",
+      "private_signer_backup_verified",
+      "base_1000_signed_with_persistent_certificate",
+      "update_1001_signed_with_same_certificate",
+      "base_1000_installed_on_physical_sm_x400",
+      "update_1001_installed_over_base_without_uninstall",
+      "post_update_launch_and_save_state_validation"
     ],
     "sm_x400_device_green_requires": [
       "physical_sm_x400_install",
       "launch",
-      "bundled_ui_load",
-      "app_owned_engine_self_test",
+      "godot3d_world_load",
+      "player_movement",
+      "interaction_loop",
+      "persistent_save",
       "no_external_daemon_dependency"
     ],
     "android17_green_requires": [
@@ -188,10 +263,12 @@
   },
   "repository": {
     "canonical_repository": "eggie-admin/hydra-shell-android",
-    "active_development_branch": "testing/luhm-os-android",
-    "candidate_branch": "build/sm-x400-android17-final-20260920",
+    "baseline_branch": "testing/luhm-os-android",
+    "game_candidate_branch": "build/iron-saint-playable-20260921",
+    "active_update_lane_branch": "build/luhm-update-lane-20260921",
     "promotion_target": "main",
     "automatic_promotion": false,
+    "main_touched_by_update_lane": false,
     "legacy_s24_builds": "HISTORICAL_NON_CANONICAL",
     "vercel_active_architecture": false
   },
