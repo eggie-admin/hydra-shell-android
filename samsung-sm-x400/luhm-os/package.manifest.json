@@ -48,6 +48,13 @@
     "no_nag_scope": "eliminate signer-conflict/uninstall cycle; Android and Samsung security UI may still require source authorization or confirmation",
     "auto_blocker_compatible_without_user_change": false
   },
+  "dry_run": {
+    "signing": "none",
+    "installation": "none",
+    "promotion": "none",
+    "device_mutation": false,
+    "purpose": "prove unsigned base/update forge lineage and audit gates before persistent private signing"
+  },
   "forge": {
     "os":"ubuntu-24.04",
     "agp":"9.1.1",
@@ -69,5 +76,5 @@
     "private_key_in_repo":false,
     "ephemeral_debug_signing_allowed_for_update_lane":false
   },
-  "status": "UPDATE_LANE_SOURCE_CANDIDATE"
+  "status": "UPDATE_LANE_DRY_RUN_PENDING"
 }
