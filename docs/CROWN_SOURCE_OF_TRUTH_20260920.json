@@ -2,7 +2,8 @@
   "schema": "luhm-os.crown-source-of-truth.v2",
   "id": "CROWN_SOURCE_OF_TRUTH_20260920",
   "date": "2026-09-20",
-  "status": "CROWNED_CANDIDATE",
+  "updated": "2026-09-21",
+  "status": "CROWNED_BUILD_GREEN_DEVICE_PENDING",
   "scope": "LuHm OS SM-X400 Android 17 self-contained package doctrine",
   "supersedes": "docs/CROWN_SOURCE_OF_TRUTH_20260919.json",
   "authority": {
@@ -105,6 +106,46 @@
     "debug_signing_allowed_for_testing": true,
     "production_signing_requires_external_secret_keystore": true,
     "private_signing_material_in_repo": false
+  },
+  "validation_state": {
+    "apk_build_green": {
+      "status": "GREEN",
+      "testing_branch_run_id": 35560945301,
+      "candidate_run_id": 35560737127,
+      "source_commit": "1353dd9be9b9983e0dd500ec0c8f106837e024b1",
+      "package_id": "art.eggiebagelface.kai9000.dev",
+      "version_name": "0.9.0-dev",
+      "version_code": 9,
+      "target_sdk": 37,
+      "apk_sha256": "1c8f1b3364eef0e7c420e465e09104b033398e16d5878bf57c2b8668ae2da31c",
+      "signature_scheme_v2_verified": true,
+      "zipalign_16k_verified": true,
+      "termux_dependency": false,
+      "bash_installer": false,
+      "external_daemon_dependency": false
+    },
+    "cathedral_canonical_assets_green": {
+      "status": "GREEN",
+      "canonical_apk_assets_verified": 9,
+      "drive_assets_verified": 6,
+      "public_brand_assets_verified": 3,
+      "asset_hashes_verified_inside_finished_apk": true
+    },
+    "local_handoff_green": {
+      "status": "GREEN",
+      "apk_sha256": "1c8f1b3364eef0e7c420e465e09104b033398e16d5878bf57c2b8668ae2da31c",
+      "artifact_zip_sha256": "a30cdeb2102f33b4da452d67b04a374780cd60e34df8d78b22c4a3e9e85f81f4",
+      "local_apk_bytes": 19550340,
+      "canonical_asset_count_rechecked_locally": 9
+    },
+    "sm_x400_device_validation": {
+      "status": "PENDING",
+      "green_claimed": false
+    },
+    "android17_runtime_validation": {
+      "status": "PENDING",
+      "green_claimed": false
+    }
   },
   "green_semantics": {
     "source_crowned_does_not_imply_runtime_green": true,
