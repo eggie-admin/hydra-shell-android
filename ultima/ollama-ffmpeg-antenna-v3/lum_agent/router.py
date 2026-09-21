@@ -10,7 +10,6 @@ from magic_chat import _reject_secrets
 
 from .agent import LUM_AGENT_NAME, LUM_MODEL, run_lum
 from .doctrine import list_skills
-from .mesh import HELPER_MAX_TURNS, MAX_HELPERS_PER_TURN, MESH_SPEC
 
 ROUTER = APIRouter(prefix="/api/lum", tags=["lum-agent"])
 
@@ -26,13 +25,6 @@ def lum_status() -> dict[str, Any]:
         "agent": LUM_AGENT_NAME,
         "model": LUM_MODEL,
         "sdk": "openai-agents",
-        "mesh": {
-            "topology": MESH_SPEC.topology,
-            "delegation_depth": MESH_SPEC.delegation_depth,
-            "helpers": [MESH_SPEC.context, MESH_SPEC.build, MESH_SPEC.critic],
-            "max_helpers_per_turn": MAX_HELPERS_PER_TURN,
-            "helper_max_turns": HELPER_MAX_TURNS,
-        },
         "reasoning_effort": "none",
         "verbosity": "low",
         "credential_env": "OPENAI_API_KEY",

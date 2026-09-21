@@ -1,0 +1,66 @@
+{
+  "schema": "luhm-os.system-shell.v2",
+  "status": "SOURCE_STAGED_BUILD_PENDING",
+  "date_local": "2026-09-18",
+  "boot": {
+    "loading_gate": true,
+    "offline_game_allowed": true,
+    "operator_required_for": [
+      "SYSTEM",
+      "ADMIN"
+    ]
+  },
+  "login": {
+    "mode": "EPHEMERAL_LOCAL_PAIRING",
+    "pair_code": "SIX_DIGIT_TERMUX_CONSOLE",
+    "session_storage": "MEMORY_ONLY",
+    "session_ttl_seconds": 900,
+    "cockpit_ticket_ttl_seconds": 30,
+    "harness_restart_invalidates_sessions": true,
+    "persistent_password": false,
+    "pair_failure_limit": 5,
+    "pair_failure_window_seconds": 60,
+    "pair_lockout_seconds": 60,
+    "operator_request_header": "X-LuHm-Request",
+    "operator_request_header_value": "operator"
+  },
+  "modes": {
+    "full": "FULL_APP",
+    "minimize_1": "ICON_TASKBAR",
+    "minimize_2": "LUM_SPRITE_BUBBLE"
+  },
+  "android": {
+    "fullscreen": "explicit app.window.immersive",
+    "system_bars": "explicit app.window.system_bars",
+    "borderless": "in_app_chrome_only",
+    "quit": "explicit app.quit"
+  },
+  "taskbar": [
+    "GAME",
+    "SYSTEM",
+    "ADMIN",
+    "LUM",
+    "MINIMIZE",
+    "SETTINGS"
+  ],
+  "local_harness": {
+    "origins": [
+      "http://127.0.0.1:8791",
+      "http://localhost:8791"
+    ],
+    "cockpit": "/cockpit",
+    "webview_attachment": "ONE_TIME_TICKET_LOOPBACK_IFRAME",
+    "termux_role": "external_loopback_host_only",
+    "run_command_permission": false,
+    "direct_shell": false
+  },
+  "authority": {
+    "human": "Professor",
+    "ai_to_shell": false,
+    "silent_install": false,
+    "release": false,
+    "deploy": false,
+    "dns": false,
+    "billing": false
+  }
+}

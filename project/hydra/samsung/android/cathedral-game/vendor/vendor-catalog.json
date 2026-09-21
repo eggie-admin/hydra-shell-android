@@ -1,0 +1,58 @@
+{
+  "schema": "luhm_os.vendor_catalog.v1",
+  "generated_for": "LuHm OS // Cathedral",
+  "policy": {
+    "runtime_cdn_allowed": false,
+    "package_only_enabled_assets": true,
+    "enabled_asset_requires_sha256": true,
+    "enabled_asset_requires_local_target": true,
+    "licenses_must_be_recorded": true
+  },
+  "vendors": [
+    {
+      "id": "jquery",
+      "name": "jQuery",
+      "version": "4.0.0",
+      "package": "jquery",
+      "license": "MIT",
+      "official_reference": "https://jquery.com/download/",
+      "role": "optional cockpit DOM/event compatibility layer",
+      "enabled": false,
+      "delivery": "local_build_mirror_only",
+      "local_target": "vendor/dist/jquery/jquery-4.0.0.min.js",
+      "sha256": null,
+      "integrity_status": "UNRESOLVED_NOT_PACKAGED"
+    },
+    {
+      "id": "jquery-ui",
+      "name": "jQuery UI",
+      "version": "1.14.2",
+      "package": "jquery-ui",
+      "license": "MIT",
+      "official_reference": "https://jqueryui.com/download/",
+      "role": "optional draggable/resizable cockpit widget layer",
+      "depends_on": [
+        "jquery"
+      ],
+      "enabled": false,
+      "delivery": "local_build_mirror_only",
+      "local_target": "vendor/dist/jquery-ui/jquery-ui-1.14.2.min.js",
+      "sha256": null,
+      "integrity_status": "UNRESOLVED_NOT_PACKAGED"
+    },
+    {
+      "id": "babylonjs-core",
+      "name": "Babylon.js ES6 Core",
+      "version": "9.26.1",
+      "package": "@babylonjs/core",
+      "license": "Apache-2.0",
+      "official_reference": "https://www.npmjs.com/package/@babylonjs/core",
+      "role": "optional 3D cockpit/scene engine",
+      "enabled": false,
+      "delivery": "local_es_module_bundle_only",
+      "local_target": "vendor/dist/babylon/babylon-core.bundle.js",
+      "sha256": null,
+      "integrity_status": "UNRESOLVED_NOT_PACKAGED"
+    }
+  ]
+}

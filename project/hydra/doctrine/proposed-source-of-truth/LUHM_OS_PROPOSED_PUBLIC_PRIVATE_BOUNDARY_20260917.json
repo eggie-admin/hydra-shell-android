@@ -1,0 +1,85 @@
+{
+  "schema": "luhm_os.public_private_boundary.v1",
+  "date": "2026-09-17",
+  "project": {
+    "display_name": "LuHm OS",
+    "machine_name": "luhm_os",
+    "repository": "eggie-admin/hydra-shell-android",
+    "repository_visibility_observed": "public",
+    "canonical_branch": "luhmos-main"
+  },
+  "proposal": {
+    "branch": "luhmos/public-private-boundary-20260917",
+    "parent_candidate_head": "50a1ade6fe60c2f05e50945e917921bd09e03e7e",
+    "status": "PROPOSED_NOT_CROWNED",
+    "canonical_merge": "NOT_TRIGGERED",
+    "public_publish": "NOT_TRIGGERED",
+    "deploy": "NOT_TRIGGERED",
+    "seal": "NOT_TRIGGERED"
+  },
+  "public_surface": {
+    "hostname": "eggiebagelface.art",
+    "purpose": "coming_soon_status_only",
+    "runtime": "cloudflare_workers_static_assets",
+    "allow_public_files": [
+      "index.html",
+      "robots.txt",
+      "_headers"
+    ],
+    "javascript": false,
+    "forms": false,
+    "analytics": false,
+    "cookies": false,
+    "external_assets": false,
+    "public_api": false,
+    "admin_surface": false,
+    "development_surface": false,
+    "source_maps": false,
+    "private_route_hints": false,
+    "search_indexing": false,
+    "security_headers_required": true
+  },
+  "private_development_surface": {
+    "public_hostname_recorded_here": false,
+    "public_path_recorded_here": false,
+    "source_in_public_repository": false,
+    "credentials_in_public_repository": false,
+    "prompts_in_public_repository": false,
+    "unreleased_assets_in_public_repository": false,
+    "operator_controls_in_public_repository": false,
+    "authentication": "identity_aware_access_required",
+    "default_policy": "deny",
+    "origin_publicly_routable": false,
+    "origin_direct_access": "deny",
+    "transport": "outbound_only_tunnel",
+    "access_assertion_validation": "required_fail_closed",
+    "router_port_forwarding": false
+  },
+  "anti_exploitation_controls": {
+    "least_privilege_tokens": true,
+    "secrets_server_side_only": true,
+    "no_global_api_keys": true,
+    "human_authority": "Professor",
+    "boss": "Lum",
+    "consequential_actions": "CROWN_GATED",
+    "provider_outputs": "ADVISORY_ONLY",
+    "remote_execution_authority": false,
+    "release_signing": "LOCKED_UNTIL_CROWN",
+    "provenance_review_before_publication": true,
+    "third_party_code_requires_license_review": true,
+    "private_material_requires_explicit_release_decision": true,
+    "unknown_or_stale_evidence": "BLOCKED_NOT_GREEN"
+  },
+  "rights_notice": {
+    "public_page_license_effect": "NO_LICENSE_TO_PRIVATE_OR_UNRELEASED_MATERIAL",
+    "copyright_owner_label": "Eggie Bagelface",
+    "third_party_marks": "NOT_GRANTED_OR_INCORPORATED_BY_DEFAULT"
+  },
+  "validation": {
+    "workflow": ".github/workflows/cloudflare-coming-soon.yml",
+    "expected_gate": "LUHM_PUBLIC_PRIVATE_BOUNDARY_GREEN",
+    "live_access_policy": "UNVERIFIED_EXTERNAL",
+    "live_tunnel": "UNVERIFIED_EXTERNAL",
+    "production_domain_binding": "NOT_TRIGGERED"
+  }
+}

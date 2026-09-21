@@ -15,7 +15,8 @@ remote_ai = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(remote_ai)
 
 
-def test_canonical_openai_model_is_current() -> None:
+def test_canonical_openai_models_are_current() -> None:
+    assert remote_ai.OPENAI_FAST_MODEL == "gpt-5.6-luna"
     assert remote_ai.OPENAI_MODEL == "gpt-5.6-sol"
 
 
@@ -50,6 +51,17 @@ def test_unknown_provider_is_rejected() -> None:
     assert exc.value.status_code == 400
 
 
+def test_short_auto_profile_uses_fast_lane() -> None:
+    assert remote_ai._resolve_profile("auto", "hello") == "fast"
+    assert remote_ai._resolve_model("openai", None, "fast") == "gpt-5.6-luna"
+
+
+def test_long_auto_profile_uses_deep_lane() -> None:
+    message = "x" * 4001
+    assert remote_ai._resolve_profile("auto", message) == "deep"
+    assert remote_ai._resolve_model("openai", None, "deep") == "gpt-5.6-sol"
+
+
 def test_huggingface_token_shape_is_rejected_from_prompt() -> None:
     fake_hf_token = "hf_" + ("a" * 32)
     with pytest.raises(HTTPException) as exc:
@@ -72,14 +84,16 @@ def test_openai_model_override_must_be_allowlisted(monkeypatch: pytest.MonkeyPat
 
 
 def test_openai_model_override_can_be_explicitly_allowlisted(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("KAI_OPENAI_ALLOWED_MODELS", "gpt-5.6-luna,gpt-5.6-terra")
-    assert remote_ai._resolve_model("openai", "gpt-5.6-luna") == "gpt-5.6-luna"
+    monkeypatch.setenv("KAI_OPENAI_ALLOWED_MODELS", "gpt-5.6-terra")
+    assert remote_ai._resolve_model("openai", "gpt-5.6-terra") == "gpt-5.6-terra"
 
 
 def test_default_models_remain_allowlisted(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("KAI_OPENAI_ALLOWED_MODELS", raising=False)
     monkeypatch.delenv("KAI_HF_ALLOWED_MODELS", raising=False)
+    assert remote_ai.OPENAI_FAST_MODEL in remote_ai._allowed_models("openai")
     assert remote_ai.OPENAI_MODEL in remote_ai._allowed_models("openai")
+    assert remote_ai.HF_FAST_MODEL in remote_ai._allowed_models("huggingface")
     assert remote_ai.HF_MODEL in remote_ai._allowed_models("huggingface")
 
 
@@ -93,7 +107,7 @@ def test_empty_provider_text_fails_closed(monkeypatch: pytest.MonkeyPatch) -> No
         def json(self) -> dict:
             return {"id": "resp_test", "output": []}
 
-    monkeypatch.setattr(remote_ai.httpx, "post", lambda *args, **kwargs: Response())
+    monkeypatch.setattr(remote_ai._HTTP_CLIENT, "post", lambda *args, **kwargs: Response())
     with pytest.raises(HTTPException) as exc:
         remote_ai._call_responses_api("openai", "hello", None)
     assert exc.value.status_code == 502
@@ -105,8 +119,43 @@ def test_provider_error_does_not_silently_failover(monkeypatch: pytest.MonkeyPat
     def fail(*args, **kwargs):
         raise remote_ai.httpx.ConnectError("offline")
 
-    monkeypatch.setattr(remote_ai.httpx, "post", fail)
+    monkeypatch.setattr(remote_ai._HTTP_CLIENT, "post", fail)
     with pytest.raises(HTTPException) as exc:
         remote_ai._call_responses_api("openai", "hello", None)
     assert exc.value.status_code == 502
     assert "without failover" in str(exc.value.detail)
+
+
+def test_previous_response_id_is_forwarded_to_openai(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("OPENAI_API_KEY", "placeholder")
+    captured: dict = {}
+
+    class Response:
+        def raise_for_status(self) -> None:
+            return None
+
+        def json(self) -> dict:
+            return {"id": "resp_next", "output_text": "GREEN"}
+
+    def post(*args, **kwargs):
+        captured.update(kwargs.get("json") or {})
+        return Response()
+
+    monkeypatch.setattr(remote_ai._HTTP_CLIENT, "post", post)
+    result = remote_ai._call_responses_api(
+        "openai",
+        "continue",
+        None,
+        profile="fast",
+        previous_response_id="resp_previous1234",
+    )
+    assert captured["previous_response_id"] == "resp_previous1234"
+    assert captured["model"] == "gpt-5.6-luna"
+    assert result["response_id"] == "resp_next"
+    assert result["connection_pool"] == "keepalive"
+
+
+def test_invalid_previous_response_id_is_rejected() -> None:
+    with pytest.raises(HTTPException) as exc:
+        remote_ai._validate_previous_response_id("not-a-response-id")
+    assert exc.value.status_code == 400

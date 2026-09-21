@@ -1,0 +1,93 @@
+{
+  "schema": "luhm-os.kai9000.proposed-ai-workflow-hardening.v1",
+  "manifest_id": "KAI9000_PROPOSED_AI_HTML_PROOF_AND_OPTIONAL_TORCH_LIGHTNING_HARDENING_20260917",
+  "status": "PROPOSED_CROSSING_REVIEW",
+  "date_local": "2026-09-17",
+  "project": "LuHm OS / KAI 9000 / Project Hydra",
+  "repository": "eggie-admin/hydra-shell-android",
+  "proposal_branch": "luhmos/proposed-doctrine-drift-cleanup-20260917",
+  "human_authority": "Professor",
+  "goal": "Harden AI-assisted mutation workflow so the same bounded proof can be inspected in-app, pasted into chat, and preserved as a self-contained HTML file.",
+  "proof_contract": {
+    "schema": "luhm-os.mutation-proof.v1",
+    "canonical_payload": "deterministic sorted compact JSON payload",
+    "payload_digest": "SHA-256",
+    "renderers": [
+      "in_app_html",
+      "chat_safe_text_summary",
+      "html_file",
+      "json_file"
+    ],
+    "single_digest_across_renderers": true,
+    "proof_available_only_after_successful_execution": true,
+    "proof_contains_staged_file_content": false,
+    "proof_contains_approval_token": false,
+    "proof_grants_authority": false,
+    "html_external_network_dependencies": false,
+    "html_script_execution": false,
+    "html_cache": "no-store",
+    "html_referrer_policy": "no-referrer",
+    "html_content_security_policy": "default-src none; inline style only; no forms; no framing"
+  },
+  "mutation_gate": {
+    "bind": "127.0.0.1",
+    "default_port": 8790,
+    "shell_execution": false,
+    "human_approval_required": true,
+    "checkpoint_before_write": true,
+    "preimage_sha_recheck": true,
+    "atomic_replace": true,
+    "postwrite_sha_verify": true,
+    "proof_after_postwrite_verify": true
+  },
+  "ai_framework_boundary": {
+    "pytorch": {
+      "state": "OPTIONAL_COMPUTE_LANE_ONLY",
+      "canonical_gateway_dependency": false,
+      "android_boot_dependency": false,
+      "authority": "NONE"
+    },
+    "lightning": {
+      "state": "OPTIONAL_ORCHESTRATION_FOR_MODEL_TRAINING_EVAL_ONLY",
+      "canonical_gateway_dependency": false,
+      "android_boot_dependency": false,
+      "authority": "NONE"
+    },
+    "rule": "PyTorch or Lightning may accelerate model training, evaluation, embeddings, or offline inference experiments, but they may not own approval, proof generation, source mutation, shell execution, signing, deployment, or release promotion."
+  },
+  "current_dependency_evidence": {
+    "canonical_backend_requirements": "Flask>=3.1,<4",
+    "active_repo_torch_or_lightning_code_search": "NONE_FOUND",
+    "decision": "Do not inject heavyweight torch/lightning dependencies into the bounded mutation gateway merely to generate UI/proof receipts."
+  },
+  "chat_handoff": {
+    "format": "LUHM_MUTATION_PROOF_V1 key=value block",
+    "safe_to_paste": true,
+    "includes": [
+      "stage_id",
+      "repo_relative_path",
+      "preimage_sha256",
+      "written_sha256",
+      "payload_sha256",
+      "human_approval_verified",
+      "shell_execution",
+      "authority_grant"
+    ],
+    "excludes": [
+      "approval_token",
+      "staged_file_content",
+      "secrets",
+      "credentials"
+    ]
+  },
+  "authority_boundaries": {
+    "canonical_merge_authorized": false,
+    "public_publish_authorized": false,
+    "release_promotion_authorized": false,
+    "persistent_signing_authorized": false,
+    "runtime_install_authorized": false,
+    "external_ai_self_approval_authorized": false
+  },
+  "next_gate": "EXACT_HEAD_CI_PLUS_HUMAN_REVIEW",
+  "result": "HTML_CHAT_FILE_PROOF_HARDENING_STAGED"
+}

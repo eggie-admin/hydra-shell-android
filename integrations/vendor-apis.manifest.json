@@ -1,16 +1,65 @@
 {
-  "schema": "kai9000.vendor-apis.v5",
-  "date": "2026-09-10",
-  "airship": "KAI9000",
-  "warp": "git",
+  "schema": "luhm-os.vendor-apis.v7",
+  "date": "2026-09-17",
+  "project_display_name": "LuHm OS",
+  "project_id": "luhm_os",
   "crown": "Professor",
-  "orchestrator": {"name": "Lum", "role": "SUPREME_WITCH"},
+  "orchestrator": {"name": "Lum", "role": "BOUNDED_PARENT_AGENT"},
+  "unified_project": {
+    "display_name": "LuHm OS",
+    "machine_id": "luhm_os",
+    "policy": "one_logical_project_many_vendor_transport_bindings",
+    "legacy_aliases": ["Project Hydra", "KAI 9000", "Hydra"],
+    "legacy_alias_policy": "history_or_component_only_never_new_vendor_target",
+    "new_vendor_resources_must_use_display_name": "LuHm OS",
+    "immutable_or_breaking_vendor_ids_may_remain_as_transport_bindings": true
+  },
+  "vendor_spine": ["openai", "google", "github", "cloudflare", "hugging_face"],
   "public_identity": {
     "domain": "eggiebagelface.art",
     "fdroid_host": "fdroid.eggiebagelface.art",
     "fdroid_repo_url": "https://fdroid.eggiebagelface.art/fdroid/repo/"
   },
+  "remote_assistance": {
+    "contract": "luhm-os.remote-assistance.v1",
+    "status_endpoint": "/api/assist/status",
+    "route_endpoint": "/api/assist/route",
+    "query_endpoint": "/api/assist/query",
+    "boss": "Lum",
+    "human_authority": "Professor",
+    "direct_questions_bypass_mesh": true,
+    "helpers_may_recursively_recruit": false,
+    "parallelism_max": 3,
+    "default_blades": {
+      "context": {"provider": "github", "policy": "evidence_by_reference_not_full_history_copy"},
+      "build": {"provider": "openai", "fast_model": "gpt-5.6-luna", "deep_model": "gpt-5.6-sol"},
+      "research": {
+        "provider": "google",
+        "fast_model": "gemini-3.5-flash-lite",
+        "deep_model": "gemini-3.8-flash",
+        "api_key_live_model": "gemini-3.8-live",
+        "vertex_live_model": "gemini-live-2.5-flash-native-audio"
+      },
+      "critic": {"provider": "hugging_face", "conditional": true, "fast_model": "openai/gpt-oss-20b:fastest"}
+    },
+    "latency_policy": {
+      "openai_http_keepalive": true,
+      "openai_previous_response_id_reuse": true,
+      "google_client_process_reuse": true,
+      "short_direct_turns_use_fast_profile": true,
+      "complex_build_and_audit_use_deep_profile": true,
+      "complex_helpers_run_in_parallel": true,
+      "provider_network_latency_is_measured_not_assumed": true
+    },
+    "authority": {
+      "provider_outputs_are_advisory": true,
+      "remote_execution_authority": false,
+      "consequential_actions_are_crown_gated": true,
+      "silent_cross_provider_failover": false
+    }
+  },
   "remote_ai_router": {
+    "role": "compatibility_single_provider_lane",
     "endpoint": "/api/remote-ai/chat",
     "status_endpoint": "/api/remote-ai/status",
     "provider_mode": "auto|openai|huggingface",
@@ -24,42 +73,127 @@
   },
   "providers": {
     "openai": {
-      "role": "primary_remote_reasoning_agent_and_typed_tool_request_lane",
+      "project_label": "LuHm OS",
+      "logical_project_id": "luhm_os",
+      "role": "primary_remote_reasoning_and_typed_tool_lane",
+      "assistance_role": "build_and_reasoning_primary",
       "api": "responses",
       "endpoint": "https://api.openai.com/v1/responses",
+      "fast_model": "gpt-5.6-luna",
       "default_model": "gpt-5.6-sol",
       "credential_env": "OPENAI_API_KEY",
       "allowed_models_env": "KAI_OPENAI_ALLOWED_MODELS",
       "credential_location": "server_or_protected_ci_only",
+      "persist_project_identifier": false,
       "store_default": false,
       "tool_policy": "typed_allowlist_only",
       "unrestricted_shell": false,
-      "credentials_visible_to_model": false
+      "credentials_visible_to_model": false,
+      "observed_primary_project": "LuHm OS",
+      "observed_legacy_project": "Project Hydra",
+      "legacy_project_policy": "do_not_target_for_new_keys_or_new_work",
+      "legacy_project_archive_state": "NOT_MUTABLE_THROUGH_CONNECTED_PLATFORM_ACTIONS",
+      "live_inference_state": "NOT_VERIFIED_SECRET_ABSENT_IN_CI_SMOKE"
+    },
+    "google": {
+      "project_label": "LuHm OS",
+      "logical_project_id": "luhm_os",
+      "role": "cloud_service_and_recovery_content_lane",
+      "assistance_role": "research_realtime_multimodal_advisory",
+      "assistance_models": {
+        "fast_text": "gemini-3.5-flash-lite",
+        "deep_text": "gemini-3.8-flash",
+        "api_key_live": "gemini-3.8-live",
+        "vertex_live": "gemini-live-2.5-flash-native-audio"
+      },
+      "cloud": {
+        "auth": "github_oidc_to_workload_identity_federation",
+        "issuer": "https://token.actions.githubusercontent.com",
+        "attribute_condition_required": true,
+        "immutable_github_subject_required": true,
+        "subject_policy": "exact_immutable_github_sub_for_luhmos_main",
+        "bootstrap": "infra/gcp/bootstrap-github-wif.sh",
+        "canonical_repository_variables": ["GCP_PROJECT_ID", "GCP_WIF_PROVIDER", "GCP_SERVICE_ACCOUNT"],
+        "gcp_project_id_is_transport_identifier": true,
+        "desired_display_name": "LuHm OS",
+        "repository_variables_state": "NOT_CONFIGURED_IN_CI_PREFLIGHT",
+        "live_oidc_auth_state": "NOT_VERIFIED_AUTH_JOB_SKIPPED",
+        "long_lived_service_account_json_in_repo": false,
+        "iam_policy": "resource_specific_least_privilege",
+        "deployment_confirmation": "PROVISION"
+      },
+      "drive": {
+        "role": "recovery_mirror_and_approved_artifact_archive",
+        "canonical_source_history": false,
+        "secret_store": false,
+        "human_facing_root": "LuHm OS"
+      },
+      "live_cloud_account_state": "UNVERIFIED_NO_GCP_ACCOUNT_CONNECTOR"
+    },
+    "github": {
+      "project_label": "LuHm OS",
+      "logical_project_id": "luhm_os",
+      "role": "canonical_versioned_source_ci_and_oidc_issuer",
+      "assistance_role": "context_evidence_ci_by_reference",
+      "repository": "eggie-admin/hydra-shell-android",
+      "repository_slug_is_transport_identifier": true,
+      "canonical_branch": "luhmos-main",
+      "actions_oidc_issuer": "https://token.actions.githubusercontent.com",
+      "repository_created_before_2026_07_15_immutable_default_rollout": true,
+      "immutable_oidc_subject_required": true,
+      "immutable_oidc_subject_live_state": "UNVERIFIED_CONNECTOR_ENDPOINT_UNAVAILABLE",
+      "pull_request_before_canonical_mutation_required": true,
+      "direct_push_should_be_blocked": true,
+      "force_push_should_be_blocked": true,
+      "branch_deletion_should_be_blocked": true,
+      "observed_2026_09_17": {
+        "canonical_branch_protected": false,
+        "repository_rulesets": "NONE",
+        "external_governance_state": "RED_EXTERNAL"
+      }
+    },
+    "cloudflare": {
+      "project_label": "LuHm OS",
+      "logical_project_id": "luhm_os",
+      "role": "public_edge_dns_tunnel_and_static_distribution_lane",
+      "assistance_role": "edge_transport_not_reasoning",
+      "api_base": "https://api.cloudflare.com/client/v4",
+      "zone": "eggiebagelface.art",
+      "worker_service_name": "eggiebagelface-art-coming-soon",
+      "worker_service_name_is_transport_identifier": true,
+      "credential_strategy": "narrowly_scoped_api_tokens",
+      "tunnel_token_is_separate_runtime_secret": true,
+      "production_publish_confirmation": "YES",
+      "wrangler_version": "4.119.0",
+      "router_port_forwarding_required": false,
+      "private_lan_names_publicly_exposed": false,
+      "live_account_state": "UNVERIFIED_NO_ACCOUNT_CONNECTOR"
     },
     "hugging_face": {
-      "role": "open_model_forge_catalog_and_remote_inference_provider_lane",
+      "project_label": "LuHm OS",
+      "logical_project_id": "luhm_os",
+      "role": "open_model_catalog_and_alternate_remote_inference_lane",
+      "assistance_role": "conditional_critic_and_alternate_inference",
+      "account": "eggiebagelface",
+      "organization": null,
+      "account_is_transport_identity": true,
       "api": "responses_beta",
-      "endpoint": "https://router.huggingface.co/v1/responses",
+      "base_url": "https://router.huggingface.co/v1",
+      "responses_endpoint": "https://router.huggingface.co/v1/responses",
       "chat_endpoint": "https://router.huggingface.co/v1/chat/completions",
       "default_model": "openai/gpt-oss-120b:fastest",
       "lower_latency_candidate": "openai/gpt-oss-20b:fastest",
       "credential_env": "HF_TOKEN",
       "allowed_models_env": "KAI_HF_ALLOWED_MODELS",
-      "credential_strategy": "fine_grained_inference_permission",
+      "credential_strategy": "fine_grained_inference_provider_permission",
       "routing_policies": ["fastest", "cheapest", "preferred", "specific_provider"],
       "auto_download_models": false,
       "auto_execute_remote_code": false,
       "revision_pin_required_for_downloaded_artifacts": true,
       "unrestricted_shell": false,
-      "credentials_visible_to_model": false
-    },
-    "google_cloud": {
-      "role": "approved_google_cloud_service_lane",
-      "credential_strategy": "workload_identity_federation_for_github_actions",
-      "github_auth": "oidc_to_workload_identity_pool_provider",
-      "long_lived_service_account_json_in_repo": false,
-      "iam_policy": "resource_specific_least_privilege",
-      "credentials_visible_to_model": false
+      "credentials_visible_to_model": false,
+      "live_inference_state": "NOT_VERIFIED_SECRET_ABSENT_IN_CI_SMOKE",
+      "live_account_state": "READ_ONLY_ACCOUNT_CONTEXT_CONFIRMED_NO_PROJECT_MUTATION_SURFACE"
     }
   },
   "shared_policy": {
@@ -74,6 +208,24 @@
     "secrets_in_model_context": false,
     "provider_response_is_untrusted_data": true,
     "execution_evidence_required_for_green": true,
-    "remote_provider_failure_does_not_grant_fallback_authority": true
+    "remote_provider_failure_does_not_grant_fallback_authority": true,
+    "canonical_merge_requires_explicit_professor_authority": true,
+    "deploy_requires_explicit_professor_authority": true,
+    "public_release_requires_explicit_professor_authority": true,
+    "crown_requires_explicit_professor_authority": true
+  },
+  "drift_audit": {
+    "contract_state": "UNIFIED_PROJECT_SYNCED_WITH_RECORDED_EXTERNAL_DEBT",
+    "verified_date": "2026-09-17",
+    "external_debt": [
+      "OpenAI legacy Project Hydra still exists externally; connector exposes target selection but not project archive or rename",
+      "GitHub canonical branch has no active protection or ruleset",
+      "GitHub immutable OIDC subject live setting could not be read through the connected GitHub action",
+      "Google Cloud WIF repository variables are not configured and live OIDC authentication was skipped",
+      "Google Cloud project display name is unverified; GCP project ID remains a transport identifier",
+      "Cloudflare live account token scopes, tunnel state and account display metadata are not readable from available connectors",
+      "OpenAI live inference was skipped because the CI smoke secret is absent",
+      "Hugging Face live inference was skipped because the CI smoke secret is absent; connected account is read-only for repository/project mutation"
+    ]
   }
 }
