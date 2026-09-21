@@ -1,0 +1,163 @@
+{
+  "schema": "luhm-os.crown-source-of-truth.v2",
+  "id": "CROWN_SOURCE_OF_TRUTH_20260920",
+  "date": "2026-09-20",
+  "status": "CROWNED_CANDIDATE",
+  "scope": "LuHm OS SM-X400 Android 17 self-contained package doctrine",
+  "supersedes": "docs/CROWN_SOURCE_OF_TRUTH_20260919.json",
+  "authority": {
+    "human_final_authority": "Professor",
+    "boss_ai": "Lum",
+    "operating_system_permissions_final": true,
+    "ai_may_self_approve_consequential_actions": false
+  },
+  "agent_mesh": {
+    "version": "LUHM Agent Mesh v1",
+    "boss": "Lum",
+    "default_blades": ["Context", "Build", "Research"],
+    "conditional_blade": "Critic",
+    "deterministic_edge": "Tool Executor",
+    "helpers_report_only_to_boss": true,
+    "helpers_may_recursively_recruit": false,
+    "task_budget_required": true,
+    "evidence_moves_by_reference": true,
+    "max_parallelism": 3,
+    "direct_questions_bypass_mesh": true,
+    "consequential_actions_crown_gated": true
+  },
+  "doctrine": {
+    "local_first": true,
+    "automatic_publishing": false,
+    "automatic_destructive_operations": false,
+    "automatic_privileged_operations": false,
+    "secrets_in_repo_logs_screenshots_frontend_artifacts": false,
+    "untrusted_output_becomes_shell_authority": false,
+    "evidence_before_green": true,
+    "prefer_mature_open_source_with_provenance": true,
+    "prefer_explicit_json_yaml_manifests": true,
+    "prefer_deterministic_auditable_tools": true
+  },
+  "roleplay_systems": {
+    "coding_roleplay": {
+      "system": "ENGINEERING_DSL",
+      "canonical_doctrine": "lumh-os/kai9000/CODING_ROLEPLAY_DOCTRINE.md",
+      "may_compile_to_engineering_intent": true,
+      "normal_risk_approval_and_evidence_gates_required": true,
+      "vowel_ripped_artifact_naming": true
+    },
+    "questforge": {
+      "system": "FICTIONAL_TABLETOP",
+      "canonical_doctrine": "docs/QUESTFORGE_ROLEPLAY_DOCTRINE.md",
+      "active_campaign_canon": "docs/QUESTFORGE_IRON_SAINT_CANON_20260919.json",
+      "engineering_authority": false,
+      "fictional_actions_may_compile_to_real_tools": false
+    },
+    "hard_separation": true,
+    "shared_mythology_does_not_imply_shared_authority": true
+  },
+  "android": {
+    "product_name": "LuHm OS",
+    "package_id": "art.eggiebagelface.kai9000.dev",
+    "version_name": "0.9.0-dev",
+    "version_code": 9,
+    "hardware_target": {
+      "manufacturer": "Samsung",
+      "model": "SM-X400",
+      "abi": "arm64-v8a",
+      "root_assumed": false
+    },
+    "platform_target": {
+      "android": 17,
+      "api": 37,
+      "compile_sdk": 37,
+      "target_sdk": 37,
+      "min_sdk": 31
+    },
+    "install_model": "single_standard_android_apk",
+    "runtime_architecture": "app_owned_native_service_plus_bundled_webview_assets",
+    "termux_runtime_dependency": false,
+    "termux_install_required": false,
+    "bash_install_required": false,
+    "shell_execution_surface": false,
+    "external_localhost_daemon_required": false,
+    "cross_profile_loopback_supported": false,
+    "same_profile_loopback_default": false,
+    "secure_folder_role": "optional_isolation_only_not_runtime_transport",
+    "active_source": {
+      "repository": "eggie-admin/hydra-shell-android",
+      "branch": "testing/luhm-os-android",
+      "native_project": "samsung-sm-x400/luhm-os",
+      "web_source": "samsung-sm-x400/luhm-os/web"
+    }
+  },
+  "forge": {
+    "environment": "github_actions_ubuntu_24_04",
+    "gradle": "9.3.1",
+    "android_gradle_plugin": "9.1.1",
+    "jdk": 17,
+    "android_sdk": 37,
+    "android_build_tools": "37.0.0",
+    "node": 24,
+    "npm": "build_time_only",
+    "python": "3.14",
+    "pip": "build_time_only_if_pinned_requirements_exist",
+    "device_toolchain_install": false,
+    "debug_signing_allowed_for_testing": true,
+    "production_signing_requires_external_secret_keystore": true,
+    "private_signing_material_in_repo": false
+  },
+  "green_semantics": {
+    "source_crowned_does_not_imply_runtime_green": true,
+    "ci_build_green_does_not_imply_device_green": true,
+    "apk_build_green_requires": [
+      "source_truth_audit",
+      "frontend_build",
+      "gradle_build",
+      "installable_apk",
+      "app_label",
+      "package_identity",
+      "target_sdk_37",
+      "signature",
+      "sha256",
+      "zipalign_16k",
+      "no_termux_dependency",
+      "no_shell_execution_surface"
+    ],
+    "sm_x400_device_green_requires": [
+      "physical_sm_x400_install",
+      "launch",
+      "bundled_ui_load",
+      "app_owned_engine_self_test",
+      "no_external_daemon_dependency"
+    ],
+    "android17_green_requires": [
+      "api37_runtime_or_emulator_validation",
+      "large_screen_behavior_validation",
+      "android17_background_and_security_behavior_validation"
+    ]
+  },
+  "repository": {
+    "canonical_repository": "eggie-admin/hydra-shell-android",
+    "active_development_branch": "testing/luhm-os-android",
+    "candidate_branch": "build/sm-x400-android17-final-20260920",
+    "promotion_target": "main",
+    "automatic_promotion": false,
+    "legacy_s24_builds": "HISTORICAL_NON_CANONICAL",
+    "vercel_active_architecture": false
+  },
+  "precedence": [
+    "docs/CROWN_SOURCE_OF_TRUTH_20260920.json",
+    "AGENTS.md",
+    "samsung-sm-x400/luhm-os/package.manifest.json",
+    "project/hydra/samsung/android/apk/testing-ingest.manifest.json",
+    "project/hydra/samsung/android/apk/app.reference.json",
+    "lumh-os/kai9000/CODING_ROLEPLAY_DOCTRINE.md",
+    "docs/QUESTFORGE_ROLEPLAY_DOCTRINE.md",
+    "docs/QUESTFORGE_IRON_SAINT_CANON_20260919.json",
+    "other repository documentation and historical artifacts"
+  ],
+  "runtime_truth": {
+    "rule": "Repository doctrine describes intended state. Current device state must be rechecked live before GREEN.",
+    "recheck_live": true
+  }
+}

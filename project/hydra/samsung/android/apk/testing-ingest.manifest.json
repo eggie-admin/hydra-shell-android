@@ -1,139 +1,60 @@
 {
-  "schema": "kai9000.android-testing-ingest.v6",
-  "date": "2026-09-19",
-  "source_of_truth": "docs/CROWN_SOURCE_OF_TRUTH_20260919.json",
+  "schema": "luhm-os.android-testing-ingest.v7",
+  "date": "2026-09-20",
+  "source_of_truth": "docs/CROWN_SOURCE_OF_TRUTH_20260920.json",
   "project": {
     "os": "LuHm OS",
-    "working_title": "KAI 9000",
-    "android_app_name": "KAI 9000 Dev",
+    "android_app_name": "LuHm OS",
     "android_package_id": "art.eggiebagelface.kai9000.dev",
-    "version": "0.8.0-dev",
-    "version_code": 8
+    "version": "0.9.0-dev",
+    "version_code": 9
   },
   "repository": "eggie-admin/hydra-shell-android",
   "branch": "testing/luhm-os-android",
   "device_contract": {
     "manufacturer": "Samsung",
-    "model": "SM-S721U1",
-    "android": 16,
+    "model": "SM-X400",
     "abi": "arm64-v8a",
-    "secure_folder_role": "cockpit_client_isolation_only",
-    "daemon_owner": "ordinary_termux",
-    "root": false
+    "root": false,
+    "secure_folder_role": "optional_isolation_only_not_runtime_transport"
   },
-  "authority": {
-    "final": "Professor",
-    "boss_ai": "Lum",
-    "ollama_role": "local_inference_provider_helper",
-    "ollama_authority": false,
-    "model_self_authorization": false
-  },
-  "loopback": {
-    "cockpit": "localhost:8787",
-    "ollama": "localhost:11434",
-    "state": "RECHECK_LIVE"
-  },
-  "historical_loopback": {
-    "axs": {
-      "endpoint": "localhost:8767",
-      "status": "HISTORICAL_NON_CANONICAL",
-      "restore_requires_fresh_crown": true
-    },
-    "vnc": {
-      "endpoint": "localhost:5901",
-      "status": "HISTORICAL_RECHECK_LIVE"
-    },
-    "websocket": {
-      "endpoint": "localhost:6080",
-      "status": "HISTORICAL_RECHECK_LIVE"
-    }
-  },
-  "apk_source": {
-    "ownership": "kai9000_owned",
-    "native_project": "luhmos/samsung-android-s24/native-cathedral",
-    "cockpit_assets": "luhmos/samsung-android-s24/live2d-chat",
-    "build_mode": "same_repository_only",
-    "donor_checkout_allowed": false,
-    "donor_purged_before_apk": true
-  },
-  "browser_harness_doctrine": {
-    "chrome_dev": "behavior_test_harness_only",
-    "chrome_canary": "behavior_test_harness_only",
-    "ingest_browser_binary_or_source_into_apk": false,
-    "upstream_chromium_reference_requires_license_provenance": true
-  },
-  "historical_donor_provenance": {
-    "status": "reference_only_not_build_input",
-    "thanks_file": "THANKS.md",
-    "rule": "Historical donor material may inform architecture review but must not be copied, checked out, or packaged by the active APK workflow."
-  },
-  "compile_bot": {
-    "implementation_assistant": "github_copilot",
-    "build_oracle": "github_actions",
-    "setup_workflow": ".github/workflows/copilot-setup-steps.yml",
-    "apk_workflow": ".github/workflows/kai9000-ultima-apk.yml",
-    "artifact_name": "kai9000-dev.apk",
-    "cancel_superseded_runs": true,
-    "parallel_preflight_and_apk_build": false
+  "package_architecture": {
+    "single_apk": true,
+    "app_owned_android_service": true,
+    "bundled_webview_assets": true,
+    "termux_required": false,
+    "bash_install_required": false,
+    "external_daemon_required": false,
+    "shell_execution_surface": false,
+    "cross_profile_loopback": false
   },
   "testing_toolchain": {
-    "android_api": 36,
-    "android_build_tools": "36.1.0",
-    "android_gradle_plugin": "8.13.2",
-    "gradle": "8.13",
-    "kotlin_android": "2.2.21",
+    "android_api": 37,
+    "android_build_tools": "37.0.0",
+    "android_gradle_plugin": "9.1.1",
+    "gradle": "9.3.1",
     "jdk": 17,
+    "node": 24,
     "python": "3.14"
   },
-  "quarantine": [
-    "chrome_dev_source_or_binary",
-    "chrome_canary_source_or_binary",
-    "legacy_donor_tree",
-    "donor_apk",
-    "donor_aar_jar_so",
-    "automatic_root",
-    "secure_folder_sui",
-    "arbitrary_model_shell",
-    "openai_api_keys_in_source_or_apk",
-    "private_keys_in_source_or_apk",
-    "proprietary_game_runtime_assets",
-    "exported_control_receivers",
-    "acodex_axs_as_active_dependency"
-  ],
-  "ci_authority": {
-    "external_hosting_status_is_authoritative": false,
-    "apk_build_green_requires": [
-      "repository_ci",
-      "donor_purge_gate",
-      "python_tests_green",
-      "reproducible_android_build",
-      "installable_apk_evidence",
-      "package_identity_evidence",
-      "apk_signature_evidence",
-      "apk_sha256_evidence",
-      "zipalign_16k_evidence"
-    ],
-    "android_green_additionally_requires": [
-      "device_or_emulator_validation",
-      "loopback_boundary_verified",
-      "secure_folder_client_boundary_verified"
-    ]
+  "compile_bot": {
+    "build_oracle": "github_actions",
+    "apk_workflow": ".github/workflows/luhm-os-sm-x400-api37.yml",
+    "artifact_name": "luhm-os-sm-x400-api37-dev.apk",
+    "cancel_superseded_runs": true
   },
   "promotion_gate": {
     "status": "testing_only",
     "automatic_promotion": false,
     "requires": [
-      "DONOR_PURGED_BEFORE_APK=true",
-      "ci_guards_green",
-      "python_tests_green",
-      "android_apk_build_green",
-      "installable_apk_evidence",
-      "package_identity_evidence",
-      "loopback_boundary_verified",
-      "secret_scan_green",
-      "proprietary_asset_scan_green",
-      "secure_folder_client_boundary_verified",
-      "device_or_emulator_validation"
+      "source_truth_audit_green",
+      "api37_apk_build_green",
+      "signature_evidence",
+      "sha256_evidence",
+      "zipalign_16k_evidence",
+      "physical_sm_x400_install",
+      "app_owned_engine_self_test",
+      "api37_runtime_or_emulator_validation"
     ]
   }
 }

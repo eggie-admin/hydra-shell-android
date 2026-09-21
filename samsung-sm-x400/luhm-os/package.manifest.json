@@ -1,0 +1,39 @@
+{
+  "schema": "luhm-os.sm-x400-package.v1",
+  "id": "LUHM_OS_SM_X400_API37_PACKAGE_20260920",
+  "source_of_truth": "docs/CROWN_SOURCE_OF_TRUTH_20260920.json",
+  "app": {
+    "label": "LuHm OS",
+    "package_id": "art.eggiebagelface.kai9000.dev",
+    "version_name": "0.9.0-dev",
+    "version_code": 9
+  },
+  "device": {"manufacturer":"Samsung","model":"SM-X400","abi":"arm64-v8a"},
+  "android": {"min_sdk":31,"compile_sdk":37,"target_sdk":37},
+  "runtime": {
+    "architecture":"app_owned_native_service_plus_bundled_webview_assets",
+    "termux":false,
+    "bash_installer":false,
+    "external_daemon":false,
+    "shell_execution":false,
+    "internet_permission":false,
+    "cross_profile_loopback":false
+  },
+  "forge": {
+    "os":"ubuntu-24.04",
+    "agp":"9.1.1",
+    "gradle":"9.3.1",
+    "jdk":17,
+    "android_sdk":37,
+    "build_tools":"37.0.0",
+    "node":24,
+    "python":"3.14",
+    "npm":"build-time-only",
+    "pip":"build-time-only-if-needed"
+  },
+  "signing": {
+    "testing":"android-debug-signature",
+    "production":"external-secret-keystore-required",
+    "private_key_in_repo":false
+  }
+}

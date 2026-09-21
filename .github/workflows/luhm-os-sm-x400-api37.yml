@@ -1,0 +1,117 @@
+name: LuHm OS SM-X400 API37 Forge
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - build/sm-x400-android17-final-20260920
+      - testing/luhm-os-android
+    paths:
+      - 'samsung-sm-x400/luhm-os/**'
+      - 'docs/CROWN_SOURCE_OF_TRUTH_20260920.json'
+      - 'tools/luhm_sm_x400_android17_audit.py'
+      - 'project/hydra/samsung/android/apk/**'
+      - '.github/workflows/luhm-os-sm-x400-api37.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: luhm-sm-x400-api37-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  APP_DIR: samsung-sm-x400/luhm-os
+  PACKAGE_ID: art.eggiebagelface.kai9000.dev
+  VERSION_NAME: 0.9.0-dev
+  VERSION_CODE: '9'
+  APK_NAME: luhm-os-sm-x400-api37-dev.apk
+
+jobs:
+  forge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.14'
+
+      - name: Source-of-truth audit
+        run: python tools/luhm_sm_x400_android17_audit.py
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Headless web forge
+        working-directory: samsung-sm-x400/luhm-os/web
+        run: npm run build
+
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c
+        with:
+          gradle-version: '9.3.1'
+          cache-cleanup: on-success
+
+      - name: Install Android 17 SDK
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" 'platform-tools' 'platforms;android-37' 'build-tools;37.0.0'
+
+      - name: Build signed install candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          gradle -p "$APP_DIR" --no-daemon :app:assembleDebug
+          SRC="$APP_DIR/app/build/outputs/apk/debug/app-debug.apk"
+          test -s "$SRC"
+          mkdir -p build/android
+          cp "$SRC" "build/android/$APK_NAME"
+
+      - name: Verify APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="build/android/$APK_NAME"
+          TOOLS="$ANDROID_HOME/build-tools/37.0.0"
+          "$TOOLS/apksigner" verify --verbose --print-certs "$APK" | tee build/android/signature.txt
+          "$TOOLS/zipalign" -c -P 16 -v 4 "$APK" | tee build/android/zipalign.txt
+          "$TOOLS/aapt2" dump badging "$APK" | tee build/android/badging.txt
+          unzip -l "$APK" | tee build/android/contents.txt
+          sha256sum "$APK" | tee build/android/sha256.txt
+          grep -q "package: name='$PACKAGE_ID' versionCode='$VERSION_CODE' versionName='$VERSION_NAME'" build/android/badging.txt
+          grep -q "targetSdkVersion:'37'" build/android/badging.txt
+          grep -q "application-label:'LuHm OS'" build/android/badging.txt
+          grep -q 'assets/index.html' build/android/contents.txt
+          if grep -Eqi 'termux|/bin/bash|processbuilder|127\.0\.0\.1' build/android/contents.txt; then
+            echo 'Forbidden external-runtime payload detected' >&2
+            exit 1
+          fi
+          echo 'LUHM_APK_BUILD_GREEN'
+          echo 'SM_X400_DEVICE_VALIDATION_PENDING'
+          echo 'ANDROID17_RUNTIME_VALIDATION_PENDING'
+
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        with:
+          name: luhm-os-sm-x400-api37-${{ github.run_number }}
+          path: |
+            build/android/${{ env.APK_NAME }}
+            build/android/sha256.txt
+            build/android/signature.txt
+            build/android/zipalign.txt
+            build/android/badging.txt
+            build/android/contents.txt
+            samsung-sm-x400/luhm-os/web-build-receipt.json
+          if-no-files-found: error
+          retention-days: 7
