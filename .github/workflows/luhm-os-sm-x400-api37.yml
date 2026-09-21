@@ -72,12 +72,12 @@ jobs:
           chmod 0755 "$RUNNER_TEMP/android-cli/android"
           ANDROID_CLI="$RUNNER_TEMP/android-cli/android"
           "$ANDROID_CLI" --version | tee build-android-cli-version.txt
-          "$ANDROID_CLI" --sdk="$ANDROID_HOME" sdk list 'platforms/android-37|build-tools/37.*|platform-tools' --all --all-versions --canary \
+          "$ANDROID_CLI" --sdk="$ANDROID_HOME" sdk list 'platforms/android-37.*|build-tools/37.*|platform-tools' --all --all-versions --canary \
             | tee build-android-sdk-catalog.txt
-          grep -q 'platforms/android-37' build-android-sdk-catalog.txt
+          grep -q 'platforms/android-37.0' build-android-sdk-catalog.txt
           "$ANDROID_CLI" --sdk="$ANDROID_HOME" sdk install --canary \
-            platforms/android-37 build-tools/37.0.0 platform-tools
-          test -f "$ANDROID_HOME/platforms/android-37/android.jar"
+            platforms/android-37.0 build-tools/37.0.0 platform-tools
+          test -f "$ANDROID_HOME/platforms/android-37.0/android.jar"
           test -x "$ANDROID_HOME/build-tools/37.0.0/apksigner"
           echo 'ANDROID17_PREVIEW_SDK_BOOTSTRAP_GREEN'
 
