@@ -4,12 +4,21 @@ This directory is the **crowned GitHub seal lane** for **LuHm OS**. The stable r
 
 GitHub owns software lineage, source, CI, and provenance. Owner-only Google Drive holds private recovery/source-of-truth documentation and staged private artifacts.
 
-## Current crown
+## Current crowns
 
-Current authority: `LUHM_OS_PIPELINE_UNIFICATION_CROWN_20260921.json`
+Architecture/pipeline authority: `LUHM_OS_PIPELINE_UNIFICATION_CROWN_20260921.json`
+
+Forward release floor / no-backtrack authority: `LUHM_OS_GOLDEN_BETA_NO_BACKTRACK_CROWN_20260922.json`
+
+The release-floor crown does not replace the architecture crown. Together they define the current LuHm OS source contract: the 2026-09-21 crown defines identity, vendor/API pipeline, authority, privilege, and evidence boundaries; the 2026-09-22 crown freezes the first real public Android beta as the minimum forward release baseline.
 
 - Canonical product name: **LuHm OS**
 - Established internal project identifier: `luhm_os`
+- Golden public beta: **1.0.10-beta.1**, Android versionCode **110**.
+- Golden beta source: `luhmos/beta` at `a2243d68fa1aaa2f554ef74d9a1edd32530c12ac`.
+- Next Android release versionCode must be **greater than 110**.
+- Package lineage remains `art.eggiebagelface.luhmos` with the crowned release signer unless a separately crowned migration explicitly proves a safe Android upgrade path.
+- `v1.0.10-beta.1` source and release assets are frozen; fixes ship as a new version rather than rewriting the golden beta.
 - One logical project spans the OpenAI, Google, GitHub, Cloudflare, and Hugging Face transport bindings.
 - OpenAI organization: **Pirate Daddy Film**
 - Canonical OpenAI project: **LuHm OS**
@@ -20,6 +29,7 @@ Current authority: `LUHM_OS_PIPELINE_UNIFICATION_CROWN_20260921.json`
 - Hugging Face account binding: `eggiebagelface`.
 - KAI 9000: donor/reference/archaeology only; not current runtime authority, dependency authority, product name, or naming authority.
 - Project Hydra: historical compatibility/repository lineage only.
+- Vue is retired from the active Android release dependency chain.
 
 ## Naming doctrine
 
@@ -47,6 +57,22 @@ Historical proof receipts preserved by reference:
 - `LUHM_OS_SOURCE_OF_TRUTH_AUDIT_20260918.json`: LuHm OS identity and vendor bindings reconciled while keeping external provider debt explicit.
 
 Historical CI proof remains historical evidence. A source-of-truth crown does not invent a fresh CI run or silently promote unverified live-provider state to GREEN.
+
+## Golden beta release floor
+
+The first real public Android beta is a permanent forward-only checkpoint:
+
+- Version: `1.0.10-beta.1`
+- versionCode: `110`
+- Package: `art.eggiebagelface.luhmos`
+- Source SHA: `a2243d68fa1aaa2f554ef74d9a1edd32530c12ac`
+- Source tree: `fb6d8154c995666a42c01797ab6ebf03758a91df`
+- APK SHA-256: `b4e162c41aacdf16d58c051b3251fc07306ffb3de6a057b9aecd6ea8f36f3754`
+- Release tag: `v1.0.10-beta.1`
+
+No later cleanup may silently regress product identity, package identity, signer continuity, versionCode, release evidence, exact-tree promotion, canonical Android forge ownership, or the KAI/Hydra/Vue retirement boundaries.
+
+Human API cleanup starts **after** this checkpoint and must move forward from it. A universal APK is a possible next release direction, but it is not crowned yet and must use a new version above versionCode 110.
 
 ## Authority and privilege
 
@@ -78,5 +104,6 @@ A proposed manifest has **zero automatic promotion authority**. It must never ov
 - Fresh physical evidence owns exact hardware/runtime claims.
 - Historical cryptographic receipts remain historical evidence and are not rewritten during doctrine cleanup.
 - External provider, DNS, repository, billing, deploy, signing, install, or release changes must not be inferred from a source-contract crown.
+- Public beta GREEN does not mean stable GREEN; physical-device install/launch and upgrade proof remain separately required for stable.
 
 Do not place serial numbers, IMEI/MEID, phone numbers, account identifiers, API keys, signing material, private keys, or private third-party payloads here.
