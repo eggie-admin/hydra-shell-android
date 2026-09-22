@@ -1,0 +1,19 @@
+{
+  "schema": "luhm-os.public-beta-crown-receipt.v2",
+  "product": "LuHm OS",
+  "stage": "PUBLIC_PRERELEASE_GREEN",
+  "source_branch": "luhmos/beta",
+  "source_sha": "a2243d68fa1aaa2f554ef74d9a1edd32530c12ac",
+  "source_tree": "fb6d8154c995666a42c01797ab6ebf03758a91df",
+  "version_name": "1.0.10-beta.1",
+  "version_code": 110,
+  "tag": "v1.0.10-beta.1",
+  "signer_run_id": 35721186522,
+  "signed_artifact_name": "luhmos-signed-beta-110-4",
+  "publisher_run_id": 35721563664,
+  "release_url": "https://github.com/eggie-admin/hydra-shell-android/releases/tag/v1.0.10-beta.1",
+  "crown_authority": "Professor explicit finish-and-publish instruction",
+  "gui_source_audit": "PASS_SOURCE_LEVEL_RUNTIME_OVERLAY_RESPONSIVE_LOCAL_ASSETS",
+  "physical_install_ui_proof": "PENDING_PROFESSOR_DEVICE_INSTALL",
+  "created_utc": "2026-09-22T11:28:05Z"
+}
