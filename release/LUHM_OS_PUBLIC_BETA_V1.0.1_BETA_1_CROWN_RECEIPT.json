@@ -1,14 +1,14 @@
 {
   "schema": "luhm-os.public-beta-crown-receipt.v1",
   "product": "LuHm OS",
-  "stage": "CROWN_CHAIN_STARTED",
+  "stage": "SIGNER_DISPATCHED",
   "source_branch": "luhmos/beta",
   "source_sha": "a2243d68fa1aaa2f554ef74d9a1edd32530c12ac",
   "source_tree": "fb6d8154c995666a42c01797ab6ebf03758a91df",
   "version_name": "1.0.1-beta.1",
   "version_code": 101,
   "tag": "v1.0.1-beta.1",
-  "signer_run_id": null,
+  "signer_run_id": 35680565476,
   "signed_artifact_name": null,
   "publisher_run_id": null,
   "release_url": null,
@@ -16,5 +16,5 @@
   "orchestrator_run_id": 35679631840,
   "permanent_signer_modified": false,
   "permanent_publisher_modified": false,
-  "created_utc": "2026-09-22T02:44:29Z"
+  "created_utc": "2026-09-22T02:44:37Z"
 }
