@@ -5,7 +5,7 @@ stability: stable-only
 python:
   implementation: CPython
   version: 3.14.7
-  role: automation_services_and_ai_adapters
+  role: automation_services_ai_adapters_and_optional_minimal_operator_gui
   package_manager: pip
   build_backend: hatchling==1.32.3
   manifest: python/pyproject.toml
@@ -16,6 +16,21 @@ python:
     httpx: 0.28.1
     openai: 3.14.1
     google-genai: 2.24.0
+    pysimplegui: 6.3.16
+
+gui:
+  minimal_operator:
+    toolkit: PySimpleGUI
+    version: 6.3.16
+    source_repository: https://github.com/PySimpleGUI/PySimpleGUI.git
+    audited_source_commit: 858d5d45babd66dc8ea7e20b797545b154e3f4dd
+    license: LGPL-3.0
+    role: optional_desktop_operator_surface
+    android_runtime_dependency: false
+    android_apk_bundled: false
+    automatic_toolkit_upgrade: false
+    direct_shell_execution: false
+    secrets_storage: memory_only_for_ephemeral_operator_session
 
 java:
   version: 17
