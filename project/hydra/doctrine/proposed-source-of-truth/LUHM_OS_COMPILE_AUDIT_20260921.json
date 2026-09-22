@@ -1,0 +1,112 @@
+{
+  "schema": "luhm_os.compile_ritual.audit.v1",
+  "audit_id": "LUHM_OS_COMPILE_AUDIT_20260921",
+  "observed_at": "2026-09-21T12:21:00Z",
+  "state": "AMBER_SOURCE_TRUTH_SYNC_REQUIRED",
+  "source_truth": {
+    "status": "AMBER",
+    "latest_document_observed": true,
+    "title": "PRIVATE_CANONICAL_LUHM_OS_CROWN_DOCTRINE_HARDENED_20260921",
+    "drive_document_id": "1ce3FjVhUZvJIbKV6HA3aqozMT2nbmvn4FFpd9EF8Lvg",
+    "revision_id": "ANLCKQmGvGj7u3Dn9JAJaA1WSXMGZP-VA8Ax4pInHp0IA_scOrm9k5N0A7YAGelNP_E5rHNxIBiM_RRopQK-ePQkziXcut5MdSQwt-1OPg",
+    "bound_canonical_sha": null,
+    "exact_current_sha_search": "NO_MATCH_FOUND",
+    "blocker": "latest private doctrine does not explicitly bind current canonical head"
+  },
+  "assets": {
+    "status": "GREEN",
+    "blocked_material_in_ship_path": false,
+    "asset_handoff_document_id": "1E5FfIaS7RUtE3nXRwluYYOHIoRD7uGyIrh_FwxYRxgU",
+    "promotion_law": "only KAI_OWNED, ORIGINAL, or RIGHTS_CLEARED enters ship path",
+    "raw_multipart_archive": "MIXED_BLOCKED_NOT_SHIPPABLE",
+    "required": [
+      {
+        "name": "KAI9000_LUM_AVATAR_ACTUAL_ANIMATED.mp4",
+        "drive_file_id": "1xuA3wkyFeGkgH7LQIi7a679wnglXvQ7H",
+        "parent_folder_id": "1rM2x-_u0zgzQkcDkXfOtFL5sb0ZSUuqO",
+        "mime_type": "video/mp4",
+        "size_bytes": 510676,
+        "sha256": "1a20bd7bf495ee930d2cc9dab9342d7cb29d326ce0c7f433c206581ebdddad97",
+        "exists_verified": true,
+        "sha256_verified": true,
+        "rights_class": "KAI_OWNED",
+        "ship_allowed": true
+      }
+    ]
+  },
+  "github": {
+    "canonical_branch": "luhmos-main",
+    "canonical_sha": "38c5b8c4264351fb500672b47f92ac9d21b4df0a",
+    "canonical_head_signed": false,
+    "canonical_head_signature_reason": "unsigned",
+    "branch_protected": false,
+    "source_audit": "NOT_RUN_DUE_SOURCE_TRUTH_CURRENTNESS_GATE",
+    "last_five_commits": [
+      {
+        "sha": "38c5b8c4264351fb500672b47f92ac9d21b4df0a",
+        "date": "2026-09-19T16:36:53Z",
+        "message": "doctrine: crown LuHm Python library plugin class system",
+        "signature": "UNSIGNED"
+      },
+      {
+        "sha": "d0cb42969b96c4812995fbb979f97854bd195c93",
+        "date": "2026-09-18",
+        "message": "milestone: seal thwtchnghr fnlmlstn",
+        "signature": "VERIFIED"
+      },
+      {
+        "sha": "1021363fc841f187990b91b0cff0873d0ffa4674",
+        "date": "2026-09-18",
+        "message": "fix milestone receipt for vendor purge guard",
+        "signature": "UNSIGNED"
+      },
+      {
+        "sha": "1de52a20b6073b4a1056d66e1f4dbb6edf7446db",
+        "date": "2026-09-18",
+        "message": "milestone: seal thwtchnghr final milestone",
+        "signature": "UNSIGNED"
+      },
+      {
+        "sha": "cffed19ed3f6fcc40ad8309ce98243d0fda54fe6",
+        "date": "2026-09-18",
+        "message": "doctrine: reconcile thwtchnghr crown to current foundation (#95)",
+        "signature": "VERIFIED"
+      }
+    ]
+  },
+  "forge": {
+    "status": "NOT_RUN_DUE_SOURCE_TRUTH_CURRENTNESS_GATE",
+    "development_observations_only": {
+      "universal_gate": ".github/workflows/luhmos-universal-forge-gate.yml",
+      "universal_gate_permissions": "contents:read",
+      "universal_gate_actions_pinned": true,
+      "universal_gate_pr_trigger_is_stale": "luhmos/public-private-boundary-20260917",
+      "preferred_candidate_workflow": ".github/workflows/luhmos-working-demo-candidate.yml",
+      "preferred_candidate_pr_target": "luhmos-main",
+      "preferred_candidate_workflow_dispatch": true,
+      "preferred_candidate_package": "art.eggiebagelface.luhmos.demo",
+      "preferred_candidate_version": "1.0.11",
+      "preferred_candidate_code": 111,
+      "preferred_candidate_godot": "4.7.2-stable",
+      "preferred_candidate_avatar_file_id": "1xuA3wkyFeGkgH7LQIi7a679wnglXvQ7H",
+      "preferred_candidate_avatar_sha256": "1a20bd7bf495ee930d2cc9dab9342d7cb29d326ce0c7f433c206581ebdddad97"
+    }
+  },
+  "dry_run": {
+    "requested": true,
+    "executed_through_forge": false,
+    "state": "BLOCKED_BEFORE_GITHUB_SOURCE_AND_FORGE_AUDIT",
+    "reason": "SOURCE_TRUTH_SYNC_REQUIRED"
+  },
+  "next_gate": "explicitly sync/promote latest private source of truth to canonical 38c5b8c4264351fb500672b47f92ac9d21b4df0a, then rerun the ritual",
+  "authority": {
+    "source_of_truth_mutation": "NOT_AUTHORIZED_BY_THIS_AUDIT",
+    "final_build": "NOT_AUTHORIZED",
+    "canonical_merge": "NOT_TRIGGERED",
+    "release_signing": "LOCKED",
+    "install": "NOT_TRIGGERED",
+    "deploy": "NOT_TRIGGERED",
+    "public_release": "NOT_TRIGGERED",
+    "crown": "NOT_TRIGGERED"
+  }
+}

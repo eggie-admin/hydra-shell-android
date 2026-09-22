@@ -1,0 +1,156 @@
+{
+  "schema": "luhm_os.compile_ritual.v1",
+  "ritual_id": "LUHM_OS_LUM_ONI_COMPILE_RITUAL_20260921",
+  "state": "PROPOSED_NOT_CROWNED",
+  "project": "LuHm OS",
+  "repository": "eggie-admin/hydra-shell-android",
+  "canonical_branch": "luhmos-main",
+  "boss": {
+    "name": "Lum",
+    "role": "single_parent_orchestrator",
+    "speaks_to": "Professor",
+    "mutation_authority": false
+  },
+  "helper_law": {
+    "default_helpers": 0,
+    "max_parallel_read_only_helpers": 2,
+    "max_delegation_depth": 1,
+    "recursive_recruitment": false,
+    "parallel_writes": false,
+    "helpers_report_only_to_lum": true,
+    "evidence_moves_by_reference": true
+  },
+  "mini_oni": [
+    {
+      "id": "source_truth_oni",
+      "display_name": "Banshee Archivist",
+      "technical_role": "source_truth_auditor",
+      "tier_ceiling": "WHISPER",
+      "allowed": ["read_drive_doctrine", "compare_revision", "verify_canonical_sha_binding"],
+      "writes": false
+    },
+    {
+      "id": "asset_oni",
+      "display_name": "Moth-Witch Curator",
+      "technical_role": "asset_provenance_auditor",
+      "tier_ceiling": "WHISPER",
+      "allowed": ["read_asset_registry", "verify_drive_file", "verify_sha256", "classify_ship_allowed"],
+      "writes": false
+    },
+    {
+      "id": "branch_warden",
+      "display_name": "Nekomata Branch-Warden",
+      "technical_role": "github_canonical_auditor",
+      "tier_ceiling": "WHISPER",
+      "allowed": ["read_canonical_head", "read_last_five_commits", "read_source", "read_governance_state"],
+      "writes": false
+    },
+    {
+      "id": "forgekeeper",
+      "display_name": "Oni Forgekeeper",
+      "technical_role": "compiler_forge_auditor",
+      "tier_ceiling": "WHISPER",
+      "allowed": ["inspect_workflow", "verify_pins", "verify_permissions", "verify_asset_contract", "verify_candidate_boundary"],
+      "writes": false
+    },
+    {
+      "id": "dry_run_oni",
+      "display_name": "Kitsune Dry-Run Scribe",
+      "technical_role": "deterministic_compile_planner",
+      "tier_ceiling": "CROSSING",
+      "allowed": ["render_plan", "verify_gate_sequence", "write_local_receipt"],
+      "build_dispatch": false,
+      "install": false
+    }
+  ],
+  "pipeline": [
+    {
+      "stage": 1,
+      "name": "AUDIT_SOURCE_OF_TRUTH",
+      "owner": "source_truth_oni",
+      "pass": "latest private canonical doctrine is readable and internally valid"
+    },
+    {
+      "stage": 2,
+      "name": "VERIFY_SHIPPABLE_ASSETS",
+      "owner": "asset_oni",
+      "pass": "every required remote asset is KAI_OWNED, ORIGINAL, or RIGHTS_CLEARED and hash-proven"
+    },
+    {
+      "stage": 3,
+      "name": "SOURCE_TRUTH_CURRENTNESS_GATE",
+      "owner": "Lum",
+      "expression": "source_truth_green && assets_green && source_truth.bound_canonical_sha == github.canonical_sha",
+      "fail_closed_state": "SOURCE_TRUTH_SYNC_REQUIRED"
+    },
+    {
+      "stage": 4,
+      "name": "AUDIT_GITHUB_CANONICAL",
+      "owner": "branch_warden",
+      "branch": "luhmos-main",
+      "requirements": ["exact_head", "last_five_commits", "source_contract", "governance_receipt"]
+    },
+    {
+      "stage": 5,
+      "name": "AUDIT_COMPILER_FORGE",
+      "owner": "forgekeeper",
+      "preferred_candidate_workflow": ".github/workflows/luhmos-working-demo-candidate.yml",
+      "forge_contract": ".github/workflows/luhmos-universal-forge-gate.yml",
+      "requirements": ["pinned_actions", "contents_read_only", "pinned_donor_ref", "pinned_toolchain_hashes", "candidate_package", "no_silent_install", "no_release_promotion"]
+    },
+    {
+      "stage": 6,
+      "name": "DRY_RUN_COMPILE_REQUEST",
+      "owner": "dry_run_oni",
+      "mutation": false,
+      "result_if_green": "FINAL_BUILD_AUTHORIZATION_REQUIRED"
+    },
+    {
+      "stage": 7,
+      "name": "PROFESSOR_FINAL_BUILD_GATE",
+      "owner": "Professor",
+      "required": true,
+      "authorization_must_bind": ["LuHm OS candidate", "exact source SHA", "GitHub build"],
+      "continue_is_not_authorization": true
+    },
+    {
+      "stage": 8,
+      "name": "GITHUB_FINAL_CANDIDATE_BUILD",
+      "owner": "deterministic_tool_executor",
+      "precondition": "exact Professor authorization for stage 7",
+      "workflow": ".github/workflows/luhmos-working-demo-candidate.yml"
+    },
+    {
+      "stage": 9,
+      "name": "VERIFY_AND_HANDOFF",
+      "owner": "Lum",
+      "requirements": ["workflow_success", "artifact_exact_head", "apk_sha256", "package_badging", "signature_receipt", "embedded_asset_hash"],
+      "drive_destination": "/Google Drive/LuHm OS/Builds/<source-sha>/",
+      "drive_upload_actor": "connected_assistant_after_verified_build",
+      "github_drive_secret_required": false
+    }
+  ],
+  "asset_policy": {
+    "allowed_rights_classes": ["KAI_OWNED", "ORIGINAL", "RIGHTS_CLEARED"],
+    "blocked_rights_classes": ["PRIVATE_REFERENCE", "QUARANTINE", "UNKNOWN", "NON_COMMERCIAL_RESTRICTED"],
+    "raw_multipart_archive": "BLOCKED_FROM_SHIP_PATH",
+    "authoritative_avatar": {
+      "drive_file_id": "1xuA3wkyFeGkgH7LQIi7a679wnglXvQ7H",
+      "filename": "KAI9000_LUM_AVATAR_ACTUAL_ANIMATED.mp4",
+      "size_bytes": 510676,
+      "sha256": "1a20bd7bf495ee930d2cc9dab9342d7cb29d326ce0c7f433c206581ebdddad97",
+      "rights_class": "KAI_OWNED",
+      "ship_allowed": true
+    }
+  },
+  "authority": {
+    "canonical_merge": "NOT_AUTHORIZED",
+    "final_build": "NOT_AUTHORIZED_BY_THIS_MANIFEST",
+    "release_signing": "LOCKED",
+    "install": "NOT_AUTHORIZED",
+    "deploy": "NOT_AUTHORIZED",
+    "public_release": "NOT_AUTHORIZED",
+    "crown": "NOT_TRIGGERED",
+    "seal": "NOT_TRIGGERED"
+  }
+}
