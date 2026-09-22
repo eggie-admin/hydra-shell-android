@@ -1,5 +1,8 @@
 extends Node
 
+# LUHM_MULTI_TIER_BRIDGE_V1
+# Web Cathedral is a presentation tier. Native Godot remains the runtime host.
+
 signal cms_ready
 signal cms_message(message: String)
 
@@ -47,6 +50,26 @@ func _on_cms_message(raw: String) -> void:
     match kind:
         "cms.ready":
             cms_ready.emit()
+        "ui.world.enter":
+            if host and host.has_method("enter_world_mode"):
+                host.enter_world_mode()
+        "ui.cathedral.enter":
+            if host and host.has_method("exit_world_mode"):
+                host.exit_world_mode()
+        "app.window.immersive":
+            if _plugin and _plugin.has_method("setImmersiveKiosk"):
+                _plugin.setImmersiveKiosk(true)
+        "app.window.system_bars":
+            if _plugin and _plugin.has_method("setImmersiveKiosk"):
+                _plugin.setImmersiveKiosk(false)
+        "app.device.snapshot":
+            if _plugin and _plugin.has_method("deviceSnapshot"):
+                var snapshot = JSON.parse_string(_plugin.deviceSnapshot())
+                if not snapshot is Dictionary:
+                    snapshot = {}
+                send_to_cms({"type": "app.device.snapshot.result", "payload": snapshot})
+        "app.quit":
+            get_tree().quit()
         "godot.window.open":
             var allowed_panels := ["renderQueue", "lumAgent", "cutsceneDirector", "cms"]
             var panel := String(payload.get("panel", ""))
