@@ -1,0 +1,72 @@
+{
+  "schema": "luhm-os.pysimplegui-minimal-gui-proposal.v1",
+  "manifest_id": "LUHM_OS_PYSIMPLEGUI_MINIMAL_GUI_PROPOSAL_20260922",
+  "status": "PROPOSED_NOT_CROWNED",
+  "date": "2026-09-22",
+  "human_final_authority": "Professor",
+  "purpose": "Adopt PySimpleGUI as the optional minimal desktop/operator GUI tier without making it an Android runtime or APK dependency.",
+  "source_of_truth_basis": [
+    "project/hydra/source-of-truth/LUHM_OS_PIPELINE_UNIFICATION_CROWN_20260921.json",
+    "project/hydra/source-of-truth/LUHM_OS_GOLDEN_BETA_NO_BACKTRACK_CROWN_20260922.json",
+    "project/hydra/source-of-truth/README.md"
+  ],
+  "upstream_audit": {
+    "repository": "https://github.com/PySimpleGUI/PySimpleGUI.git",
+    "default_branch": "master",
+    "audited_commit": "858d5d45babd66dc8ea7e20b797545b154e3f4dd",
+    "audited_version": "6.3.16",
+    "license": "LGPL-3.0",
+    "source_characterization": "PySimpleGUI is a compact Python GUI wrapper centered on tkinter with other historical GUI backends referenced by the project.",
+    "python_3_14_declared_supported": true,
+    "android_native_gui": false,
+    "browser_runtime_dependency": false
+  },
+  "accepted_scope": {
+    "role": "OPTIONAL_DESKTOP_OPERATOR_MINIMAL_GUI",
+    "python_extra": "gui",
+    "entrypoint": "luhm-minigui",
+    "local_harness_client_only": true,
+    "ephemeral_operator_pairing": true,
+    "direct_shell_execution": false,
+    "silent_install": false,
+    "signing_authority": false,
+    "release_authority": false,
+    "provider_secret_storage": false
+  },
+  "explicit_exclusions": [
+    "Do not replace the Android Godot host with PySimpleGUI.",
+    "Do not bundle PySimpleGUI into the Android APK.",
+    "Do not replace the Cathedral WebView presentation tier with PySimpleGUI.",
+    "Do not use PySimpleGUI self-upgrade features in LuHm OS.",
+    "Do not treat PySimpleGUI as a privileged executor or Crown authority.",
+    "Do not vendor or modify upstream PySimpleGUI code without preserving LGPL obligations and separate review."
+  ],
+  "multi_tier_gui_model": [
+    {
+      "tier": "minimal_operator",
+      "implementation": "PySimpleGUI",
+      "host": "desktop Python service lane",
+      "purpose": "small local operator/status surface"
+    },
+    {
+      "tier": "cathedral",
+      "implementation": "packaged Android WebView assets",
+      "host": "Android plugin over Godot",
+      "purpose": "rich 2D cockpit, install, settings, and agent presentation"
+    },
+    {
+      "tier": "world",
+      "implementation": "Godot native 3D",
+      "host": "Android Godot runtime",
+      "purpose": "native 3D world and immersive runtime"
+    }
+  ],
+  "implementation_branch": "luhmos/multitier-gui-harness-20260922",
+  "golden_beta_mutated": false,
+  "release_floor_preserved": {
+    "version": "1.0.10-beta.1",
+    "version_code": 110,
+    "source_sha": "a2243d68fa1aaa2f554ef74d9a1edd32530c12ac"
+  },
+  "result": "PYSIMPLEGUI_ACCEPTED_FOR_OPTIONAL_MINIMAL_OPERATOR_TIER_PENDING_FRESH_CI_AND_HUMAN_PROMOTION"
+}
