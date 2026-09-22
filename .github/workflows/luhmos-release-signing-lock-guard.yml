@@ -7,6 +7,7 @@ on:
     paths:
       - '.github/workflows/luhmos-world-first-apk.yml'
       - '.github/workflows/luhmos-crown-gate-apk.yml'
+      - '.github/workflows/luhmos-signed-beta-candidate.yml'
       - '.github/workflows/luhmos-release-signing-lock-guard.yml'
 
 permissions:
@@ -20,7 +21,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Prove production signing is manual-only and secret-free
+      - name: Prove legacy APK workflows remain signing sterile
         shell: bash
         run: |
           set -euo pipefail
@@ -39,8 +40,43 @@ jobs:
             ! grep -q 'secrets\.' "$file"
             ! grep -q -- '--export-release' "$file"
             ! grep -qE '\b(apksigner|jarsigner|keytool)\b' "$file"
-            ! grep -qE '\b(gh release create|git push|firebase|fastlane|gradle publish)\b' "$file"
+            ! grep -qE '\b(gh release create|gh release upload|git push|firebase|fastlane|gradle publish)\b' "$file"
           done
 
+          echo 'LUHMOS_LEGACY_SIGNING_SURFACES_LOCKED'
+
+      - name: Prove signed beta candidate is bounded and cannot publish
+        shell: bash
+        run: |
+          set -euo pipefail
+          file=.github/workflows/luhmos-signed-beta-candidate.yml
+          test -f "$file"
+          grep -q 'workflow_dispatch:' "$file"
+          grep -q 'contents: read' "$file"
+          grep -q 'acknowledge_signed_candidate_only' "$file"
+          grep -q "refs/heads/luhmos-main" "$file"
+          grep -q 'refs/heads/luhmos/beta' "$file"
+          grep -q 'LUHMOS_SIGNED_CANDIDATE_AUTHORITY=BUILD_AND_SIGN_ONLY' "$file"
+          grep -q 'LUHMOS_PUBLIC_PUBLISH=OFF' "$file"
+          grep -q 'LUHMOS_ANDROID_KEYSTORE_B64' "$file"
+          grep -q 'LUHMOS_ANDROID_KEYSTORE_PASSWORD' "$file"
+          grep -q 'LUHMOS_ANDROID_KEY_PASSWORD' "$file"
+          grep -q 'LUHMOS_ANDROID_CERT_SHA256' "$file"
+          grep -q -- '--export-release' "$file"
+          grep -q 'apksigner' "$file"
+          grep -q 'zipalign' "$file"
+          grep -q 'release-manifest.json' "$file"
+          grep -q 'public_publish_authority' "$file"
+          grep -q 'LUHMOS_SIGNED_BETA_CANDIDATE_GREEN' "$file"
+          ! grep -qE '^[[:space:]]+push:' "$file"
+          ! grep -qE '^[[:space:]]+workflow_run:' "$file"
+          ! grep -qE '^[[:space:]]+schedule:' "$file"
+          ! grep -qE '^[[:space:]]+contents:[[:space:]]*write' "$file"
+          ! grep -qE '\b(gh release create|gh release upload|git push|firebase|fastlane|gradle publish)\b' "$file"
+          echo 'LUHMOS_SIGNED_CANDIDATE_BOUNDARY_GREEN'
+
+      - name: Signing boundary receipt
+        shell: bash
+        run: |
           echo 'LUHMOS_RELEASE_SIGNING_LOCK_GUARD_GREEN'
-          echo 'Production signing remains a separate explicit human-authorized lane.'
+          echo 'Production signing is confined to a manual no-publish signed-candidate lane.'
