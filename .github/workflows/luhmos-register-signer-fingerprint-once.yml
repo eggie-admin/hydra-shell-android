@@ -30,3 +30,5 @@ jobs:
           echo 'LUHMOS_ANDROID_CERT_SHA256_REGISTERED_GREEN'
           echo 'SOURCE_PROOF_RUN=34755649323'
           echo 'SOURCE_PROOF_SIGNER_SHA256=598D7272D62DBEBB71972D6164822636AD1439CD35631D0CD43321D003C92142'
+
+# second push intentionally activates this already-registered one-shot workflow
