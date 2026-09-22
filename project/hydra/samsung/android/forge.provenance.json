@@ -1,0 +1,52 @@
+{
+  "schema": "luhm-os.android-forge-provenance.v1",
+  "status": "CANONICALIZED_DONOR_SUBSET",
+  "product": "LuHm OS",
+  "canonical_path": "project/hydra/samsung/android/forge",
+  "donor": {
+    "repository": "eggie-admin/vue-headless-cms",
+    "commit": "96c23c87713800fc17c80b6a972ee2e93f1bb4b1",
+    "tree": "692247533209efad6e5b98907dcd43e9f95bde2c",
+    "godot_tree": "edd197f28f0a01f21d720b38b775ae9c89790fae",
+    "role": "historical_source_material_only",
+    "runtime_dependency": false,
+    "release_checkout_dependency": false,
+    "vue_runtime_included": false
+  },
+  "source_blobs": {
+    "android-plugin/build.gradle.kts": "61d2439b6b349d948ac1a852ecd4f2e0cb5aa790",
+    "android-plugin/gradle.properties": "f64d6f439fe8c21306dc12c8ea145373313ece66",
+    "android-plugin/settings.gradle.kts": "66e038a4f7a30389eec6f3d14f5657c5d84092ef",
+    "android-plugin/plugin/build.gradle.kts": "8ccd4c81bdba9da69ef62ed7d5871ace40cc7951",
+    "android-plugin/plugin/export_scripts_template/export_plugin.gd": "8f912b9598977323ae185bc8db31ff9130ff4765",
+    "android-plugin/plugin/export_scripts_template/plugin.cfg": "b2a0c9a3030b80da5ac9a33d87302d5622f865e8",
+    "android-plugin/plugin/src/main/AndroidManifest.xml": "db8d90c4aeacdfe12795c626bb6b462041a767e3",
+    "android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralAndroidPlugin.kt": "eea0aa8d6f8562c18d844b50ab942356847546c6",
+    "android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralWidgetProvider.kt": "85e454f5bbdb027bb32cbbb1ce41df6385ea1944",
+    "android-plugin/plugin/src/main/res/drawable/cathedral_widget_bg.xml": "d711c6b960d197efe558287fdf8e91cb2576be72",
+    "android-plugin/plugin/src/main/res/layout/cathedral_widget.xml": "e1048cddda79ebc222bdbfd63d7ca9be30816101",
+    "android-plugin/plugin/src/main/res/xml/cathedral_network_security.xml": "13542843a5babc9231f8381bd4ac3d4ab235d0f4",
+    "android-plugin/plugin/src/main/res/xml/cathedral_widget_info.xml": "624d3c8eddc44782292e23a246c5713f13d0d8dd",
+    "export_presets.cfg": "b15970d9c83a76f2c95ea16f16a1efd2b1e4aeff",
+    "project.godot": "2b57ee063a131d7f786ef908c51a9991a61342d8",
+    "scenes/main.tscn": "46fea62046256c9a161f670fdd79d51c57caf6f8",
+    "scripts/cage_manager.gd": "618819135796bbd7e9bcab624f5775465b728ec4",
+    "scripts/web_cms_bridge.gd": "81bb488920ee4788edad06fc52938c4e16a52d8a"
+  },
+  "canonicalization": [
+    "product identity changed from historical KAI 9000 shell to LuHm OS",
+    "Vue application and package files excluded",
+    "loopback control-plane API bridge excluded",
+    "unused donor cutscene and CMS registry scripts excluded from release shell",
+    "cleartext localhost network-security exceptions removed",
+    "widget title changed to LuHm OS",
+    "WebView bridge remains local appassets-origin and external-runtime-free"
+  ],
+  "forbidden_release_dependencies": [
+    "eggie-admin/vue-headless-cms checkout",
+    "Vue runtime",
+    "Termux RUN_COMMAND",
+    "loopback HTTP control plane",
+    "cleartext network exception"
+  ]
+}
