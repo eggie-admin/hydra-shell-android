@@ -1,0 +1,102 @@
+{
+  "schema": "luhm-os.golden-beta-no-backtrack-crown.v1",
+  "product": "LuHm OS",
+  "status": "CROWNED_NO_BACKTRACK_BASELINE",
+  "sealed_utc": "2026-09-22T00:00:00Z",
+  "human_final_authority": "Professor",
+  "boss": "Lum",
+  "purpose": "Freeze the first real public LuHm OS Android beta as the minimum forward-compatible release baseline and prevent regression to superseded identities, architectures, version numbers, signers, or release practices.",
+  "golden_beta": {
+    "version_name": "1.0.10-beta.1",
+    "version_code": 110,
+    "tag": "v1.0.10-beta.1",
+    "package_id": "art.eggiebagelface.luhmos",
+    "source_branch": "luhmos/beta",
+    "source_sha": "a2243d68fa1aaa2f554ef74d9a1edd32530c12ac",
+    "source_tree": "fb6d8154c995666a42c01797ab6ebf03758a91df",
+    "apk_name": "luhmos-1.0.10-beta.1.apk",
+    "apk_sha256": "b4e162c41aacdf16d58c051b3251fc07306ffb3de6a057b9aecd6ea8f36f3754",
+    "android_signer_sha256": "598D7272D62DBEBB71972D6164822636AD1439CD35631D0CD43321D003C92142",
+    "github_release": "https://github.com/eggie-admin/hydra-shell-android/releases/tag/v1.0.10-beta.1",
+    "release_stage": "PUBLIC_PRERELEASE_GREEN",
+    "physical_device_ui_proof": "PENDING_PROFESSOR_DEVICE_INSTALL"
+  },
+  "private_recovery_mirror": {
+    "drive_release_folder_id": "1q8Qcwk0aFGIrgKlGeL_Sebv2c9En_r6F",
+    "drive_release_folder": "LuHm OS • 1.0.10 Public Beta • 2026-09-22",
+    "canonical_doctrine_document_id": "1ce3FjVhUZvJIbKV6HA3aqozMT2nbmvn4FFpd9EF8Lvg",
+    "evidence_bundle": [
+      "APK",
+      "signed evidence ZIP",
+      "release manifest",
+      "SPDX SBOM",
+      "release provenance",
+      "evidence digests",
+      "APK SHA-256",
+      "Android signature receipt",
+      "16 KiB alignment receipt",
+      "package badging",
+      "permissions receipt",
+      "signer fingerprint",
+      "Crown receipt"
+    ]
+  },
+  "forward_only_invariants": {
+    "version_code_floor": 110,
+    "next_version_code_must_be_greater_than": 110,
+    "never_publish_lower_version_code": true,
+    "package_id_is_stable": "art.eggiebagelface.luhmos",
+    "signer_identity_is_stable": "598D7272D62DBEBB71972D6164822636AD1439CD35631D0CD43321D003C92142",
+    "same_signer_required_for_upgrade_lineage": true,
+    "golden_beta_release_assets_are_immutable_by_doctrine": true,
+    "golden_beta_source_sha_is_frozen": true,
+    "release_promotion_direction": [
+      "luhmos-main",
+      "luhmos/testing",
+      "luhmos/proposed",
+      "luhmos/beta"
+    ],
+    "fresh_green_required_at_each_release_gate": true,
+    "signed_artifact_evidence_required_before_publication": true,
+    "sbom_and_provenance_required_before_publication": true,
+    "physical_device_proof_required_before_stable": true
+  },
+  "architecture_floor": {
+    "product_identity": "LuHm OS",
+    "internal_project_id": "luhm_os",
+    "kai_9000_role": "DONOR_REFERENCE_ONLY",
+    "project_hydra_role": "HISTORICAL_COMPATIBILITY_ONLY",
+    "vue_runtime_role": "RETIRED_NOT_RELEASE_DEPENDENCY",
+    "canonical_android_forge": "project/hydra/samsung/android/forge",
+    "release_time_external_vue_checkout": false,
+    "loopback_http_control_plane_in_public_android_release": false,
+    "cleartext_localhost_exception_in_public_android_release": false,
+    "remote_model_direct_shell_authority": false,
+    "ai_self_approval": false,
+    "consequential_actions_are_crown_gated": true
+  },
+  "anti_regression_rules": [
+    "Do not rename the product back to Project Hydra, KAI 9000, lhms, or another superseded alias.",
+    "Do not reactivate KAI 9000 as runtime authority, control plane, dependency authority, or naming authority.",
+    "Do not restore Vue as an active LuHm OS Android release dependency.",
+    "Do not reintroduce a public Android loopback control plane or cleartext localhost exception merely because donor code once contained one.",
+    "Do not decrement Android versionCode or republish an older package over the golden beta upgrade lineage.",
+    "Do not change package ID or signer identity casually; any deliberate migration requires a separately crowned migration plan and Android-compatible upgrade evidence.",
+    "Do not mutate or replace v1.0.10-beta.1 release assets; issue a new version for changes.",
+    "Do not call stable GREEN without physical-device install/launch and upgrade proof.",
+    "Do not infer fresh live-provider, network, device, or governance GREEN from source or release receipts.",
+    "Do not backtrack crowned architecture or release doctrine during human API cleanup; cleanup must move forward from this baseline."
+  ],
+  "next_work_boundary": {
+    "first": "Professor human API cleanup",
+    "then": "evaluate universal APK as a new forward version",
+    "universal_apk_is_not_yet_crowned": true,
+    "golden_beta_must_remain_unchanged_during_next_work": true
+  },
+  "supersession": {
+    "architecture_crown_preserved": "LUHM_OS_PIPELINE_UNIFICATION_CROWN_20260921.json",
+    "release_floor_added_by_this_crown": true,
+    "this_crown_does_not_rewrite_historical_receipts": true
+  },
+  "result": "LUHM_OS_GOLDEN_BETA_NO_BACKTRACK_BASELINE_CROWNED"
+}
