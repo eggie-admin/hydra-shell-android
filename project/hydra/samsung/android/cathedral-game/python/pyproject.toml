@@ -18,6 +18,10 @@ dependencies = [
 openai = ["openai==3.14.1"]
 google = ["google-genai==2.24.0"]
 ai = ["openai==3.14.1", "google-genai==2.24.0"]
+gui = ["PySimpleGUI==6.3.16"]
+
+[project.scripts]
+luhm-minigui = "luhm_core.minimal_gui:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/luhm_core"]
