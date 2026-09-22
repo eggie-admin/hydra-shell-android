@@ -1,0 +1,30 @@
+name: LuHm OS Register Signer Fingerprint Once
+
+on:
+  push:
+    branches: ['main']
+    paths: ['.github/workflows/luhmos-register-signer-fingerprint-once.yml']
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  register:
+    runs-on: ubuntu-24.04
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SIGNER_FP: 598D7272D62DBEBB71972D6164822636AD1439CD35631D0CD43321D003C92142
+    steps:
+      - name: Register proven LuHm OS signer fingerprint
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh api "repos/$GITHUB_REPOSITORY/actions/variables/LUHMOS_ANDROID_CERT_SHA256" >/dev/null 2>&1; then
+            gh api -X PATCH "repos/$GITHUB_REPOSITORY/actions/variables/LUHMOS_ANDROID_CERT_SHA256" -f name=LUHMOS_ANDROID_CERT_SHA256 -f value="$SIGNER_FP"
+          else
+            gh api -X POST "repos/$GITHUB_REPOSITORY/actions/variables" -f name=LUHMOS_ANDROID_CERT_SHA256 -f value="$SIGNER_FP"
+          fi
+          test "$(gh api "repos/$GITHUB_REPOSITORY/actions/variables/LUHMOS_ANDROID_CERT_SHA256" --jq '.value')" = "$SIGNER_FP"
+          echo 'LUHMOS_ANDROID_CERT_SHA256_REGISTERED_GREEN'
+          echo 'SOURCE_PROOF_RUN=34755649323'
