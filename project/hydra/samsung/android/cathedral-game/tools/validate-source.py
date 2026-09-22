@@ -64,6 +64,10 @@ def main() -> int:
         "pyyaml: 6.0.3",
         "openai: 3.14.1",
         "google-genai: 2.24.0",
+        "pysimplegui: 6.3.16",
+        "audited_source_commit: 858d5d45babd66dc8ea7e20b797545b154e3f4dd",
+        "android_apk_bundled: false",
+        "automatic_toolkit_upgrade: false",
         "version: 17",
         "com.openai:openai-java: 4.63.3",
         "com.google.genai:google-genai: 1.72.0",
@@ -80,7 +84,18 @@ def main() -> int:
         '"PyYAML==6.0.3"',
         'openai = ["openai==3.14.1"]',
         'google = ["google-genai==2.24.0"]',
+        'gui = ["PySimpleGUI==6.3.16"]',
+        'luhm-minigui = "luhm_core.minimal_gui:main"',
     ])
+    require_text(root / "python/src/luhm_core/minimal_gui.py", [
+        "LUHM_PYSIMPLEGUI_MINIMAL_OPERATOR_V1",
+        "import PySimpleGUI as sg",
+        "No shell execution. No silent install. No signing or release authority.",
+        "Token remains memory-only.",
+    ])
+    gui_text = (root / "python/src/luhm_core/minimal_gui.py").read_text(encoding="utf-8")
+    if re.search(r"\bsubprocess\b|\bos\.system\s*\(|shell\s*=\s*True", gui_text):
+        die("minimal GUI contains forbidden direct shell execution primitive")
     require_text(root / "java/build.gradle.kts", [
         'JavaLanguageVersion.of(17)',
         'implementation("com.openai:openai-java:4.63.3")',
