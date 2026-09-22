@@ -1,0 +1,14 @@
+name: LuHm OS Signed Beta Candidate
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dispatch-registration-only:
+    if: ${{ false }}
+    runs-on: ubuntu-24.04
+    steps:
+      - run: echo 'Default-branch dispatch registration only. Canonical workflow executes from requested ref.'
