@@ -29,4 +29,4 @@ jobs:
           echo 'LUHMOS_ANDROID_CERT_SHA256_REGISTERED_GREEN'
           echo 'SOURCE_PROOF_RUN=34755649323'
 
-# activation push after default-branch registration
+# merge-trigger activation after default-branch registration
