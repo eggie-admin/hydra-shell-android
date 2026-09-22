@@ -1,0 +1,141 @@
+name: LuHm OS Crown Main One Shot
+run-name: Crown v1.0.1-beta.1
+
+on:
+  push:
+    branches: ['luhmos-main']
+    paths: ['.github/workflows/luhmos-crown-main-once.yml']
+
+permissions:
+  actions: write
+  contents: write
+
+concurrency:
+  group: luhmos-crown-main-once-v1.0.1-beta.1
+  cancel-in-progress: false
+
+env:
+  RELEASE_SHA: a2243d68fa1aaa2f554ef74d9a1edd32530c12ac
+  RELEASE_TREE: fb6d8154c995666a42c01797ab6ebf03758a91df
+  VERSION_NAME: 1.0.1-beta.1
+  VERSION_CODE: '101'
+  TAG_NAME: v1.0.1-beta.1
+  RECEIPT_PATH: release/LUHM_OS_PUBLIC_BETA_V1.0.1_BETA_1_CROWN_RECEIPT.json
+
+jobs:
+  crown:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          ref: luhmos-main
+          fetch-depth: 1
+
+      - name: Execute signer and publisher chain
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          SIGN_RUN=''; ARTIFACT_NAME=''; PUBLISH_RUN=''; RELEASE_URL=''
+
+          receipt() {
+            local stage="$1"
+            mkdir -p "$(dirname "$RECEIPT_PATH")"
+            STAGE="$stage" SIGN_RUN="$SIGN_RUN" ARTIFACT_NAME="$ARTIFACT_NAME" PUBLISH_RUN="$PUBLISH_RUN" RELEASE_URL="$RELEASE_URL" python3 - <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+          p=Path(os.environ['RECEIPT_PATH'])
+          p.write_text(json.dumps({
+            'schema':'luhm-os.public-beta-crown-receipt.v1',
+            'product':'LuHm OS',
+            'stage':os.environ['STAGE'],
+            'source_branch':'luhmos/beta',
+            'source_sha':os.environ['RELEASE_SHA'],
+            'source_tree':os.environ['RELEASE_TREE'],
+            'version_name':os.environ['VERSION_NAME'],
+            'version_code':int(os.environ['VERSION_CODE']),
+            'tag':os.environ['TAG_NAME'],
+            'signer_run_id':int(os.environ['SIGN_RUN']) if os.environ['SIGN_RUN'] else None,
+            'signed_artifact_name':os.environ['ARTIFACT_NAME'] or None,
+            'publisher_run_id':int(os.environ['PUBLISH_RUN']) if os.environ['PUBLISH_RUN'] else None,
+            'release_url':os.environ['RELEASE_URL'] or None,
+            'crown_authority':'Professor explicit finish-and-publish instruction',
+            'orchestrator_run_id':int(os.environ['GITHUB_RUN_ID']),
+            'permanent_signer_modified':False,
+            'permanent_publisher_modified':False,
+            'created_utc':datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+          },indent=2)+'\n',encoding='utf-8')
+          PY
+            git add "$RECEIPT_PATH"
+            if ! git diff --cached --quiet; then
+              git commit -m "receipt: LuHm OS ${stage}"
+              git push origin HEAD:luhmos-main
+            fi
+          }
+
+          ACTUAL_BETA="$(gh api "repos/$GITHUB_REPOSITORY/branches/luhmos/beta" --jq '.commit.sha')"
+          test "$ACTUAL_BETA" = "$RELEASE_SHA"
+          ACTUAL_TREE="$(gh api "repos/$GITHUB_REPOSITORY/git/commits/$RELEASE_SHA" --jq '.tree.sha')"
+          test "$ACTUAL_TREE" = "$RELEASE_TREE"
+          ! gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG_NAME" >/dev/null 2>&1
+          ! gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$TAG_NAME" >/dev/null 2>&1
+          receipt 'CROWN_CHAIN_STARTED'
+
+          SIGN_SINCE="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          jq -n --arg ref luhmos-main --arg sha "$RELEASE_SHA" --arg vn "$VERSION_NAME" --arg vc "$VERSION_CODE" --arg tag "$TAG_NAME" \
+            '{ref:$ref,inputs:{release_sha:$sha,version_name:$vn,version_code:$vc,tag_name:$tag,acknowledge_signed_candidate_only:"true"}}' > "$RUNNER_TEMP/sign.json"
+          gh api -X POST "repos/$GITHUB_REPOSITORY/actions/workflows/luhmos-signed-beta-candidate.yml/dispatches" --input "$RUNNER_TEMP/sign.json"
+
+          for _ in $(seq 1 30); do
+            SIGN_RUN="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/luhmos-signed-beta-candidate.yml/runs?event=workflow_dispatch&branch=luhmos-main&per_page=20" | jq -r --arg since "$SIGN_SINCE" '[.workflow_runs[]|select(.created_at >= $since)]|sort_by(.created_at)|reverse|.[0].id // empty')"
+            test -n "$SIGN_RUN" && break
+            sleep 5
+          done
+          test -n "$SIGN_RUN"
+          receipt 'SIGNER_DISPATCHED'
+
+          for _ in $(seq 1 300); do
+            J="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SIGN_RUN")"
+            S="$(jq -r '.status' <<<"$J")"; C="$(jq -r '.conclusion // ""' <<<"$J")"
+            if test "$S" = completed; then test "$C" = success; break; fi
+            sleep 12
+          done
+          test "$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SIGN_RUN" --jq '.conclusion')" = success
+          ARTIFACT_NAME="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SIGN_RUN/artifacts?per_page=100" | jq -r --arg p "luhmos-signed-beta-${VERSION_CODE}-" '[.artifacts[]|select(.expired==false)|select(.name|startswith($p))]|sort_by(.created_at)|reverse|.[0].name // empty')"
+          test -n "$ARTIFACT_NAME"
+          receipt 'SIGNED_CANDIDATE_GREEN'
+
+          PUB_SINCE="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          jq -n --arg ref luhmos-main --arg run "$SIGN_RUN" --arg art "$ARTIFACT_NAME" --arg sha "$RELEASE_SHA" --arg vn "$VERSION_NAME" --arg tag "$TAG_NAME" \
+            '{ref:$ref,inputs:{source_run_id:$run,artifact_name:$art,release_sha:$sha,version_name:$vn,tag_name:$tag,acknowledge_public_beta_release:"true"}}' > "$RUNNER_TEMP/pub.json"
+          gh api -X POST "repos/$GITHUB_REPOSITORY/actions/workflows/luhmos-github-release.yml/dispatches" --input "$RUNNER_TEMP/pub.json"
+
+          for _ in $(seq 1 30); do
+            PUBLISH_RUN="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/luhmos-github-release.yml/runs?event=workflow_dispatch&branch=luhmos-main&per_page=20" | jq -r --arg since "$PUB_SINCE" '[.workflow_runs[]|select(.created_at >= $since)]|sort_by(.created_at)|reverse|.[0].id // empty')"
+            test -n "$PUBLISH_RUN" && break
+            sleep 5
+          done
+          test -n "$PUBLISH_RUN"
+          receipt 'PUBLISHER_DISPATCHED'
+
+          for _ in $(seq 1 180); do
+            J="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$PUBLISH_RUN")"
+            S="$(jq -r '.status' <<<"$J")"; C="$(jq -r '.conclusion // ""' <<<"$J")"
+            if test "$S" = completed; then test "$C" = success; break; fi
+            sleep 10
+          done
+          test "$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$PUBLISH_RUN" --jq '.conclusion')" = success
+
+          R="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG_NAME")"
+          test "$(jq -r '.prerelease' <<<"$R")" = true
+          test "$(jq -r '.target_commitish' <<<"$R")" = "$RELEASE_SHA"
+          A="$(jq -r '.assets[].name' <<<"$R")"
+          for f in "luhmos-$VERSION_NAME.apk" release-manifest.json sbom.spdx.json provenance.json evidence-sha256.txt sha256.txt signature.txt zipalign.txt badging.txt permissions.txt android-signer-sha256.txt; do grep -Fxq "$f" <<<"$A"; done
+          RELEASE_URL="$(jq -r '.html_url' <<<"$R")"
+          receipt 'PUBLIC_PRERELEASE_GREEN'
+          echo 'LUHM_OS_PUBLIC_BETA_V1_0_1_BETA_1_GREEN'
