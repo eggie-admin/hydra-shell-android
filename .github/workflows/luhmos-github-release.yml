@@ -112,7 +112,7 @@ jobs:
           RELEASE_SHA: ${{ inputs.release_sha }}
           VERSION_NAME: ${{ inputs.version_name }}
           TAG_NAME: ${{ inputs.tag_name }}
-          EXPECTED_APK_FP: ${{ vars.LUHMOS_ANDROID_CERT_SHA256 }}
+          EXPECTED_APK_FP: ${{ vars.LUHMOS_ANDROID_CERT_SHA256 || '598D7272D62DBEBB71972D6164822636AD1439CD35631D0CD43321D003C92142' }}
         run: |
           set -euo pipefail
           test -n "$EXPECTED_APK_FP"
