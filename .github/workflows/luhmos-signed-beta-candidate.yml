@@ -2,6 +2,23 @@ name: LuHm OS Signed Beta Candidate
 
 on:
   workflow_dispatch:
+    inputs:
+      release_sha:
+        required: true
+        type: string
+      version_name:
+        required: true
+        type: string
+      version_code:
+        required: true
+        type: string
+      tag_name:
+        required: true
+        type: string
+      acknowledge_signed_candidate_only:
+        required: true
+        type: boolean
+        default: false
 
 permissions:
   contents: read
