@@ -20,6 +20,7 @@ env:
   VERSION_NAME: 1.0.1-beta.1
   VERSION_CODE: '101'
   TAG_NAME: v1.0.1-beta.1
+  SIGNER_FP: 598D7272D62DBEBB71972D6164822636AD1439CD35631D0CD43321D003C92142
   RECEIPT_PATH: release/LUHM_OS_PUBLIC_BETA_V1.0.1_BETA_1_CROWN_RECEIPT.json
 
 jobs:
@@ -77,6 +78,14 @@ jobs:
               git push origin HEAD:luhmos-main
             fi
           }
+
+          if gh api "repos/$GITHUB_REPOSITORY/actions/variables/LUHMOS_ANDROID_CERT_SHA256" >/dev/null 2>&1; then
+            gh api -X PATCH "repos/$GITHUB_REPOSITORY/actions/variables/LUHMOS_ANDROID_CERT_SHA256" -f name=LUHMOS_ANDROID_CERT_SHA256 -f value="$SIGNER_FP"
+          else
+            gh api -X POST "repos/$GITHUB_REPOSITORY/actions/variables" -f name=LUHMOS_ANDROID_CERT_SHA256 -f value="$SIGNER_FP"
+          fi
+          test "$(gh api "repos/$GITHUB_REPOSITORY/actions/variables/LUHMOS_ANDROID_CERT_SHA256" --jq '.value')" = "$SIGNER_FP"
+          echo 'LUHMOS_ANDROID_CERT_SHA256_REGISTERED_GREEN'
 
           ACTUAL_BETA="$(gh api "repos/$GITHUB_REPOSITORY/branches/luhmos/beta" --jq '.commit.sha')"
           test "$ACTUAL_BETA" = "$RELEASE_SHA"
