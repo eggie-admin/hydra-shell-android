@@ -63,9 +63,13 @@ else:
         "LUHMOS_PUBLIC_BETA_AUTHORITY=EXPLICIT",
         "LuHm OS Signed Beta Candidate",
         "release-manifest.json",
+        "sbom.spdx.json",
+        "provenance.json",
+        "evidence-sha256.txt",
+        "luhm-os.signed-beta-artifact.v2",
         "LUHMOS_ANDROID_CERT_SHA256",
-        "Requested release SHA is not the current beta head.",
-        "LUHMOS_SIGNED_ARTIFACT_EVIDENCE_GREEN",
+        "git rev-parse refs/remotes/origin/luhmos/beta",
+        "LUHMOS_ENTERPRISE_SIGNED_ARTIFACT_EVIDENCE_GREEN",
         "LUHMOS_RELEASE_NAMESPACE_CLEAR",
         "gh release create",
         "--prerelease",
@@ -96,5 +100,6 @@ print("LUHMOS_PUBLIC_RELEASE_LOCK_GREEN")
 print("AUTO_PUBLIC_RELEASE_DISPATCH=ABSENT")
 print("GITHUB_BETA_PUBLISHER=MANUAL_EVIDENCE_BOUND")
 print("GITHUB_BETA_PUBLISHER_SIGNING_SECRETS=ABSENT")
+print("GITHUB_BETA_SBOM_PROVENANCE=REQUIRED")
 print("FDROID_PUBLICATION=LOCKED")
 print("IZZY_PUBLICATION=LOCKED")

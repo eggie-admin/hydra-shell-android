@@ -41,7 +41,7 @@ concurrency:
 
 jobs:
   publish-beta:
-    name: Verify candidate and publish immutable prerelease
+    name: Verify enterprise candidate and publish immutable prerelease
     runs-on: ubuntu-24.04
     steps:
       - name: Enforce publisher Crown boundary
@@ -50,14 +50,8 @@ jobs:
           ACK: ${{ inputs.acknowledge_public_beta_release }}
         run: |
           set -euo pipefail
-          test "$GITHUB_REF" = 'refs/heads/luhmos-main' || {
-            echo 'Publisher may only be dispatched from canonical luhmos-main workflow code.' >&2
-            exit 1
-          }
-          test "$ACK" = 'true' || {
-            echo 'Explicit public-beta release acknowledgement required.' >&2
-            exit 1
-          }
+          test "$GITHUB_REF" = 'refs/heads/luhmos-main'
+          test "$ACK" = 'true'
           echo 'LUHMOS_PUBLISHER_SIGNING_SECRETS=NONE'
           echo 'LUHMOS_PUBLIC_BETA_AUTHORITY=EXPLICIT'
 
@@ -79,10 +73,7 @@ jobs:
           [[ "$VERSION_NAME" =~ ^[0-9]+\.[0-9]+\.[0-9]+-beta\.[0-9]+$ ]]
           test "$TAG_NAME" = "v$VERSION_NAME"
           git fetch --no-tags origin refs/heads/luhmos/beta:refs/remotes/origin/luhmos/beta
-          test "$(git rev-parse refs/remotes/origin/luhmos/beta)" = "$RELEASE_SHA" || {
-            echo 'Requested release SHA is not the current beta head.' >&2
-            exit 1
-          }
+          test "$(git rev-parse refs/remotes/origin/luhmos/beta)" = "$RELEASE_SHA"
 
       - name: Prove source signer workflow run
         shell: bash
@@ -111,8 +102,11 @@ jobs:
           mkdir -p build/candidate
           gh run download "$RUN_ID" --repo "$GITHUB_REPOSITORY" --name "$ARTIFACT_NAME" --dir build/candidate
           test -s build/candidate/release-manifest.json
+          test -s build/candidate/sbom.spdx.json
+          test -s build/candidate/provenance.json
+          test -s build/candidate/evidence-sha256.txt
 
-      - name: Verify signed candidate manifest, APK hash and signer lineage
+      - name: Verify APK, signer, SBOM and provenance binding
         shell: bash
         env:
           RELEASE_SHA: ${{ inputs.release_sha }}
@@ -121,9 +115,14 @@ jobs:
           EXPECTED_APK_FP: ${{ vars.LUHMOS_ANDROID_CERT_SHA256 }}
         run: |
           set -euo pipefail
-          test -n "$EXPECTED_APK_FP" || { echo 'Missing LUHMOS_ANDROID_CERT_SHA256 repository variable.' >&2; exit 1; }
+          test -n "$EXPECTED_APK_FP"
           MANIFEST=build/candidate/release-manifest.json
+          SBOM=build/candidate/sbom.spdx.json
+          PROV=build/candidate/provenance.json
           python -m json.tool "$MANIFEST" >/dev/null
+          python -m json.tool "$SBOM" >/dev/null
+          python -m json.tool "$PROV" >/dev/null
+          test "$(jq -r '.schema' "$MANIFEST")" = 'luhm-os.signed-beta-artifact.v2'
           test "$(jq -r '.source_sha' "$MANIFEST")" = "$RELEASE_SHA"
           test "$(jq -r '.tag' "$MANIFEST")" = "$TAG_NAME"
           test "$(jq -r '.version_name' "$MANIFEST")" = "$VERSION_NAME"
@@ -136,13 +135,27 @@ jobs:
           test "$APK_FP" = "$WANT_FP"
           test -s "build/candidate/$APK_NAME"
           test "$(sha256sum "build/candidate/$APK_NAME" | awk '{print $1}')" = "$APK_SHA"
+          test "$(sha256sum "$SBOM" | awk '{print $1}')" = "$(jq -r '.sbom_sha256' "$MANIFEST")"
+          test "$(sha256sum "$PROV" | awk '{print $1}')" = "$(jq -r '.provenance_sha256' "$MANIFEST")"
+          test "$(jq -r '.spdxVersion' "$SBOM")" = 'SPDX-2.3'
+          test "$(jq -r '.packages[] | select(.SPDXID=="SPDXRef-Package-LuHmOS") | .checksums[] | select(.algorithm=="SHA256") | .checksumValue' "$SBOM")" = "$APK_SHA"
+          test "$(jq -r '.schema' "$PROV")" = 'luhm-os.release-provenance.v1'
+          test "$(jq -r '.source_repository' "$PROV")" = 'eggie-admin/hydra-shell-android'
+          test "$(jq -r '.source_branch' "$PROV")" = 'luhmos/beta'
+          test "$(jq -r '.source_sha' "$PROV")" = "$RELEASE_SHA"
+          test "$(jq -r '.artifact.sha256' "$PROV")" = "$APK_SHA"
+          test "$(jq -r '.artifact.signer_sha256' "$PROV" | tr -d ':[:space:]' | tr '[:lower:]' '[:upper:]')" = "$APK_FP"
+          test "$(jq -r '.canonical_forge.external_checkout' "$PROV")" = 'false'
+          test "$(jq -r '.public_publish_authority' "$PROV")" = 'false'
           test -s build/candidate/signature.txt
           test -s build/candidate/zipalign.txt
           test -s build/candidate/badging.txt
+          test -s build/candidate/permissions.txt
+          (cd build/candidate && sha256sum --check evidence-sha256.txt)
           echo "APK_NAME=$APK_NAME" >> "$GITHUB_ENV"
           echo "APK_SHA=$APK_SHA" >> "$GITHUB_ENV"
           echo "APK_FP=$APK_FP" >> "$GITHUB_ENV"
-          echo 'LUHMOS_SIGNED_ARTIFACT_EVIDENCE_GREEN'
+          echo 'LUHMOS_ENTERPRISE_SIGNED_ARTIFACT_EVIDENCE_GREEN'
 
       - name: Refuse tag or release replacement
         shell: bash
@@ -166,7 +179,6 @@ jobs:
         env:
           RELEASE_SHA: ${{ inputs.release_sha }}
           VERSION_NAME: ${{ inputs.version_name }}
-          TAG_NAME: ${{ inputs.tag_name }}
         run: |
           set -euo pipefail
           cat > build/candidate/release-notes.md <<EOF
@@ -179,9 +191,11 @@ jobs:
           - Source SHA: \`$RELEASE_SHA\`
           - APK SHA-256: \`$APK_SHA\`
           - Android signer SHA-256: \`$APK_FP\`
+          - SBOM: SPDX 2.3, artifact-bound
+          - Provenance: source/SHA/tree/toolchain/artifact bound
           - Target: Samsung/Android, arm64-v8a, target SDK 36
 
-          This beta preserves the existing LuHm OS Android signing identity. Stable promotion remains separately gated by physical Samsung install/launch and same-signer upgrade proof.
+          Stable promotion remains separately gated by physical Samsung install/launch and same-signer upgrade proof.
           EOF
 
       - name: Publish immutable GitHub prerelease
@@ -201,10 +215,14 @@ jobs:
             --prerelease \
             "build/candidate/$APK_NAME#LuHm OS Android APK" \
             "build/candidate/release-manifest.json#Signed beta release manifest" \
+            "build/candidate/sbom.spdx.json#SPDX 2.3 SBOM" \
+            "build/candidate/provenance.json#Release provenance" \
+            "build/candidate/evidence-sha256.txt#Evidence digest set" \
             "build/candidate/sha256.txt#APK SHA-256 receipt" \
             "build/candidate/signature.txt#Android signature receipt" \
             "build/candidate/zipalign.txt#16 KiB alignment receipt" \
             "build/candidate/badging.txt#Android package identity receipt" \
+            "build/candidate/permissions.txt#Android permissions receipt" \
             "build/candidate/android-signer-sha256.txt#Android signer fingerprint"
           gh release view "$TAG_NAME" --repo "$GITHUB_REPOSITORY" --json tagName,isPrerelease,targetCommitish,url
           echo 'LUHMOS_PUBLIC_BETA_GITHUB_RELEASE_GREEN'

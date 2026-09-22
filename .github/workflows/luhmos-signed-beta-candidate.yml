@@ -36,16 +36,16 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  DONOR_REPO: eggie-admin/vue-headless-cms
-  DONOR_REF: 96c23c87713800fc17c80b6a972ee2e93f1bb4b1
   PACKAGE_ID: art.eggiebagelface.luhmos
   KEY_ALIAS: luhmos-release
+  CANONICAL_FORGE: project/hydra/samsung/android/forge
+  FORGE_PROVENANCE: project/hydra/samsung/android/forge.provenance.json
   GODOT_RELEASE: 4.7.2-stable
   GODOT_TEMPLATE_VERSION: 4.7.2.stable
   GODOT_EDITOR_SHA256: cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4
   GODOT_TEMPLATES_SHA256: f298490b8d44d934be425a5a65a51bf15f422428b229a06a6e11d9ffea248011
-  ANDROID_GRADLE_VERSION: 8.11.1
-  ANDROID_GRADLE_SHA256: f397b287023acdba1e9f6fc5ea72d22dd63669d59ed4a289a29b1a76eee151c6
+  GODOT_GRADLE_VERSION: 8.11.1
+  GODOT_GRADLE_SHA256: f397b287023acdba1e9f6fc5ea72d22dd63669d59ed4a289a29b1a76eee151c6
 
 jobs:
   signed-candidate:
@@ -79,7 +79,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Prove exact beta source and public identity
+      - name: Prove exact beta source and canonical forge boundary
         shell: bash
         env:
           RELEASE_SHA: ${{ inputs.release_sha }}
@@ -89,36 +89,27 @@ jobs:
           test "$(git rev-parse HEAD)" = "$RELEASE_SHA"
           test "$(git rev-parse refs/remotes/origin/luhmos/beta)" = "$RELEASE_SHA"
           python -m json.tool project/hydra/samsung/android/apk/app.reference.json >/dev/null
+          python -m json.tool "$FORGE_PROVENANCE" >/dev/null
           grep -q '"package_id": "art.eggiebagelface.luhmos"' project/hydra/samsung/android/apk/app.reference.json
           grep -q '"release_signing_alias": "luhmos-release"' project/hydra/samsung/android/apk/app.reference.json
+          grep -q '"release_checkout_dependency": false' "$FORGE_PROVENANCE"
+          grep -q '"vue_runtime_included": false' "$FORGE_PROVENANCE"
+          test -f "$CANONICAL_FORGE/project.godot"
+          test -f "$CANONICAL_FORGE/android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralAndroidPlugin.kt"
           if git ls-files | grep -E '(^|/)(\.secrets|private)/|\.(jks|keystore|p12|pfx|pkcs12|key|pem)$'; then
             echo 'Tracked signing/private material detected.' >&2
             exit 1
           fi
+          ! grep -R -nE 'http://127\.0\.0\.1|http://localhost|com\.termux\.RUN_COMMAND|RunCommandService|KAI 9000|PROJECT HYDRA|\.vue(["'"'"' ]|$)' "$CANONICAL_FORGE"
+          grep -q 'cleartextTrafficPermitted="false"' "$CANONICAL_FORGE/android-plugin/plugin/src/main/res/xml/cathedral_network_security.xml"
+          ! grep -q 'cleartextTrafficPermitted="true"' "$CANONICAL_FORGE/android-plugin/plugin/src/main/res/xml/cathedral_network_security.xml"
           GAME=project/hydra/samsung/android/cathedral-game
           python "$GAME/tools/validate-source.py" "$GAME"
           grep -q 'LUHM_PUBLIC_BETA_IDENTITY_OVERLAY_V1' "$GAME/crown-cathedral.js"
           grep -q 'LUHM OS CATHEDRAL V1' "$GAME/crown-cathedral.js"
           grep -q 'LUHM OS // SOURCE-OF-TRUTH DEMO' "$GAME/crown-cathedral.js"
           grep -q 'PUBLIC BETA CANDIDATE · ORIGINAL LUHM OS SYSTEMS' "$GAME/crown-cathedral.js"
-          echo 'LUHMOS_BETA_SOURCE_IDENTITY_GREEN'
-
-      - name: Checkout pinned Android donor
-        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
-        with:
-          repository: ${{ env.DONOR_REPO }}
-          ref: ${{ env.DONOR_REF }}
-          path: _forge/luhmos-android
-          persist-credentials: false
-
-      - name: Validate Android bridge boundary
-        shell: bash
-        run: |
-          set -euo pipefail
-          ! grep -R -nE 'com\.termux\.permission\.RUN_COMMAND|com\.termux\.RUN_COMMAND|RunCommandService' _forge/luhmos-android/godot/android-plugin
-          ! grep -R -n 'http://127.0.0.1' _forge/luhmos-android/godot/android-plugin/plugin/src/main/java
-          grep -q 'MIXED_CONTENT_NEVER_ALLOW' _forge/luhmos-android/godot/android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralAndroidPlugin.kt
-          grep -q 'setAcceptCookie(false)' _forge/luhmos-android/godot/android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralAndroidPlugin.kt
+          echo 'LUHMOS_BETA_SOURCE_AND_FORGE_GREEN'
 
       - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
         with:
@@ -153,9 +144,9 @@ jobs:
           echo "${GODOT_EDITOR_SHA256}  $CACHE/godot.zip" | sha256sum --check --strict
           curl --fail --location --retry 5 --retry-all-errors -o "$CACHE/export_templates.tpz" "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v4.7.2-stable_export_templates.tpz"
           echo "${GODOT_TEMPLATES_SHA256}  $CACHE/export_templates.tpz" | sha256sum --check --strict
-          GRADLE_ZIP="$CACHE/gradle-${ANDROID_GRADLE_VERSION}-bin.zip"
-          curl --fail --location --retry 5 --retry-all-errors -o "$GRADLE_ZIP" "https://services.gradle.org/distributions/gradle-${ANDROID_GRADLE_VERSION}-bin.zip"
-          echo "${ANDROID_GRADLE_SHA256}  $GRADLE_ZIP" | sha256sum --check --strict
+          GRADLE_ZIP="$CACHE/gradle-${GODOT_GRADLE_VERSION}-bin.zip"
+          curl --fail --location --retry 5 --retry-all-errors -o "$GRADLE_ZIP" "https://services.gradle.org/distributions/gradle-${GODOT_GRADLE_VERSION}-bin.zip"
+          echo "${GODOT_GRADLE_SHA256}  $GRADLE_ZIP" | sha256sum --check --strict
           unzip -q -o "$CACHE/godot.zip" -d "$WORK"
           chmod +x "$WORK/Godot_v4.7.2-stable_linux.x86_64"
           echo "GODOT_BIN=$WORK/Godot_v4.7.2-stable_linux.x86_64" >> "$GITHUB_ENV"
@@ -168,7 +159,7 @@ jobs:
           unzip -q "$TEMPLATE_DIR/android_source.zip" -d "$PATCH_DIR"
           WRAPPER_PROPS="$(find "$PATCH_DIR" -type f -path '*/gradle/wrapper/gradle-wrapper.properties' -print -quit)"
           test -n "$WRAPPER_PROPS"
-          python - "$WRAPPER_PROPS" "$GRADLE_ZIP" "$ANDROID_GRADLE_SHA256" <<'PY'
+          python - "$WRAPPER_PROPS" "$GRADLE_ZIP" "$GODOT_GRADLE_SHA256" <<'PY'
           from pathlib import Path
           import sys
           path=Path(sys.argv[1]); uri=Path(sys.argv[2]).resolve().as_uri(); digest=sys.argv[3]
@@ -187,30 +178,35 @@ jobs:
           (cd "$PATCH_DIR" && zip -q -r "$TEMPLATE_DIR/android_source.zip.new" .)
           mv "$TEMPLATE_DIR/android_source.zip.new" "$TEMPLATE_DIR/android_source.zip"
 
-      - name: Bundle current LuHm source and build Android plugin
+      - name: Stage canonical forge, bundle current LuHm source, and build Android plugin
         shell: bash
         run: |
           set -euo pipefail
+          FORGE="$RUNNER_TEMP/luhmos-android-forge"
+          rm -rf "$FORGE"
+          cp -a "$CANONICAL_FORGE" "$FORGE"
           GAME="$GITHUB_WORKSPACE/project/hydra/samsung/android/cathedral-game"
-          rm -rf _forge/luhmos-android/godot/android-plugin/plugin/src/main/assets/cms
-          mkdir -p _forge/luhmos-android/godot/android-plugin/plugin/src/main/assets/cms
-          cp -a "$GAME"/. _forge/luhmos-android/godot/android-plugin/plugin/src/main/assets/cms/
-          gradle -p _forge/luhmos-android/godot/android-plugin :plugin:assemble
-          test -f _forge/luhmos-android/godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-release.aar
-          rm -rf _forge/luhmos-android/godot/addons/CathedralAndroid
-          mkdir -p _forge/luhmos-android/godot/addons/CathedralAndroid/bin/debug _forge/luhmos-android/godot/addons/CathedralAndroid/bin/release
-          cp -a _forge/luhmos-android/godot/android-plugin/plugin/export_scripts_template/. _forge/luhmos-android/godot/addons/CathedralAndroid/
-          cp _forge/luhmos-android/godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-debug.aar _forge/luhmos-android/godot/addons/CathedralAndroid/bin/debug/
-          cp _forge/luhmos-android/godot/android-plugin/plugin/build/outputs/aar/CathedralAndroid-release.aar _forge/luhmos-android/godot/addons/CathedralAndroid/bin/release/
+          rm -rf "$FORGE/android-plugin/plugin/src/main/assets/cms"
+          mkdir -p "$FORGE/android-plugin/plugin/src/main/assets/cms"
+          cp -a "$GAME"/. "$FORGE/android-plugin/plugin/src/main/assets/cms/"
+          gradle -p "$FORGE/android-plugin" :plugin:assemble
+          test -f "$FORGE/android-plugin/plugin/build/outputs/aar/CathedralAndroid-release.aar"
+          rm -rf "$FORGE/addons/CathedralAndroid"
+          mkdir -p "$FORGE/addons/CathedralAndroid/bin/debug" "$FORGE/addons/CathedralAndroid/bin/release"
+          cp -a "$FORGE/android-plugin/plugin/export_scripts_template/." "$FORGE/addons/CathedralAndroid/"
+          cp "$FORGE/android-plugin/plugin/build/outputs/aar/CathedralAndroid-debug.aar" "$FORGE/addons/CathedralAndroid/bin/debug/"
+          cp "$FORGE/android-plugin/plugin/build/outputs/aar/CathedralAndroid-release.aar" "$FORGE/addons/CathedralAndroid/bin/release/"
+          echo "LUHMOS_FORGE=$FORGE" >> "$GITHUB_ENV"
+          echo 'LUHMOS_CANONICAL_FORGE_BUILD_GREEN'
 
-      - name: Patch donor export metadata for beta identity
+      - name: Patch staged export metadata for beta identity
         shell: bash
         env:
           VERSION_NAME: ${{ inputs.version_name }}
           VERSION_CODE: ${{ inputs.version_code }}
         run: |
           set -euo pipefail
-          PRESET=_forge/luhmos-android/godot/export_presets.cfg
+          PRESET="$LUHMOS_FORGE/export_presets.cfg"
           python - "$PRESET" "$VERSION_NAME" "$VERSION_CODE" <<'PY'
           from pathlib import Path
           import re,sys
@@ -224,7 +220,7 @@ jobs:
           grep -q "version/code=$VERSION_CODE" "$PRESET"
           grep -q "version/name=\"$VERSION_NAME\"" "$PRESET"
 
-      - name: Sign, export and verify beta APK
+      - name: Sign, export, verify, and bind enterprise evidence
         shell: bash
         env:
           ANDROID_KS_B64: ${{ secrets.LUHMOS_ANDROID_KEYSTORE_B64 }}
@@ -257,8 +253,8 @@ jobs:
           export/android/java_sdk_path = "$JAVA_HOME"
           EOF
           APK="$GITHUB_WORKSPACE/build/release/luhmos-$VERSION_NAME.apk"
-          "$GODOT_BIN" --headless --editor --path _forge/luhmos-android/godot --quit
-          "$GODOT_BIN" --headless --path _forge/luhmos-android/godot --install-android-build-template --export-release 'Android Release' "$APK"
+          "$GODOT_BIN" --headless --editor --path "$LUHMOS_FORGE" --quit
+          "$GODOT_BIN" --headless --path "$LUHMOS_FORGE" --install-android-build-template --export-release 'Android Release' "$APK"
           test -s "$APK"
           BT="$ANDROID_HOME/build-tools/36.1.0"
           "$BT/apksigner" verify --verbose --print-certs "$APK" | tee build/release/signature.txt
@@ -279,13 +275,90 @@ jobs:
           WANT_FP="$(printf '%s' "$EXPECTED_APK_FP" | tr -d ':[:space:]' | tr '[:lower:]' '[:upper:]')"
           test -n "$APK_FP" && test "$APK_FP" = "$WANT_FP"
           APK_SHA="$(sha256sum "$APK" | awk '{print $1}')"
+          SOURCE_TREE="$(git rev-parse HEAD^{tree})"
+          FORGE_PROV_SHA="$(sha256sum "$FORGE_PROVENANCE" | awk '{print $1}')"
           printf '%s\n' "$APK_FP" > build/release/android-signer-sha256.txt
-          python - "$RELEASE_SHA" "$TAG_NAME" "$VERSION_NAME" "$VERSION_CODE" "$APK_SHA" "$APK_FP" <<'PY'
-          import json,sys
-          out={'schema':'luhm-os.signed-beta-artifact.v1','source_sha':sys.argv[1],'tag':sys.argv[2],'version_name':sys.argv[3],'version_code':int(sys.argv[4]),'package':'art.eggiebagelface.luhmos','apk_name':f'luhmos-{sys.argv[3]}.apk','apk_sha256':sys.argv[5],'signer_sha256':sys.argv[6],'public_publish_authority':False}
+
+          RELEASE_SHA="$RELEASE_SHA" SOURCE_TREE="$SOURCE_TREE" VERSION_NAME="$VERSION_NAME" VERSION_CODE="$VERSION_CODE" TAG_NAME="$TAG_NAME" APK_SHA="$APK_SHA" APK_FP="$APK_FP" FORGE_PROV_SHA="$FORGE_PROV_SHA" python - <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          out = Path('build/release')
+          version = os.environ['VERSION_NAME']
+          apk_sha = os.environ['APK_SHA']
+          source_sha = os.environ['RELEASE_SHA']
+          created = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+          sbom = {
+              'spdxVersion': 'SPDX-2.3',
+              'dataLicense': 'CC0-1.0',
+              'SPDXID': 'SPDXRef-DOCUMENT',
+              'name': f'LuHm OS {version} Android beta',
+              'documentNamespace': f'https://eggiebagelface.art/luhmos/spdx/{apk_sha}',
+              'creationInfo': {'created': created, 'creators': ['Tool: LuHm OS Signed Beta Candidate']},
+              'packages': [
+                  {'name':'LuHm OS Android APK','SPDXID':'SPDXRef-Package-LuHmOS','versionInfo':version,'downloadLocation':'NOASSERTION','filesAnalyzed':False,'checksums':[{'algorithm':'SHA256','checksumValue':apk_sha}]},
+                  {'name':'Godot Engine','SPDXID':'SPDXRef-Package-Godot','versionInfo':'4.7.2-stable','downloadLocation':'https://github.com/godotengine/godot','filesAnalyzed':False},
+                  {'name':'AndroidX WebKit','SPDXID':'SPDXRef-Package-AndroidXWebKit','versionInfo':'1.17.0','downloadLocation':'NOASSERTION','filesAnalyzed':False},
+                  {'name':'Android Gradle Plugin','SPDXID':'SPDXRef-Package-AGP','versionInfo':'8.13.2','downloadLocation':'NOASSERTION','filesAnalyzed':False},
+                  {'name':'Kotlin Android Plugin','SPDXID':'SPDXRef-Package-Kotlin','versionInfo':'2.2.21','downloadLocation':'NOASSERTION','filesAnalyzed':False},
+              ],
+              'relationships': [
+                  {'spdxElementId':'SPDXRef-DOCUMENT','relationshipType':'DESCRIBES','relatedSpdxElement':'SPDXRef-Package-LuHmOS'},
+                  {'spdxElementId':'SPDXRef-Package-LuHmOS','relationshipType':'DEPENDS_ON','relatedSpdxElement':'SPDXRef-Package-Godot'},
+                  {'spdxElementId':'SPDXRef-Package-LuHmOS','relationshipType':'DEPENDS_ON','relatedSpdxElement':'SPDXRef-Package-AndroidXWebKit'},
+              ],
+          }
+          (out/'sbom.spdx.json').write_text(json.dumps(sbom, indent=2)+'\n', encoding='utf-8')
+          provenance = {
+              'schema':'luhm-os.release-provenance.v1',
+              'product':'LuHm OS',
+              'package':'art.eggiebagelface.luhmos',
+              'source_repository':'eggie-admin/hydra-shell-android',
+              'source_branch':'luhmos/beta',
+              'source_sha':source_sha,
+              'source_tree':os.environ['SOURCE_TREE'],
+              'version_name':version,
+              'version_code':int(os.environ['VERSION_CODE']),
+              'tag':os.environ['TAG_NAME'],
+              'artifact':{'name':f'luhmos-{version}.apk','sha256':apk_sha,'signer_sha256':os.environ['APK_FP']},
+              'canonical_forge':{'path':'project/hydra/samsung/android/forge','provenance_path':'project/hydra/samsung/android/forge.provenance.json','provenance_sha256':os.environ['FORGE_PROV_SHA'],'external_checkout':False},
+              'toolchain':{'godot':'4.7.2-stable','godot_editor_sha256':os.environ['GODOT_EDITOR_SHA256'],'godot_templates_sha256':os.environ['GODOT_TEMPLATES_SHA256'],'godot_gradle':'8.11.1','godot_gradle_sha256':os.environ['GODOT_GRADLE_SHA256'],'android_build_tools':'36.1.0','target_sdk':36,'abi':'arm64-v8a','java':17},
+              'workflow':{'name':'LuHm OS Signed Beta Candidate','run_id':os.environ['GITHUB_RUN_ID'],'run_attempt':int(os.environ['GITHUB_RUN_ATTEMPT'])},
+              'created_utc':created,
+              'public_publish_authority':False,
+          }
+          (out/'provenance.json').write_text(json.dumps(provenance, indent=2)+'\n', encoding='utf-8')
+          PY
+
+          SBOM_SHA="$(sha256sum build/release/sbom.spdx.json | awk '{print $1}')"
+          PROV_SHA="$(sha256sum build/release/provenance.json | awk '{print $1}')"
+          RELEASE_SHA="$RELEASE_SHA" TAG_NAME="$TAG_NAME" VERSION_NAME="$VERSION_NAME" VERSION_CODE="$VERSION_CODE" APK_SHA="$APK_SHA" APK_FP="$APK_FP" SBOM_SHA="$SBOM_SHA" PROV_SHA="$PROV_SHA" python - <<'PY'
+          import json, os
+          out={
+            'schema':'luhm-os.signed-beta-artifact.v2',
+            'source_sha':os.environ['RELEASE_SHA'],
+            'tag':os.environ['TAG_NAME'],
+            'version_name':os.environ['VERSION_NAME'],
+            'version_code':int(os.environ['VERSION_CODE']),
+            'package':'art.eggiebagelface.luhmos',
+            'apk_name':f"luhmos-{os.environ['VERSION_NAME']}.apk",
+            'apk_sha256':os.environ['APK_SHA'],
+            'signer_sha256':os.environ['APK_FP'],
+            'sbom_name':'sbom.spdx.json',
+            'sbom_sha256':os.environ['SBOM_SHA'],
+            'provenance_name':'provenance.json',
+            'provenance_sha256':os.environ['PROV_SHA'],
+            'public_publish_authority':False
+          }
           open('build/release/release-manifest.json','w',encoding='utf-8').write(json.dumps(out,indent=2)+'\n')
           PY
+          (cd build/release && sha256sum "luhmos-$VERSION_NAME.apk" release-manifest.json sbom.spdx.json provenance.json signature.txt zipalign.txt badging.txt permissions.txt android-signer-sha256.txt > evidence-sha256.txt)
+          python -m json.tool build/release/sbom.spdx.json >/dev/null
+          python -m json.tool build/release/provenance.json >/dev/null
+          python -m json.tool build/release/release-manifest.json >/dev/null
           echo 'LUHMOS_SIGNED_BETA_CANDIDATE_GREEN'
+          echo 'LUHMOS_SBOM_PROVENANCE_BOUND_GREEN'
 
       - name: Upload immutable signed candidate evidence
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -294,6 +367,9 @@ jobs:
           path: |
             build/release/luhmos-${{ inputs.version_name }}.apk
             build/release/release-manifest.json
+            build/release/sbom.spdx.json
+            build/release/provenance.json
+            build/release/evidence-sha256.txt
             build/release/sha256.txt
             build/release/signature.txt
             build/release/zipalign.txt

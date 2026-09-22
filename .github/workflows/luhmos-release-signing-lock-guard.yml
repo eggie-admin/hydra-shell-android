@@ -8,7 +8,10 @@ on:
       - '.github/workflows/luhmos-world-first-apk.yml'
       - '.github/workflows/luhmos-crown-gate-apk.yml'
       - '.github/workflows/luhmos-signed-beta-candidate.yml'
+      - '.github/workflows/luhmos-github-release.yml'
       - '.github/workflows/luhmos-release-signing-lock-guard.yml'
+      - 'project/hydra/samsung/android/forge/**'
+      - 'project/hydra/samsung/android/forge.provenance.json'
 
 permissions:
   contents: read
@@ -29,7 +32,6 @@ jobs:
             .github/workflows/luhmos-world-first-apk.yml
             .github/workflows/luhmos-crown-gate-apk.yml
           )
-
           for file in "${FILES[@]}"; do
             test -f "$file"
             grep -q 'workflow_dispatch:' "$file"
@@ -42,10 +44,26 @@ jobs:
             ! grep -qE '\b(apksigner|jarsigner|keytool)\b' "$file"
             ! grep -qE '\b(gh release create|gh release upload|git push|firebase|fastlane|gradle publish)\b' "$file"
           done
-
           echo 'LUHMOS_LEGACY_SIGNING_SURFACES_LOCKED'
 
-      - name: Prove signed beta candidate is bounded and cannot publish
+      - name: Prove canonical forge is donor-independent and public-safe
+        shell: bash
+        run: |
+          set -euo pipefail
+          FORGE=project/hydra/samsung/android/forge
+          PROV=project/hydra/samsung/android/forge.provenance.json
+          test -f "$FORGE/project.godot"
+          test -f "$FORGE/android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralAndroidPlugin.kt"
+          python -m json.tool "$PROV" >/dev/null
+          grep -q '"runtime_dependency": false' "$PROV"
+          grep -q '"release_checkout_dependency": false' "$PROV"
+          grep -q '"vue_runtime_included": false' "$PROV"
+          ! grep -R -nE 'http://127\.0\.0\.1|http://localhost|com\.termux\.RUN_COMMAND|RunCommandService|KAI 9000|PROJECT HYDRA' "$FORGE"
+          grep -q 'cleartextTrafficPermitted="false"' "$FORGE/android-plugin/plugin/src/main/res/xml/cathedral_network_security.xml"
+          ! grep -q 'cleartextTrafficPermitted="true"' "$FORGE/android-plugin/plugin/src/main/res/xml/cathedral_network_security.xml"
+          echo 'LUHMOS_CANONICAL_ANDROID_FORGE_GREEN'
+
+      - name: Prove signed beta candidate is bounded and evidence-complete
         shell: bash
         run: |
           set -euo pipefail
@@ -56,6 +74,8 @@ jobs:
           grep -q 'acknowledge_signed_candidate_only' "$file"
           grep -q "refs/heads/luhmos-main" "$file"
           grep -q 'refs/heads/luhmos/beta' "$file"
+          grep -q 'CANONICAL_FORGE: project/hydra/samsung/android/forge' "$file"
+          grep -q 'FORGE_PROVENANCE: project/hydra/samsung/android/forge.provenance.json' "$file"
           grep -q 'LUHMOS_SIGNED_CANDIDATE_AUTHORITY=BUILD_AND_SIGN_ONLY' "$file"
           grep -q 'LUHMOS_PUBLIC_PUBLISH=OFF' "$file"
           grep -q 'LUHMOS_ANDROID_KEYSTORE_B64' "$file"
@@ -66,8 +86,13 @@ jobs:
           grep -q 'apksigner' "$file"
           grep -q 'zipalign' "$file"
           grep -q 'release-manifest.json' "$file"
-          grep -q 'public_publish_authority' "$file"
-          grep -q 'LUHMOS_SIGNED_BETA_CANDIDATE_GREEN' "$file"
+          grep -q 'sbom.spdx.json' "$file"
+          grep -q 'provenance.json' "$file"
+          grep -q 'evidence-sha256.txt' "$file"
+          grep -q 'luhm-os.signed-beta-artifact.v2' "$file"
+          grep -q 'LUHMOS_SBOM_PROVENANCE_BOUND_GREEN' "$file"
+          ! grep -q 'DONOR_REPO' "$file"
+          ! grep -q 'vue-headless-cms' "$file"
           ! grep -qE '^[[:space:]]+push:' "$file"
           ! grep -qE '^[[:space:]]+workflow_run:' "$file"
           ! grep -qE '^[[:space:]]+schedule:' "$file"
@@ -75,8 +100,32 @@ jobs:
           ! grep -qE '\b(gh release create|gh release upload|git push|firebase|fastlane|gradle publish)\b' "$file"
           echo 'LUHMOS_SIGNED_CANDIDATE_BOUNDARY_GREEN'
 
+      - name: Prove publisher has no signing authority and verifies enterprise evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          file=.github/workflows/luhmos-github-release.yml
+          test -f "$file"
+          grep -q 'workflow_dispatch:' "$file"
+          grep -q 'acknowledge_public_beta_release' "$file"
+          grep -q 'actions: read' "$file"
+          grep -q 'contents: write' "$file"
+          grep -q 'sbom.spdx.json' "$file"
+          grep -q 'provenance.json' "$file"
+          grep -q 'evidence-sha256.txt' "$file"
+          grep -q 'luhm-os.signed-beta-artifact.v2' "$file"
+          grep -q 'LUHMOS_ENTERPRISE_SIGNED_ARTIFACT_EVIDENCE_GREEN' "$file"
+          grep -q 'gh release create' "$file"
+          ! grep -q 'LUHMOS_ANDROID_KEYSTORE_B64' "$file"
+          ! grep -q 'LUHMOS_ANDROID_KEYSTORE_PASSWORD' "$file"
+          ! grep -q 'LUHMOS_ANDROID_KEY_PASSWORD' "$file"
+          ! grep -qE '^[[:space:]]+push:' "$file"
+          ! grep -qE '^[[:space:]]+workflow_run:' "$file"
+          ! grep -qE '^[[:space:]]+schedule:' "$file"
+          echo 'LUHMOS_PUBLISHER_AUTHORITY_SPLIT_GREEN'
+
       - name: Signing boundary receipt
         shell: bash
         run: |
           echo 'LUHMOS_RELEASE_SIGNING_LOCK_GUARD_GREEN'
-          echo 'Production signing is confined to a manual no-publish signed-candidate lane.'
+          echo 'Signer is manual/read-only/no-publish; publisher is manual/no-signing-secrets/evidence-bound.'
