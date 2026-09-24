@@ -1,5 +1,5 @@
 {
-  "schema": "luhm-os.fastbuild-asset-cache.proposal.v1",
+  "schema": "luhm-os.fastbuild-asset-cache.proposal.v2",
   "status": "PROPOSED_NOT_CROWNED",
   "date": "2026-09-24",
   "human_final_authority": "Professor",
@@ -9,39 +9,45 @@
     "version_name": "1.0.11-proposed.1",
     "version_code": 111
   },
-  "objective": "Keep the maximum currently verified public-safe game-development material source-local so Android/Godot iteration does not depend on repeated Drive or upstream pulls.",
+  "objective": "Keep useful public-safe game assets source-native and deterministic so Android/Godot iterations do not depend on repeated external asset pulls.",
   "source_cache": {
-    "path": "project/hydra/assets/fastbuild-cache/luhm-fastbuild-assets-v1.zip",
-    "sha256": "307077bc56d1d57647d40ddfed36e719dd7f92203f704841f162fb58cbde3e92",
     "manifest": "project/hydra/assets/fastbuild-cache/manifest.json",
-    "stager": "tools/stage_fastbuild_assets.py"
+    "stager": "tools/stage_fastbuild_assets.py",
+    "generated_atlas": "project/hydra/assets/fastbuild-cache/generated/luhm_fastbuild_sprite_atlas.svg",
+    "atlas_metadata": "project/hydra/assets/fastbuild-cache/generated/luhm_fastbuild_atlas.json",
+    "palette": "project/hydra/assets/fastbuild-cache/generated/luhm_fastbuild_palette.json"
   },
   "included": {
-    "luhm_original_runtime_proxies": 2,
-    "community_reference_and_receipt_files": 14,
+    "source_native_runtime_files": 5,
+    "generated_atlas_regions": 25,
+    "existing_luhm_source_sprites": 2,
+    "logical_game_asset_count": 27,
     "community_plugins_auto_enabled": false,
-    "canonical_originals_replaced": false
+    "canonical_drive_originals_replaced": false
+  },
+  "canonical_drive_receipts": {
+    "cathedral_cockpit_png": {
+      "drive_file_id": "1JPw-v-qMamrYP2hdfPg948bOhSBdFd1-",
+      "sha256": "15006744bfdc286cb5afd2425f0a27c3ee3a674b7f11f06540a036cd0546c70e",
+      "source_local": false
+    },
+    "lum_animation_sheet_png": {
+      "drive_file_id": "1LJPerV_fhofG4wXjDpQgyZoaWdV6369w",
+      "sha256": "6bfc5147179c15d6a9339179ae0204bbb677ac419834ee6276f96ba476487d80",
+      "source_local": false
+    },
+    "community_physics_receipt_bundle": {
+      "drive_file_id": "1zRf8EFtCWIa8XfSpBLpMBPhRx3wlyzdO",
+      "sha256": "931881e695f138fb2cf37ea4b636a850ed2e8bd0e3861a2bbbf23c315d520e75",
+      "source_local": false,
+      "runtime_import_claimed": false
+    }
   },
   "rights_boundary": {
     "runtime_stage_allow": ["LUHM_ORIGINAL"],
-    "source_reference_allow": ["COMMUNITY_OPEN_LICENSE_RECEIPTS", "MIT_REFERENCE_CODE"],
     "hard_exclude": ["THIRD_PARTY_PRIVATE_REFERENCE", "UNKNOWN", "mixed-license runtime assets pending review"],
-    "private_pck_files_in_public_git": false
-  },
-  "canonical_original_receipts": [
-    {
-      "drive_file_id": "1JPw-v-qMamrYP2hdfPg948bOhSBdFd1-",
-      "sha256": "15006744bfdc286cb5afd2425f0a27c3ee3a674b7f11f06540a036cd0546c70e"
-    },
-    {
-      "drive_file_id": "1LJPerV_fhofG4wXjDpQgyZoaWdV6369w",
-      "sha256": "6bfc5147179c15d6a9339179ae0204bbb677ac419834ee6276f96ba476487d80"
-    }
-  ],
-  "community_receipt_bundle": {
-    "drive_file_id": "1zRf8EFtCWIa8XfSpBLpMBPhRx3wlyzdO",
-    "sha256": "931881e695f138fb2cf37ea4b636a850ed2e8bd0e3861a2bbbf23c315d520e75",
-    "runtime_import_claimed": false
+    "private_pck_files_in_public_git": false,
+    "community_plugins_auto_enabled": false
   },
   "release_authority": {
     "merge": false,
@@ -49,5 +55,5 @@
     "publish": false,
     "stable_promote": false
   },
-  "next_gate": "CI must verify archive hash, per-file hashes, rights exclusions, and stage only the two LuHm-original WebP proxies into a temporary runtime asset directory."
+  "next_gate": "CI must verify tracked blob identities, 25 atlas regions, 27 logical assets, and stage only LUHM_ORIGINAL source-native files."
 }
