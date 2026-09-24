@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="1280" viewBox="0 0 1280 1280">
+  <defs>
+    <style>
+      .bg{fill:#080710}.panel{fill:#100d20;stroke:#8a5cff;stroke-width:8}.pink{fill:#ff4b88}.violet{fill:#8a5cff}.cyan{fill:#59e5ff}.gold{fill:#ffc76b}.red{fill:#ff5e68}.ink{fill:#f7edf8}.none{fill:none;stroke:#f7edf8;stroke-width:14;stroke-linecap:round;stroke-linejoin:round}.thin{fill:none;stroke:#59e5ff;stroke-width:9;stroke-linecap:round;stroke-linejoin:round}
+    </style>
+    <radialGradient id="glow"><stop offset="0" stop-color="#59e5ff"/><stop offset="1" stop-color="#8a5cff"/></radialGradient>
+  </defs>
+  <rect class="bg" width="1280" height="1280"/>
+
+  <!-- row 1 -->
+  <g id="lum_sigil" transform="translate(0 0)"><rect class="panel" x="8" y="8" width="240" height="240" rx="28"/><path class="red" d="M82 168Q58 104 95 62L119 103Q128 80 137 103L161 62Q198 104 174 168Q158 200 128 210Q98 200 82 168Z"/><path class="gold" d="M91 79L60 36Q101 48 112 89ZM165 79L196 36Q155 48 144 89Z"/><circle class="cyan" cx="108" cy="142" r="9"/><circle class="cyan" cx="148" cy="142" r="9"/></g>
+  <g id="crown" transform="translate(256 0)"><rect class="panel" x="8" y="8" width="240" height="240" rx="28"/><path class="gold" d="M50 176L68 82L111 132L128 62L145 132L188 82L206 176Z"/><rect class="pink" x="60" y="176" width="136" height="28" rx="10"/></g>
+  <g id="portal" transform="translate(512 0)"><rect class="panel" x="8" y="8" width="240" height="240" rx="28"/><circle cx="128" cy="128" r="74" fill="none" stroke="#8a5cff" stroke-width="20"/><circle cx="128" cy="128" r="45" fill="url(#glow)"/><path class="thin" d="M128 38V72M128 184V218M38 128H72M184 128H218"/></g>
+  <g id="mana_crystal" transform="translate(768 0)"><rect class="panel" x="8" y="8" width="240" height="240" rx="28"/><path class="cyan" d="M128 38L190 104L165 204H91L66 104Z"/><path class="violet" d="M128 38L128 204L91 204L66 104Z"/><path class="none" d="M66 104H190M91 204L128 104L165 204"/></g>
+  <g id="spark" transform="translate(1024 0)"><rect class="panel" x="8" y="8" width="240" height="240" rx="28"/><path class="gold" d="M128 35L148 103L218 128L148 153L128 221L108 153L38 128L108 103Z"/><circle class="pink" cx="128" cy="128" r="24"/></g>
+
+  <!-- row 2 -->
+  <g id="heart" transform="translate(0 256)"><rect class="panel" x="8" y="8" width="240" height="240" rx="28"/><path class="pink" d="M128 210L52 132Q25 94 55 65Q89 35 128 76Q167 35 201 65Q231 94 204 132Z"/></g>
+  <g id="shield" transform="translate(256 256)"><rect class="panel" x="8" y="8" width="240" height="240" rx="28"/><path class="violet" d="M128 35L205 66V125Q199 190 128 222Q57 190 51 125V66Z"/><path class="none" d="M128 62V190M83 125H173"/></g>
+  <g id="wrench" transform="translate(512 256)"><rect class="panel" x="8" y="8" width="240" height="240" rx="28"/><path class="gold" d="M67 45Q110 38 125 72L91 106L120 135L154 101Q188 116 181 159Q174 205 125 203Q93 201 76 179Q59 157 67 130L45 108Q31 89 42 68Z"/><circle class="bg" cx="144" cy="158" r="18"/></g>
+  <g id="tower" transform="translate(768 256)"><rect class="panel" x="8" y="8" width="240" height="240" rx="28"/><path class="ink" d="M74 210V78L98 58L112 83L128 38L144 83L158 58L182 78V210Z"/><rect class="cyan" x="104" y="110" width="48" height="24" rx="4"/><rect class="pink" x="104" y="152" width="48" height="24" rx="4"/></g>
+  <g id="spire" transform="translate(1024 256)"><rect class="panel" x="8" y="8" width="240" height="240" rx="28"/><path class="violet" d="M128 30L190 218H66Z"/><path class="cyan" d="M128 60L146 188H110Z"/><circle class="gold" cx="128" cy="74" r="12"/></g>
+
+  <!-- row 3 -->
+  <g id="moon" transform="translate(0 512)"><rect class="panel" x="8" y="8" width="240" height="240" rx="28"/><path class="gold" d="M178 188Q112 214 69 166Q31 123 59 75Q82 36 132 45Q86 72 91 126Q96 175 178 188Z"/></g>
+  <g id="moth" transform="translate(256 512)"><rect class="panel" x="8" y="8" width="240" height="240" rx="28"/><ellipse class="gold" cx="128" cy="128" rx="18" ry="74"/><path class="pink" d="M110 96Q58 48 40 91Q31 125 104 138ZM146 96Q198 48 216 91Q225 125 152 138Z"/><path class="violet" d="M104 142Q55 157 69 199Q83 223 116 166ZM152 142Q201 157 187 199Q173 223 140 166Z"/></g>
+  <g id="wing" transform="translate(512 512)"><rect class="panel" x="8" y="8" width="240" height="240" rx="28"/><path class="cyan" d="M42 177Q83 59 184 48Q150 76 139 112Q177 92 212 98Q171 122 154 153Q179 149 198 157Q127 213 42 177Z"/></g>
+  <g id="eye" transform="translate(768 512)"><rect class="panel" x="8" y="8" width="240" height="240" rx="28"/><path class="none" d="M35 128Q76 70 128 70Q180 70 221 128Q180 186 128 186Q76 186 35 128Z"/><circle class="violet" cx="128" cy="128" r="42"/><circle class="cyan" cx="128" cy="128" r="18"/><circle class="ink" cx="116" cy="114" r="7"/></g>
+  <g id="circuit" transform="translate(1024 512)"><rect class="panel" x="8" y="8" width="240" height="240" rx="28"/><path class="thin" d="M48 64H102V104H154V58H210M48 192H92V150H133V190H210M128 104V150"/><circle class="gold" cx="48" cy="64" r="12"/><circle class="pink" cx="210" cy="58" r="12"/><circle class="gold" cx="48" cy="192" r="12"/><circle class="pink" cx="210" cy="190" r="12"/></g>
+
+  <!-- row 4 -->
+  <g id="save_crystal" transform="translate(0 768)"><rect class="panel" x="8" y="8" width="240" height="240" rx="28"/><path class="violet" d="M128 36L184 92L172 184L128 220L84 184L72 92Z"/><path class="cyan" d="M128 36L128 220L84 184L72 92Z"/><circle class="gold" cx="128" cy="128" r="24"/></g>
+  <g id="d20" transform="translate(256 768)"><rect class="panel" x="8" y="8" width="240" height="240" rx="28"/><path class="pink" d="M128 34L212 94L180 196H76L44 94Z"/><path class="none" d="M128 34L76 196M128 34L180 196M44 94H212M44 94L180 196M212 94L76 196"/><text x="128" y="145" text-anchor="middle" font-size="58" font-family="monospace" font-weight="900" fill="#f7edf8">20</text></g>
+  <g id="sword" transform="translate(512 768)"><rect class="panel" x="8" y="8" width="240" height="240" rx="28"/><path class="ink" d="M186 40L213 43L211 70L112 169L88 145Z"/><path class="gold" d="M74 137L121 184L103 202L56 155Z"/><path class="pink" d="M63 181L82 200L54 228L35 209Z"/></g>
+  <g id="key" transform="translate(768 768)"><rect class="panel" x="8" y="8" width="240" height="240" rx="28"/><circle fill="none" stroke="#ffc76b" stroke-width="20" cx="82" cy="82" r="40"/><path class="gold" d="M107 107L210 210L190 230L164 204L145 223L129 207L148 188L132 172L113 191L97 175L116 156L91 131Z"/></g>
+  <g id="lock" transform="translate(1024 768)"><rect class="panel" x="8" y="8" width="240" height="240" rx="28"/><rect class="pink" x="62" y="110" width="132" height="104" rx="22"/><path class="none" d="M84 110V87Q84 45 128 45Q172 45 172 87V110"/><circle class="gold" cx="128" cy="154" r="16"/><rect class="gold" x="121" y="154" width="14" height="32"/></g>
+
+  <!-- row 5 -->
+  <g id="camera" transform="translate(0 1024)"><rect class="panel" x="8" y="8" width="240" height="240" rx="28"/><rect class="ink" x="42" y="78" width="172" height="116" rx="20"/><path class="gold" d="M78 78L94 54H152L168 78Z"/><circle class="violet" cx="128" cy="136" r="42"/><circle class="cyan" cx="128" cy="136" r="20"/></g>
+  <g id="mic" transform="translate(256 1024)"><rect class="panel" x="8" y="8" width="240" height="240" rx="28"/><rect class="pink" x="98" y="38" width="60" height="120" rx="30"/><path class="none" d="M72 124Q72 184 128 184Q184 184 184 124M128 184V218M92 218H164"/></g>
+  <g id="gamepad" transform="translate(512 1024)"><rect class="panel" x="8" y="8" width="240" height="240" rx="28"/><path class="violet" d="M46 112Q52 70 92 70H164Q204 70 210 112L222 178Q228 211 197 218Q177 222 158 187H98Q79 222 59 218Q28 211 34 178Z"/><path class="none" d="M72 135H112M92 115V155"/><circle class="gold" cx="164" cy="125" r="12"/><circle class="pink" cx="188" cy="149" r="12"/></g>
+  <g id="archive" transform="translate(768 1024)"><rect class="panel" x="8" y="8" width="240" height="240" rx="28"/><rect class="gold" x="48" y="66" width="160" height="142" rx="14"/><rect class="pink" x="42" y="42" width="172" height="50" rx="12"/><rect class="bg" x="88" y="112" width="80" height="18" rx="8"/><rect class="bg" x="88" y="150" width="80" height="18" rx="8"/></g>
+  <g id="debug_oni" transform="translate(1024 1024)"><rect class="panel" x="8" y="8" width="240" height="240" rx="28"/><path class="gold" d="M91 83L56 39Q101 47 112 94ZM165 83L200 39Q155 47 144 94Z"/><circle class="red" cx="128" cy="135" r="72"/><path class="none" d="M88 128L109 143L88 158M168 128L147 143L168 158M112 184H144"/><circle class="cyan" cx="101" cy="112" r="9"/><circle class="cyan" cx="155" cy="112" r="9"/></g>
+</svg>
