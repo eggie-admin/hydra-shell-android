@@ -1,0 +1,44 @@
+name: LuHm Debug Oni Dry Run
+
+on:
+  pull_request:
+    paths:
+      - 'tools/luhm_debug_oni.py'
+      - 'project/hydra/source-of-truth/**'
+      - 'project/hydra/samsung/android/**'
+      - '.github/workflows/luhm-debug-oni-dry-run.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  kuroko-dry-run:
+    name: Kuroko read-only sanity pass
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout candidate
+        uses: actions/checkout@v4
+      - name: Python syntax check
+        run: python3 -m py_compile tools/luhm_debug_oni.py
+      - name: Summon Kuroko
+        run: python3 tools/luhm_debug_oni.py | tee kuroko-dry-run.json
+      - name: Verify no release mutation authority
+        run: |
+          python3 - <<'PY'
+          import json
+          p=json.load(open('kuroko-dry-run.json', encoding='utf-8'))
+          assert p['mode']=='READ_ONLY_DRY_RUN'
+          assert p['authority']=='NONE'
+          assert p['mutation'] is False
+          assert p['release_publish'] is False
+          print('Kuroko authority guard: GREEN')
+          PY
+      - name: Upload dry-run receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: kuroko-dry-run
+          path: kuroko-dry-run.json
+          if-no-files-found: error
+          retention-days: 7
