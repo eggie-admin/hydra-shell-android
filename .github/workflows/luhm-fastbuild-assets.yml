@@ -1,0 +1,107 @@
+name: LuHm Fastbuild Asset Cache
+
+on:
+  pull_request:
+    branches:
+      - luhmos/proposed-install-apk-20260924
+    paths:
+      - 'project/hydra/assets/fastbuild-cache/**'
+      - 'project/hydra/samsung/android/cathedral-game/godot-world/assets/**'
+      - 'project/hydra/source-of-truth/LUHM_OS_FASTBUILD_ASSET_CACHE_PROPOSAL_20260924.json'
+      - 'tools/stage_fastbuild_assets.py'
+      - '.github/workflows/luhm-fastbuild-assets.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fastbuild-assets:
+    name: Kuroko fastbuild asset gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout proposal
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.14'
+
+      - name: Verify source-native proposal boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          PROPOSAL='project/hydra/source-of-truth/LUHM_OS_FASTBUILD_ASSET_CACHE_PROPOSAL_20260924.json'
+          CACHE='project/hydra/assets/fastbuild-cache'
+          MANIFEST="$CACHE/manifest.json"
+          ATLAS="$CACHE/generated/luhm_fastbuild_sprite_atlas.svg"
+          META="$CACHE/generated/luhm_fastbuild_atlas.json"
+          PALETTE="$CACHE/generated/luhm_fastbuild_palette.json"
+          test -f "$PROPOSAL"
+          test -f "$MANIFEST"
+          test -f "$ATLAS"
+          test -f "$META"
+          test -f "$PALETTE"
+          python -m json.tool "$PROPOSAL" >/dev/null
+          python -m json.tool "$MANIFEST" >/dev/null
+          python -m json.tool "$META" >/dev/null
+          python -m json.tool "$PALETTE" >/dev/null
+          ! find "$CACHE" -type f | grep -Ei '\.(pck|p12|pfx|jks|keystore|pem|key)$'
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          proposal=json.loads(Path('project/hydra/source-of-truth/LUHM_OS_FASTBUILD_ASSET_CACHE_PROPOSAL_20260924.json').read_text())
+          manifest=json.loads(Path('project/hydra/assets/fastbuild-cache/manifest.json').read_text())
+          meta=json.loads(Path('project/hydra/assets/fastbuild-cache/generated/luhm_fastbuild_atlas.json').read_text())
+          assert proposal['status']=='PROPOSED_NOT_CROWNED'
+          assert proposal['included']['logical_game_asset_count']==27
+          assert proposal['rights_boundary']['private_pck_files_in_public_git'] is False
+          assert proposal['rights_boundary']['community_plugins_auto_enabled'] is False
+          assert 'THIRD_PARTY_PRIVATE_REFERENCE' in proposal['rights_boundary']['hard_exclude']
+          assert manifest['status']=='PROPOSED_PUBLIC_SAFE_SOURCE_CACHE'
+          assert manifest['logical_asset_count']==27
+          assert manifest['rights_gate']['private_pck_files_in_public_git'] is False
+          assert manifest['rights_gate']['community_plugins_auto_enabled'] is False
+          assert manifest['rights_gate']['runtime_allow']==['LUHM_ORIGINAL']
+          assert 'THIRD_PARTY_PRIVATE_REFERENCE' in manifest['rights_gate']['hard_exclude']
+          assert meta['region_count']==25
+          print('LUHM_FASTBUILD_RIGHTS_BOUNDARY_GREEN')
+          PY
+
+      - name: Stage runtime-safe source assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          MANIFEST='project/hydra/assets/fastbuild-cache/manifest.json'
+          DEST='build/fastbuild/runtime-assets'
+          RECEIPT='build/fastbuild/stage-receipt.json'
+          python tools/stage_fastbuild_assets.py . "$MANIFEST" "$DEST" --receipt "$RECEIPT"
+          test -s "$DEST/luhm_fastbuild_sprite_atlas.svg"
+          test -s "$DEST/luhm_fastbuild_atlas.json"
+          test -s "$DEST/luhm_fastbuild_palette.json"
+          test -s "$DEST/lum_hud_icon.svg"
+          test -s "$DEST/lum_world_sprite.svg"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('build/fastbuild/stage-receipt.json').read_text())
+          assert r['runtime_rights']=='LUHM_ORIGINAL_ONLY'
+          assert r['logical_asset_count']==27
+          assert r['atlas_regions']==25
+          assert r['staged_file_count']==5
+          assert r['community_plugins_auto_enabled'] is False
+          assert r['private_reference_assets_included'] is False
+          assert r['mixed_license_runtime_assets_included'] is False
+          print('LUHM_FASTBUILD_ASSET_STAGE_GREEN')
+          PY
+
+      - name: Upload staged asset evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: luhm-fastbuild-runtime-assets
+          path: build/fastbuild/
+          if-no-files-found: error
+          retention-days: 14
