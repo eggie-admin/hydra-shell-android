@@ -6,6 +6,7 @@ on:
       - luhmos/proposed-install-apk-20260924
     paths:
       - 'project/hydra/assets/fastbuild-cache/**'
+      - 'project/hydra/samsung/android/cathedral-game/godot-world/assets/**'
       - 'project/hydra/source-of-truth/LUHM_OS_FASTBUILD_ASSET_CACHE_PROPOSAL_20260924.json'
       - 'tools/stage_fastbuild_assets.py'
       - '.github/workflows/luhm-fastbuild-assets.yml'
@@ -29,43 +30,57 @@ jobs:
         with:
           python-version: '3.14'
 
-      - name: Verify proposal boundary
+      - name: Verify source-native proposal boundary
         shell: bash
         run: |
           set -euo pipefail
           PROPOSAL='project/hydra/source-of-truth/LUHM_OS_FASTBUILD_ASSET_CACHE_PROPOSAL_20260924.json'
-          PACK='project/hydra/assets/fastbuild-cache/luhm-fastbuild-assets-v1.zip'
-          MANIFEST='project/hydra/assets/fastbuild-cache/manifest.json'
+          CACHE='project/hydra/assets/fastbuild-cache'
+          MANIFEST="$CACHE/manifest.json"
+          ATLAS="$CACHE/generated/luhm_fastbuild_sprite_atlas.svg"
+          META="$CACHE/generated/luhm_fastbuild_atlas.json"
+          PALETTE="$CACHE/generated/luhm_fastbuild_palette.json"
           test -f "$PROPOSAL"
-          test -f "$PACK"
           test -f "$MANIFEST"
-          grep -q '"status": "PROPOSED_NOT_CROWNED"' "$PROPOSAL"
-          grep -q '"private_pck_files_in_public_git": false' "$PROPOSAL"
-          sha256sum "$PACK"
-          echo '307077bc56d1d57647d40ddfed36e719dd7f92203f704841f162fb58cbde3e92  '"$PACK" | sha256sum --check --strict
+          test -f "$ATLAS"
+          test -f "$META"
+          test -f "$PALETTE"
           python -m json.tool "$PROPOSAL" >/dev/null
           python -m json.tool "$MANIFEST" >/dev/null
-          ! unzip -Z1 "$PACK" | grep -Ei '\.(pck|p12|jks|keystore|pem|key)$'
+          python -m json.tool "$META" >/dev/null
+          python -m json.tool "$PALETTE" >/dev/null
+          grep -q '"status": "PROPOSED_NOT_CROWNED"' "$PROPOSAL"
+          grep -q '"private_pck_files_in_public_git": false' "$PROPOSAL"
+          grep -q '"logical_game_asset_count": 27' "$PROPOSAL"
+          grep -q '"logical_asset_count": 27' "$MANIFEST"
+          grep -q '"region_count": 25' "$META"
+          ! find "$CACHE" -type f | grep -Ei '\.(pck|p12|pfx|jks|keystore|pem|key)$'
+          ! grep -R -nE 'THIRD_PARTY_PRIVATE_REFERENCE.*(allow|include|runtime)|private_pck_files_in_public_git[^f]' "$CACHE" "$PROPOSAL"
 
-      - name: Stage runtime-safe proxy assets
+      - name: Stage runtime-safe source assets
         shell: bash
         run: |
           set -euo pipefail
-          PACK='project/hydra/assets/fastbuild-cache/luhm-fastbuild-assets-v1.zip'
           MANIFEST='project/hydra/assets/fastbuild-cache/manifest.json'
           DEST='build/fastbuild/runtime-assets'
           RECEIPT='build/fastbuild/stage-receipt.json'
-          python tools/stage_fastbuild_assets.py "$PACK" "$MANIFEST" "$DEST" --receipt "$RECEIPT"
-          test -s "$DEST/luhm_cathedral_cockpit_fast.webp"
-          test -s "$DEST/lum_animation_sheet_fast.webp"
+          python tools/stage_fastbuild_assets.py . "$MANIFEST" "$DEST" --receipt "$RECEIPT"
+          test -s "$DEST/luhm_fastbuild_sprite_atlas.svg"
+          test -s "$DEST/luhm_fastbuild_atlas.json"
+          test -s "$DEST/luhm_fastbuild_palette.json"
+          test -s "$DEST/lum_hud_icon.svg"
+          test -s "$DEST/lum_world_sprite.svg"
           python - <<'PY'
           import json
           from pathlib import Path
           r=json.loads(Path('build/fastbuild/stage-receipt.json').read_text())
           assert r['runtime_rights']=='LUHM_ORIGINAL_ONLY'
+          assert r['logical_asset_count']==27
+          assert r['atlas_regions']==25
+          assert r['staged_file_count']==5
           assert r['community_plugins_auto_enabled'] is False
           assert r['private_reference_assets_included'] is False
-          assert len(r['staged'])==2
+          assert r['mixed_license_runtime_assets_included'] is False
           print('LUHM_FASTBUILD_ASSET_STAGE_GREEN')
           PY
 
