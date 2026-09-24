@@ -21,8 +21,8 @@
     {"bytes":1086,"path":"community/physics-curated/wigglebone-3.0.1-reference/LICENSE","sha256":"c56b1e60d68f6929830c95a2f9ad9caf395cea542505a095a6f515de8940d680"},
     {"bytes":397,"path":"community/physics-curated/wigglebone-3.0.1-reference/SOURCE_RECEIPT.txt","sha256":"3abc7adc19c7fa4ca5d16d728ba07139fa1604cb05bc3e015e466ef5889589d9"},
     {"bytes":131,"path":"community/physics-curated/wigglebone-3.0.1-reference/plugin.cfg","sha256":"d7b6edaf1d90a2e1f85486b88fa4757bb54fcc7c1cc6ecf4378a4b69936d60f3"},
-    {"bytes":49954,"path":"original/luhm_cathedral_cockpit_fast.webp","sha256":"51b020ac5fe7d964d137e61331fad250bb7c0c24e491392375ccfe6ee529576a"},
-    {"bytes":54180,"path":"original/lum_animation_sheet_fast.webp","sha256":"ac4523254bab5f792ea46275b94c48468678a4eb93dd4e155c66c6c3a9d59532"}
+    {"bytes":127686,"path":"original/luhm_cathedral_cockpit_fast.webp","sha256":"77ba2392607d52db43ca05b7f4331aba93790f45a81b952970bdf20ee33b99d5"},
+    {"bytes":116470,"path":"original/lum_animation_sheet_fast.webp","sha256":"822a878754f1f8101e8c0ba6c6fd4378bb00ba665c734e6fcd87a917d392d9bd"}
   ],
   "original_sources": [
     {
@@ -31,7 +31,7 @@
       "rights": "LUHM_ORIGINAL",
       "source_name": "kai9000_cathedral_cockpit_interface.png",
       "source_sha256": "15006744bfdc286cb5afd2425f0a27c3ee3a674b7f11f06540a036cd0546c70e",
-      "transform": "long edge 512px, WebP quality 82; fast-build proxy"
+      "transform": "50% linear dimensions, WebP quality 85, build proxy only; source PNG remains canonical in private Drive vault"
     },
     {
       "derivative": "original/lum_animation_sheet_fast.webp",
@@ -39,11 +39,11 @@
       "rights": "LUHM_ORIGINAL",
       "source_name": "lum_gothic_hip_wing_animation_asset_sheet.png",
       "source_sha256": "6bfc5147179c15d6a9339179ae0204bbb677ac419834ee6276f96ba476487d80",
-      "transform": "long edge 512px, WebP quality 82; fast-build proxy"
+      "transform": "50% linear dimensions, WebP quality 85, build proxy only; source PNG remains canonical in private Drive vault"
     }
   ],
-  "pack_sha256": "8ddf044da058abea338c85a4d171a01fb06bec4e92983f4e1a1ee8f5b382c2cb",
-  "purpose": "Tiny source-local proxy/reference pack for fast Android/Godot iteration. Canonical originals remain in private Drive.",
+  "pack_sha256": "b6745249e45335d91cbf7408a6c4bca85e9b904e1b70db7e3ed10e7154af7518",
+  "purpose": "Keep public-safe game-development assets source-local for deterministic faster builds.",
   "rights_gate": {
     "exclude": ["THIRD_PARTY_PRIVATE_REFERENCE", "UNKNOWN", "mixed-license runtime assets pending review"],
     "include": ["LUHM_ORIGINAL", "COMMUNITY_OPEN_LICENSE_RECEIPTS"]
