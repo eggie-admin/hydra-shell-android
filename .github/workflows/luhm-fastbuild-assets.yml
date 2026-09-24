@@ -1,0 +1,77 @@
+name: LuHm Fastbuild Asset Cache
+
+on:
+  pull_request:
+    branches:
+      - luhmos/proposed-install-apk-20260924
+    paths:
+      - 'project/hydra/assets/fastbuild-cache/**'
+      - 'project/hydra/source-of-truth/LUHM_OS_FASTBUILD_ASSET_CACHE_PROPOSAL_20260924.json'
+      - 'tools/stage_fastbuild_assets.py'
+      - '.github/workflows/luhm-fastbuild-assets.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fastbuild-assets:
+    name: Kuroko fastbuild asset gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout proposal
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.14'
+
+      - name: Verify proposal boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          PROPOSAL='project/hydra/source-of-truth/LUHM_OS_FASTBUILD_ASSET_CACHE_PROPOSAL_20260924.json'
+          PACK='project/hydra/assets/fastbuild-cache/luhm-fastbuild-assets-v1.zip'
+          MANIFEST='project/hydra/assets/fastbuild-cache/manifest.json'
+          test -f "$PROPOSAL"
+          test -f "$PACK"
+          test -f "$MANIFEST"
+          grep -q '"status": "PROPOSED_NOT_CROWNED"' "$PROPOSAL"
+          grep -q '"private_pck_files_in_public_git": false' "$PROPOSAL"
+          echo '8ddf044da058abea338c85a4d171a01fb06bec4e92983f4e1a1ee8f5b382c2cb  '"$PACK" | sha256sum --check --strict
+          python -m json.tool "$PROPOSAL" >/dev/null
+          python -m json.tool "$MANIFEST" >/dev/null
+          ! unzip -Z1 "$PACK" | grep -Ei '\.(pck|p12|jks|keystore|pem|key)$'
+
+      - name: Stage runtime-safe proxy assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          PACK='project/hydra/assets/fastbuild-cache/luhm-fastbuild-assets-v1.zip'
+          MANIFEST='project/hydra/assets/fastbuild-cache/manifest.json'
+          DEST='build/fastbuild/runtime-assets'
+          RECEIPT='build/fastbuild/stage-receipt.json'
+          python tools/stage_fastbuild_assets.py "$PACK" "$MANIFEST" "$DEST" --receipt "$RECEIPT"
+          test -s "$DEST/luhm_cathedral_cockpit_fast.webp"
+          test -s "$DEST/lum_animation_sheet_fast.webp"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('build/fastbuild/stage-receipt.json').read_text())
+          assert r['runtime_rights']=='LUHM_ORIGINAL_ONLY'
+          assert r['community_plugins_auto_enabled'] is False
+          assert r['private_reference_assets_included'] is False
+          assert len(r['staged'])==2
+          print('LUHM_FASTBUILD_ASSET_STAGE_GREEN')
+          PY
+
+      - name: Upload staged asset evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: luhm-fastbuild-runtime-assets
+          path: build/fastbuild/
+          if-no-files-found: error
+          retention-days: 14
