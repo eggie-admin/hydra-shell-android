@@ -1,0 +1,53 @@
+{
+  "schema": "luhm-os.fastbuild-asset-cache.proposal.v1",
+  "status": "PROPOSED_NOT_CROWNED",
+  "date": "2026-09-24",
+  "human_final_authority": "Professor",
+  "parent_candidate": {
+    "branch": "luhmos/proposed-install-apk-20260924",
+    "head_sha_at_fork": "85389880d6d0e9c304817444298195ea48106587",
+    "version_name": "1.0.11-proposed.1",
+    "version_code": 111
+  },
+  "objective": "Keep the maximum currently verified public-safe game-development material source-local so Android/Godot iteration does not depend on repeated Drive or upstream pulls.",
+  "source_cache": {
+    "path": "project/hydra/assets/fastbuild-cache/luhm-fastbuild-assets-v1.zip",
+    "sha256": "8ddf044da058abea338c85a4d171a01fb06bec4e92983f4e1a1ee8f5b382c2cb",
+    "manifest": "project/hydra/assets/fastbuild-cache/manifest.json",
+    "stager": "tools/stage_fastbuild_assets.py"
+  },
+  "included": {
+    "luhm_original_runtime_proxies": 2,
+    "community_reference_and_receipt_files": 14,
+    "community_plugins_auto_enabled": false,
+    "canonical_originals_replaced": false
+  },
+  "rights_boundary": {
+    "runtime_stage_allow": ["LUHM_ORIGINAL"],
+    "source_reference_allow": ["COMMUNITY_OPEN_LICENSE_RECEIPTS", "MIT_REFERENCE_CODE"],
+    "hard_exclude": ["THIRD_PARTY_PRIVATE_REFERENCE", "UNKNOWN", "mixed-license runtime assets pending review"],
+    "private_pck_files_in_public_git": false
+  },
+  "canonical_original_receipts": [
+    {
+      "drive_file_id": "1JPw-v-qMamrYP2hdfPg948bOhSBdFd1-",
+      "sha256": "15006744bfdc286cb5afd2425f0a27c3ee3a674b7f11f06540a036cd0546c70e"
+    },
+    {
+      "drive_file_id": "1LJPerV_fhofG4wXjDpQgyZoaWdV6369w",
+      "sha256": "6bfc5147179c15d6a9339179ae0204bbb677ac419834ee6276f96ba476487d80"
+    }
+  ],
+  "community_receipt_bundle": {
+    "drive_file_id": "1zRf8EFtCWIa8XfSpBLpMBPhRx3wlyzdO",
+    "sha256": "931881e695f138fb2cf37ea4b636a850ed2e8bd0e3861a2bbbf23c315d520e75",
+    "runtime_import_claimed": false
+  },
+  "release_authority": {
+    "merge": false,
+    "production_sign": false,
+    "publish": false,
+    "stable_promote": false
+  },
+  "next_gate": "CI must verify archive hash, per-file hashes, rights exclusions, and stage only the two LuHm-original WebP proxies into a temporary runtime asset directory."
+}
