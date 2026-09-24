@@ -41,6 +41,7 @@ jobs:
           test -f "$MANIFEST"
           grep -q '"status": "PROPOSED_NOT_CROWNED"' "$PROPOSAL"
           grep -q '"private_pck_files_in_public_git": false' "$PROPOSAL"
+          sha256sum "$PACK"
           echo 'b6745249e45335d91cbf7408a6c4bca85e9b904e1b70db7e3ed10e7154af7518  '"$PACK" | sha256sum --check --strict
           python -m json.tool "$PROPOSAL" >/dev/null
           python -m json.tool "$MANIFEST" >/dev/null
