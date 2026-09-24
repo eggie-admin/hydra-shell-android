@@ -1,0 +1,51 @@
+{
+  "schema": "luhm-os.debug-oni.proposal.v1",
+  "status": "PROPOSED_NOT_CROWNED",
+  "date": "2026-09-23",
+  "human_final_authority": "Professor",
+  "boss": "Lum",
+  "oni": {
+    "name": "Kuroko",
+    "role": "bounded debugging demon",
+    "purpose": "read-only source-of-truth and build-path sanity checks",
+    "authority": "NONE",
+    "recursive_recruiting": false,
+    "task_budget": "single audit pass",
+    "mutation": false,
+    "shell_execution": false,
+    "secret_access": false,
+    "signing": false,
+    "release_publish": false
+  },
+  "source_floor": {
+    "golden_version": "1.0.10-beta.1",
+    "version_code_floor": 110,
+    "package": "art.eggiebagelface.luhmos",
+    "golden_beta_sha": "a2243d68fa1aaa2f554ef74d9a1edd32530c12ac",
+    "golden_beta_tree": "fb6d8154c995666a42c01797ab6ebf03758a91df",
+    "golden_beta_frozen": true
+  },
+  "working_parent": {
+    "branch": "luhmos/multitier-gui-harness-20260922",
+    "observed_head_before_proposal": "66db8334c4b2c856b874f60931da084ef19a45f5",
+    "state": "YELLOW_SOURCE_STAGED_NOT_RELEASE_PROVEN"
+  },
+  "checks": [
+    "golden Crown presence and identity floor",
+    "pipeline Crown presence",
+    "source-of-truth README presence",
+    "native Godot 3D harness marker",
+    "multi-tier bridge marker",
+    "Cathedral-to-world bridge marker",
+    "PySimpleGUI proposal remains non-crowned",
+    "loopback release conflict remains visible",
+    "tracked OpenAI/Google key-shaped secret smell scan"
+  ],
+  "dry_run_contract": {
+    "green": "all hard invariants pass and no tracked secret smell; advisory conflicts may still make overall YELLOW",
+    "yellow": "proposal/release-boundary conflict requiring Professor/Crown decision before promotion",
+    "red": "hard source-of-truth or secret-safety failure",
+    "promotion": "FORBIDDEN_BY_THIS_PROPOSAL"
+  },
+  "result": "PROPOSAL_STAGED_FOR_DRY_RUN_ONLY"
+}
