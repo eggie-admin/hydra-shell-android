@@ -1,0 +1,47 @@
+{
+  "schema": "luhm-os.native-bridge-release-boundary.proposal.v1",
+  "status": "PROPOSED_NOT_CROWNED",
+  "human_final_authority": "Professor",
+  "proposal_date": "2026-09-23",
+  "product": "LuHm OS",
+  "release_floor": {
+    "version_name": "1.0.10-beta.1",
+    "version_code": 110,
+    "frozen_beta_sha": "a2243d68fa1aaa2f554ef74d9a1edd32530c12ac",
+    "mutation_allowed": false
+  },
+  "proposed_next_candidate": {
+    "version_name": "1.0.11-beta.1",
+    "minimum_version_code": 111,
+    "publication_authority": false
+  },
+  "android_release_boundary": {
+    "runtime_host": "Godot native Android runtime",
+    "presentation_tier": "packaged appassets WebView",
+    "bridge": "CathedralAndroid Godot plugin plus WebMessage bridge",
+    "network_control_plane": "NONE",
+    "loopback_http_control_plane": false,
+    "termux_run_command": false,
+    "python_runtime_packaged": false,
+    "pysimplegui_packaged": false,
+    "development_only_lanes_excluded": [
+      "project/hydra/samsung/android/cathedral-game/python",
+      "project/hydra/samsung/android/cathedral-game/tools"
+    ]
+  },
+  "development_lane": {
+    "local_harness_may_exist_in_source": true,
+    "release_payload_inclusion": false,
+    "release_authority": false,
+    "reason": "Keep desktop/local operator experiments available without crossing the Android release boundary."
+  },
+  "required_proof_before_crown": [
+    "release payload staging excludes development-only lanes",
+    "staged payload contains no loopback/control-plane markers",
+    "Android plugin builds without release signing secrets",
+    "native Godot 3D bridge markers remain present",
+    "PR guardrails and local CI pass",
+    "physical device demonstrates Cathedral to native World and back"
+  ],
+  "result": "YELLOW_PROPOSAL_ONLY"
+}
