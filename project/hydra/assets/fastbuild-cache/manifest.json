@@ -1,0 +1,53 @@
+{
+  "community_bundle": {
+    "drive_file_id": "1zRf8EFtCWIa8XfSpBLpMBPhRx3wlyzdO",
+    "mixed_license_runtime_assets_included": false,
+    "role": "receipts + reference code only; no plugin auto-enable",
+    "sha256": "931881e695f138fb2cf37ea4b636a850ed2e8bd0e3861a2bbbf23c315d520e75",
+    "source_name": "LUHMOS_GODOT4_CHARACTER_PHYSICS_CURATED_20260916.zip"
+  },
+  "files": [
+    {"bytes":2543,"path":"community/physics-curated/GODOT4_CHARACTER_PHYSICS_SOURCE_MANIFEST.txt","sha256":"4fbc98963585fae723cf6b54028f40e46afde788ecfe65963b776641018bb64d"},
+    {"bytes":1246,"path":"community/physics-curated/PULL_UPSTREAM_COMMUNITY_ASSETS.sh","sha256":"f2b15ce651e67c81990bad0b1f5d018765987b310a1d17014c08f722e5a41018"},
+    {"bytes":753,"path":"community/physics-curated/README_FIRST.txt","sha256":"e1c52e29099955f25fee1c080142eb0be28a8f018650478a66963a956d1e1d14"},
+    {"bytes":1381,"path":"community/physics-curated/SHA256SUMS.txt","sha256":"9c854b3fcaf64a5e9e35855d1b137bdce2680bc6814a2fe09cf5c07e9a2e44b7"},
+    {"bytes":262,"path":"community/physics-curated/hair-physics/V-Sekai_godot-vrm_SOURCE_RECEIPT.txt","sha256":"aa7ad801b8d5a4196bcba8388d922d7fb3f11d737ec0838c0a5efb9454b95b6c"},
+    {"bytes":354,"path":"community/physics-curated/hair-physics/ibrews_VitruvianGodot_SOURCE_RECEIPT.txt","sha256":"5f2d134b3df400a5d0158aebc0fe1b53b1c018a400127f4c2dee59eb65526fcb"},
+    {"bytes":295,"path":"community/physics-curated/hair-rendering/2Retr0_GodotHair_SOURCE_RECEIPT.txt","sha256":"1a0648630997c9a6a47d51a4020b17b1135a16f99fcbc314e469b6a7948763f9"},
+    {"bytes":1096,"path":"community/physics-curated/jigglebones-4x-reference/LICENSE","sha256":"5c3ec27be0bb298f70f85337c8f1f764f51ec760ff2e2005e39bee3a9f9ee1cf"},
+    {"bytes":391,"path":"community/physics-curated/jigglebones-4x-reference/SOURCE_RECEIPT.txt","sha256":"3f3f09e3615398a299102e0286556e245b8f9ea213a8f050d1a9f38ee061063f"},
+    {"bytes":402,"path":"community/physics-curated/jigglebones-4x-reference/custom_node.gd","sha256":"a02b91282d54a408593e725ef1bb099967508943eeb36a937f4fc45c9bdbd03b"},
+    {"bytes":192,"path":"community/physics-curated/jigglebones-4x-reference/plugin.cfg","sha256":"fb1bd61ae436a49499c5599441123eb674a5717adb0413dacba56f01693ca31f"},
+    {"bytes":1086,"path":"community/physics-curated/wigglebone-3.0.1-reference/LICENSE","sha256":"c56b1e60d68f6929830c95a2f9ad9caf395cea542505a095a6f515de8940d680"},
+    {"bytes":397,"path":"community/physics-curated/wigglebone-3.0.1-reference/SOURCE_RECEIPT.txt","sha256":"3abc7adc19c7fa4ca5d16d728ba07139fa1604cb05bc3e015e466ef5889589d9"},
+    {"bytes":131,"path":"community/physics-curated/wigglebone-3.0.1-reference/plugin.cfg","sha256":"d7b6edaf1d90a2e1f85486b88fa4757bb54fcc7c1cc6ecf4378a4b69936d60f3"},
+    {"bytes":49954,"path":"original/luhm_cathedral_cockpit_fast.webp","sha256":"51b020ac5fe7d964d137e61331fad250bb7c0c24e491392375ccfe6ee529576a"},
+    {"bytes":54180,"path":"original/lum_animation_sheet_fast.webp","sha256":"ac4523254bab5f792ea46275b94c48468678a4eb93dd4e155c66c6c3a9d59532"}
+  ],
+  "original_sources": [
+    {
+      "derivative": "original/luhm_cathedral_cockpit_fast.webp",
+      "drive_file_id": "1JPw-v-qMamrYP2hdfPg948bOhSBdFd1-",
+      "rights": "LUHM_ORIGINAL",
+      "source_name": "kai9000_cathedral_cockpit_interface.png",
+      "source_sha256": "15006744bfdc286cb5afd2425f0a27c3ee3a674b7f11f06540a036cd0546c70e",
+      "transform": "long edge 512px, WebP quality 82; fast-build proxy"
+    },
+    {
+      "derivative": "original/lum_animation_sheet_fast.webp",
+      "drive_file_id": "1LJPerV_fhofG4wXjDpQgyZoaWdV6369w",
+      "rights": "LUHM_ORIGINAL",
+      "source_name": "lum_gothic_hip_wing_animation_asset_sheet.png",
+      "source_sha256": "6bfc5147179c15d6a9339179ae0204bbb677ac419834ee6276f96ba476487d80",
+      "transform": "long edge 512px, WebP quality 82; fast-build proxy"
+    }
+  ],
+  "pack_sha256": "8ddf044da058abea338c85a4d171a01fb06bec4e92983f4e1a1ee8f5b382c2cb",
+  "purpose": "Tiny source-local proxy/reference pack for fast Android/Godot iteration. Canonical originals remain in private Drive.",
+  "rights_gate": {
+    "exclude": ["THIRD_PARTY_PRIVATE_REFERENCE", "UNKNOWN", "mixed-license runtime assets pending review"],
+    "include": ["LUHM_ORIGINAL", "COMMUNITY_OPEN_LICENSE_RECEIPTS"]
+  },
+  "schema": "luhm-os.fastbuild-assets.v1",
+  "status": "PROPOSED_PUBLIC_SAFE_SOURCE_CACHE"
+}
