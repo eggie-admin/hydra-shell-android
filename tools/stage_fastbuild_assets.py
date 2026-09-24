@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Verify and stage LuHm public-safe fast-build assets.
+"""Verify and stage LuHm public-safe source-native fast-build assets.
 
-This intentionally stages only LuHm-original proxy art into runtime assets.
-Community files in the pack remain source/reference material and are never auto-enabled.
+Only files explicitly marked LUHM_ORIGINAL in the manifest may enter the runtime
+staging directory. Private references, mixed-license runtime packs and community
+plugins remain outside the Android payload.
 """
 
 from __future__ import annotations
@@ -11,11 +12,9 @@ import argparse
 import hashlib
 import json
 import shutil
-import tempfile
-import zipfile
 from pathlib import Path
 
-EXPECTED_SCHEMA = "luhm-os.fastbuild-assets.v1"
+EXPECTED_SCHEMA = "luhm-os.fastbuild-assets.v2"
 EXPECTED_STATUS = "PROPOSED_PUBLIC_SAFE_SOURCE_CACHE"
 
 
@@ -27,66 +26,88 @@ def sha256File(path: Path) -> str:
     return digest.hexdigest()
 
 
+def gitBlobSha1(path: Path) -> str:
+    body = path.read_bytes()
+    framed = b"blob " + str(len(body)).encode("ascii") + b"\0" + body
+    return hashlib.sha1(framed).hexdigest()
+
+
 def loadJson(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def verifyManifest(root: Path, manifest: dict) -> None:
+def stageAssets(repoRoot: Path, manifestPath: Path, destination: Path, receiptPath: Path | None) -> dict:
+    manifest = loadJson(manifestPath)
     if manifest.get("schema") != EXPECTED_SCHEMA:
         raise SystemExit("unexpected fastbuild asset schema")
     if manifest.get("status") != EXPECTED_STATUS:
         raise SystemExit("fastbuild asset cache is not in proposed public-safe state")
-    excluded = set(manifest.get("rights_gate", {}).get("exclude", []))
+
+    rights = manifest.get("rights_gate", {})
+    excluded = set(rights.get("hard_exclude", []))
     if "THIRD_PARTY_PRIVATE_REFERENCE" not in excluded:
         raise SystemExit("private-reference exclusion is missing")
-    for row in manifest.get("files", []):
+    if rights.get("private_pck_files_in_public_git") is not False:
+        raise SystemExit("private PCK exclusion must remain false")
+    if rights.get("community_plugins_auto_enabled") is not False:
+        raise SystemExit("community plugin auto-enable must remain false")
+
+    runtimeRows = manifest.get("runtime_files", [])
+    if not runtimeRows:
+        raise SystemExit("no runtime fastbuild assets declared")
+
+    checked: list[tuple[dict, Path]] = []
+    for row in runtimeRows:
+        if row.get("rights") != "LUHM_ORIGINAL":
+            raise SystemExit(f"non-original runtime asset blocked: {row.get('path')}")
         relative = Path(row["path"])
-        path = root / relative
-        if not path.is_file():
-            raise SystemExit(f"asset missing from cache pack: {relative}")
-        if path.stat().st_size != int(row["bytes"]):
-            raise SystemExit(f"asset size mismatch: {relative}")
-        if sha256File(path) != row["sha256"]:
-            raise SystemExit(f"asset sha256 mismatch: {relative}")
+        source = repoRoot / relative
+        if not source.is_file():
+            raise SystemExit(f"runtime asset missing: {relative}")
+        actualBlob = gitBlobSha1(source)
+        if actualBlob != row.get("git_blob_sha1"):
+            raise SystemExit(f"git blob mismatch: {relative}")
+        checked.append((row, source))
 
+    atlasMetaPath = repoRoot / manifest["atlas"]["metadata"]
+    atlasMeta = loadJson(atlasMetaPath)
+    regions = atlasMeta.get("regions", {})
+    if atlasMeta.get("region_count") != len(regions):
+        raise SystemExit("atlas region count mismatch")
+    if len(regions) != int(manifest.get("atlas", {}).get("regions", 0)):
+        raise SystemExit("manifest/atlas logical count mismatch")
 
-def stageAssets(pack: Path, manifestPath: Path, destination: Path, receiptPath: Path | None) -> dict:
-    manifest = loadJson(manifestPath)
-    expectedPackHash = manifest.get("pack_sha256")
-    actualPackHash = sha256File(pack)
-    if expectedPackHash != actualPackHash:
-        raise SystemExit("fastbuild pack sha256 mismatch")
+    if destination.exists():
+        shutil.rmtree(destination)
+    destination.mkdir(parents=True, exist_ok=True)
 
-    with tempfile.TemporaryDirectory(prefix="luhm-fastbuild-") as tempName:
-        tempRoot = Path(tempName)
-        with zipfile.ZipFile(pack) as archive:
-            archive.extractall(tempRoot)
-        internalManifest = loadJson(tempRoot / "manifest.json")
-        internalManifest["pack_sha256"] = expectedPackHash
-        if internalManifest != manifest:
-            raise SystemExit("external and packed fastbuild manifests differ")
-        verifyManifest(tempRoot, manifest)
+    staged = []
+    for row, source in checked:
+        target = destination / source.name
+        shutil.copy2(source, target)
+        staged.append({
+            "source": row["path"],
+            "path": target.name,
+            "role": row.get("role"),
+            "bytes": target.stat().st_size,
+            "sha256": sha256File(target),
+            "git_blob_sha1": gitBlobSha1(target),
+        })
 
-        if destination.exists():
-            shutil.rmtree(destination)
-        destination.mkdir(parents=True, exist_ok=True)
-
-        staged = []
-        for source in sorted((tempRoot / "original").glob("*.webp")):
-            target = destination / source.name
-            shutil.copy2(source, target)
-            staged.append({
-                "path": target.name,
-                "bytes": target.stat().st_size,
-                "sha256": sha256File(target),
-            })
+    logicalCount = int(manifest.get("logical_asset_count", 0))
+    expectedLogical = len(regions) + 2
+    if logicalCount != expectedLogical:
+        raise SystemExit(f"logical asset count mismatch: {logicalCount} != {expectedLogical}")
 
     receipt = {
-        "schema": "luhm-os.fastbuild-assets.stage-receipt.v1",
-        "pack_sha256": actualPackHash,
+        "schema": "luhm-os.fastbuild-assets.stage-receipt.v2",
         "runtime_rights": "LUHM_ORIGINAL_ONLY",
+        "logical_asset_count": logicalCount,
+        "atlas_regions": len(regions),
+        "staged_file_count": len(staged),
         "community_plugins_auto_enabled": False,
         "private_reference_assets_included": False,
+        "mixed_license_runtime_assets_included": False,
         "staged": staged,
     }
     if receiptPath:
@@ -97,14 +118,14 @@ def stageAssets(pack: Path, manifestPath: Path, destination: Path, receiptPath: 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("pack", type=Path)
+    parser.add_argument("repo_root", type=Path)
     parser.add_argument("manifest", type=Path)
     parser.add_argument("destination", type=Path)
     parser.add_argument("--receipt", type=Path)
     args = parser.parse_args()
 
     receipt = stageAssets(
-        args.pack.resolve(),
+        args.repo_root.resolve(),
         args.manifest.resolve(),
         args.destination.resolve(),
         args.receipt.resolve() if args.receipt else None,
