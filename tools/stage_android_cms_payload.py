@@ -2,8 +2,9 @@
 """Stage the LuHm Android WebView payload without development-only control planes.
 
 This copies the Cathedral presentation tree into an Android plugin asset directory while
-excluding Python/operator tooling. It fails closed if the staged payload contains loopback or
-control-plane markers forbidden by the golden beta release boundary.
+excluding Python/operator tooling and legacy loopback shell files. It fails closed if the
+staged payload contains concrete loopback/control-plane URLs or runtime markers forbidden by
+the golden beta release boundary.
 """
 
 from __future__ import annotations
@@ -15,11 +16,26 @@ import re
 import shutil
 from pathlib import Path
 
-EXCLUDED_TOP_LEVEL = {"python", "tools", "__pycache__", ".pytest_cache"}
+EXCLUDED_TOP_LEVEL = {
+    "python",
+    "tools",
+    "tests",
+    "source",
+    "config",
+    "distribution",
+    "__pycache__",
+    ".pytest_cache",
+}
+EXCLUDED_FILES = {
+    "SYSTEM_SHELL_MANIFEST.json",
+    "system-shell.js",
+    "system-shell.css",
+    "enterprise-distribution.js",
+    "enterprise-distribution.css",
+}
 FORBIDDEN = {
-    "loopback_ip": re.compile(r"127\.0\.0\.1"),
-    "localhost": re.compile(r"\blocalhost\b", re.I),
-    "loopback_word": re.compile(r"\bloopback\b", re.I),
+    "loopback_http": re.compile(r"https?://(?:127\.0\.0\.1|localhost)(?::\d+)?", re.I),
+    "loopback_ws": re.compile(r"wss?://(?:127\.0\.0\.1|localhost)(?::\d+)?", re.I),
     "pair_code": re.compile(r"LUHM_PAIR_CODE"),
     "fastapi": re.compile(r"\bFastAPI\b"),
     "pysimplegui": re.compile(r"\bPySimpleGUI\b"),
@@ -43,9 +59,23 @@ def ignore_entries(directory: str, names: list[str]) -> set[str]:
     base = Path(directory)
     ignored: set[str] = set()
     if base.name == "cathedral-game":
-        ignored.update(name for name in names if name in EXCLUDED_TOP_LEVEL)
+        ignored.update(name for name in names if name in EXCLUDED_TOP_LEVEL or name in EXCLUDED_FILES)
     ignored.update(name for name in names if name in {"__pycache__", ".pytest_cache"})
     return ignored
+
+
+def strip_legacy_shell_loaders(index_path: Path) -> None:
+    body = index_path.read_text(encoding="utf-8", errors="strict")
+    for fragment in (
+        '<link rel="stylesheet" href="system-shell.css">\\n',
+        '<script defer src="system-shell.js"></script>\\n',
+        '<link rel="stylesheet" href="system-shell.css">',
+        '<script defer src="system-shell.js"></script>',
+    ):
+        body = body.replace(fragment, "")
+    if "system-shell" in body:
+        raise SystemExit("legacy system-shell loader remains in staged index.html")
+    index_path.write_text(body, encoding="utf-8")
 
 
 def scan_payload(root: Path) -> list[dict[str, str]]:
@@ -79,9 +109,17 @@ def main() -> int:
     destination.parent.mkdir(parents=True, exist_ok=True)
     shutil.copytree(source, destination, ignore=ignore_entries)
 
+    index_path = destination / "index.html"
+    if not index_path.is_file():
+        raise SystemExit("staged payload is missing index.html")
+    strip_legacy_shell_loaders(index_path)
+
     for excluded in EXCLUDED_TOP_LEVEL:
         if (destination / excluded).exists():
             raise SystemExit(f"excluded development lane leaked into payload: {excluded}")
+    for excluded in EXCLUDED_FILES:
+        if (destination / excluded).exists():
+            raise SystemExit(f"excluded legacy shell file leaked into payload: {excluded}")
 
     hits = scan_payload(destination)
     files = [path for path in sorted(destination.rglob("*")) if path.is_file()]
@@ -89,7 +127,9 @@ def main() -> int:
         "schema": "luhm-os.android-cms-payload.dry-run.v1",
         "release_boundary": "NATIVE_GODOT_BRIDGE_PLUS_PACKAGED_APPASSETS",
         "development_loopback_harness_included": False,
+        "legacy_loopback_shell_included": False,
         "excluded_top_level": sorted(EXCLUDED_TOP_LEVEL),
+        "excluded_files": sorted(EXCLUDED_FILES),
         "file_count": len(files),
         "total_bytes": sum(path.stat().st_size for path in files),
         "forbidden_hits": hits,
