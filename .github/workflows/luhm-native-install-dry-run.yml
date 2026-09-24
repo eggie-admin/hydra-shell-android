@@ -14,11 +14,30 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: luhm-native-install-dry-run-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CANONICAL_FORGE: project/hydra/samsung/android/forge
+  GAME: project/hydra/samsung/android/cathedral-game
+  GODOT_RELEASE: 4.7.2-stable
+  GODOT_TEMPLATE_VERSION: 4.7.2.stable
+  GODOT_EDITOR_SHA256: cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4
+  GODOT_TEMPLATES_SHA256: f298490b8d44d934be425a5a65a51bf15f422428b229a06a6e11d9ffea248011
+  GODOT_GRADLE_VERSION: 8.11.1
+  GODOT_GRADLE_SHA256: f397b287023acdba1e9f6fc5ea72d22dd63669d59ed4a289a29b1a76eee151c6
+  DRYRUN_PACKAGE: art.eggiebagelface.luhmos.dryrun
+  DRYRUN_VERSION_NAME: 1.0.11-dryrun.1
+  DRYRUN_VERSION_CODE: '111'
+  DRYRUN_APP_NAME: LuHm OS Dry Run
+  DRYRUN_APK: luhmos-1.0.11-dryrun.1.apk
+
 jobs:
   native-boundary-dry-run:
-    name: Kuroko native release-boundary dry run
+    name: Kuroko integrated native dry run
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 45
     steps:
       - name: Checkout proposal
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
@@ -37,64 +56,245 @@ jobs:
       - uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a
         with:
           gradle-version: '8.13'
+          cache-cleanup: on-success
 
       - name: Sanity-check frozen floor and native bridge
         shell: bash
         run: |
           set -euo pipefail
           GOLDEN='project/hydra/source-of-truth/LUHM_OS_GOLDEN_BETA_NO_BACKTRACK_CROWN_20260922.json'
-          FORGE='project/hydra/samsung/android/forge'
           grep -q '"version_name": "1.0.10-beta.1"' "$GOLDEN"
           grep -q '"version_code": 110' "$GOLDEN"
           grep -q 'a2243d68fa1aaa2f554ef74d9a1edd32530c12ac' "$GOLDEN"
-          grep -q 'LUHM_NATIVE_3D_HARNESS_V1' "$FORGE/scripts/cage_manager.gd"
-          grep -q 'LUHM_MULTI_TIER_BRIDGE_V1' "$FORGE/scripts/web_cms_bridge.gd"
-          grep -q 'https://appassets.androidplatform.net' "$FORGE/android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralAndroidPlugin.kt"
-          ! grep -R -nE 'http://127\.0\.0\.1|http://localhost|com\.termux\.RUN_COMMAND|RunCommandService' "$FORGE"
+          grep -q 'LUHM_NATIVE_3D_HARNESS_V1' "$CANONICAL_FORGE/scripts/cage_manager.gd"
+          grep -q 'LUHM_MULTI_TIER_BRIDGE_V1' "$CANONICAL_FORGE/scripts/web_cms_bridge.gd"
+          grep -q 'https://appassets.androidplatform.net' "$CANONICAL_FORGE/android-plugin/plugin/src/main/java/art/eggiebagelface/cathedral/CathedralAndroidPlugin.kt"
+          ! grep -R -nE 'http://127\.0\.0\.1|http://localhost|com\.termux\.RUN_COMMAND|RunCommandService' "$CANONICAL_FORGE"
 
-      - name: Stage release-safe Cathedral payload
-        shell: bash
-        run: |
-          set -euo pipefail
-          GAME='project/hydra/samsung/android/cathedral-game'
-          STAGE="$RUNNER_TEMP/luhm-cms"
-          RECEIPT='build/dry-run/native-payload-receipt.json'
-          python tools/stage_android_cms_payload.py "$GAME" "$STAGE" --receipt "$RECEIPT"
-          test -f "$STAGE/index.html"
-          test ! -e "$STAGE/python"
-          test ! -e "$STAGE/tools"
-          python -m json.tool "$RECEIPT" >/dev/null
-          grep -q '"development_loopback_harness_included": false' "$RECEIPT"
-          grep -q '"forbidden_hits": \[\]' "$RECEIPT"
-
-      - name: Compile Android Godot plugin without signing secrets
-        shell: bash
-        run: |
-          set -euo pipefail
-          PLUGIN='project/hydra/samsung/android/forge/android-plugin'
-          gradle -p "$PLUGIN" :plugin:assemble
-          test -s "$PLUGIN/plugin/build/outputs/aar/CathedralAndroid-debug.aar"
-          test -s "$PLUGIN/plugin/build/outputs/aar/CathedralAndroid-release.aar"
-          mkdir -p build/dry-run
-          cp "$PLUGIN/plugin/build/outputs/aar/CathedralAndroid-debug.aar" build/dry-run/
-          cp "$PLUGIN/plugin/build/outputs/aar/CathedralAndroid-release.aar" build/dry-run/
-          sha256sum build/dry-run/*.aar > build/dry-run/aar-sha256.txt
-
-      - name: Prove dry-run has no release authority
+      - name: Prove no production signer or publish authority
         shell: bash
         run: |
           set -euo pipefail
           test -z "${LUHMOS_ANDROID_KEYSTORE_B64:-}"
           test -z "${LUHMOS_ANDROID_KEYSTORE_PASSWORD:-}"
           test -z "${LUHMOS_ANDROID_KEY_PASSWORD:-}"
-          echo 'LUHM_DRY_RUN_SIGNING=OFF'
+          echo 'LUHM_DRY_RUN_SIGNING=DEBUG_ONLY'
           echo 'LUHM_DRY_RUN_PUBLISH=OFF'
           echo 'LUHM_DRY_RUN_INSTALL=OFF'
+
+      - name: Install Android SDK 36
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" 'platform-tools' 'build-tools;36.1.0' 'platforms;android-36'
+
+      - name: Install verified Godot toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          CACHE="$HOME/.cache/luhmos/godot-4.7.2"
+          WORK="$RUNNER_TEMP/luhmos-godot"
+          mkdir -p "$CACHE" "$WORK"
+
+          curl --fail --location --retry 5 --retry-all-errors -o "$CACHE/godot.zip" \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v4.7.2-stable_linux.x86_64.zip"
+          echo "${GODOT_EDITOR_SHA256}  $CACHE/godot.zip" | sha256sum --check --strict
+
+          curl --fail --location --retry 5 --retry-all-errors -o "$CACHE/export_templates.tpz" \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v4.7.2-stable_export_templates.tpz"
+          echo "${GODOT_TEMPLATES_SHA256}  $CACHE/export_templates.tpz" | sha256sum --check --strict
+
+          GRADLE_ZIP="$CACHE/gradle-${GODOT_GRADLE_VERSION}-bin.zip"
+          curl --fail --location --retry 5 --retry-all-errors -o "$GRADLE_ZIP" \
+            "https://services.gradle.org/distributions/gradle-${GODOT_GRADLE_VERSION}-bin.zip"
+          echo "${GODOT_GRADLE_SHA256}  $GRADLE_ZIP" | sha256sum --check --strict
+
+          unzip -q -o "$CACHE/godot.zip" -d "$WORK"
+          chmod +x "$WORK/Godot_v4.7.2-stable_linux.x86_64"
+          echo "GODOT_BIN=$WORK/Godot_v4.7.2-stable_linux.x86_64" >> "$GITHUB_ENV"
+
+          rm -rf "$WORK/templates"
+          mkdir -p "$WORK/templates"
+          unzip -q "$CACHE/export_templates.tpz" -d "$WORK/templates"
+          TEMPLATE_DIR="$HOME/.local/share/godot/export_templates/${GODOT_TEMPLATE_VERSION}"
+          mkdir -p "$TEMPLATE_DIR"
+          cp -a "$WORK/templates/templates/." "$TEMPLATE_DIR/"
+          test -f "$TEMPLATE_DIR/android_debug.apk"
+          test -f "$TEMPLATE_DIR/android_source.zip"
+
+          PATCH_DIR="$WORK/android-source-patched"
+          rm -rf "$PATCH_DIR"
+          mkdir -p "$PATCH_DIR"
+          unzip -q "$TEMPLATE_DIR/android_source.zip" -d "$PATCH_DIR"
+          WRAPPER_PROPS="$(find "$PATCH_DIR" -type f -path '*/gradle/wrapper/gradle-wrapper.properties' -print -quit)"
+          test -n "$WRAPPER_PROPS"
+          python - "$WRAPPER_PROPS" "$GRADLE_ZIP" "$GODOT_GRADLE_SHA256" <<'PY'
+          from pathlib import Path
+          import sys
+          path = Path(sys.argv[1])
+          uri = Path(sys.argv[2]).resolve().as_uri()
+          digest = sys.argv[3]
+          lines = path.read_text(encoding='utf-8').splitlines()
+          out = []
+          saw_url = False
+          saw_sha = False
+          for line in lines:
+              if line.startswith('distributionUrl='):
+                  out.append('distributionUrl=' + uri)
+                  saw_url = True
+              elif line.startswith('distributionSha256Sum='):
+                  out.append('distributionSha256Sum=' + digest)
+                  saw_sha = True
+              else:
+                  out.append(line)
+          if not saw_url:
+              raise SystemExit('missing Gradle distributionUrl')
+          if not saw_sha:
+              out.append('distributionSha256Sum=' + digest)
+          path.write_text('\n'.join(out) + '\n', encoding='utf-8')
+          PY
+          (cd "$PATCH_DIR" && zip -q -r "$TEMPLATE_DIR/android_source.zip.new" .)
+          mv "$TEMPLATE_DIR/android_source.zip.new" "$TEMPLATE_DIR/android_source.zip"
+
+      - name: Stage isolated forge and release-safe Cathedral payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          FORGE="$RUNNER_TEMP/luhm-dryrun-forge"
+          rm -rf "$FORGE"
+          cp -a "$CANONICAL_FORGE" "$FORGE"
+
+          CMS="$FORGE/android-plugin/plugin/src/main/assets/cms"
+          rm -rf "$CMS"
+          RECEIPT="$GITHUB_WORKSPACE/build/dry-run/native-payload-receipt.json"
+          python tools/stage_android_cms_payload.py "$GAME" "$CMS" --receipt "$RECEIPT"
+          test -f "$CMS/index.html"
+          test ! -e "$CMS/python"
+          test ! -e "$CMS/tools"
+          test ! -e "$CMS/system-shell.js"
+          python -m json.tool "$RECEIPT" >/dev/null
+          grep -q '"development_loopback_harness_included": false' "$RECEIPT"
+          grep -q '"legacy_loopback_shell_included": false' "$RECEIPT"
+          grep -q '"forbidden_hits": \[\]' "$RECEIPT"
+
+          gradle -p "$FORGE/android-plugin" :plugin:assemble
+          test -s "$FORGE/android-plugin/plugin/build/outputs/aar/CathedralAndroid-debug.aar"
+          test -s "$FORGE/android-plugin/plugin/build/outputs/aar/CathedralAndroid-release.aar"
+
+          rm -rf "$FORGE/addons/CathedralAndroid"
+          mkdir -p "$FORGE/addons/CathedralAndroid/bin/debug" "$FORGE/addons/CathedralAndroid/bin/release"
+          cp -a "$FORGE/android-plugin/plugin/export_scripts_template/." "$FORGE/addons/CathedralAndroid/"
+          cp "$FORGE/android-plugin/plugin/build/outputs/aar/CathedralAndroid-debug.aar" \
+            "$FORGE/addons/CathedralAndroid/bin/debug/"
+          cp "$FORGE/android-plugin/plugin/build/outputs/aar/CathedralAndroid-release.aar" \
+            "$FORGE/addons/CathedralAndroid/bin/release/"
+
+          mkdir -p "$GITHUB_WORKSPACE/build/dry-run"
+          cp "$FORGE/android-plugin/plugin/build/outputs/aar/CathedralAndroid-debug.aar" \
+            "$GITHUB_WORKSPACE/build/dry-run/"
+          cp "$FORGE/android-plugin/plugin/build/outputs/aar/CathedralAndroid-release.aar" \
+            "$GITHUB_WORKSPACE/build/dry-run/"
+          sha256sum "$GITHUB_WORKSPACE"/build/dry-run/*.aar > \
+            "$GITHUB_WORKSPACE/build/dry-run/aar-sha256.txt"
+          echo "LUHM_DRYRUN_FORGE=$FORGE" >> "$GITHUB_ENV"
+
+      - name: Patch only isolated export identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          PRESET="$LUHM_DRYRUN_FORGE/export_presets.cfg"
+          python - "$PRESET" "$DRYRUN_PACKAGE" "$DRYRUN_APP_NAME" "$DRYRUN_VERSION_NAME" "$DRYRUN_VERSION_CODE" <<'PY'
+          from pathlib import Path
+          import re, sys
+          path = Path(sys.argv[1])
+          package, app_name, version_name, version_code = sys.argv[2:]
+          text = path.read_text(encoding='utf-8')
+          replacements = {
+              r'^version/code=.*$': f'version/code={version_code}',
+              r'^version/name=.*$': f'version/name="{version_name}"',
+              r'^package/unique_name=.*$': f'package/unique_name="{package}"',
+              r'^package/name=.*$': f'package/name="{app_name}"',
+              r'^export_path=.*$': f'export_path="../build/android/luhmos-{version_name}.apk"',
+          }
+          for pattern, value in replacements.items():
+              text, count = re.subn(pattern, value, text, flags=re.M)
+              if count != 1:
+                  raise SystemExit(f'expected one preset field for {pattern}, found {count}')
+          path.write_text(text, encoding='utf-8')
+          PY
+          grep -q "version/code=$DRYRUN_VERSION_CODE" "$PRESET"
+          grep -q "version/name=\"$DRYRUN_VERSION_NAME\"" "$PRESET"
+          grep -q "package/unique_name=\"$DRYRUN_PACKAGE\"" "$PRESET"
+          grep -q "package/name=\"$DRYRUN_APP_NAME\"" "$PRESET"
+
+      - name: Configure temporary debug signer
+        shell: bash
+        run: |
+          set -euo pipefail
+          KEYSTORE="$RUNNER_TEMP/luhm-dryrun-debug.keystore"
+          keytool -genkeypair -keystore "$KEYSTORE" -storepass android \
+            -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 \
+            -validity 10000 -dname 'CN=LuHm OS Dry Run Debug,O=LuHm OS,C=US'
+          chmod 600 "$KEYSTORE"
+          echo "GODOT_ANDROID_KEYSTORE_DEBUG_PATH=$KEYSTORE" >> "$GITHUB_ENV"
+          echo 'GODOT_ANDROID_KEYSTORE_DEBUG_USER=androiddebugkey' >> "$GITHUB_ENV"
+          echo 'GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD=android' >> "$GITHUB_ENV"
+
+          mkdir -p "$HOME/.config/godot"
+          cat > "$HOME/.config/godot/editor_settings-4.tres" <<EOF
+          [gd_resource type="EditorSettings" format=3]
+
+          [resource]
+          export/android/android_sdk_path = "$ANDROID_HOME"
+          export/android/java_sdk_path = "$JAVA_HOME"
+          EOF
+
+      - name: Export isolated debug APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="$GITHUB_WORKSPACE/build/dry-run/$DRYRUN_APK"
+          "$GODOT_BIN" --headless --editor --path "$LUHM_DRYRUN_FORGE" --quit
+          "$GODOT_BIN" --headless --path "$LUHM_DRYRUN_FORGE" \
+            --install-android-build-template \
+            --export-debug 'Android Release' "$APK"
+          test -s "$APK"
+
+      - name: Verify integrated APK identity and payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="$GITHUB_WORKSPACE/build/dry-run/$DRYRUN_APK"
+          BT="$ANDROID_HOME/build-tools/36.1.0"
+          "$BT/aapt" dump badging "$APK" | tee build/dry-run/apk-badging.txt
+          "$BT/aapt" dump permissions "$APK" | tee build/dry-run/apk-permissions.txt
+          "$BT/apksigner" verify --verbose --print-certs "$APK" | tee build/dry-run/apk-signature.txt
+          "$BT/zipalign" -c -P 16 -v 4 "$APK" > build/dry-run/apk-zipalign.txt
+          sha256sum "$APK" | tee build/dry-run/apk-sha256.txt
+
+          grep -q "package: name='$DRYRUN_PACKAGE'" build/dry-run/apk-badging.txt
+          grep -q "versionCode='$DRYRUN_VERSION_CODE'" build/dry-run/apk-badging.txt
+          grep -q "versionName='$DRYRUN_VERSION_NAME'" build/dry-run/apk-badging.txt
+          ! grep -q "package: name='art.eggiebagelface.luhmos'" build/dry-run/apk-badging.txt
+
+          UNPACK="$RUNNER_TEMP/luhm-dryrun-apk"
+          rm -rf "$UNPACK"
+          mkdir -p "$UNPACK"
+          unzip -q "$APK" -d "$UNPACK"
+          test -f "$UNPACK/assets/cms/index.html"
+          test ! -e "$UNPACK/assets/cms/python"
+          test ! -e "$UNPACK/assets/cms/system-shell.js"
+          ! grep -R -nE 'https?://(127\.0\.0\.1|localhost)(:[0-9]+)?|com\.termux\.RUN_COMMAND|RunCommandService|LUHM_PAIR_CODE|\bFastAPI\b|\bPySimpleGUI\b' \
+            "$UNPACK/assets/cms"
+          grep -q 'LUHM_NATIVE_3D_WORLD_BRIDGE_V1' "$UNPACK/assets/cms/crown-cathedral.js"
+          echo 'LUHM_INTEGRATED_DRYRUN_APK_GREEN'
 
       - name: Upload dry-run evidence
         uses: actions/upload-artifact@v4
         with:
-          name: luhm-native-install-dry-run
+          name: luhm-native-integrated-dry-run
           path: build/dry-run/
           if-no-files-found: error
           retention-days: 7
