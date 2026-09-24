@@ -1,0 +1,41 @@
+{
+  "schema": "luhm-os.proposed-install-apk.v1",
+  "status": "PROPOSED_NOT_CROWNED",
+  "human_final_authority": "Professor",
+  "product": "LuHm OS",
+  "purpose": "Physical-device install and multi-tier GUI proof before any production promotion.",
+  "source_floor": {
+    "golden_beta": "1.0.10-beta.1",
+    "golden_version_code": 110,
+    "golden_beta_sha": "a2243d68fa1aaa2f554ef74d9a1edd32530c12ac",
+    "golden_mutation_allowed": false
+  },
+  "proposed_install": {
+    "version_name": "1.0.11-proposed.1",
+    "version_code": 111,
+    "package_id": "art.eggiebagelface.luhmos.proposed",
+    "app_name": "LuHm OS Proposed",
+    "production_signer": false,
+    "temporary_debug_signer": true,
+    "side_by_side_with_golden": true,
+    "publish_authority": false,
+    "stable_promotion_authority": false
+  },
+  "android_release_boundary": {
+    "native_godot_3d_harness_required": true,
+    "cathedral_webview_required": true,
+    "native_cathedral_bridge_required": true,
+    "loopback_control_plane_in_apk": false,
+    "fastapi_in_apk": false,
+    "pysimplegui_in_apk": false,
+    "termux_run_command_in_apk": false
+  },
+  "device_proof_required": [
+    "install succeeds without replacing golden LuHm OS",
+    "Cathedral WebView renders",
+    "WORLD MODE hides WebView and reveals native Godot 3D tier",
+    "Cathedral return path restores WebView",
+    "no loopback harness dependency is required for normal app boot"
+  ],
+  "promotion_rule": "No merge, Crown, production signing, release publication, or stable promotion from this proposal without fresh evidence and explicit human approval."
+}
