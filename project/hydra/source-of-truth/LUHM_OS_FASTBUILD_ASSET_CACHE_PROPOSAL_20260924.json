@@ -12,7 +12,7 @@
   "objective": "Keep the maximum currently verified public-safe game-development material source-local so Android/Godot iteration does not depend on repeated Drive or upstream pulls.",
   "source_cache": {
     "path": "project/hydra/assets/fastbuild-cache/luhm-fastbuild-assets-v1.zip",
-    "sha256": "b6745249e45335d91cbf7408a6c4bca85e9b904e1b70db7e3ed10e7154af7518",
+    "sha256": "307077bc56d1d57647d40ddfed36e719dd7f92203f704841f162fb58cbde3e92",
     "manifest": "project/hydra/assets/fastbuild-cache/manifest.json",
     "stager": "tools/stage_fastbuild_assets.py"
   },
