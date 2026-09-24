@@ -49,13 +49,27 @@ jobs:
           python -m json.tool "$MANIFEST" >/dev/null
           python -m json.tool "$META" >/dev/null
           python -m json.tool "$PALETTE" >/dev/null
-          grep -q '"status": "PROPOSED_NOT_CROWNED"' "$PROPOSAL"
-          grep -q '"private_pck_files_in_public_git": false' "$PROPOSAL"
-          grep -q '"logical_game_asset_count": 27' "$PROPOSAL"
-          grep -q '"logical_asset_count": 27' "$MANIFEST"
-          grep -q '"region_count": 25' "$META"
           ! find "$CACHE" -type f | grep -Ei '\.(pck|p12|pfx|jks|keystore|pem|key)$'
-          ! grep -R -nE 'THIRD_PARTY_PRIVATE_REFERENCE.*(allow|include|runtime)|private_pck_files_in_public_git[^f]' "$CACHE" "$PROPOSAL"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          proposal=json.loads(Path('project/hydra/source-of-truth/LUHM_OS_FASTBUILD_ASSET_CACHE_PROPOSAL_20260924.json').read_text())
+          manifest=json.loads(Path('project/hydra/assets/fastbuild-cache/manifest.json').read_text())
+          meta=json.loads(Path('project/hydra/assets/fastbuild-cache/generated/luhm_fastbuild_atlas.json').read_text())
+          assert proposal['status']=='PROPOSED_NOT_CROWNED'
+          assert proposal['included']['logical_game_asset_count']==27
+          assert proposal['rights_boundary']['private_pck_files_in_public_git'] is False
+          assert proposal['rights_boundary']['community_plugins_auto_enabled'] is False
+          assert 'THIRD_PARTY_PRIVATE_REFERENCE' in proposal['rights_boundary']['hard_exclude']
+          assert manifest['status']=='PROPOSED_PUBLIC_SAFE_SOURCE_CACHE'
+          assert manifest['logical_asset_count']==27
+          assert manifest['rights_gate']['private_pck_files_in_public_git'] is False
+          assert manifest['rights_gate']['community_plugins_auto_enabled'] is False
+          assert manifest['rights_gate']['runtime_allow']==['LUHM_ORIGINAL']
+          assert 'THIRD_PARTY_PRIVATE_REFERENCE' in manifest['rights_gate']['hard_exclude']
+          assert meta['region_count']==25
+          print('LUHM_FASTBUILD_RIGHTS_BOUNDARY_GREEN')
+          PY
 
       - name: Stage runtime-safe source assets
         shell: bash
