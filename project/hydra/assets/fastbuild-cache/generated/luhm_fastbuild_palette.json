@@ -1,0 +1,14 @@
+{
+  "schema": "luhm-os.fastbuild-palette.v1",
+  "rights": "LUHM_ORIGINAL",
+  "colors": {
+    "background": "#080710",
+    "panel": "#100d20",
+    "ink": "#f7edf8",
+    "pink": "#ff4b88",
+    "violet": "#8a5cff",
+    "cyan": "#59e5ff",
+    "gold": "#ffc76b",
+    "red": "#ff5e68"
+  }
+}
