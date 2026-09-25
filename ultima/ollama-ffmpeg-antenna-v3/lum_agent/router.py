@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 from magic_chat import _reject_secrets
 
 from .agent import LUM_AGENT_NAME, LUM_MODEL, run_lum
+from .astra import astra_status
 from .doctrine import list_skills
 
 ROUTER = APIRouter(prefix="/api/lum", tags=["lum-agent"])
@@ -31,7 +32,9 @@ def lum_status() -> dict[str, Any]:
         "credential_configured": bool(os.environ.get("OPENAI_API_KEY")),
         "credential_exposed_to_client": False,
         "skills": [item["name"] for item in list_skills()],
+        "astra": astra_status(),
         "mutation_authority": "deterministic_magic_cast_gateway",
+        "single_boss": True,
         "self_approval": False,
     }
 
