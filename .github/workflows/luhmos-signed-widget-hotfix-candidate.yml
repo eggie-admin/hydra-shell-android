@@ -24,6 +24,7 @@ env:
   VERSION_CODE: '101'
   APK_NAME: LuHm-OS-1.0.1-widget-hotfix-signed.apk
   KEY_ALIAS: luhmos-release
+  EXPECTED_APK_FP: 598D7272D62DBEBB71972D6164822636AD1439CD35631D0CD43321D003C92142
   GODOT_RELEASE: 4.7.2-stable
   GODOT_TEMPLATE_VERSION: 4.7.2.stable
   GODOT_EDITOR_SHA256: cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4
@@ -228,8 +229,6 @@ jobs:
 
       - name: Verify signed artifact and update continuity
         shell: bash
-        env:
-          EXPECTED_APK_FP: ${{ vars.LUHMOS_ANDROID_CERT_SHA256 }}
         run: |
           set -euo pipefail
           APK="build/release/$APK_NAME"
@@ -253,7 +252,6 @@ jobs:
           grep -Eq 'Verified using v(2|3|4) scheme .*: true' build/release/signature.txt
           APK_FP="$(sed -n 's/^Signer #1 certificate SHA-256 digest: //p' build/release/signature.txt | head -n1 | tr -d ':[:space:]' | tr '[:lower:]' '[:upper:]')"
           test -n "$APK_FP"
-          test -n "$EXPECTED_APK_FP"
           norm() { tr -d ':[:space:]' | tr '[:lower:]' '[:upper:]'; }
           test "$(printf '%s' "$APK_FP" | norm)" = "$(printf '%s' "$EXPECTED_APK_FP" | norm)"
           printf '%s\n' "$APK_FP" > build/release/apk-signer-sha256.txt
