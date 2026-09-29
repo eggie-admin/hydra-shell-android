@@ -24,9 +24,10 @@
   },
   "pinned_android_donor": {
     "repository": "eggie-admin/vue-headless-cms",
-    "branch": "luhmos/s24fe-standalone-hardening-20260911",
-    "commit": "96c23c87713800fc17c80b6a972ee2e93f1bb4b1",
-    "review_pr": 20,
+    "branch": "stage/luhmos-widget-factory-physical-green-20260928",
+    "commit": "74cccf654a863e2dd41626486efd440c2def3c87",
+    "review_pr": 23,
+    "physical_widget_hotfix_evidence": "GREEN",
     "production_termux_permission": false,
     "production_termux_package_query": false,
     "widget_external_daemon_control": false,
@@ -97,5 +98,5 @@
     "legacy_videoforge_package": "historical_only",
     "testing_ingest_manifest": "project/hydra/samsung/android/apk/testing-ingest.manifest.json"
   },
-  "next_green_gate": "LUHMOS_IZZYONDROID_PUBLIC_INSTALL_GREEN"
+  "next_green_gate": "LUHMOS_1_0_1_WIDGET_HOTFIX_SIGNED_DEVICE_UPDATE_GREEN"
 }
