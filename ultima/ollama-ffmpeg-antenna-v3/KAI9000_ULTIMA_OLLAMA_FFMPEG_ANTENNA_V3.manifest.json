@@ -4,11 +4,26 @@
   "planes": {
     "local_live": {
       "ollama": "http://127.0.0.1:11434",
+      "ollama_facade": {
+        "loopback_only": true,
+        "fail_closed": true,
+        "non_loopback_fallback": false
+      },
       "ffmpeg": "local_binary",
       "ffprobe": "local_binary",
       "comfyui_optional": "http://127.0.0.1:8188",
       "antenna": "http://127.0.0.1:8797",
-      "coding_cockpit": "jquery_ui_plus_python3_fastapi_magic_kernel"
+      "coding_cockpit": "jquery_ui_plus_python3_fastapi_magic_kernel",
+      "edge_gallery": {
+        "role": "samsung_local_ui_surface_only",
+        "assumed_http_api": false,
+        "scrape_private_app_storage": false
+      },
+      "future_native_backends": {
+        "llama_cpp_optional": true,
+        "litert_lm_native_path_preserved": true,
+        "enabled_by_default": false
+      }
     },
     "openai_coding": {
       "transport": "responses_api",
