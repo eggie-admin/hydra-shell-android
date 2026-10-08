@@ -1,0 +1,69 @@
+{
+  "schema": "kai9000.luhm.for-loop.v1",
+  "seal": "KAI9000_LUHM_FOR_LOOP_AI_TOOLCHAIN_20260916",
+  "date": "2026-09-16",
+  "authority": "Professor",
+  "scope": "source-only-ai-workflow-hardening",
+  "source_lineage": {
+    "initial_base_branch": "luhmos-main",
+    "initial_base_sha": "a02c3d19aac9043c54901d8bc31a54c5d6e709b2",
+    "reconciled_base_sha": "91f180f612c09ecc68f075d5ade77456b3b9e538",
+    "reconciliation_commit": "aa5108f6be9f87a5030849ada1b7a9361719bebc"
+  },
+  "branch": "luhmos/for-loop-ai-toolchain-20260916",
+  "pull_request": 62,
+  "loop": {
+    "max_evidence_passes": 10,
+    "max_agent_rounds": 3,
+    "terminal_conditions": [
+      "PROVEN",
+      "BLOCKED",
+      "CROWN_REQUIRED",
+      "NEEDS_HUMAN"
+    ],
+    "null_is_green": false
+  },
+  "boss": {
+    "name": "KAI9000-Lum-Boss",
+    "single_user_facing_authority": true,
+    "helper_recursion": false,
+    "provider_consensus_grants_authority": false
+  },
+  "skills": {
+    "context": "read-only evidence and source-of-truth",
+    "forge": "reversible source/test proposal",
+    "warden": "audit/provenance/security only"
+  },
+  "provider_roles": {
+    "openai": "primary boss reasoning",
+    "hugging_face": "registry/provenance/explicit advisory",
+    "google_cloud": "explicit review/live provider",
+    "ollama": "local optional inference adapter",
+    "edge_gallery": "on-device experiment/skill surface",
+    "cloudflare": "transport-and-identity-only",
+    "github": "source-review-ci-provenance"
+  },
+  "required_followup": [
+    "selective_pr60_boss_integration",
+    "selective_pr61_evidence_pipeline_integration",
+    "selective_pr47_loopback_enforcement",
+    "retire_magic_chat_direct_model_route",
+    "purge_active_gpt-6-astra_model_identifier",
+    "combined_sha_ci"
+  ],
+  "private_donor_firewall": {
+    "public_repo_accepts_private_donor_material": false,
+    "default_ship_allowed": false,
+    "clean_room_reimplementation_required_for_private_reference": true
+  },
+  "mutation": {
+    "source_only": true,
+    "compile": false,
+    "sign": false,
+    "install": false,
+    "merge": false,
+    "publish": false,
+    "play_release": false,
+    "privileged_action": false
+  }
+}
