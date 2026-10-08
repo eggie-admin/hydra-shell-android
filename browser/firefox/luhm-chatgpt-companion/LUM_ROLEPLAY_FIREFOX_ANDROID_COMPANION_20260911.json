@@ -1,0 +1,22 @@
+{
+  "seal": "LUM_ROLEPLAY_FIREFOX_ANDROID_COMPANION_20260911",
+  "status": "SEALED_BUILD",
+  "scope": "ChatGPT app/web roleplay companion only",
+  "version": "0.2.0",
+  "target": ["Firefox Desktop", "Firefox Android"],
+  "addon_id": "luhm-chatgpt-companion@eggiebagelface.art",
+  "commands": ["PET LUM", "ROLL D20", "GACHA PULL", "DATE EVENT", "SUMMON IMAGE", "CAST ULTIMA", "SAVEPOINT"],
+  "authority": {
+    "human_final_authority": true,
+    "auto_send": false,
+    "background_actions": false,
+    "credential_access": false,
+    "external_publish": false
+  },
+  "data_collection": "none",
+  "authentication": "User signs into ChatGPT normally in Firefox; extension does not handle authentication.",
+  "distribution": {
+    "xpi_status": "unsigned_signing_ready",
+    "standard_firefox_requires_mozilla_signature": true
+  }
+}

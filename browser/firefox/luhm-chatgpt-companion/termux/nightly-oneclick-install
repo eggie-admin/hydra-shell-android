@@ -1,0 +1,105 @@
+#!/data/data/com.termux/files/usr/bin/bash
+set -u
+
+BRANCH="feature/lum-chatgpt-companion-extension"
+REPO="$HOME/luhm-firefox"
+ROOT="$REPO/browser/firefox/luhm-chatgpt-companion"
+VERSION="0.4.0"
+NIGHTLY_PKG="org.mozilla.fenix"
+NIGHTLY_ACTIVITY="org.mozilla.fenix/org.mozilla.fenix.HomeActivity"
+DOWNLOADS="$HOME/storage/downloads"
+UNSIGNED="$ROOT/dist/luhm-chatgpt-companion-firefox-$VERSION-unsigned.xpi"
+DEST="$DOWNLOADS/LuHm-ChatGPT-Companion-$VERSION-NIGHTLY-UNSIGNED.xpi"
+
+banner() { printf '\n=== %s ===\n' "$1"; }
+
+termux-wake-lock 2>/dev/null || true
+export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=384}"
+export npm_config_jobs="${npm_config_jobs:-1}"
+export npm_config_audit=false
+export npm_config_fund=false
+
+banner "LUHM NIGHTLY LOCAL INSTALL / SOURCE"
+command -v git >/dev/null 2>&1 || pkg install -y git || exit 40
+if [ ! -d "$REPO/.git" ]; then
+  git clone --depth=1 --branch "$BRANCH" https://github.com/eggie-admin/hydra-shell-android.git "$REPO" || exit 41
+else
+  cd "$REPO" || exit 42
+  git fetch --depth=1 origin "$BRANCH" || exit 43
+  git reset --hard "origin/$BRANCH" || exit 44
+fi
+cd "$ROOT" || exit 45
+
+banner "TERMUX DEPENDENCIES"
+command -v python >/dev/null 2>&1 || pkg install -y python || exit 46
+command -v node >/dev/null 2>&1 || pkg install -y nodejs || exit 47
+command -v npm >/dev/null 2>&1 || pkg install -y nodejs || exit 48
+command -v sha256sum >/dev/null 2>&1 || pkg install -y coreutils || exit 49
+
+if [ ! -d "$HOME/storage" ]; then
+  echo "Termux shared storage is not enabled."
+  echo "Run: termux-setup-storage"
+  echo "Approve Android's storage prompt, then rerun this installer."
+  exit 32
+fi
+
+chmod +x \
+  termux/full-live2d-mutation \
+  termux/install-live2d-runtime \
+  termux/luhm-private-bridge 2>/dev/null || true
+
+banner "FULL PRIVATE LIVE2D FORGE"
+termux/full-live2d-mutation || {
+  code=$?
+  echo "Forge stopped with code $code" >&2
+  return "$code" 2>/dev/null || exit "$code"
+}
+
+[ -f "$UNSIGNED" ] || {
+  echo "Expected Nightly XPI missing: $UNSIGNED" >&2
+  exit 50
+}
+
+banner "COPY XPI TO ANDROID DOWNLOADS"
+mkdir -p "$DOWNLOADS"
+cp -f "$UNSIGNED" "$DEST"
+chmod 644 "$DEST" 2>/dev/null || true
+sha256sum "$DEST"
+
+banner "PRIVATE ASSET BRIDGE"
+termux/luhm-private-bridge restart || true
+termux/luhm-private-bridge status || true
+
+banner "OPEN FIREFOX NIGHTLY SETTINGS"
+# Never send the XPI through Android's generic VIEW chooser here: current
+# Termux registers itself as a broad file viewer, so Android may route the XPI
+# right back into Termux. Firefox for Android intentionally installs local XPIs
+# through its own in-app OpenDocument flow instead.
+#
+# Fenix exposes the fenix://settings deep link on HomeActivity. Target the
+# Nightly package/component explicitly so this cannot resolve to Termux.
+AM_OUT="$(am start --user 0 -W \
+  -a android.intent.action.VIEW \
+  -c android.intent.category.BROWSABLE \
+  -d 'fenix://settings' \
+  -n "$NIGHTLY_ACTIVITY" 2>&1 || true)"
+printf '%s\n' "$AM_OUT" | sed -n '1,8p'
+
+if printf '%s' "$AM_OUT" | grep -Eqi 'Status: ok|Starting: Intent|Activity: org\.mozilla\.fenix'; then
+  echo "Firefox Nightly settings handoff: GREEN"
+else
+  echo "Nightly settings deep-link did not report GREEN; launching Nightly home as fallback."
+  am start --user 0 -a android.intent.action.VIEW -d 'https://chatgpt.com/' -p "$NIGHTLY_PKG" >/dev/null 2>&1 || true
+fi
+
+banner "NIGHTLY LOCAL INSTALL READY"
+echo "XPI=$DEST"
+echo "SEAL=LUM_FIREFOX_LIVE2D_FULL_MUTATION_20260911"
+echo "LUHM_NIGHTLY_LOCAL_INSTALL_READY"
+echo
+echo "Firefox Nightly should now be on Settings."
+echo "Tap: Install Extension from File"
+echo "Then: Downloads > LuHm-ChatGPT-Companion-$VERSION-NIGHTLY-UNSIGNED.xpi > Add"
+echo
+echo "xpinstall.signatures.required is already false on this device."
+echo "No Android file chooser is invoked by Termux, so the XPI will not bounce back into Termux."

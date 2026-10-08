@@ -1,0 +1,55 @@
+#!/data/data/com.termux/files/usr/bin/bash
+set -euo pipefail
+
+VERSION="${LUHM_L2D_VERSION:-2.1.1}"
+ROOT="${LUHM_PRIVATE_RUNTIME_ROOT:-$HOME/luhm-private/runtime/l2d-$VERSION}"
+RUNTIME="$ROOT/index.min.js"
+META="$ROOT/runtime.json"
+
+command -v npm >/dev/null 2>&1 || {
+  echo "npm is required. Install Node.js/npm in Termux first." >&2
+  exit 2
+}
+
+mkdir -p "$ROOT"
+TMP="$(mktemp -d)"
+trap 'rm -rf "$TMP"' EXIT
+
+cd "$TMP"
+echo "Fetching private Live2D renderer package: l2d@$VERSION"
+TARBALL="$(npm pack "l2d@$VERSION" --silent | tail -n 1)"
+tar -xzf "$TARBALL"
+
+[ -f package/dist/index.min.js ] || {
+  echo "l2d package did not contain dist/index.min.js" >&2
+  exit 3
+}
+
+cp package/dist/index.min.js "$RUNTIME"
+if [ -f package/LICENSE ]; then
+  cp package/LICENSE "$ROOT/LICENSE.l2d.txt"
+fi
+
+SHA="$(sha256sum "$RUNTIME" | awk '{print $1}')"
+python - "$META" "$VERSION" "$SHA" <<'PY'
+import json, sys, time
+out, version, sha = sys.argv[1:]
+payload = {
+    "schema": "luhm.private-live2d-runtime-vendor.v1",
+    "package": "l2d",
+    "version": version,
+    "source": f"npm:l2d@{version}",
+    "sha256": sha,
+    "installed_at": int(time.time()),
+    "private_only": True,
+    "public_git_bytes": False,
+    "remote_executable_code": False,
+    "wrapper_license": "MIT",
+    "live2d_sdk_notice": "This renderer integrates Live2D Cubism SDK components and remains subject to applicable Live2D license terms."
+}
+with open(out, "w", encoding="utf-8") as fh:
+    json.dump(payload, fh, indent=2)
+PY
+
+chmod 600 "$RUNTIME" "$META" 2>/dev/null || true
+printf 'Live2D runtime: GREEN\npath: %s\nsha256: %s\n' "$RUNTIME" "$SHA"

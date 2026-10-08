@@ -1,0 +1,45 @@
+#!/data/data/com.termux/files/usr/bin/bash
+set -euo pipefail
+
+HERE="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "$HERE/.." && pwd)"
+ASSETS="${LUHM_PRIVATE_ASSET_ROOT:-$HOME/luhm-private/assets}"
+RUNTIME="${LUHM_LIVE2D_RUNTIME:-$HOME/luhm-private/runtime/l2d-2.1.1/index.min.js}"
+
+cd "$ROOT"
+chmod +x "$HERE/install-live2d-runtime" "$HERE/luhm-private-bridge" 2>/dev/null || true
+
+echo "=== 1/5 PRIVATE LIVE2D RUNTIME ==="
+"$HERE/install-live2d-runtime"
+
+echo "=== 2/5 MODEL CONTRACTS ==="
+LUHM_PRIVATE_ASSET_ROOT="$ASSETS" python "$HERE/build-live2d-runtime-index.py"
+
+echo "=== 3/5 PRIVATE ASSET BRIDGE ==="
+"$HERE/luhm-private-bridge" restart
+"$HERE/luhm-private-bridge" status
+
+echo "=== 4/5 FIREFOX FULL FORGE ==="
+LUHM_LIVE2D_RUNTIME="$RUNTIME" python forge.py
+
+echo "=== 5/5 VERIFY PRIVATE RUNTIME IN XPI ==="
+LUHM_LIVE2D_RUNTIME="$RUNTIME" python - <<'PY'
+from pathlib import Path
+import hashlib, json, os, zipfile
+root = Path.cwd()
+runtime = Path(os.environ["LUHM_LIVE2D_RUNTIME"]).expanduser().resolve()
+audit = json.loads((root / "dist/witching-hour-audit.json").read_text())
+xpi = root / f"dist/luhm-chatgpt-companion-firefox-{audit['version']}-unsigned.xpi"
+with zipfile.ZipFile(xpi) as z:
+    vendor = z.read("vendor/l2d.min.js")
+want = hashlib.sha256(runtime.read_bytes()).hexdigest()
+got = hashlib.sha256(vendor).hexdigest()
+index = json.loads((Path.home() / "luhm-private/assets/live2d-runtime-index.json").read_text())
+print("audit:", audit["status"])
+print("models:", index.get("model_count", 0))
+print("vendor_sha_match:", got == want)
+print("xpi:", xpi)
+if audit["status"] != "GREEN" or index.get("model_count", 0) < 1 or got != want:
+    raise SystemExit(1)
+print("LIVE2D_FULL_MUTATION_GREEN")
+PY

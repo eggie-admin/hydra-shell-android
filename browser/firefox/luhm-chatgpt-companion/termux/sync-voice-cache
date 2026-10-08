@@ -1,0 +1,57 @@
+#!/data/data/com.termux/files/usr/bin/bash
+set -euo pipefail
+
+ROOT="${LUHM_PRIVATE_ASSET_ROOT:-$HOME/luhm-private/assets}"
+REMOTE="${LUHM_GDRIVE_REMOTE:-gdrive}"
+REMOTE_PATH="${LUHM_GDRIVE_DESTINY_PATH:-DestinyChildMods}"
+TTL="${LUHM_AUDIO_SYNC_TTL_SECONDS:-21600}"
+HERE="$(cd "$(dirname "$0")" && pwd)"
+STATE="${XDG_STATE_HOME:-$HOME/.local/state}/luhm-private-bridge"
+STAMP="$STATE/audio-sync.stamp"
+FORCE="${1:-}"
+mkdir -p "$ROOT/DestinyChildMods" "$ROOT/voice-cache" "$STATE"
+
+fresh=0
+if [ -f "$STAMP" ] && [ "$FORCE" != "--force" ]; then
+  now="$(date +%s)"
+  then="$(cat "$STAMP" 2>/dev/null || echo 0)"
+  age=$((now - then))
+  if [ "$age" -ge 0 ] && [ "$age" -lt "$TTL" ]; then
+    fresh=1
+  fi
+fi
+
+if [ "$fresh" -eq 1 ]; then
+  echo "Drive audio cache is fresh; TTL=${TTL}s. Use --force to refresh now."
+else
+  command -v rclone >/dev/null 2>&1 || {
+    echo "rclone is required. Configure a private Google Drive remote named '$REMOTE' first." >&2
+    exit 2
+  }
+  echo "Refreshing private Destiny Child audio/package cache from Google Drive…"
+
+  FILTERS=(
+    wav mp3 ogg oga opus m4a aac flac webm
+    acb awb hca wem bnk adx at3 at9 xma
+    pck cpk
+  )
+  ARGS=()
+  for ext in "${FILTERS[@]}"; do
+    ARGS+=(--include "*.${ext}" --include "**/*.${ext}")
+  done
+  ARGS+=(--exclude '*')
+
+  rclone copy "${REMOTE}:${REMOTE_PATH}" "$ROOT/DestinyChildMods" \
+    --drive-shared-with-me \
+    --create-empty-src-dirs \
+    --update \
+    "${ARGS[@]}" \
+    --checkers 8 \
+    --transfers 4 \
+    --progress
+  date +%s > "$STAMP"
+fi
+
+LUHM_PRIVATE_ASSET_ROOT="$ROOT" python "$HERE/index-destiny-audio.py"
+echo "voice cache root: $ROOT/voice-cache"
+echo "audio index: $ROOT/destiny-audio-index.json"

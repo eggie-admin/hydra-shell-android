@@ -1,0 +1,44 @@
+{
+  "seal": "LUM_FIREFOX_LIVE2D_FULL_MUTATION_20260911",
+  "version": "0.4.0",
+  "status": "PROMOTED",
+  "scope": "private Firefox Android ChatGPT companion only",
+  "authority": {
+    "human_final_authority": "Professor",
+    "assistant_persona": "Lum",
+    "auto_send": false,
+    "external_publish": false
+  },
+  "checkpoint": {
+    "firefox_forge": "GREEN_10_OF_10",
+    "private_asset_bridge": "GREEN_127.0.0.1_8799",
+    "audio_recognized": 51,
+    "live2d_cached_models": 9,
+    "live2d_runtime_family": "Cubism_2_legacy_moc",
+    "live2d_preferred_filename_matches": 0
+  },
+  "live2d_mutation": {
+    "renderer": "l2d 2.1.1 IIFE, locally vendored at forge time",
+    "renderer_source": "npm:l2d@2.1.1",
+    "renderer_public_git_bytes": false,
+    "renderer_remote_executable_code": false,
+    "renderer_stub_in_public_shell": true,
+    "model_assets_in_public_git": false,
+    "model_assets_in_xpi": false,
+    "model_source": "private localhost bridge generated from Google Drive cache",
+    "model_contract": "Cubism 2 model.json synthesized locally when original contract is absent",
+    "reactions": ["PET LUM", "ROLL D20", "GACHA PULL", "DATE EVENT", "SUMMON IMAGE", "CAST ULTIMA", "SAVEPOINT", "assistant_voice"],
+    "display": "isolated extension iframe mounted over chatgpt.com"
+  },
+  "licensing": {
+    "wrapper_license": "MIT",
+    "live2d_sdk_notice": "The l2d runtime integrates Live2D Cubism SDK components and remains subject to applicable Live2D license terms.",
+    "private_development_only": true,
+    "redistribute_third_party_models": false
+  },
+  "safety": {
+    "private_adult_reference_lane": true,
+    "adult_reference_assumption": "user-curated adult-design references only",
+    "infer_age_or_body_from_image": false
+  }
+}

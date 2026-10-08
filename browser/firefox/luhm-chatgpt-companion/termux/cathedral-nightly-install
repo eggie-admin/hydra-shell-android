@@ -1,0 +1,148 @@
+#!/data/data/com.termux/files/usr/bin/bash
+set -u
+
+BRANCH="feature/lum-chatgpt-companion-extension"
+REPO="$HOME/luhm-firefox"
+ROOT="$REPO/browser/firefox/luhm-chatgpt-companion"
+VERSION="0.4.0"
+NIGHTLY_PKG="org.mozilla.fenix"
+DEST="$HOME/storage/downloads/LuHm-ChatGPT-Companion-$VERSION-SIGNED.xpi"
+
+banner() { printf '\n=== %s ===\n' "$1"; }
+die() { echo "ERROR: $*" >&2; return 1 2>/dev/null || exit 1; }
+
+banner "LUHM CATHEDRAL / OWNER PROFILE GATE"
+CURRENT_USER="$(am get-current-user 2>/dev/null | tr -dc '0-9' || true)"
+if [ -n "$CURRENT_USER" ]; then
+  echo "Android user: $CURRENT_USER"
+  if [ "$CURRENT_USER" != "0" ]; then
+    echo "ABORT: this installer is intended for ordinary Termux in Android owner profile user 0, outside Samsung Secure Folder." >&2
+    exit 30
+  fi
+else
+  echo "Android user: unknown. Continuing because Android 16 may block this query from Termux."
+fi
+
+banner "FIREFOX NIGHTLY GATE"
+# Android 16 / Samsung can deny Termux's package-service binder query even when
+# Firefox Nightly is installed. Treat `pm path` as advisory only, never fatal.
+PM_OUT="$(pm path "$NIGHTLY_PKG" 2>&1 || true)"
+if printf '%s' "$PM_OUT" | grep -q '^package:'; then
+  printf '%s\n' "$PM_OUT" | sed -n '1p'
+  echo "Firefox Nightly package query: GREEN"
+else
+  echo "Package-manager query unavailable from Termux (non-fatal)."
+  [ -n "$PM_OUT" ] && printf '%s\n' "$PM_OUT" | sed -n '1,2p'
+  echo "Using Activity Manager soft probe for $NIGHTLY_PKG ..."
+  AM_OUT="$(am start -W -a android.intent.action.VIEW -d 'https://chatgpt.com/' -p "$NIGHTLY_PKG" 2>&1 || true)"
+  if printf '%s' "$AM_OUT" | grep -Eqi 'Status: ok|Starting: Intent|cmp=org\.mozilla\.fenix'; then
+    echo "Firefox Nightly Activity Manager probe: GREEN"
+  else
+    echo "Could not verify Nightly from Termux, but this is no longer a hard gate."
+    echo "Your visible Firefox Nightly install is accepted; continuing."
+  fi
+fi
+
+banner "SOURCE OF TRUTH"
+command -v git >/dev/null 2>&1 || pkg install -y git || exit 40
+if [ ! -d "$REPO/.git" ]; then
+  git clone --depth=1 --branch "$BRANCH" https://github.com/eggie-admin/hydra-shell-android.git "$REPO" || exit 41
+else
+  cd "$REPO" || exit 42
+  git fetch --depth=1 origin "$BRANCH" || exit 43
+  git reset --hard "origin/$BRANCH" || exit 44
+fi
+cd "$ROOT" || exit 45
+
+banner "TERMUX DEPENDENCIES"
+command -v python >/dev/null 2>&1 || pkg install -y python || exit 46
+command -v node >/dev/null 2>&1 || pkg install -y nodejs || exit 47
+command -v npm >/dev/null 2>&1 || pkg install -y nodejs || exit 48
+command -v unzip >/dev/null 2>&1 || pkg install -y unzip || exit 49
+command -v sha256sum >/dev/null 2>&1 || pkg install -y coreutils || exit 50
+
+if [ ! -d "$HOME/storage" ]; then
+  echo "Termux shared storage is not enabled."
+  echo "Run: termux-setup-storage"
+  echo "Approve Android's storage prompt, then rerun this installer."
+  exit 32
+fi
+
+chmod +x \
+  termux/install-live2d-runtime \
+  termux/full-live2d-mutation \
+  termux/final-firefox-install \
+  termux/luhm-private-bridge 2>/dev/null || true
+
+# Constrain Node on Android so npm/web-ext does not balloon memory.
+export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=384}"
+export npm_config_jobs="${npm_config_jobs:-1}"
+export npm_config_audit=false
+export npm_config_fund=false
+
+banner "PRIVATE MOZILLA SIGNING CREDENTIALS"
+if [ -z "${WEB_EXT_API_KEY:-}" ]; then
+  read -r -p "AMO JWT issuer: " WEB_EXT_API_KEY
+  export WEB_EXT_API_KEY
+fi
+if [ -z "${WEB_EXT_API_SECRET:-}" ]; then
+  read -r -s -p "AMO JWT secret: " WEB_EXT_API_SECRET
+  echo
+  export WEB_EXT_API_SECRET
+fi
+if [ -z "${WEB_EXT_API_KEY:-}" ] || [ -z "${WEB_EXT_API_SECRET:-}" ]; then
+  echo "Signing credentials are required for the final Nightly install build." >&2
+  exit 33
+fi
+
+banner "FULL PRIVATE LIVE2D + FIREFOX FORGE + SIGN"
+termux/final-firefox-install || {
+  code=$?
+  echo "Final Firefox installer stopped with code $code" >&2
+  echo "Termux session stays open. Re-run this script after fixing the reported gate." >&2
+  return "$code" 2>/dev/null || exit "$code"
+}
+
+[ -f "$DEST" ] || {
+  echo "Signed XPI was not produced: $DEST" >&2
+  exit 34
+}
+
+banner "SIGNED XPI VERIFY"
+sha256sum "$DEST"
+if unzip -l "$DEST" | grep -q 'META-INF/'; then
+  echo "signature metadata: PRESENT"
+else
+  echo "WARNING: no META-INF signature metadata found in signed XPI listing" >&2
+fi
+
+banner "PRIVATE ASSET BRIDGE"
+termux/luhm-private-bridge restart || true
+termux/luhm-private-bridge status || true
+
+banner "FIREFOX NIGHTLY HANDOFF"
+# Avoid `monkey` and `pm` package queries on Android 16. Activity Manager can
+# launch Nightly directly without requiring Termux to inspect package metadata.
+am start -a android.intent.action.VIEW -d "https://chatgpt.com/" -p "$NIGHTLY_PKG" >/dev/null 2>&1 || true
+sleep 1
+
+if command -v termux-open >/dev/null 2>&1; then
+  termux-open --view --chooser --content-type application/x-xpinstall "$DEST" >/dev/null 2>&1 || \
+  termux-open --chooser "$DEST" >/dev/null 2>&1 || true
+else
+  am start -a android.intent.action.VIEW -t application/x-xpinstall -d "file://$DEST" -p "$NIGHTLY_PKG" >/dev/null 2>&1 || true
+fi
+
+banner "CATHEDRAL GREEN"
+echo "ANDROID_USER=${CURRENT_USER:-unknown}"
+echo "FIREFOX_NIGHTLY=$NIGHTLY_PKG"
+echo "SIGNED_XPI=$DEST"
+echo "BRIDGE=http://127.0.0.1:8799/"
+echo "SEAL=LUM_FIREFOX_LIVE2D_FULL_MUTATION_20260911"
+echo "CATHEDRAL_NIGHTLY_INSTALL_READY"
+echo
+echo "If Android shows an app chooser, choose Firefox Nightly."
+echo "If Nightly does not immediately offer Add:"
+echo "  Settings > About Firefox > tap Firefox logo 5x (once to unlock developer options)"
+echo "  Back > Settings > Install Extension from File"
+echo "  Select LuHm-ChatGPT-Companion-$VERSION-SIGNED.xpi and tap Add."

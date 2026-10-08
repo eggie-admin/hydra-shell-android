@@ -1,0 +1,79 @@
+#!/data/data/com.termux/files/usr/bin/bash
+set -euo pipefail
+
+ROOT="${LUHM_PRIVATE_ASSET_ROOT:-$HOME/luhm-private/assets}"
+REMOTE="${LUHM_GDRIVE_REMOTE:-gdrive}"
+BASE="${LUHM_GDRIVE_DESTINY_PATH:-DestinyChildMods}"
+MAX="${LUHM_LIVE2D_MAX_PACKS:-12}"
+HERE="$(cd "$(dirname "$0")" && pwd)"
+MANUAL="$HOME/luhm-private/live2d-reference-paths.txt"
+TMP="$(mktemp -d)"
+trap 'rm -rf "$TMP"' EXIT
+mkdir -p "$ROOT/live2d" "$HOME/luhm-private"
+
+command -v rclone >/dev/null 2>&1 || { echo "rclone required" >&2; exit 2; }
+
+if [ -s "$MANUAL" ]; then
+  grep -v '^[[:space:]]*#' "$MANUAL" | grep -v '^[[:space:]]*$' > "$TMP/packs.txt"
+else
+  echo "Scanning Drive for Live2D model packs..."
+  rclone lsf "${REMOTE}:${BASE}" --drive-shared-with-me --recursive --files-only > "$TMP/all-files.txt"
+  python - "$TMP/all-files.txt" "$MAX" > "$TMP/packs.txt" <<'PY'
+from pathlib import PurePosixPath
+import os, sys
+source, maximum = sys.argv[1], int(sys.argv[2])
+keywords = tuple(x.strip().lower() for x in os.environ.get(
+    "LUHM_LIVE2D_PREFERRED_KEYWORDS",
+    "topless,nude,nsfw,uncensor,adult,busty,oppai,special,skin"
+).split(",") if x.strip())
+dirs = set()
+for raw in open(source, encoding="utf-8", errors="ignore"):
+    raw = raw.strip()
+    if not raw: continue
+    p = PurePosixPath(raw)
+    n = p.name.lower()
+    if n.endswith(".moc") or n.endswith(".moc3") or n == "model.json" or n.endswith(".model3.json"):
+        parent = p.parent.as_posix()
+        if parent not in ("", "."): dirs.add(parent)
+def score(path):
+    low = path.lower()
+    return sum(k in low for k in keywords)
+for path in sorted(dirs, key=lambda p: (-score(p), p.lower()))[:maximum]:
+    print(path)
+PY
+fi
+
+echo "Selected Live2D packs:"
+nl -ba "$TMP/packs.txt" || true
+
+cat > "$TMP/live2d.filter" <<'EOF'
++ **/
++ *.moc
++ *.moc3
++ *.json
++ *.txt
++ *.dat
++ *.mtn
++ *.png
++ *.jpg
++ *.jpeg
++ *.webp
+- **
+EOF
+
+count=0
+while IFS= read -r pack; do
+  [ -n "$pack" ] || continue
+  echo ">>> Live2D pack: $pack"
+  dest="$ROOT/live2d/$pack"
+  mkdir -p "$dest"
+  rclone copy "${REMOTE}:${BASE}/${pack}" "$dest" \
+    --drive-shared-with-me \
+    --filter-from "$TMP/live2d.filter" \
+    --create-empty-src-dirs \
+    --checkers 8 --transfers 4 --progress
+  count=$((count + 1))
+done < "$TMP/packs.txt"
+
+LUHM_PRIVATE_ASSET_ROOT="$ROOT" python "$HERE/index-live2d-reference.py"
+echo "Live2D reference packs synced: $count"

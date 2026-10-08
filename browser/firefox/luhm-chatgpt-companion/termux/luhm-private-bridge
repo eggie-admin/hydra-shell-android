@@ -1,0 +1,100 @@
+#!/data/data/com.termux/files/usr/bin/bash
+set -euo pipefail
+
+ROOT="${LUHM_PRIVATE_ASSET_ROOT:-$HOME/luhm-private/assets}"
+STATE="${XDG_STATE_HOME:-$HOME/.local/state}/luhm-private-bridge"
+HERE="$(cd "$(dirname "$0")" && pwd)"
+ASSET_PORT="${LUHM_ASSET_PORT:-8799}"
+mkdir -p "$ROOT" "$STATE"
+
+reindex() {
+  if [ -f "$HERE/build-live2d-runtime-index.py" ]; then
+    LUHM_PRIVATE_ASSET_ROOT="$ROOT" python "$HERE/build-live2d-runtime-index.py"
+  fi
+  LUHM_PRIVATE_ASSET_ROOT="$ROOT" python "$HERE/build-private-manifest.py"
+  if [ -f "$HERE/index-destiny-audio.py" ]; then
+    LUHM_PRIVATE_ASSET_ROOT="$ROOT" python "$HERE/index-destiny-audio.py"
+  fi
+  if [ -f "$HERE/index-live2d-reference.py" ]; then
+    LUHM_PRIVATE_ASSET_ROOT="$ROOT" python "$HERE/index-live2d-reference.py"
+  fi
+}
+
+start_assets() {
+  reindex
+  if [ -f "$STATE/assets.pid" ] && kill -0 "$(cat "$STATE/assets.pid")" 2>/dev/null; then
+    echo "asset bridge already running"
+    return
+  fi
+  nohup python "$HERE/serve-private-assets.py" \
+    --root "$ROOT" \
+    --host 127.0.0.1 \
+    --port "$ASSET_PORT" \
+    >"$STATE/assets.log" 2>&1 &
+  echo $! > "$STATE/assets.pid"
+  echo "asset bridge: http://127.0.0.1:$ASSET_PORT/"
+}
+
+stop_assets() {
+  local pidfile="$STATE/assets.pid"
+  if [ -f "$pidfile" ]; then
+    local pid
+    pid="$(cat "$pidfile")"
+    kill "$pid" 2>/dev/null || true
+    rm -f "$pidfile"
+  fi
+}
+
+status_assets() {
+  local pidfile="$STATE/assets.pid"
+  if [ -f "$pidfile" ] && kill -0 "$(cat "$pidfile")" 2>/dev/null; then
+    echo "assets: GREEN pid=$(cat "$pidfile")"
+  else
+    echo "assets: OFF"
+  fi
+}
+
+sync_destiny_drive() {
+  if ! command -v rclone >/dev/null 2>&1; then
+    echo "rclone is required for Drive sync. Configure a private Google Drive remote named gdrive first."
+    return 2
+  fi
+  mkdir -p "$ROOT/DestinyChildMods"
+  rclone copy "gdrive:DestinyChildMods" "$ROOT/DestinyChildMods" \
+    --drive-shared-with-me --create-empty-src-dirs --checkers 8 --transfers 4 --progress
+  reindex
+}
+
+sync_voice_cache() {
+  if [ ! -x "$HERE/sync-voice-cache" ]; then
+    chmod +x "$HERE/sync-voice-cache" 2>/dev/null || true
+  fi
+  LUHM_PRIVATE_ASSET_ROOT="$ROOT" "$HERE/sync-voice-cache" "${2:-}"
+}
+
+sync_live2d_cache() {
+  if [ ! -x "$HERE/sync-live2d-reference" ]; then
+    chmod +x "$HERE/sync-live2d-reference" 2>/dev/null || true
+  fi
+  LUHM_PRIVATE_ASSET_ROOT="$ROOT" "$HERE/sync-live2d-reference"
+  reindex
+}
+
+prepare_live2d() {
+  LUHM_PRIVATE_ASSET_ROOT="$ROOT" python "$HERE/build-live2d-runtime-index.py"
+  echo "Live2D runtime index: $ROOT/live2d-runtime-index.json"
+}
+
+case "${1:-status}" in
+  start) start_assets ;;
+  stop) stop_assets ;;
+  restart) "$0" stop; "$0" start ;;
+  status) status_assets; echo "asset root: $ROOT" ;;
+  reindex) reindex ;;
+  sync-drive) sync_destiny_drive ;;
+  sync-voice) sync_voice_cache "$@" ;;
+  sync-live2d) sync_live2d_cache ;;
+  prepare-live2d) prepare_live2d ;;
+  logs) tail -n 80 "$STATE/assets.log" 2>/dev/null || true ;;
+  *) echo "usage: $0 {start|stop|restart|status|reindex|sync-drive|sync-voice [--force]|sync-live2d|prepare-live2d|logs}"; exit 2 ;;
+esac

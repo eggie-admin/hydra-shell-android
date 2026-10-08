@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>LuHm Companion</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main>
+    <h1>LuHm Companion 👹</h1>
+    <p>ChatGPT-only roleplay controls. Commands are inserted, never auto-sent.</p>
+    <div class="grid">
+      <button data-cmd="PET LUM">PET LUM</button>
+      <button data-cmd="ROLL D20">ROLL D20</button>
+      <button data-cmd="GACHA PULL">GACHA PULL</button>
+      <button data-cmd="DATE EVENT">DATE EVENT</button>
+      <button data-cmd="SUMMON IMAGE">SUMMON IMAGE</button>
+      <button data-cmd="SAVEPOINT">SAVEPOINT</button>
+      <button class="ultima" data-cmd="CAST ULTIMA">CAST ULTIMA ⚡</button>
+    </div>
+    <div id="status" aria-live="polite"></div>
+  </main>
+  <script src="popup.js"></script>
+</body>
+</html>

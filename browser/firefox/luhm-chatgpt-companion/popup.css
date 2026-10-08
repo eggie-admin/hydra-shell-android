@@ -1,0 +1,27 @@
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  width: 310px;
+  background: #100d17;
+  color: #f8f1ff;
+  font: 15px/1.35 system-ui, sans-serif;
+}
+main { padding: 14px; }
+h1 { margin: 0 0 4px; font-size: 18px; }
+p { margin: 0 0 12px; color: #b7a9c8; font-size: 12px; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+button {
+  min-height: 46px;
+  border: 1px solid #624474;
+  border-radius: 12px;
+  background: #2a1c37;
+  color: white;
+  font-weight: 750;
+}
+button:active { transform: scale(.98); }
+.ultima {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg,#6b2c85,#235f84);
+}
+#status { min-height: 34px; padding-top: 10px; color: #80e8ff; font-size: 12px; }
