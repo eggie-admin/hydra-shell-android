@@ -12,12 +12,15 @@ from pydantic import BaseModel, Field
 ROUTER = APIRouter(tags=["kai-antenna-gateway"])
 
 GOOGLE_LOCATION = os.environ.get("GOOGLE_CLOUD_LOCATION", "global")
-GOOGLE_TEXT_MODEL = os.environ.get("KAI_GOOGLE_TEXT_MODEL", "gemini-3.5-flash")
+GOOGLE_TEXT_MODEL = os.environ.get(
+    "KAI_GOOGLE_TEXT_MODEL",
+    os.environ.get("KAI_GOOGLE_FAST_TEXT_MODEL", "gemini-3.5-flash-lite"),
+)
 GEMINI_LIVE_VERTEX_MODEL = os.environ.get(
     "KAI_GEMINI_LIVE_VERTEX_MODEL", "gemini-live-2.5-flash-native-audio"
 )
 GEMINI_LIVE_API_MODEL = os.environ.get(
-    "KAI_GEMINI_LIVE_API_MODEL", "gemini-3.1-flash-live-preview"
+    "KAI_GEMINI_LIVE_API_MODEL", "gemini-3.8-live"
 )
 
 

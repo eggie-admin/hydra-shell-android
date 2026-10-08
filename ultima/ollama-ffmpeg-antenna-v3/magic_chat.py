@@ -23,7 +23,7 @@ STATE_ROOT = Path(os.environ.get("KAI_MAGIC_STATE", str(RUNTIME_DIR / "data" / "
 CHECKPOINT_ROOT = STATE_ROOT / "checkpoints"
 CHECKPOINT_ROOT.mkdir(parents=True, exist_ok=True)
 OPENAI_API_URL = os.environ.get("OPENAI_API_URL", "https://api.openai.com/v1/responses")
-OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-6-astra")
+OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-5.6-sol")
 
 ALLOWED_SUFFIXES = {
     ".py", ".js", ".html", ".css", ".json", ".toml", ".md", ".txt", ".yml", ".yaml", ".sh"

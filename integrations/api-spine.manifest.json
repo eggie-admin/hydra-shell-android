@@ -1,0 +1,117 @@
+{
+  "schema": "luhm-os.api-spine.v1",
+  "date": "2026-09-18",
+  "project": "LuHm OS",
+  "machine_id": "luhm_os",
+  "status": "CANDIDATE_UNIFIED_NONBREAKING",
+  "canonical_prefix": "/api/v1",
+  "composition_root": "ultima/ollama-ffmpeg-antenna-v3/magic_server.py",
+  "contract_module": "ultima/ollama-ffmpeg-antenna-v3/api_spine.py",
+  "authority": {
+    "human_final_authority": "Professor",
+    "parent_agent": "Lum",
+    "provider_output_is_advisory": true,
+    "helper_consensus_grants_authority": false,
+    "canonical_merge_requires_fresh_professor_authority": true,
+    "deploy_requires_fresh_professor_authority": true
+  },
+  "roleplay_runtime_limits": {
+    "default_helpers": 0,
+    "max_parallel_read_only_helpers": 2,
+    "max_delegation_depth": 1,
+    "recursive_recruiting": false,
+    "single_parent_writer": true,
+    "direct_questions_bypass_mesh": true
+  },
+  "vendor_spine": ["openai", "google", "github", "cloudflare", "hugging_face"],
+  "canonical_routes": {
+    "health": "GET /api/v1/health",
+    "status": "GET /api/v1/status",
+    "providers": "GET /api/v1/providers",
+    "capabilities": "GET /api/v1/capabilities",
+    "assist_plan": "POST /api/v1/assist/plan",
+    "assist_query": "POST /api/v1/assist/query",
+    "ai_chat": "POST /api/v1/ai/chat",
+    "provider_route": "POST /api/v1/providers/route"
+  },
+  "compatibility_planes": {
+    "remote_assistance_v1": {
+      "owner": "ultima/ollama-ffmpeg-antenna-v3/assistance.py",
+      "paths": ["/api/assist/status", "/api/assist/route", "/api/assist/query"],
+      "policy": "compatibility_only_no_new_clients"
+    },
+    "remote_ai": {
+      "owner": "ultima/ollama-ffmpeg-antenna-v3/remote_ai.py",
+      "paths": ["/api/remote-ai/status", "/api/remote-ai/chat"],
+      "policy": "compatibility_only_no_new_clients"
+    },
+    "lum_agent": {
+      "owner": "ultima/ollama-ffmpeg-antenna-v3/lum_agent/router.py",
+      "paths": ["/api/lum/status", "/api/lum/chat"],
+      "policy": "component_agent_plane_bounded_by_spine_authority"
+    },
+    "magic_cast": {
+      "owner": "ultima/ollama-ffmpeg-antenna-v3/magic_chat.py",
+      "paths": ["/api/magic/spells", "/api/magic/chat", "/api/magic/cast/*"],
+      "policy": "component_tool_plane_human_approval_required_for_mutation"
+    },
+    "ai_feed": {
+      "owner": "ultima/ollama-ffmpeg-antenna-v3/ai_feed/router.py",
+      "paths": ["/api/ai/health", "/api/ai/rss/*", "/api/ai/chat", "/api/ai/learning/*"],
+      "policy": "component_feed_learning_plane_review_gated"
+    },
+    "antenna_gateway": {
+      "owner": "ultima/ollama-ffmpeg-antenna-v3/gateway.py",
+      "paths": ["/api/status", "/api/providers/route", "/api/director", "/providers/google/*", "/providers/gemini/live", "/ws"],
+      "policy": "component_transport_compatibility"
+    },
+    "local_antenna": {
+      "owner": "ultima/ollama-ffmpeg-antenna-v3/main.py",
+      "paths": ["/api/antenna/status", "/api/antenna/ollama/chat"],
+      "policy": "optional_local_provider_component_not_boot_authority"
+    },
+    "media": {
+      "owner": "ultima/ollama-ffmpeg-antenna-v3/main.py",
+      "paths": ["/api/jobs", "/api/demux", "/api/apng", "/api/comfy/*", "/api/remux", "/api/seal", "/api/backup", "/api/file/*"],
+      "policy": "component_plane_no_vendor_authority"
+    },
+    "widget_cms": {
+      "owner": "luhmos/samsung-android-s24/widget-cms/app/main.py",
+      "paths": ["/api/health", "/api/pages*"],
+      "policy": "separate_content_plane"
+    },
+    "local_agent": {
+      "owner": "backend/server.py",
+      "paths": ["/health", "/v1/*"],
+      "policy": "local_only_compatibility_plane"
+    }
+  },
+  "provider_defaults": {
+    "openai_fast": "gpt-5.6-luna",
+    "openai_deep": "gpt-5.6-sol",
+    "google_fast": "gemini-3.5-flash-lite",
+    "google_deep": "gemini-3.8-flash",
+    "google_live_api": "gemini-3.8-live",
+    "hugging_face_critic": "openai/gpt-oss-20b:fastest"
+  },
+  "migration": {
+    "new_clients_must_use_canonical_prefix": true,
+    "legacy_routes_removed_in_this_milestone": false,
+    "legacy_routes_may_expand": false,
+    "silent_cross_provider_failover": false,
+    "secrets_in_client_or_repo": false,
+    "private_lan_public_exposure": false
+  },
+  "supersedes_runtime_routing_sections": [
+    "integrations/vendor-apis.manifest.json#remote_assistance",
+    "integrations/vendor-apis.manifest.json#remote_ai_router",
+    "integrations/runtime-capabilities.policy.json#routing"
+  ],
+  "does_not_supersede": [
+    "provider credential boundaries",
+    "vendor endpoint bindings",
+    "external governance debt",
+    "release gates",
+    "Crown authority"
+  ]
+}

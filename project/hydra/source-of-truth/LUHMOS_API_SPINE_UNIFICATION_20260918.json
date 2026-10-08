@@ -1,0 +1,153 @@
+{
+  "schema": "luhm-os.api-spine-unification.v1",
+  "manifest_id": "LUHMOS_API_SPINE_UNIFICATION_20260918",
+  "date_local": "2026-09-18",
+  "project": "LuHm OS",
+  "repository": "eggie-admin/hydra-shell-android",
+  "canonical_branch": "luhmos-main",
+  "candidate_branch": "luhmos/api-spine-20260918",
+  "status": "GREEN_CANDIDATE_NOT_CANONICAL",
+  "human_final_authority": "Professor",
+  "source_law": "AI proposes. Policy authorizes. CI proves. The human promotes.",
+  "promotion": {
+    "authorized": false,
+    "canonical_merge_performed": false,
+    "deploy_performed": false,
+    "release_performed": false,
+    "signing_performed": false,
+    "physical_install_performed": false,
+    "fresh_professor_crown_required": true
+  },
+  "lineage": {
+    "audited_canonical_base": "d0cb42969b96c4812995fbb979f97854bd195c93",
+    "green_code_candidate": "29025a9067d9772715fc4e2a1aae3c7ae13e07ea",
+    "pull_request": 98,
+    "superseded_pull_request": 97,
+    "superseded_pr_merged": false,
+    "superseded_reason": "unsupported audit/* to luhmos-main branch topology; candidate moved to policy-compliant luhmos/* lane without weakening guardrails",
+    "history_rewrite": false
+  },
+  "audit_findings": [
+    {
+      "id": "API-001",
+      "finding": "API ownership was fragmented across Flask local-agent, Ultima FastAPI routers, media routes, widget CMS, provider gateway, and separate router composition.",
+      "resolution": "One canonical /api/v1 facade mounted first at the existing magic_server.py composition root; old surfaces remain classified component or compatibility planes."
+    },
+    {
+      "id": "API-002",
+      "finding": "Runtime capability policy still encoded the older three-helper mesh while the sealed LuHm roleplay contract requires zero default helpers, max two explicit read-only helpers, depth one.",
+      "resolution": "runtime-capabilities policy v2 and both deterministic guards now enforce 0/2/depth-1, no recursion, single parent writer, no consensus authority."
+    },
+    {
+      "id": "API-003",
+      "finding": "Legacy /api/remote-ai/* and /api/assist/* documentation competed for canonical routing authority.",
+      "resolution": "New clients use /api/v1; legacy routes are compatibility-only and may not expand."
+    },
+    {
+      "id": "API-004",
+      "finding": "Initial inventory omitted mounted Lum agent, Magic cast, AI/RSS feed, and local antenna planes.",
+      "resolution": "Complete ten-plane inventory is represented in api-spine.manifest.json and returned by /api/v1/status and /api/v1/capabilities."
+    },
+    {
+      "id": "API-005",
+      "finding": "Magic chat retained a retired OpenAI fallback and gateway retained stale Google text/live fallbacks masked by normal composition-root environment defaults.",
+      "resolution": "Standalone fallbacks aligned to OpenAI Luna/Sol and Google fast/deep/live spine policy; CI forbids those stale fallbacks from returning."
+    },
+    {
+      "id": "API-006",
+      "finding": "The runtime entitlement guard still required runtime-capabilities policy v1 after the spine upgrade to v2.",
+      "resolution": "Guard upgraded to v2 while preserving provider entitlement, privacy, credential, and authority checks; Cathedral CI proves it."
+    },
+    {
+      "id": "API-007",
+      "finding": "Changing legacy cockpit branding broke compatibility smoke despite not being required for API unification.",
+      "resolution": "Legacy application title restored; canonical LuHm API identity is exposed by /api/v1 rather than breaking compatibility metadata."
+    },
+    {
+      "id": "API-008",
+      "finding": "Top-level project manifest exposed only the legacy remote-AI endpoint as runtime API guidance.",
+      "resolution": "Project manifest now binds canonical contract luhm-os.api-spine.v1, prefix /api/v1, and canonical AI route /api/v1/ai/chat while retaining the old endpoint as compatibility-only."
+    }
+  ],
+  "canonical_contract": {
+    "schema": "luhm-os.api-spine.v1",
+    "prefix": "/api/v1",
+    "composition_root": "ultima/ollama-ffmpeg-antenna-v3/magic_server.py",
+    "router": "ultima/ollama-ffmpeg-antenna-v3/api_spine.py",
+    "routes": [
+      "GET /api/v1/health",
+      "GET /api/v1/status",
+      "GET /api/v1/providers",
+      "GET /api/v1/capabilities",
+      "POST /api/v1/assist/plan",
+      "POST /api/v1/assist/query",
+      "POST /api/v1/ai/chat",
+      "POST /api/v1/providers/route"
+    ]
+  },
+  "component_planes": [
+    "remote_assistance_v1",
+    "remote_ai",
+    "lum_agent",
+    "magic_cast",
+    "ai_feed",
+    "antenna_gateway",
+    "local_antenna",
+    "media",
+    "widget_cms",
+    "local_agent"
+  ],
+  "provider_defaults": {
+    "openai_fast": "gpt-5.6-luna",
+    "openai_deep": "gpt-5.6-sol",
+    "google_fast": "gemini-3.5-flash-lite",
+    "google_deep": "gemini-3.8-flash",
+    "google_live_api": "gemini-3.8-live",
+    "hugging_face_critic": "openai/gpt-oss-20b:fastest"
+  },
+  "roleplay_runtime_limits": {
+    "default_helpers": 0,
+    "max_parallel_read_only_helpers": 2,
+    "max_delegation_depth": 1,
+    "recursive_recruiting": false,
+    "single_parent_writer": true,
+    "helper_consensus_grants_authority": false,
+    "direct_questions_bypass_mesh": true
+  },
+  "migration_policy": {
+    "nonbreaking": true,
+    "new_clients_use_api_v1": true,
+    "legacy_routes_removed": false,
+    "legacy_routes_may_expand": false,
+    "silent_cross_provider_failover": false,
+    "secrets_in_client_or_repo": false,
+    "private_lan_public_exposure": false
+  },
+  "exact_head_ci": {
+    "head": "29025a9067d9772715fc4e2a1aae3c7ae13e07ea",
+    "result": "11/11_SUCCESS",
+    "runs": [
+      {"name": "LuHm OS Fastpath Gate", "run_id": 35384558456, "run_number": 185, "conclusion": "success"},
+      {"name": "LuHm Vendor Purge Guard", "run_id": 35384558647, "run_number": 184, "conclusion": "success"},
+      {"name": "LuHm OS Unified Project Guard", "run_id": 35384558380, "run_number": 34, "conclusion": "success"},
+      {"name": "LuHm OS ULTIMA Debug Contract", "run_id": 35384558455, "run_number": 287, "conclusion": "success"},
+      {"name": "LuHm OS Remote Assistance Smoke", "run_id": 35384558588, "run_number": 159, "conclusion": "success"},
+      {"name": "PR guardrails", "run_id": 35384558474, "run_number": 514, "conclusion": "success"},
+      {"name": "LuHm OS lane gates", "run_id": 35384558774, "run_number": 379, "conclusion": "success"},
+      {"name": "LuHm OS API Spine Audit", "run_id": 35384558400, "run_number": 16, "conclusion": "success"},
+      {"name": "Cathedral Android Gate", "run_id": 35384558544, "run_number": 511, "conclusion": "success"},
+      {"name": "LuHm OS Local CI", "run_id": 35384558922, "run_number": 308, "conclusion": "success"},
+      {"name": "KAI9000 Cathedral CI", "run_id": 35384558458, "run_number": 471, "conclusion": "success"}
+    ]
+  },
+  "green_definition": {
+    "repository_contract_green": true,
+    "live_provider_credentials_proven": false,
+    "live_external_iam_proven": false,
+    "production_edge_state_proven": false,
+    "deployment_proven": false,
+    "persistent_signing_proven": false,
+    "physical_device_operation_proven": false
+  },
+  "next_gate": "Fresh explicit Professor Crown is required before merging PR #98 into luhmos-main or performing any deployment/release action."
+}

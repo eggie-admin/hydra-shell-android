@@ -1,7 +1,8 @@
 {
-  "schema": "luhm-os.runtime-capabilities.v1",
+  "schema": "luhm-os.runtime-capabilities.v2",
   "project": "LuHm OS",
   "logical_project_id": "luhm_os",
+  "api_spine_contract": "luhm-os.api-spine.v1",
   "privacy": {
     "account_specific_plan_names_in_public_source": false,
     "billing_amounts_in_public_source": false,
@@ -55,10 +56,15 @@
     }
   },
   "routing": {
+    "canonical_api_prefix": "/api/v1",
+    "default_helpers": 0,
+    "max_parallel_read_only_helpers": 2,
+    "max_delegation_depth": 1,
+    "recursive_recruiting": false,
+    "single_parent_writer": true,
     "prefer_paid_capability_when_proven_and_task_relevant": true,
     "do_not_spend_more_only_to_prove_entitlement": true,
     "no_silent_cross_provider_failover": true,
-    "max_parallel_remote_helpers": 3,
     "direct_questions_bypass_mesh": true,
     "consequential_actions_remain_crown_gated": true
   }
