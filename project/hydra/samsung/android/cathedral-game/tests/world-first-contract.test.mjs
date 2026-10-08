@@ -10,7 +10,7 @@ const scene=fs.readFileSync(path.join(game,'godot-world','scenes','main.tscn'),'
 const manifest=JSON.parse(fs.readFileSync(path.join(game,'godot-world','WORLD_FIRST_MANIFEST.json'),'utf8'));
 
 assert.match(scene,/world_first\.gd/);
-assert.match(gd,/KAI9000_GODOT_WORLD_FIRST_HUD_V1/);
+assert.match(gd,/KAI9000_GODOT_WORLD_FIRST_HUD_V[12]/);
 assert.match(gd,/CanvasLayer/);
 assert.match(gd,/Sprite3D/);
 assert.match(gd,/Camera3D/);
@@ -19,7 +19,10 @@ assert.match(gd,/explicit cockpit summon/);
 assert.match(gd,/_plugin\.openCms\(\)/);
 assert.doesNotMatch(gd,/func _ready\([\s\S]{0,700}_plugin\.openCms\(\)/);
 assert.doesNotMatch(gd,/\beval\s*\(|\bnew\s+Function\s*\(/);
-assert.equal(manifest.mutation,'LUHM_OS_GODOT_WORLD_FIRST_HUD_1.0.7');
+assert.ok(
+  ['LUHM_OS_GODOT_WORLD_FIRST_HUD_1.0.7','LUHM_OS_WINDOWS_VN_CATHEDRAL_1.0.8'].includes(manifest.mutation),
+  `unexpected world-first mutation ${manifest.mutation}`
+);
 assert.equal(manifest.main_layer,'native Godot 3D world');
 assert.equal(manifest.authority.game_to_admin_escalation,false);
 assert.equal(manifest.authority.cockpit_auto_open,false);

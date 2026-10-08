@@ -1,12 +1,15 @@
 extends Node
 
-# KAI9000_GODOT_WORLD_FIRST_HUD_V1
-# Native Godot 4 world owns the screen. HUD is minimal. The WebView cockpit is
-# opened only by an explicit CROWN gesture from the Lum micro menu.
+# KAI9000_GODOT_WORLD_FIRST_HUD_V2
+# LUHM_OS_WINDOWS_VN_CATHEDRAL_1_0_8
+# Native Godot 4 world owns the screen. HUD stays minimal. Lightweight windows
+# and visual-novel dialogue float over the stage. The WebView cockpit is opened
+# only by an explicit CROWN gesture from the Lum micro menu.
 
 const PLUGIN_NAME := "CathedralAndroid"
 const WORLD_TITLE := "CORKTOWN SWITCHYARD"
 const WORLD_SUBTITLE := "INDUSTRY · RUIN · SPIRITS · OPPORTUNITY"
+const DesktopShellScript = preload("res://scripts/ui/desktop_shell.gd")
 
 var _plugin = null
 var _camera: Camera3D
@@ -16,15 +19,17 @@ var _hud_root: Control
 var _micro_menu: PanelContainer
 var _quest_panel: PanelContainer
 var _status_label: Label
+var _desktop_shell = null
 var _world_time := 0.0
 var _interaction_step := 0
 
 func _ready() -> void:
     _build_world()
     _build_hud()
+    _build_desktop_shell()
     if OS.get_name() == "Android" and Engine.has_singleton(PLUGIN_NAME):
         _plugin = Engine.get_singleton(PLUGIN_NAME)
-    _set_status("WORLD FIRST · WHISPER · READY")
+    _set_status("WORLD FIRST · VN DESKTOP · WHISPER · READY")
 
 func _process(delta: float) -> void:
     _world_time += delta
@@ -233,16 +238,16 @@ func _build_hud() -> void:
     _status_label = Label.new()
     _status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
     _status_label.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
-    _status_label.position = Vector2(-360, 28)
-    _status_label.size = Vector2(330, 44)
+    _status_label.position = Vector2(-430, 28)
+    _status_label.size = Vector2(400, 44)
     _status_label.add_theme_color_override("font_color", Color("b8a9bf"))
     _status_label.add_theme_font_size_override("font_size", 18)
     _hud_root.add_child(_status_label)
 
     _micro_menu = PanelContainer.new()
     _micro_menu.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
-    _micro_menu.position = Vector2(-360, -218)
-    _micro_menu.size = Vector2(328, 78)
+    _micro_menu.position = Vector2(-470, -218)
+    _micro_menu.size = Vector2(438, 78)
     _micro_menu.visible = false
     _micro_menu.add_theme_stylebox_override("panel", _panel_style(Color(0.04, 0.02, 0.06, 0.92), Color("ff66b7")))
     _hud_root.add_child(_micro_menu)
@@ -257,6 +262,9 @@ func _build_hud() -> void:
     var quest_micro := _mini_button("QUEST")
     quest_micro.pressed.connect(_toggle_quest)
     row.add_child(quest_micro)
+    var desk := _mini_button("DESK")
+    desk.pressed.connect(_toggle_desktop)
+    row.add_child(desk)
     var crown := _mini_button("CROWN")
     crown.pressed.connect(_summon_cockpit)
     row.add_child(crown)
@@ -272,6 +280,12 @@ func _build_hud() -> void:
     quest_text.add_theme_font_size_override("font_size", 18)
     quest_text.add_theme_color_override("font_color", Color("f4eafa"))
     _quest_panel.add_child(quest_text)
+
+func _build_desktop_shell() -> void:
+    _desktop_shell = DesktopShellScript.new()
+    add_child(_desktop_shell)
+    _desktop_shell.typed_intent.connect(_on_desktop_intent)
+    _desktop_shell.dialogue_visibility_changed.connect(_on_dialogue_visibility_changed)
 
 func _hud_button(text_value: String, accent: Color) -> Button:
     var button := Button.new()
@@ -310,11 +324,17 @@ func _panel_style(bg: Color, border: Color) -> StyleBoxFlat:
 
 func _toggle_micro_menu() -> void:
     _micro_menu.visible = not _micro_menu.visible
-    _set_status("LUM MICRO MENU · explicit summon only" if _micro_menu.visible else "WORLD FIRST · WHISPER · READY")
+    _set_status("LUM MICRO MENU · explicit summon only" if _micro_menu.visible else "WORLD FIRST · VN DESKTOP · WHISPER · READY")
+
+func _toggle_desktop() -> void:
+    _micro_menu.visible = false
+    if _desktop_shell:
+        _desktop_shell.toggle_launcher()
+    _set_status("DESKTOP ICONS · lightweight windows over world")
 
 func _toggle_quest() -> void:
     _quest_panel.visible = not _quest_panel.visible
-    _set_status("QUEST SIGIL · CORKTOWN" if _quest_panel.visible else "WORLD FIRST · WHISPER · READY")
+    _set_status("QUEST SIGIL · CORKTOWN" if _quest_panel.visible else "WORLD FIRST · VN DESKTOP · WHISPER · READY")
 
 func _map_ping() -> void:
     _set_status("MAP PING · CORKTOWN SWITCHYARD · DETROIT-ISH")
@@ -325,15 +345,23 @@ func _context_action() -> void:
         0:
             _contact_marker.text = "◇ CONTACT"
             _set_status("CONTACT READY · no admin authority")
+            if _desktop_shell:
+                _desktop_shell.show_dialogue("LUM", "Signal's back. CONTACT is game-space only. No crown keys hiding in the dialogue box.")
         1:
             _contact_marker.text = "◇ BOND"
             _set_status("BOND · GAME ONLY")
+            if _desktop_shell:
+                _desktop_shell.show_dialogue("LUM", "Bond event queued. The Cathedral stays visible behind the dialogue dock.")
         2:
             _contact_marker.text = "◇ DESCEND"
             _set_status("DESCEND · next room staged")
+            if _desktop_shell:
+                _desktop_shell.show_dialogue("LUM", "Next room is staged. DESCEND when you're ready, Professor.")
 
 func _pet_lum() -> void:
     _set_status("LUM · suspiciously cheerful · GAME ONLY")
+    if _desktop_shell:
+        _desktop_shell.show_dialogue("LUM", "Pet received. Still not sudo. Still cute.")
     if _lum_sprite:
         _lum_sprite.scale = Vector3.ONE * 1.08
         await get_tree().create_timer(0.16).timeout
@@ -348,6 +376,25 @@ func _summon_cockpit() -> void:
     else:
         push_warning("CathedralAndroid cockpit plugin unavailable on this runtime")
         _set_status("CROWN · cockpit plugin unavailable")
+
+func _on_desktop_intent(intent_id: String, payload: Dictionary) -> void:
+    match intent_id:
+        "ui.window.toggle":
+            _set_status("WINDOW · %s · PRESENTATION ONLY" % String(payload.get("window_id", "unknown")).to_upper())
+        "ui.settings.changed":
+            _set_status("SETTINGS SAVED · local UI only")
+        "ui.settings.reset":
+            _set_status("SETTINGS RESET · sane defaults restored")
+        "game.dialogue.auto":
+            _set_status("DIALOGUE AUTO · %s" % ("ON" if bool(payload.get("enabled", false)) else "OFF"))
+        _:
+            _set_status("TYPED INTENT · %s" % intent_id)
+
+func _on_dialogue_visibility_changed(visible: bool) -> void:
+    if visible:
+        _set_status("VISUAL NOVEL DOCK · GAME PRESENTATION")
+    else:
+        _set_status("WORLD FIRST · VN DESKTOP · WHISPER · READY")
 
 func _set_status(value: String) -> void:
     if _status_label:
